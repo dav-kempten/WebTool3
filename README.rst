@@ -12,7 +12,7 @@ The ``docs/source`` directory contains the plaintext version of
 these manuals. If you have Sphinx_ installed, you can build them by typing
 ``cd docs; make html`` for local browsing.
 
-The official documentation is hosted on https://webtool2.readthedocs.io/de/latest/
+The official documentation is hosted on http://webtool3.readthedocs.io/de/latest/index.html
 
 The project language is german, and so all other documents are written in german language.
 
