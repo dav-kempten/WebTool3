@@ -8,6 +8,8 @@ WebTool3
    :target: http://webtool3.readthedocs.io/de/latest/?badge=latest
    :alt: Documentation Status
 
+-----
+
 This is a Django_ based web application, supporting the full time employees and volunteers staff
 of the DAV (German Alpine Club) section Allgäu Kempten in their work with
 any number of tours, instructions, talks and other events.
