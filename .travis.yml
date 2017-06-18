@@ -19,4 +19,4 @@ before_script:
   - createdb -O postgres travisci
 
 script:
-  - cd $HOME/builds/wodo/WebTool3/webtool; python3.6 manage.py migrate
+  - cd webtool
