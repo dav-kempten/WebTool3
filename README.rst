@@ -1,18 +1,15 @@
 .. _readme:
 
-========
-
 .. image:: https://badges.gitter.im/WebTool3/Lobby.svg
-   :alt: Join the chat at https://gitter.im/WebTool3/Lobby
    :target: https://gitter.im/WebTool3/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
-WebTool3
-========
+   :alt: Join the chat at https://gitter.im/WebTool3/Lobby
 
 .. image:: https://readthedocs.org/projects/webtool3/badge/?version=latest
    :target: http://webtool3.readthedocs.io/de/latest/?badge=latest
    :alt: Documentation Status
 
------
+WebTool3
+========
 
 This is a Django_ based web application, supporting the full time employees and volunteers staff
 of the DAV (German Alpine Club) section Allgäu Kempten in their work with
