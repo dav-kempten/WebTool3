@@ -19,9 +19,6 @@ before_install:
 install:
   - pip install -r requirements.txt
 
-before_script:
-  - createdb -O postgres travisci
-
 script:
   - cd webtool
   - python3.6 manage.py migrate
