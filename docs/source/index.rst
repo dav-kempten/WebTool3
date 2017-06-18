@@ -12,6 +12,10 @@ WebTool3
    environment/deployment
    environment/installation
 
+   testing/django
+
+   documentation/autodoc
+
 
 Verzeichnisse und Tabellen
 ==========================
