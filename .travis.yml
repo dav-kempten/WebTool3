@@ -1,11 +1,15 @@
+dist: trusty
+sudo: false
+
+addons:
+  postgresql: "9.6"
+
 language: python
+
 python:
   - 3.6
 
 services: postgresql
-
-env:
-  - DJANGO 1.11.2
 
 before_install:
   - export DJANGO_SETTINGS_MODULE=config.settings.travis
@@ -20,3 +24,4 @@ before_script:
 
 script:
   - cd webtool
+  - python3.6 manage.py migrate

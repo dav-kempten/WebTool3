@@ -8,6 +8,10 @@
    :target: http://webtool3.readthedocs.io/de/latest/?badge=latest
    :alt: Documentation Status
 
+.. image:: https://travis-ci.org/wodo/WebTool3.svg?branch=master
+   :target: https://travis-ci.org/wodo/WebTool3
+   :alt: Build Status
+
 WebTool3
 ========
 
