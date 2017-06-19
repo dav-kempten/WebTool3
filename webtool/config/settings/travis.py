@@ -72,7 +72,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'HOST': 'localhost',
-        'NAME': 'travis',
+        'NAME': 'webtool',
         'USER': 'travis',
         'PORT': '',
         'PASSWORT': ''
