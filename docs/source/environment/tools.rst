@@ -12,7 +12,8 @@ Werkzeuge
 * sphinx_ 1.6.2
 * Django_ 1.11.2
 * PostgreSQL_ 9.6.3
-* GitHub_
+* Git_ 2.11.0
+* GitHub_ (`GitHub Standard Fork & Pull Request Workflow <https://gist.github.com/Chaser324/ce0505fbed06b947d962>`_)
 * `Travis CI`_
 * `Django REST Framework`_ 3.6.3
 
@@ -25,6 +26,7 @@ Werkzeuge
 .. _sphinx: http://www.sphinx-doc.org/en/1.6.2/
 .. _Django: https://docs.djangoproject.com/en/1.11/
 .. _PostgreSQL: https://www.postgresql.org/docs/9.6/static/index.html
+.. _Git: https://git-scm.com
 .. _GitHub: https://github.com
 .. _`Travis CI`: https://travis-ci.org
 .. _`Django REST Framework`: http://www.django-rest-framework.org
