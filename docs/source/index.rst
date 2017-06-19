@@ -16,6 +16,7 @@ WebTool3
 
    documentation/autodoc
 
+   code/code
 
 Verzeichnisse und Tabellen
 ==========================
