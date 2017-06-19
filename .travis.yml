@@ -20,6 +20,7 @@ install:
   - pip3 install -r requirements.txt
 
 script:
+  - locale -a
   - createdb -O travis -E UTF8 --locale=de_DE.utf8 --template=template0 webtool
   - cd webtool
   - python3.6 manage.py migrate
