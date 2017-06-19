@@ -20,6 +20,6 @@ install:
   - pip3 install -r requirements.txt
 
 script:
-  - sudo -u postgres createdb -O travis -E UTF8 --locale=de_DE.utf8 webtool
+  - createdb -O travis -E UTF8 --locale=de_DE.utf8 webtool
   - cd webtool
   - python3.6 manage.py migrate
