@@ -3,7 +3,7 @@
 Testentwicklung für Django
 ==========================
 
-siehe : https://docs.djangoproject.com/en/1.11/topics/testing/
+siehe: https://docs.djangoproject.com/en/1.11/topics/testing/
 
 Testentwicklung für das REST-Framework
 ======================================
