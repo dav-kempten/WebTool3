@@ -3,4 +3,4 @@
 Config - Module
 ===============
 
-.. py:module:: config
+.. automodule:: config

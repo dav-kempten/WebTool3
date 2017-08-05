@@ -12,3 +12,5 @@ build/
 __pycache__/
 .pickle
 .doctree
+.dicts/
+.dic

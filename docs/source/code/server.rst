@@ -3,5 +3,4 @@
 Server - Module
 ===============
 
-.. py:module:: server
-
+.. automodule:: server
