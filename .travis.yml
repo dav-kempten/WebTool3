@@ -13,7 +13,7 @@ services: postgresql
 
 before_install:
   - export DJANGO_SETTINGS_MODULE=config.settings.travis
-  - export DJCODE_SECRET_KEY 3247623963291291398732873287
+  - export DJCODE_SECRET_KEY=3247623963291291398732873287
   - export PYTHONPATH=$HOME/builds/wodo/WebTool3
   - export PIP_USE_MIRRORS=true
   - export DJCODE_DB_ENGINE=django.db.backends.postgresql
