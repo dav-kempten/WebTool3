@@ -1,7 +1,5 @@
 from .base import *
 
-SECRET_KEY = '3247623963291291398732873287'
-
 DEBUG = True
 
 ALLOWED_HOSTS = []
