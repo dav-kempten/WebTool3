@@ -24,6 +24,8 @@ def get_env(name):
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# See https://docs.djangoproject.com/en/1.11/ref/contrib/sites/
+SITE_ID = 1
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
@@ -34,6 +36,8 @@ SECRET_KEY = get_env('DJCODE_SECRET_KEY')
 # Application definition
 
 INSTALLED_APPS = [
+    'django.contrib.sites',
+    'django.contrib.redirects',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.staticfiles',
@@ -47,6 +51,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.contrib.redirects.middleware.RedirectFallbackMiddleware'
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -82,6 +87,18 @@ DATABASES = {
         'PASSWORD': get_env('DJCODE_DB_PASSWORD'),
     }
 }
+
+# Cache
+# https://docs.djangoproject.com/en/1.11/topics/cache/#database-caching
+# https://docs.djangoproject.com/en/1.11/ref/settings/#caches
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'wt3_cache',
+    }
+}
+
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators

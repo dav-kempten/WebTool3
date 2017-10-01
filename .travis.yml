@@ -29,4 +29,6 @@ install:
 script:
   - createdb -O travis -E UTF8 --locale=de_DE.utf8 --template=template0 webtool
   - cd webtool
+  - python3.6 manage.py createcachetable
   - python3.6 manage.py migrate
+  - python3.6 manage.py init_season
