@@ -152,7 +152,7 @@ Es gibt Kapitel (``Part``), Unterkapitel (``Section``) und Abschnitte (``Chapter
             unique_together = (('season', 'section', 'name'),)
 
 Ein Vortrag (``Talk``), ein Gruppentermin (``Session``), ein Kurs (``Instruction``) oder eine
-Gemeinschaftstour (``Tour``) haben ein Attribut ``chapter``, über welches sie einem oder mehreren Abschnitten zuordnen
+Gemeinschaftstour (``Tour``) haben ein Attribut ``chapter``, über welches sie einem oder mehreren Abschnitten zugeordnet
 werden können.
 
 Gemeinschaftstouren:
@@ -171,18 +171,18 @@ Die bisher aufgeführten Elemente (``Talk``, ``Session``, ``Instruction`` und ``
 eines zentralen Datentyps, dem Veranstaltungstermin  (``Event``).
 
 Vortrag (``Talk``) und Gruppentermin (``Session``):
-    | Ein Vortrag ist über das Attribute ``talk`` mit genau einem Veranstaltungstermin verbunden.
-    | Ein Gruppentermin ist über das Attribute ``session`` mit genau einem Veranstaltungstermin verbunden.
+    | Ein Vortrag ist über das Attribut ``talk`` mit genau einem Veranstaltungstermin verbunden.
+    | Ein Gruppentermin ist über das Attribut ``session`` mit genau einem Veranstaltungstermin verbunden.
 Kurstermin (``Instruction``):
     Ein Kurs kann viele Veranstaltungstermine (z.B. einige Theorie- und/oder Praxisabende sowie längere Ausfahrten) benötigen.
-    Es gibt aber genau einen Haupttermin, der über das Attribute ``instruction`` mit einem Veranstaltungstermin verbunden ist.
+    Es gibt aber genau einen Haupttermin, der über das Attribut ``instruction`` mit einem Veranstaltungstermin verbunden ist.
     Alle weiteren Kurstermine verweisen mit ihrem ``instruction`` Attribut zurück auf das jeweilige ``Instruction`` Objekt.
     Dort können alle untergeordneten Termine über das Attribut ``meeting_list`` bearbeitet werden.
 Gemeinschaftstour (``Tour``):
     Eine Gemeinschaftstour hat in der Regel drei Veranstaltungstermine:
 
-    * Der Anmeldeschluss (``deadline``) bezeichnet den Termin an dem die minimal Teilnehmerzahl erreicht sein sollte.
-    * Die Vorbesprechung (``preliminary``) ist optinal und kann z.B durch eine Telefonkonferenz oder eine Rundmail ersetzt werden.
+    * Der Anmeldeschluss (``deadline``) bezeichnet den Termin an dem die minimale Teilnehmerzahl erreicht sein sollte.
+    * Die Vorbesprechung (``preliminary``) ist optional und kann z.B durch eine Telefonkonferenz oder eine Rundmail ersetzt werden.
     * Die Ausfahrt (``tour``) erstreckt sich über einen gewissen Zeitraum, von einigen Stunden bis zu mehreren Tagen.
 
 .. code-block:: python
@@ -228,8 +228,8 @@ Vortrag
 ~~~~~~~
 
 * Die Teilnehmerzahl kann begrenzt sein. => Buchungscode
-* Es können Teilnehmerlisten geführt werden oder Eintritskarten verkauft werden => Buchungscode
-* Die Veranstaltung kann auch für nicht Nichtmitglieder offen stehen => verschiedene Tarife
+* Es können Teilnehmerlisten geführt werden oder Eintrittskarten verkauft werden. => Buchungscode
+* Die Veranstaltung kann auch für Nichtmitglieder offen stehen. => verschiedene Tarife
 
 .. code-block:: python
 
@@ -266,13 +266,13 @@ Vortrag
             db_table = 'server_talk_tariffs'
             unique_together = (('talk', 'tariff'),)
 
-Grupperntermin
-~~~~~~~~~~~~~~
+Gruppentermin
+~~~~~~~~~~~~~
 
-* Es können nur Gruppenmitglieder teilnehmen => Kein Teilnehmerbeitrag
-* Es gibt einen Ansprechpartner => ``guide``
-* Es kann Unterstützer im Team geben => ``team``
-* Jeder Gruppentermin gehört zu einer Gruppe (``Collective``)
+* Es können nur Gruppenmitglieder teilnehmen. => Kein Teilnehmerbeitrag
+* Es gibt einen Ansprechpartner. => ``guide``
+* Es kann Unterstützer im Team geben. => ``team``
+* Jeder Gruppentermin gehört zu einer Gruppe. (``Collective``)
 
 .. code-block:: python
 
@@ -327,11 +327,11 @@ Grupperntermin
 Kurs
 ~~~~
 
-* Die Teilnehmerzahl ist begrenzt. Es werden Teilnehmerlisten geführt => Buchungscode
-* Indoorkurse stehen auch Nichtmitgliedern offen => verschiedene Tarife
-* Es gibt einen Ansprechpartner => ``guide``
-* Es kann Unterstützer im Team geben => ``team``
-* Kurse können von Frauen exclusiv für Frauen veranstaltet werden => ``ladies_only``
+* Die Teilnehmerzahl ist begrenzt. Es werden Teilnehmerlisten geführt. => Buchungscode
+* Indoorkurse stehen auch Nichtmitgliedern offen. => verschiedene Tarife
+* Es gibt einen Ansprechpartner. => ``guide``
+* Es kann Unterstützer im Team geben. => ``team``
+* Kurse können von Frauen exclusiv für Frauen veranstaltet werden. => ``ladies_only``
 
 .. code-block:: python
 
@@ -388,12 +388,12 @@ Kurs
 Gemeinschaftstour
 ~~~~~~~~~~~~~~~~~
 
-* Die Teilnehmerzahl ist begrenzt. Es werden Teilnehmerlisten geführt => Buchungscode
-* Touren stehen nur Mitgliedern offen => eine Teilnehmergebühr ``admission``
-* Es gibt einen Ansprechpartner => ``guide``
-* Es kann Unterstützer im Team geben => ``team``
-* Die Beherrschung bestimmter Kursinhalte kann notwendige Vorraussetzung für eine Teilnahme sein => ``qualification_list``
-* Touren können von Frauen exclusiv für Frauen veranstaltet werden => ``ladies_only``
+* Die Teilnehmerzahl ist begrenzt. Es werden Teilnehmerlisten geführt. => Buchungscode
+* Touren stehen nur Mitgliedern offen. => Eine Teilnehmergebühr ``admission``
+* Es gibt einen Ansprechpartner. => ``guide``
+* Es kann Unterstützer im Team geben. => ``team``
+* Die Beherrschung bestimmter Kursinhalte kann notwendige Vorraussetzung für eine Teilnahme sein. => ``qualification_list``
+* Touren können von Frauen exclusiv für Frauen veranstaltet werden. => ``ladies_only``
 
 .. code-block:: python
 
@@ -491,7 +491,7 @@ Kennung, Kategorie, Buchungscode
 
 Jedem Veranstaltungstermin ist eine eindeutige Kennung (``Reference``) zugeordnet.
 Für Touren (``Tour``), Kurse (``Instruction``) und Vorträge (``Talk``) wird diese Kennung als Buchungscode benutzt.
-Über die Kennung ist ebenfallse jederm Veranstaltungstermin eine Kategorie (``Category``) zugeordnet.
+Über die Kennung ist ebenfalls jedem Veranstaltungstermin eine Kategorie (``Category``) zugeordnet.
 Aus dieser Angabe leitet sich z.B. ab in welcher Jahreszeit (Winter oder Sommer) eine Veranstaltung stattfinden soll.
 Im Winter werden nur Wintersportarten (z.B. Skitouren oder Schneeschuhtouren) angeboten.
 Im Sommer werden eben nur Sommersportarten (z.B. Bergtouren oder Touren mit dem Moutainbike) angeboten.
