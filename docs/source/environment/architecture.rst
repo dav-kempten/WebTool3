@@ -351,7 +351,6 @@ Kurs
         max_quantity = models.IntegerField()
         cur_quantity = models.IntegerField()
 
-        mileage = models.IntegerField()
         calc_budget = models.DecimalField(max_digits=6, decimal_places=2)
         real_costs = models.DecimalField(max_digits=6, decimal_places=2)
         budget_info = postgres.JSONField(blank=True, null=True)
@@ -425,7 +424,6 @@ Gemeinschaftstour
         misc_category = models.CharField(max_length=75)
         portal = models.CharField(max_length=200)
 
-        mileage = models.IntegerField()
         calc_budget = models.DecimalField(max_digits=6, decimal_places=2)
         real_costs = models.DecimalField(max_digits=6, decimal_places=2)
         budget_info = postgres.JSONField(blank=True, null=True)
@@ -795,7 +793,7 @@ Trainer
 
     class ServerGuide(models.Model):
         season = models.ForeignKey('ServerSeason')
-        user = models.ForeignKey(AuthUser)
+        user = models.ForeignKey(AuthUser, primary_key=True)
 
         first_name = models.CharField(max_length=30)
         last_name = models.CharField(max_length=30)

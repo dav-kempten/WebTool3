@@ -10,7 +10,7 @@ class Guide(SeasonMixin, TimeMixin, models.Model):
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        db_index=True,
+        primary_key=True,
         verbose_name='Leiter',
         related_name='guide_list',
         on_delete=models.PROTECT,

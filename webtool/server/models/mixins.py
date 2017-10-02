@@ -136,12 +136,6 @@ class StateMixin(models.Model):
 
 class AdminMixin(StateMixin, models.Model):
 
-    mileage = models.PositiveIntegerField(
-        'Kilometerleistung',
-        blank=True, default=0,
-        help_text="Kempten (Treffpunkt) → Ausgangsort und zurück"
-    )
-
     calc_budget = models.DecimalField(
         'Budget',
         max_digits=6, decimal_places=2,
@@ -156,7 +150,7 @@ class AdminMixin(StateMixin, models.Model):
         help_text="Tatsächlicher Betrag in €, der vom Team in Summe abgerechnet wurde",
     )
 
-    budget_info = postgres.JSONField(blank=True, default='')  # JSON data as base for calculation of budget
+    budget_info = postgres.JSONField(blank=True, null=True)  # JSON data as base for calculation of budget
     message = models.TextField(blank=True, default='')  # Info vom Guide an Referat
     comment = models.TextField(blank=True, default='')  # Interna!
 

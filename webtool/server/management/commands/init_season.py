@@ -137,19 +137,20 @@ def init_section():
 def init_category():
 
     values = [
-        {'tour': True, 'order': 10, 'code': 'SST', 'name': 'Schneeschuhtour', 'winter': True},
-        {'tour': True, 'order': 20, 'code': 'SHG', 'name': 'Schneeschuh- Gletscher/Hochtour', 'winter': True},
-        {'tour': True, 'order': 30, 'code': 'SKT', 'name': 'Skitour', 'winter': True},
-        {'tour': True, 'order': 40, 'code': 'SHT', 'name': 'Skihochtour', 'winter': True},
-        {'tour': True, 'order': 50, 'code': 'SBD', 'name': 'Snowboardtour', 'winter': True},
-        {'tour': True, 'order': 60, 'code': 'FRD', 'name': 'Freeride', 'winter': True},
-        {'tour': True, 'order': 70, 'code': 'BGT', 'name': 'Bergtour', 'summer': True},
-        {'tour': True, 'order': 80, 'code': 'KSG', 'name': 'Klettersteig', 'summer': True},
-        {'tour': True, 'order': 90, 'code': 'KLT', 'name': 'Klettertour', 'summer': True},
+        {'tour': True, 'order': 10,  'code': 'SST', 'name': 'Schneeschuhtour', 'winter': True},
+        {'tour': True, 'order': 20,  'code': 'SHG', 'name': 'Schneeschuh- Gletscher/Hochtour', 'winter': True},
+        {'tour': True, 'order': 30,  'code': 'SKT', 'name': 'Skitour', 'winter': True},
+        {'tour': True, 'order': 40,  'code': 'SHT', 'name': 'Skihochtour', 'winter': True},
+        {'tour': True, 'order': 50,  'code': 'SBD', 'name': 'Snowboardtour', 'winter': True},
+        {'tour': True, 'order': 60,  'code': 'FRD', 'name': 'Freeride', 'winter': True},
+        {'tour': True, 'order': 70,  'code': 'BGT', 'name': 'Bergtour', 'summer': True},
+        {'tour': True, 'order': 80,  'code': 'KSG', 'name': 'Klettersteig', 'summer': True},
+        {'tour': True, 'order': 90,  'code': 'KLT', 'name': 'Klettertour', 'summer': True},
         {'tour': True, 'order': 100, 'code': 'GHT', 'name': 'Gletschertour / Hochtour', 'summer': True},
         {'tour': True, 'order': 110, 'code': 'MTB', 'name': 'Mountainbike', 'summer': True},
         {'tour': True, 'order': 120, 'code': 'EBK', 'name': 'E-Bike', 'summer': True},
         {'tour': True, 'order': 130, 'code': 'RDT', 'name': 'Radtour', 'summer': True},
+        {'talk': True, 'order': 140, 'code': 'TLK', 'name': 'Vortrag'},
         {'order': 140, 'code': '?', 'name': 'Sonstige'},
     ]
 
