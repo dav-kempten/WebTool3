@@ -196,6 +196,8 @@ class QualificationGroupManager(models.Manager):
 
 class QualificationGroup(TimeMixin, models.Model):
 
+    objects = QualificationGroupManager()
+
     name = fields.NameField(
         help_text="Bezeichnung der Qualifikationsgruppe",
         unique=True
@@ -222,6 +224,8 @@ class QualificationManager(models.Manager):
 
 
 class Qualification(TimeMixin, models.Model):
+
+    objects = QualificationManager()
 
     code = models.CharField(
         'Kurzzeichen',
@@ -264,6 +268,8 @@ class UserQualificationManager(models.Manager):
 
 
 class UserQualification(TimeMixin, models.Model):
+
+    objects = UserQualificationManager()
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,

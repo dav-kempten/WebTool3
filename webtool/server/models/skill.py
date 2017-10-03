@@ -58,6 +58,8 @@ class SkillDescription(SeasonMixin, TimeMixin, models.Model):
     # SeasonMixin is needed only for namespace checking. See unique_together
     # check skill and category belongs to the same season
 
+    objects = SkillDescriptionManager()
+
     skill = models.ForeignKey(
         Skill,
         db_index=True,

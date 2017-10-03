@@ -59,6 +59,8 @@ class FitnessDescription(SeasonMixin, TimeMixin, models.Model):
     # SeasonMixin is needed only for namespace checking. See unique_together
     # check: fitness and category belongs to the same season!
 
+    objects = FitnessDescriptionManager()
+
     fitness = models.ForeignKey(
         Fitness,
         db_index=True,

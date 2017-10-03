@@ -14,6 +14,8 @@ class GuideManager(models.Manager):
 
 class Guide(SeasonMixin, TimeMixin, models.Model):
 
+    objects = GuideManager()
+
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         db_index=True,

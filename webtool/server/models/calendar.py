@@ -114,6 +114,8 @@ class AnniversaryManager(models.Manager):
 
 class Anniversary(TimeMixin, models.Model):
 
+    objects = AnniversaryManager()
+
     calendar = models.ForeignKey(
         'Calendar',
         db_index=True,
@@ -363,6 +365,8 @@ class VacationManager(models.Manager):
 
 
 class Vacation(TimeMixin, models.Model):
+
+    objects = VacationManager()
 
     calendar = models.ForeignKey(
         'Calendar',

@@ -16,6 +16,8 @@ class RetrainingManager(models.Manager):
 
 class Retraining(TimeMixin, models.Model):
 
+    objects = RetrainingManager()
+
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         db_index=True,

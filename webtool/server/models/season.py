@@ -16,6 +16,8 @@ class SeasonManager(models.Manager):
 
 class Season(TimeMixin, models.Model):
 
+    objects = SeasonManager()
+
     name = models.SlugField(
         'Bezeichnung',
         unique=True,
