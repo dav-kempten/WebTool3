@@ -10,9 +10,17 @@ from .time_base import TimeMixin
 from . import fields
 
 
+class CollectiveManager(models.Manager):
+
+    def get_by_natural_key(self, season, title):
+        return self.get(season__name=season, title=title)
+
+
 class Collective(SeasonMixin, SectionMixin, TimeMixin, DescriptionMixin, models.Model):
 
     # SeasonMixin is needed only for namespace checking. See unique_together
+
+    objects = CollectiveManager()
 
     # noinspection PyUnresolvedReferences
     categories = models.ManyToManyField(
@@ -33,19 +41,33 @@ class Collective(SeasonMixin, SectionMixin, TimeMixin, DescriptionMixin, models.
 
     order = fields.OrderField()
 
+    def natural_key(self):
+        return self.season.name, self.title
+
+    natural_key.dependencies = ['server.season']
+
     def __str__(self):
         return "{} [{}]".format(self.title, self.season.name)
 
     class Meta:
         verbose_name = "Gruppe"
         verbose_name_plural = "Gruppen"
-        unique_together = ('season', 'title', 'name')
+        unique_together = (('season', 'title'), ('season', 'name'), ('season', 'title', 'name'))
         ordering = ('season__name', 'order', 'name')
+
+
+class SessionManager(models.Manager):
+
+    def get_by_natural_key(self, season, reference):
+        session = Event.objects.get_by_natural_key(season, reference)
+        return session.session
 
 
 class Session(TimeMixin, GuidedEventMixin, RequirementMixin, EquipmentMixin, StateMixin, ChapterMixin, models.Model):
 
     # check: category.season and self.season belongs to the same season!
+
+    objects = SessionManager()
 
     collective = models.ForeignKey(
         Collective,
@@ -80,6 +102,11 @@ class Session(TimeMixin, GuidedEventMixin, RequirementMixin, EquipmentMixin, Sta
     @property
     def season(self):
         return self.collective.season
+
+    def natural_key(self):
+        return self.session.natural_key()
+
+    natural_key.dependencies = ['server.season', 'server.event', 'server.collective']
 
     def __str__(self):
         return '{} - {}, {} [{}]'.format(

@@ -6,11 +6,17 @@ from .mixins import SeasonMixin
 from .time_base import TimeMixin
 
 
+class GuideManager(models.Manager):
+
+    def get_by_natural_key(self, season, username):
+        return self.get(season__name=season, user__username=username)
+
+
 class Guide(SeasonMixin, TimeMixin, models.Model):
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        primary_key=True,
+        db_index=True,
         verbose_name='Leiter',
         related_name='guide_list',
         on_delete=models.PROTECT,
@@ -74,11 +80,16 @@ class Guide(SeasonMixin, TimeMixin, models.Model):
     def name(self):
         return ' '.join((self.first_name.strip(), self.last_name.strip()))
 
+    def natural_key(self):
+        return self.season.name, self.user.get_username()
+
+    natural_key.dependencies = ['auth.user', 'server.season']
+
     def __str__(self):
         return "{} [{}]".format(self.name, self.season.name)
 
     class Meta:
-        unique_together = ('season', 'first_name', 'last_name')
         verbose_name = "Touren/Kurs/Gruppenleiter"
         verbose_name_plural = "Touren/Kurs/Gruppenleiter"
+        unique_together = ('season', 'user')
         ordering = ('season__name', 'last_name', 'first_name')

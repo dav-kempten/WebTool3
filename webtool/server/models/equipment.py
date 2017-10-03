@@ -6,7 +6,15 @@ from .time_base import TimeMixin
 from . import fields
 
 
+class EquipmentManager(models.Manager):
+
+    def get_by_natural_key(self, season, code):
+        return self.get(season__name=season, code=code)
+
+
 class Equipment(SeasonMixin, TimeMixin, models.Model):
+
+    objects = EquipmentManager()
 
     code = models.CharField(
         'Kurzzeichen',
@@ -29,6 +37,11 @@ class Equipment(SeasonMixin, TimeMixin, models.Model):
         'Die initiale Ausrüstung',
         blank=True, default=False
     )
+
+    def natural_key(self):
+        return self.season.name, self.code
+
+    natural_key.dependencies = ['server.season']
 
     def __str__(self):
         return "{} ({}) [{}]".format(self.name, self.code, self.season.name)

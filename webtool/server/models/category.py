@@ -6,7 +6,15 @@ from .mixins import SeasonMixin
 from .time_base import TimeMixin
 
 
+class CategoryManager(models.Manager):
+
+    def get_by_natural_key(self, season, code):
+        return self.get(season__name=season, code=code)
+
+
 class Category(SeasonMixin, TimeMixin, models.Model):
+
+    objects = CategoryManager()
 
     code = models.CharField(
         'Kurzzeichen',
@@ -67,6 +75,11 @@ class Category(SeasonMixin, TimeMixin, models.Model):
         'Klettersportart',
         blank=True, default=False
     )
+
+    def natural_key(self):
+        return self.season.name, self.code
+
+    natural_key.dependencies = ['server.season']
 
     def __str__(self):
         return "{} ({}) [{}]".format(self.name, self.code, self.season.name)

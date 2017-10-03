@@ -8,6 +8,12 @@ from .time_base import TimeMixin
 from . import defaults
 
 
+class SeasonManager(models.Manager):
+
+    def get_by_natural_key(self, name):
+        return self.get(name=name)
+
+
 class Season(TimeMixin, models.Model):
 
     name = models.SlugField(
@@ -26,6 +32,9 @@ class Season(TimeMixin, models.Model):
         blank=True, null=True,
         default=defaults.get_default_params,
     )
+
+    def natural_key(self):
+        return self.name,
 
     def __str__(self):
         return self.name

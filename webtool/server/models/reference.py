@@ -7,7 +7,15 @@ from .mixins import SeasonMixin
 from .time_base import TimeMixin
 
 
+class ReferenceManager(models.Manager):
+
+    def get_by_natural_key(self, season, category, reference):
+        return self.get(season__name=season, category__code=category, reference=reference)
+
+
 class Reference(SeasonMixin, TimeMixin, models.Model):
+
+    objects = ReferenceManager()
 
     # noinspection PyUnresolvedReferences
     category = models.ForeignKey(
@@ -23,13 +31,18 @@ class Reference(SeasonMixin, TimeMixin, models.Model):
         validators=[MaxValueValidator(99, 'Bitte keine Zahlen größer 99 eingeben')]
     )
 
+    def natural_key(self):
+        return self.season.name, self.category.code, self.reference
+
+    natural_key.dependencies = ['server.season', 'server.category']
+
     def __str__(self):
         return "{}-{}{:02d}".format(self.category, self.season.name[-1], self.reference)
 
     class Meta:
         verbose_name = "Buchungscode"
         verbose_name_plural = "Buchungscodes"
-        unique_together = ('season', 'reference', 'category')
+        unique_together = ('season', 'category', 'reference')
         ordering = ('season__name', 'category__order', 'reference')
 
 

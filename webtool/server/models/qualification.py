@@ -188,6 +188,12 @@ from . import fields, defaults
 # )
 
 
+class QualificationGroupManager(models.Manager):
+
+    def get_by_natural_key(self, name):
+        return self.get(name=name)
+
+
 class QualificationGroup(TimeMixin, models.Model):
 
     name = fields.NameField(
@@ -196,6 +202,9 @@ class QualificationGroup(TimeMixin, models.Model):
     )
 
     order = fields.OrderField()
+
+    def natural_key(self):
+        return self.name,
 
     def __str__(self):
         return self.name
@@ -206,14 +215,19 @@ class QualificationGroup(TimeMixin, models.Model):
         ordering = ('order', 'name')
 
 
+class QualificationManager(models.Manager):
+
+    def get_by_natural_key(self, code):
+        return self.get(code=code)
+
+
 class Qualification(TimeMixin, models.Model):
 
     code = models.CharField(
         'Kurzzeichen',
-        db_index=True,
+        primary_key=True,
         max_length=10,
         help_text="Kurzzeichen der Qualifikation",
-        unique=True
     )
 
     name = fields.NameField(
@@ -230,6 +244,9 @@ class Qualification(TimeMixin, models.Model):
         blank=True, null=True
     )
 
+    def natural_key(self):
+        return self.code,
+
     def __str__(self):
         return "{} ({})".format(self.name, self.code)
 
@@ -238,6 +255,12 @@ class Qualification(TimeMixin, models.Model):
         verbose_name_plural = "Qualifikationen"
         unique_together = (('code', 'name'), ('code', 'group'))
         ordering = ('order', 'code', 'name')
+
+
+class UserQualificationManager(models.Manager):
+
+    def get_by_natural_key(self, username, qualification, year):
+        return self.get(user__username=username, qualification__code=qualification, year=year)
 
 
 class UserQualification(TimeMixin, models.Model):
@@ -252,7 +275,7 @@ class UserQualification(TimeMixin, models.Model):
     qualification = models.ForeignKey(
         'Qualification',
         db_index=True,
-        related_name='qualification_list',
+        related_name='user_list',
         on_delete=models.PROTECT
     )
 
@@ -279,8 +302,13 @@ class UserQualification(TimeMixin, models.Model):
         help_text="Raum für interne Notizen",
     )
 
+    def natural_key(self):
+        return self.user.get_username(), self.qualification.code, self.year
+
+    natural_key.dependencies = ['auth.user', 'server.qualification']
+
     def __str__(self):
-        return "{}'s {} von {}".format(self.user.full_name, self.qualification.name, self.year)
+        return "{}'s {} von {}".format(self.user.get_full_name(), self.qualification.name, self.year)
 
     class Meta:
         unique_together = ('user', 'qualification', 'year')

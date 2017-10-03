@@ -51,7 +51,15 @@ easter_cache = {}
 advent_cache = {}
 
 
+class CalendarManager(models.Manager):
+
+    def get_by_natural_key(self, season):
+        return self.get(season__name=season)
+
+
 class Calendar(TimeMixin, models.Model):
+
+    objects = CalendarManager()
 
     season = models.OneToOneField(
         'Season',
@@ -69,6 +77,11 @@ class Calendar(TimeMixin, models.Model):
     @property
     def end_date(self):
         return datetime.date(int(self.season.name), 12, 31)
+
+    def natural_key(self):
+        return self.season.name,
+
+    natural_key.dependencies = ['server.season']
 
     def __str__(self):
         return "Kalender für {}".format(self.season.name)
@@ -91,6 +104,12 @@ class Calendar(TimeMixin, models.Model):
                 # The 4th advent will not celebrated, if it is at 24th of december
                 anniversary.deprecated = (current_date.month == 12 and current_date.day == 24)
             anniversary.save()
+
+
+class AnniversaryManager(models.Manager):
+
+    def get_by_natural_key(self, season, name):
+        return self.get(calendar__season__name=season, name=name)
 
 
 class Anniversary(TimeMixin, models.Model):
@@ -161,6 +180,11 @@ class Anniversary(TimeMixin, models.Model):
     @property
     def season(self):
         return self.calendar.season
+
+    def natural_key(self):
+        return self.calendar.season.name, self.name
+
+    natural_key.dependencies = ['server.season', 'server.calendar']
 
     def __str__(self):
         year = int(self.season.name)
@@ -332,6 +356,12 @@ class Anniversary(TimeMixin, models.Model):
     day_definition.short_description = 'Definition'
 
 
+class VacationManager(models.Manager):
+
+    def get_by_natural_key(self, season, name):
+        return self.get(calendar__season__name=season, name=name)
+
+
 class Vacation(TimeMixin, models.Model):
 
     calendar = models.ForeignKey(
@@ -355,6 +385,11 @@ class Vacation(TimeMixin, models.Model):
     end_date = models.DateField(
         'Ende'
     )
+
+    def natural_key(self):
+        return self.calendar.season.name, self.name
+
+    natural_key.dependencies = ['server.season', 'server.calendar']
 
     def __str__(self):
         return "{} [{}]".format(self.name, self.calendar.season)

@@ -99,6 +99,11 @@ CACHES = {
     }
 }
 
+# http://www.django-rest-framework.org/api-guide/filtering/
+
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators

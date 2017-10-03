@@ -3,10 +3,14 @@ import datetime
 
 from django.core.management import BaseCommand
 
-from ...models import Season, Part, Section, Chapter
-from ...models import Calendar, Anniversary, Vacation
-from ...models import Category, Approximate
-from ...models import get_default_season
+from server.models import Season, Part, Section, Chapter
+from server.models import Calendar, Anniversary, Vacation
+from server.models import Category, Approximate
+from server.models import Skill, SkillDescription
+from server.models import Fitness, FitnessDescription
+from server.models import Equipment
+from server.models import State
+from server.models import get_default_season
 
 
 def init_season(name='2017'):
@@ -138,7 +142,7 @@ def init_category():
 
     values = [
         {'tour': True, 'order': 10,  'code': 'SST', 'name': 'Schneeschuhtour', 'winter': True},
-        {'tour': True, 'order': 20,  'code': 'SHG', 'name': 'Schneeschuh- Gletscher/Hochtour', 'winter': True},
+        {'tour': True, 'order': 20,  'code': 'SGH', 'name': 'Schneeschuh- Gletscher/Hochtour', 'winter': True},
         {'tour': True, 'order': 30,  'code': 'SKT', 'name': 'Skitour', 'winter': True},
         {'tour': True, 'order': 40,  'code': 'SHT', 'name': 'Skihochtour', 'winter': True},
         {'tour': True, 'order': 50,  'code': 'SBD', 'name': 'Snowboardtour', 'winter': True},
@@ -151,7 +155,6 @@ def init_category():
         {'tour': True, 'order': 120, 'code': 'EBK', 'name': 'E-Bike', 'summer': True},
         {'tour': True, 'order': 130, 'code': 'RDT', 'name': 'Radtour', 'summer': True},
         {'talk': True, 'order': 140, 'code': 'TLK', 'name': 'Vortrag'},
-        {'order': 140, 'code': '?', 'name': 'Sonstige'},
     ]
 
     for data in values:
@@ -196,6 +199,348 @@ def init_chapter():
             chapter.save()
 
 
+def init_skill():
+
+    values = [
+        {
+            "description": {
+                "RDT": "",
+                "KSG": "Wenig bis mäßig schwierig, K1-K2, Trittsicherheit und Schwindelfreiheit nötig",
+                "FRD": "",
+                "SHT": "",
+                "SBD": "",
+                "SST": "Für Anfänger geeignet",
+                "GHT": "Gletscher bis 35 Grad, Umgang mit Pickel und Steigeisen, Anseilen am Gletscher",
+                "SKT": "Steilpassagen bis ca. 30 Grad, sicheres Aufsteigen mit Fellen, sicheres Abfahren in allen Schneearten",
+                "BGT": "Für Anfänger geeignet",
+                "SGH": "",
+                "KLT": "",
+                "MTB": "Überwiegend breite und befestigte Wege",
+            },
+            "code": "△",
+            "order": 1
+        },
+        {
+            "description": {
+                "RDT": "",
+                "KSG": "Steile und ausgesetzte Passagen, Armkraft und körperliche Gewandtheit nötig, K3-K4",
+                "FRD": "",
+                "SHT": "",
+                "SBD": "",
+                "SST": "Steilpassagen bis 30 Grad, Trittsicherheit und Schwindelfreiheit nötig",
+                "GHT": "Gletscher bis 40 Grad, sicherer Umgang mit Seil, Pickel und Steigeisen, Kenntnisse Spaltenbergung, etwas Kletterkönnen in Eis und Fels",
+                "SKT": "Sichere Skitechnik in Aufstieg und Abfahrt, auch bei widrigen Schneeverhältnissen, gute Spitzkehrentechnik, Trittsicherheit und Schwindelfreiheit",
+                "BGT": "Trittsicherheit und Schwindelfreiheit nötig",
+                "SGH": "",
+                "KLT": "",
+                "MTB": "Zusätzlich leichte Singletrails",
+            },
+            "code": "△△",
+            "order": 2
+        },
+        {
+            "description": {
+                "RDT": "",
+                "KSG": "Senkrecht, oft überhängend, gute Armkraft, Ausdauer und Kletterkönnen nötig, wenig künstl. Haltepunkte, K5-K6",
+                "FRD": "",
+                "SHT": "",
+                "SBD": "",
+                "SST": "Steilpassagen über 30 Grad, Steigeisenkenntnisse",
+                "GHT": "Gletscher über 45 Grad, gutes Kletterkönnen in Eis und Fels, sehr sicheres Beherrschen der Ausrüstung und der Sicherungstechnik im Eis",
+                "SKT": "Steilpassagen bis ca. 40 Grad, sehr gute Skitechnik, ggf. sicherer Umgang mit Pickel und Steigeisen",
+                "BGT": "Zusätzlich Bergerfahrung, sicheres Steigen und Klettern in kurzen Felspassagen",
+                "SGH": "",
+                "KLT": "",
+                "MTB": "Zusätzlich schwere Singletrails, die eine gute Bike- Beherrschung erfordern",
+            },
+            "code": "△△△",
+            "order": 3
+        }
+    ]
+
+    season = get_default_season()
+    for data in values:
+        description = data.pop('description')
+        skill = Skill(**data)
+        skill.default = (data['order'] == 1)
+        skill.save()
+        for code, description in description.items():
+            category = Category.objects.get(season=season, code=code)
+            skill_description = SkillDescription(skill=skill, category=category, description=description)
+            skill_description.save()
+
+
+def init_fitness():
+
+    values = [
+        {
+            "description": {
+                "RDT": "",
+                "KSG": "Aufstiege bis ca. 800 Hm, bis ca. 5 Std. Gesamtgehzeit",
+                "FRD": "",
+                "SHT": "",
+                "SBD": "",
+                "SST": "Aufstiege bis ca. 800 Hm, bis ca. 5 Std. Gesamtgehzeit",
+                "GHT": "Aufstiege bis ca. 800 Hm, bis ca. 5 Std. Gesamtgehzeit",
+                "SKT": "Aufstiege bis ca. 800 Hm, bis ca. 5 Std. Gesamtzeit",
+                "BGT": "Aufstiege bis ca. 800 Hm, bis ca. 5 Std. Gesamtgehzeit",
+                "SGH": "",
+                "KLT": "",
+                "MTB": "Bis 1000 Hm, bis ca. 30 km und ca. 4 Std. Fahrzeit",
+            },
+            "code": "△",
+            "order": 1,
+        },
+        {
+            "description": {
+                "RDT": "",
+                "KSG": "Aufstiege bis ca. 1200 Hm, bis ca. 8 Std. Gesamtgehzeit",
+                "FRD": "",
+                "SHT": "",
+                "SBD": "",
+                "SST": "Aufstiege bis ca. 1200 Hm, bis ca. 8 Std. Gesamtgehzeit",
+                "GHT": "Aufstiege bis ca. 1200 Hm, bis ca. 8 Std. Gesamtgehzeit",
+                "SKT": "Aufstiege bis ca. 1200 Hm, bis ca. 8 Std. Gesamtzeit",
+                "BGT": "Aufstiege bis ca. 1200 Hm, bis ca. 8 Std. Gesamtgehzeit",
+                "SGH": "",
+                "KLT": "",
+                "MTB": "Bis 1500 Hm, bis ca. 50 km und ca. 6 Std. Fahrzeit",
+            },
+            "code": "△△",
+            "order": 2,
+        },
+        {
+            "description": {
+                "RDT": "",
+                "KSG": "Aufstiege über 1200 Hm, über 8 Std. Gesamtgehzeit",
+                "FRD": "",
+                "SHT": "",
+                "SBD": "",
+                "SST": "Aufstiege über 1200 Hm, über 8 Std. Gesamtgehzeit",
+                "GHT": "Aufstiege über 1200 Hm, über 8 Std. Gesamtgehzeit",
+                "SKT": "Aufstiege über 1200 Hm, über 8 Std. Gesamtzeit",
+                "BGT": "Aufstiege über 1200 Hm, über 8 Std. Gesamtgehzeit",
+                "SGH": "",
+                "KLT": "",
+                "MTB": "Über 1500 Hm, über 50 km und über 6 Std. Fahrzeit, plus Schiebe- und Tragepassagen",
+            },
+            "code": "△△△",
+            "order": 3,
+        },
+    ]
+
+    season = get_default_season()
+    for data in values:
+        description = data.pop('description')
+        fitness = Fitness(**data)
+        fitness.default = (data['order'] == 1)
+        fitness.save()
+        for code, description in description.items():
+            category = Category.objects.get(season=season, code=code)
+            fitness_description = FitnessDescription(fitness=fitness, category=category, description=description)
+            fitness_description.save()
+
+
+def init_equipment():
+
+    values = [
+        {
+            "code": "A",
+            "name": "Wandern und Bergsteigen",
+            "description": "Wander-/Trekkingschuhe bzw. Bergstiefel, Rucksack, Wetterschutz (Jacke, ggf. Überhose), Handschuhe & Mütze, Sonnenschutz (Kopfbedeckung, Brille, Sonnencreme), Trinkflasche, Stirnlampe/Taschenlampe, Erste-Hilfe-Set*, Biwaksack*",
+            "default": True
+        },
+        {
+            "code": "B",
+            "name": "Klettersteigausrüstung",
+            "description": "Ausrüstung A + Hüftgurt, ggf. Brustgurt, Steinschlaghelm, Klettersteigset, HMS-Karabiner, Bandschlinge (60 oder 120 cm)",
+        },
+        {
+            "code": "C1",
+            "name": "Sportklettern Indoor",
+            "description": "Kletterschuhe, Hüftgurt, HMS-Karabiner, Halbautomat (z. B. Edelrid Jul²), Chalkbag",
+        },
+        {
+            "code": "C2",
+            "name": "Bouldern Indoor",
+            "description": "Kletterschuhe, Chalkbag",
+        },
+        {
+            "code": "C3",
+            "name": "Sportklettern Outdoor",
+            "description": "Feste Zustiegsschuhe, Kletterschuhe, Rucksack, Wetterschutz (Jacke, Überhose), Handschuhe & Mütze (fakultativ), Sonnenschutz (Kopfbedeckung, Brille, Sonnencreme), Trinkflasche, Stirnlampe/Taschenlampe, Erste-Hilfe-Set*, Biwaksack*, Hüftgurt, ggf. Brustgurt, Steinschlaghelm, Halbautomat (z. B. Edelrid Jul²), HMS-Karabiner, Safelockkarabiner, Expressschlingen (5 Stück), Bandschlinge (120 cm), Abseilgerät, Chalkbag",
+        },
+        {
+            "code": "C4",
+            "name": "Alpinklettern",
+            "description": "Feste Zustiegsschuhe oder Wander-/Trekkingschuhe bzw. Bergstiefel, Kletterschuhe, Rucksack, Wetterschutz (Jacke, Überhose), Handschuhe & Mütze, Sonnenschutz (Kopfbedeckung, Brille, Sonnencreme), Trinkflasche, Stirnlampe/Taschenlampe, Erste-Hilfe-Set*, Biwaksack*, Hüftgurt, ggf. Brustgurt, Steinschlaghelm, Klemmkeil-Set, 1 Abseilgerät, 2 HMS-Karabiner, 1 Safelockkarabiner, 5 Expressschlingen, 3 Normalkarabiner, 2 Bandschlingen (120 cm), 3 Prusikschlingen (4, 2, 1m Länge u. 6 mm Durchmesser)",
+        },
+        {
+            "code": "D",
+            "name": "Hochtourenausrüstung",
+            "description": "Steigeisenfeste Bergstiefel, Rucksack, Wetterschutz (Jacke, Überhose), Handschuhe & Mütze,\nSonnenschutz (Kopfbedeckung, Gletscherbrille, Sonnencreme), Trinkflasche, Stirnlampe/Taschenlampe, Erste-Hilfe-Set*, Biwaksack*, Hüftgurt, ggf. Brustgurt, Steinschlaghelm, Steigeisen, Eispickel, Eisschraube, Gletscherset (1 HMS-Karabiner, 1 Safelockkarabiner, 3 Normalkarabiner, 1 Bandschlinge 120 cm, 3 Prusikschlingen mit 4, 2, 1 m Länge u. 6 mm Durchmesser)",
+        },
+        {
+            "code": "E1",
+            "name": "Skitouren",
+            "description": "Rucksack, Wetterschutz (Jacke, Überhose), Handschuhe & Mütze, Sonnenschutz (Kopfbedeckung, Brille, Sonnencreme), Trinkflasche, Stirnlampe/Taschenlampe, Erste-Hilfe-Set*, Biwaksack*, Tourenski mit Aufstiegsbindung, Felle und Harscheisen, Stöcke, Mehrantennen-LVS-Gerät, Lawinensonde, Lawinenschaufel",
+        },
+        {
+            "code": "E2",
+            "name": "Skihochtouren",
+            "description": "Ausrüstung E1 + Hüftgurt, ggf. Brustgurt, Steigeisen, Eispickel, Eisschraube, Gletscherset (1 HMS-Karabiner, 1 Safelockkarabiner, 3 Normalkarabiner, 1 Bandschlinge 120 cm, 3 Prusikschlingen mit 4, 2, 1 m Länge u. 6 mm Durchmesser)",
+        },
+        {
+            "code": "F1",
+            "name": "Schneeschuhtouren",
+            "description": "Bergschuhe, Rucksack, Wetterschutz (Jacke, Überhose), Handschuhe & Mütze, Sonnenschutz (Kopfbedeckung, Brille, Sonnencreme), Trinkflasche, Stirnlampe/Taschenlampe, Erste-Hilfe-Set*, Biwaksack*, Gebirgstaugliche Schneeschuhe, Stöcke, Mehrantennen-LVS-Gerät, Lawinensonde, Lawinenschaufel",
+        },
+        {
+            "code": "F2",
+            "name": "Schneeschuhhochtouren",
+            "description": "Ausrüstung F1 + Hüftgurt, ggf. Brustgurt, Steigeisen, Eispickel, Eisschraube, Gletscherset (1 HMS-Karabiner, 1 Safelockkarabiner, 3 Normalkarabiner, 1 Bandschlinge 120 cm, 3 Prusikschlingen mit 4, 2, 1 m Länge u. 6 mm Durchmesser)",
+        },
+        {
+            "code": "G",
+            "name": "Freeride",
+            "description": "Rucksack, Wetterschutz (Jacke, Überhose), Handschuhe & Mütze, Sonnenschutz (Kopfbedeckung, Brille, Sonnencreme), Trinkflasche, Stirnlampe/Taschenlampe, Erste-Hilfe-Set*, Biwaksack*, Freerideski/Allmountain oder Tourenski mit Aufstiegsbindung und Felle, ggf. Harscheisen, Stöcke, Mehrantennen-LVS-Gerät, Lawinensonde, LawinenschaufelIm Grundkurs Freeride sind keine Aufstiegsbindungen und Felle erforderlich!",
+        },
+        {
+            "code": "H",
+            "name": "Steileisklettern",
+            "description": "Bergschuhe, Rucksack, Wetterschutz (Jacke, Überhose), Handschuhe & Mütze, Sonnenschutz (Kopfbedeckung, Brille, Sonnencreme), Trinkflasche, Stirnlampe/Taschenlampe, Erste-Hilfe-Set*, Biwaksack*, Hüftgurt, ggf. Brustgurt, Steinschlaghelm, Steigeisen, Steileisgerät, 2 Eisschrauben, Mehrantennen-LVS-Gerät, Lawinensonde, Lawinenschaufel, 1 Abseilgerät, 2 HMS-Karabiner, 1 Safelockkarabiner, 5 Expressschlingen, 3 Normalkarabiner, 2 Bandschlingen (120 cm), 3 Prusikschlingen (4, 2, 1 m Länge u. 6 mm Durchmesser)",
+        },
+        {
+            "code": "I",
+            "name": "Nordic/Skating",
+            "description": "Wetterschutz (Jacke, Überhose), Handschuhe & Mütze, Sonnenschutz (Kopfbedeckung, Brille, Sonnencreme), Trinkflasche, Erste-Hilfe-Set*, Skatingski, Skatingschuhe, Skatingstöcke",
+        },
+        {
+            "code": "J",
+            "name": "Mountainbike",
+            "description": "Rucksack, Wetterschutz (Jacke, Überhose), Sonnenschutz (Kopfbedeckung, Sonnencreme), Trinkflasche, Stirnlampe/Taschenlampe, Erste-Hilfe-Set*, Biwaksack*, Mountainbike, Fahrradhelm, Fahrradbrille, Fahrradhandschuhe, Fahrradhose, Luftpumpe*, Ersatzschlauch, Reparaturset (Flicken) ggf. Protektoren",
+        },
+        {
+            "code": "K",
+            "name": "Hüttenübernachtung",
+            "description": "Hüttenschlafsack, Hüttenschuhe, Freizeitkleidung, Waschzeug, DAV-Ausweis",
+        },
+    ]
+
+    for data in values:
+        equipment = Equipment(**data)
+        equipment.save()
+
+
+def init_state():
+
+    values = [
+        {
+            "name": "In Arbeit",
+            "description": "Der Termin wird gerade bearbeitet",
+            "order": 1,
+            "public": False,
+            "default": True,
+            "canceled": False,
+            "moved": False,
+            "unfeasible": False,
+            "done": False,
+        },
+        {
+            "name": "Fertig",
+            "description": "Die Bearbeitung des Termins ist abeschlossen",
+            "order": 2,
+            "public": False,
+            "default": False,
+            "canceled": False,
+            "moved": False,
+            "unfeasible": False,
+            "done": False,
+        },
+        {
+            "name": "Abgelehnt",
+            "description": "Die Inhalte wurden geprüft, konnten so aber nicht freigegeben werden",
+            "order": 3,
+            "public": False,
+            "default": False,
+            "canceled": False,
+            "moved": False,
+            "unfeasible": False,
+            "done": False,
+        },
+        {
+            "name": "Freigegeben",
+            "description": "Die Inhalte wurden geprüft und freigegeben",
+            "order": 4,
+            "public": False,
+            "default": False,
+            "canceled": False,
+            "moved": False,
+            "unfeasible": False,
+            "done": False,
+        },
+        {
+            "name": "Veröffentlicht",
+            "description": "Der Termin ist bereits der Öffentlichkeit zugänglich",
+            "order": 5,
+            "public": True,
+            "default": False,
+            "canceled": False,
+            "moved": False,
+            "unfeasible": False,
+            "done": False,
+        },
+        {
+            "name": "Durchgeführt",
+            "description": "Die Veranstaltung wurde durchgeführt",
+            "order": 6,
+            "public": True,
+            "default": False,
+            "canceled": False,
+            "moved": False,
+            "unfeasible": False,
+            "done": True,
+        },
+        {
+            "name": "Ausgefallen",
+            "description": "Die Veranstaltung wurde abgesagt",
+            "order": 7,
+            "public": True,
+            "default": False,
+            "canceled": True,
+            "moved": False,
+            "unfeasible": False,
+            "done": False,
+        },
+        {
+            "name": "Verschoben",
+            "description": "Die Veranstaltung wurde verschoben",
+            "order": 8,
+            "public": True,
+            "default": False,
+            "canceled": False,
+            "moved": True,
+            "unfeasible": False,
+            "done": False,
+        },
+        {
+            "name": "Noch nicht buchbar",
+            "description": "Die Veranstaltung ist noch nicht buchbar wird aber bald freigeschaltet",
+            "order": 9,
+            "public": True,
+            "default": False,
+            "canceled": False,
+            "moved": False,
+            "unfeasible": True,
+            "done": False,
+        }
+    ]
+
+    for data in values:
+        state = State(**data)
+        state.save()
+
+
 class Command(BaseCommand):
     help = 'Init season data'
 
@@ -207,3 +552,7 @@ class Command(BaseCommand):
         init_category()
         init_approximate()
         init_chapter()
+        init_skill()
+        init_fitness()
+        init_equipment()
+        init_state()

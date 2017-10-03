@@ -9,7 +9,15 @@ from .mixins import EquipmentMixin, GuidedEventMixin, AdminMixin, AdmissionMixin
 from .time_base import TimeMixin
 
 
+class TopicManager(models.Manager):
+
+    def get_by_natural_key(self, season, title):
+        return self.get(season__name=season, title=title)
+
+
 class Topic(SeasonMixin, TimeMixin, DescriptionMixin, QualificationMixin, EquipmentMixin, models.Model):
+
+    objects = TopicManager()
 
     # noinspection PyUnresolvedReferences
     category = models.ForeignKey(
@@ -29,6 +37,11 @@ class Topic(SeasonMixin, TimeMixin, DescriptionMixin, QualificationMixin, Equipm
 
     order = fields.OrderField()
 
+    def natural_key(self):
+        return self.season.name, self.title
+
+    natural_key.dependencies = ['server.season']
+
     def __str__(self):
         return "{} [{}]".format(self.title, self.season.name)
 
@@ -38,7 +51,16 @@ class Topic(SeasonMixin, TimeMixin, DescriptionMixin, QualificationMixin, Equipm
         ordering = ('season__name', 'order', 'name')
 
 
+class InstructionManager(models.Manager):
+
+    def get_by_natural_key(self, season, reference):
+        instruction = Event.objects.get_by_natural_key(season, reference)
+        return instruction.meeting
+
+
 class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, ChapterMixin, models.Model):
+
+    objects = InstructionManager()
 
     topic = models.ForeignKey(
         Topic,
@@ -64,6 +86,11 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
     @property
     def season(self):
         return self.topic.season
+
+    def natural_key(self):
+        return self.instruction.natural_key()
+
+    natural_key.dependencies = ['server.season', 'server.event', 'server.topic']
 
     def __str__(self):
         return "{}{}, {} [{}]".format(

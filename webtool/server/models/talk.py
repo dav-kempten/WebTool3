@@ -7,7 +7,16 @@ from .time_base import TimeMixin
 from . import fields
 
 
+class TalkManager(models.Manager):
+
+    def get_by_natural_key(self, season, reference):
+        talk = Event.objects.get_by_natural_key(season, reference)
+        return talk.talk
+
+
 class Talk(SeasonMixin, TimeMixin, StateMixin, ChapterMixin, models.Model):
+
+    objects = TalkManager()
 
     talk = models.OneToOneField(
         Event,
@@ -36,6 +45,11 @@ class Talk(SeasonMixin, TimeMixin, StateMixin, ChapterMixin, models.Model):
         verbose_name='Preisaufschläge',
         related_name='talk_list',
     )
+
+    def natural_key(self):
+        return self.talk.natural_key()
+
+    natural_key.dependencies = ['server.season', 'server.event']
 
     def __str__(self):
         return "{}, {} [{}]".format(self.talk.title, self.talk.long_date(with_year=True), self.season.name)

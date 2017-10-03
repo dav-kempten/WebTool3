@@ -6,7 +6,15 @@ from .time_base import TimeMixin
 from . import fields
 
 
+class TariffManager(models.Manager):
+
+    def get_by_natural_key(self, season, name):
+        return self.get(season__name=season, name=name)
+
+
 class Tariff(SeasonMixin, TimeMixin, models.Model):
+
+    objects = TariffManager()
 
     name = fields.NameField(
         'Bezeichnung',
@@ -27,6 +35,11 @@ class Tariff(SeasonMixin, TimeMixin, models.Model):
         blank=True, default=0.0,
         help_text='Preisaufschlag auf Mitgliederpreise'
     )
+
+    def natural_key(self):
+        return self.season.name, self.name
+
+    natural_key.dependencies = ['server.season']
 
     def __str__(self):
         return "{} [{}]".format(self.name, self.season.name)

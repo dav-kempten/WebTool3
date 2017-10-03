@@ -6,7 +6,15 @@ from .time_base import TimeMixin
 from . import fields, Season
 
 
+class StateManager(models.Manager):
+
+    def get_by_natural_key(self, season, name):
+        return self.get(season__name=season, name=name)
+
+
 class State(SeasonMixin, TimeMixin, models.Model):
+
+    objects = StateManager()
 
     name = fields.TitleField(
         'Kurzbeschreibung',
@@ -49,6 +57,11 @@ class State(SeasonMixin, TimeMixin, models.Model):
         'Der Bearbeitungsstand: "Durchgeführt"',
         blank=True, default=False
     )
+
+    def natural_key(self):
+        return self.season.name, self.name
+
+    natural_key.dependencies = ['server.season']
 
     def __str__(self):
         return "{} [{}]".format(self.name, self.season.name)

@@ -18,10 +18,18 @@ SEX_CHOICES = (
 )
 
 
+class ProfileManager(models.Manager):
+
+    def get_by_natural_key(self, member_id):
+        return self.get(member_id=member_id)
+
+
 class Profile(TimeMixin, models.Model):
 
     # This is the key for data exchange with KV-Manager
     # Authenticates an guide for proposals
+
+    objects = ProfileManager()
 
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
@@ -34,7 +42,7 @@ class Profile(TimeMixin, models.Model):
     member_id = models.CharField(
         'MitgliedsNr',
         max_length=13,
-        blank=True, null=True, unique=True,
+        unique=True,
         help_text="Format:sss-oo-mmmmmm s=Sektionsnummer(008) o=Ortsgruppe(00|01) m=Mitgliedsnummer",
         validators=[RegexValidator(MEMBER_ID_REGEX, 'Bitte auf den richtigen Aufbau achten')],
     )
@@ -92,6 +100,9 @@ class Profile(TimeMixin, models.Model):
         blank=True, default='',
         help_text="Heimatsektion für C-Mitglieder"
     )
+
+    def natural_key(self):
+        return self.member_id,
 
     def __str__(self):
         return "{}'s Steckbrief".format(self.user.username)

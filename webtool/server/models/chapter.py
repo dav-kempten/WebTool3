@@ -6,9 +6,17 @@ from .time_base import TimeMixin
 from . import fields
 
 
+class ChapterManager(models.Manager):
+
+    def get_by_natural_key(self, season, part, section, name):
+        return self.get(season__name=season, section__part=part, section__name=section, name=name)
+
+
 class Chapter(SeasonMixin, TimeMixin, SectionMixin, models.Model):
 
     # SeasonMixin is needed only for namespace checking. See unique_together.
+
+    objects = ChapterManager()
 
     name = fields.NameField(
         'Bezeichnung',
@@ -22,6 +30,11 @@ class Chapter(SeasonMixin, TimeMixin, SectionMixin, models.Model):
     )
 
     order = fields.OrderField()
+
+    def natural_key(self):
+        return self.season.name, self.section.part.name, self.section.name, self.name
+
+    natural_key.dependencies = ['server.season', 'server.part', 'server.section']
 
     def __str__(self):
         return "{} - {} - {} [{}]".format(

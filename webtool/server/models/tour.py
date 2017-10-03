@@ -9,6 +9,13 @@ from .time_base import TimeMixin
 from . import fields
 
 
+class TourManager(models.Manager):
+
+    def get_by_natural_key(self, season, reference):
+        tour = Event.objects.get_by_natural_key(season, reference)
+        return tour.tour
+
+
 class Tour(
     SeasonMixin,
     TimeMixin, QualificationMixin, EquipmentMixin, GuidedEventMixin, ChapterMixin,
@@ -18,6 +25,8 @@ class Tour(
     # Check: categories.season and self.season belongs to the same season!
     # Check: deadline <= preliminary < tour
     # Check: tour.category not part of categories
+
+    objects = TourManager()
 
     # noinspection PyUnresolvedReferences
     categories = models.ManyToManyField(
@@ -76,6 +85,11 @@ class Tour(
         blank=True, default='',
         help_text="Eine URL zum Tourenportal der Alpenvereine",
     )
+
+    def natural_key(self):
+        return self.tour.natural_key()
+
+    natural_key.dependencies = ['server.season', 'server.event']
 
     def __str__(self):
         return "{}, {} [{}]".format(self.tour.title, self.tour.long_date(with_year=True), self.season)

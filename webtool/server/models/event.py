@@ -8,6 +8,13 @@ from .time_base import TimeMixin
 from . import fields
 
 
+class EventManager(models.Manager):
+
+    def get_by_natural_key(self, season, reference):
+        category, code = reference.split('-')
+        return self.get(season__name=season, reference__category__code=category, reference__reference=int(code[1:]))
+
+
 class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
     """
     The option (blank=True, default='') for CharField describes an optional element
@@ -19,10 +26,12 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
     field is not None => data is Valid
     """
 
+    objects = EventManager()
+
     # noinspection PyUnresolvedReferences
-    reference = models.ForeignKey(
+    reference = models.OneToOneField(
         'Reference',
-        db_index=True,
+        primary_key=True,
         verbose_name='Buchungscode',
         related_name='event_list',
         on_delete=models.PROTECT,
@@ -124,6 +133,11 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
         related_name='meeting_list',
         on_delete=models.PROTECT,
     )
+
+    def natural_key(self):
+        return self.season.name, "{}".format(self.reference)
+
+    natural_key.dependencies = ['server.season', 'server.reference']
 
     def __str__(self):
         return "{}, {} [{}]".format(self.title, self.long_date(with_year=True), self.season.name)

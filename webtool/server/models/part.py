@@ -6,7 +6,15 @@ from .time_base import TimeMixin
 from . import fields
 
 
+class PartManager(models.Manager):
+
+    def get_by_natural_key(self, season, name):
+        return self.get(season__name=season, name=name)
+
+
 class Part(SeasonMixin, TimeMixin, models.Model):
+
+    objects = PartManager()
 
     name = fields.NameField(
         'Bezeichnung',
@@ -20,6 +28,11 @@ class Part(SeasonMixin, TimeMixin, models.Model):
     )
 
     order = fields.OrderField()
+
+    def natural_key(self):
+        return self.season.name, self.name
+
+    natural_key.dependencies = ['server.season']
 
     def __str__(self):
         return "{} [{}]".format(self.name, self.season.name)

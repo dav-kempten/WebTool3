@@ -5,7 +5,15 @@ from .time_base import TimeMixin
 from . import fields
 
 
+class ApproximateManager(models.Manager):
+
+    def get_by_natural_key(self, season, name):
+        return self.get(season__name=season, name=name)
+
+
 class Approximate(SeasonMixin, TimeMixin, models.Model):
+
+    objects = ApproximateManager()
 
     name = fields.TitleField(
         db_index=True,
@@ -33,6 +41,11 @@ class Approximate(SeasonMixin, TimeMixin, models.Model):
         'Der initiale Zeitraum',
         blank=True, default=False
     )
+
+    def natural_key(self):
+        return self.season.name, self.name
+
+    natural_key.dependencies = ['server.season']
 
     def __str__(self):
         return "{} [{}]".format(self.name, self.season.name)
