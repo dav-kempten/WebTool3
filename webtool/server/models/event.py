@@ -267,6 +267,126 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
         """
         return "{} {}".format(prefix, formatter(self, with_year))
 
+    @property
+    def activity(self):
+        if self.tour:
+            return "tour"
+        if self.talk:
+            return "talk"
+        if self.instruction:
+            return "instruction"
+        if self.session:
+            return "session"
+
+    @property
+    def division(self):
+        winter = self.reference.category.winter
+        summer = self.reference.category.summer
+        climbing = self.reference.category.climbing
+
+        if winter and not summer and not climbing:
+            return "winter"
+        elif not winter and summer and not climbing:
+            return "summer"
+        elif not winter and not summer and climbing:
+            return "indoor"
+        else:
+            return "misc"
+
+    @property
+    def state(self):
+        state = None
+
+        if self.tour:
+            state = self.tour.state
+        elif self.talk:
+            state = self.talk.state
+        elif self.instruction:
+            state = self.instruction.state
+        if self.session:
+            state = self.session.state
+
+        if state:
+            if state.done:
+                return "done"
+            if state.moved:
+                return "moved"
+            if state.canceled:
+                return "canceled"
+            if state.unfeasible:
+                return "unfeasible"
+            if state.public:
+                return "public"
+        else:
+            return "private"
+
+    @property
+    def quantity(self):
+        min_quantity = 0
+        max_quantity = 0
+        cur_quantity = 0
+
+        if self.tour:
+            min_quantity = self.tour.min_quantity
+            max_quantity = self.tour.max_quantity
+            cur_quantity = self.tour.cur_quantity
+        elif self.instruction:
+            min_quantity = self.instruction.min_quantity
+            max_quantity = self.instruction.max_quantity
+            cur_quantity = self.instruction.cur_quantity
+        elif self.talk:
+            min_quantity = self.talk.min_quantity
+            max_quantity = self.talk.max_quantity
+            cur_quantity = self.talk.cur_quantity
+
+        return {
+            "min": min_quantity,
+            "max": max_quantity,
+            "current": cur_quantity
+        }
+
+    @property
+    def speaker(self):
+        if self.talk:
+            return self.talk.speaker
+        if self.session:
+            return self.session.speaker
+        return None
+
+    @property
+    def guide(self):
+        if self.tour:
+            return self.tour.guide
+        if self.instruction:
+            return self.instruction.guide
+        if self.session:
+            return self.session.guide
+        return None
+
+    @property
+    def skill(self):
+        if self.tour:
+            return self.tour.skill
+        if self.session:
+            return self.session.skill
+        return None
+
+    @property
+    def fitness(self):
+        if self.tour:
+            return self.tour.fitness
+        if self.session:
+            return self.session.fitness
+        return None
+
+    @property
+    def ladies_only(self):
+        if self.tour:
+            return self.tour.ladies_only
+        if self.instruction:
+            return self.instruction.ladies_only
+        return None
+
     class Meta:
         verbose_name = "Veranstaltungstermin"
         verbose_name_plural = "Veranstaltungstermine"

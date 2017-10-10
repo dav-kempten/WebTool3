@@ -46,11 +46,12 @@ class Reference(SeasonMixin, TimeMixin, models.Model):
         ordering = ('season__name', 'category__order', 'reference')
 
 
-def get_reference(value):
+def get_reference(value, season=None):
     try:
         code, reference = value.split('-')
         category = Category.objects.get(code=code)
-        season = '201' + reference[0]
+        if season is None:
+            season = '201' + reference[0]
     except ValueError:
         raise Reference.DoesNotExist("Reference matching query does not exist.")
     try:

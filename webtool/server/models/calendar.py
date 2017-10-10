@@ -2,7 +2,6 @@
 
 import datetime
 from django.core.cache import cache
-from django.template.defaultfilters import date
 from django.db import models
 
 from .time_base import TimeMixin
@@ -108,21 +107,19 @@ class Calendar(TimeMixin, models.Model):
 
 class AnniversaryManager(models.Manager):
 
-    def get_by_natural_key(self, season, name):
-        return self.get(calendar__season__name=season, name=name)
+    def get_by_natural_key(self, name, public_holiday):
+        return self.get(name=name, public_holiday=public_holiday)
 
 
 class Anniversary(TimeMixin, models.Model):
 
     objects = AnniversaryManager()
 
-    calendar = models.ForeignKey(
+    calendars = models.ManyToManyField(
         'Calendar',
         db_index=True,
         verbose_name='Kalender',
         related_name='anniversary_list',
-        on_delete=models.PROTECT,
-        blank=True, default=defaults.get_default_calendar
     )
 
     name = fields.NameField(
@@ -179,23 +176,18 @@ class Anniversary(TimeMixin, models.Model):
         blank=True, null=True,
     )
 
-    @property
-    def season(self):
-        return self.calendar.season
-
     def natural_key(self):
-        return self.calendar.season.name, self.name
+        return self.name, self.public_holiday
 
-    natural_key.dependencies = ['server.season', 'server.calendar']
+    natural_key.dependencies = ['server.calendar']
 
     def __str__(self):
-        year = int(self.season.name)
-        return "{} {} [{}]".format(self.name, date(self.date(year), "d.m."), self.season.name)
+        return "{} {}".format(self.name, self.public_holiday)
 
     class Meta:
         verbose_name = "Gedenktag"
         verbose_name_plural = "Gedenktage"
-        unique_together = ('calendar', 'name')
+        unique_together = ('name', 'public_holiday')
         ordering = ('order', 'name')
 
     @staticmethod
@@ -360,8 +352,8 @@ class Anniversary(TimeMixin, models.Model):
 
 class VacationManager(models.Manager):
 
-    def get_by_natural_key(self, season, name):
-        return self.get(calendar__season__name=season, name=name)
+    def get_by_natural_key(self, calendar, name):
+        return self.get(calendar__season__name=calendar, name=name)
 
 
 class Vacation(TimeMixin, models.Model):
@@ -393,10 +385,10 @@ class Vacation(TimeMixin, models.Model):
     def natural_key(self):
         return self.calendar.season.name, self.name
 
-    natural_key.dependencies = ['server.season', 'server.calendar']
+    natural_key.dependencies = ['server.calendar']
 
     def __str__(self):
-        return "{} [{}]".format(self.name, self.calendar.season)
+        return "{} [{}]".format(self.name, self.calendar.season.name)
 
     class Meta:
         verbose_name = "Ferien"

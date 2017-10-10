@@ -17,8 +17,7 @@ class TourManager(models.Manager):
 
 
 class Tour(
-    SeasonMixin,
-    TimeMixin, QualificationMixin, EquipmentMixin, GuidedEventMixin, ChapterMixin,
+    SeasonMixin, TimeMixin, QualificationMixin, EquipmentMixin, GuidedEventMixin, ChapterMixin,
     AdminMixin, RequirementMixin, AdmissionMixin, models.Model
 ):
 
@@ -87,7 +86,7 @@ class Tour(
     )
 
     def natural_key(self):
-        return self.tour.natural_key()
+        return self.tour.season, self.tour.reference
 
     natural_key.dependencies = ['server.season', 'server.event']
 

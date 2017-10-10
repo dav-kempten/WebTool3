@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 
-from .mixins import SeasonMixin
+from .mixins import SeasonsMixin
 from .category import Category
 from .time_base import TimeMixin
 from . import fields
@@ -15,13 +15,13 @@ class FitnessManager(models.Manager):
         return self.get(season__name=season, code=code)
 
 
-class Fitness(SeasonMixin, TimeMixin, models.Model):
+class Fitness(SeasonsMixin, TimeMixin, models.Model):
 
     objects = FitnessManager()
 
     code = models.CharField(
         'Kurzbeschreibung',
-        db_index=True,
+        unique=True,
         max_length=3,
         help_text="Konditionelle Anforderungen",
     )
@@ -34,27 +34,26 @@ class Fitness(SeasonMixin, TimeMixin, models.Model):
     )
 
     def natural_key(self):
-        return self.season.name, self.code
+        return self.code
 
     natural_key.dependencies = ['server.season']
 
     def __str__(self):
-        return "{} [{}]".format(self.code, self.season.name)
+        return "{}".format(self.code)
 
     class Meta:
         verbose_name = "Konditionelle Anforderung"
         verbose_name_plural = "Konditionelle Anforderungen"
-        unique_together = ('season', 'code')
-        ordering = ('season__name', 'order', 'code')
+        ordering = ('order', 'code')
 
 
 class FitnessDescriptionManager(models.Manager):
 
-    def get_by_natural_key(self, season, fitness, category):
-        return self.get(season__name=season, fitness__code=fitness, category__code=category)
+    def get_by_natural_key(self, fitness, category):
+        return self.get(fitness__code=fitness, category__code=category)
 
 
-class FitnessDescription(SeasonMixin, TimeMixin, models.Model):
+class FitnessDescription(TimeMixin, models.Model):
 
     # SeasonMixin is needed only for namespace checking. See unique_together
     # check: fitness and category belongs to the same season!
@@ -83,15 +82,15 @@ class FitnessDescription(SeasonMixin, TimeMixin, models.Model):
     )
 
     def natural_key(self):
-        return self.season.name, self.fitness.code, self.category.code
+        return self.fitness.code, self.category.code
 
-    natural_key.dependencies = ['server.season']
+    natural_key.dependencies = ['server.category']
 
     def __str__(self):
-        return "{} - {} [{}]".format(self.fitness.code, self.category.code, self.fitness.season)
+        return "{} - {}".format(self.fitness.code, self.category.code)
 
     class Meta:
-        unique_together = ('season', 'fitness', 'category')
+        unique_together = ('fitness', 'category')
         verbose_name = "Beschreibung der Konditionelle Anforderung"
         verbose_name_plural = "Beschreibungen der Konditionelle Anforderungen"
-        ordering = ('season__name', 'fitness__code', 'category__order')
+        ordering = ('fitness__code', 'category__order')

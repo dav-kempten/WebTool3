@@ -1,20 +1,18 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 
-from .mixins import SeasonMixin, PartMixin
+from .mixins import PartMixin
 from .time_base import TimeMixin
 from . import fields
 
 
 class SectionManager(models.Manager):
 
-    def get_by_natural_key(self, season, part, name):
-        return self.get(season__name=season, part__name=part, name=name)
+    def get_by_natural_key(self, part, name):
+        return self.get(part__name=part, name=name)
 
 
-class Section(SeasonMixin, TimeMixin, PartMixin, models.Model):
-
-    # SeasonMixin is needed only for namespace checking. See unique_together.
+class Section(TimeMixin, PartMixin, models.Model):
 
     objects = SectionManager()
 
@@ -32,15 +30,15 @@ class Section(SeasonMixin, TimeMixin, PartMixin, models.Model):
     order = fields.OrderField()
 
     def natural_key(self):
-        return self.season.name, self.part.name, self.name
+        return self.part.name, self.name
 
-    natural_key.dependencies = ['server.season', 'server.part']
+    natural_key.dependencies = ['server.part']
 
     def __str__(self):
-        return "{} - {} [{}]".format(self.name, self.part.name, self.part.season.name)
+        return "{} - {}".format(self.name, self.part.name)
 
     class Meta:
         verbose_name = "Unterabschnitt"
         verbose_name_plural = "Unterabschnitte"
-        unique_together = ('season', 'part', 'name')
-        ordering = ('season__name', 'order', 'name')
+        unique_together = ('part', 'name')
+        ordering = ('order', 'name')

@@ -3,7 +3,7 @@ from django.db import models
 
 from . import fields
 from .event import Event
-from .mixins import DescriptionMixin, QualificationMixin, SeasonMixin, ChapterMixin
+from .mixins import DescriptionMixin, QualificationMixin, ChapterMixin, SeasonsMixin
 from .mixins import EquipmentMixin, GuidedEventMixin, AdminMixin, AdmissionMixin
 
 from .time_base import TimeMixin
@@ -11,11 +11,11 @@ from .time_base import TimeMixin
 
 class TopicManager(models.Manager):
 
-    def get_by_natural_key(self, season, title):
-        return self.get(season__name=season, title=title)
+    def get_by_natural_key(self, title, internal):
+        return self.get(title=title, internal=internal)
 
 
-class Topic(SeasonMixin, TimeMixin, DescriptionMixin, QualificationMixin, EquipmentMixin, models.Model):
+class Topic(SeasonsMixin, TimeMixin, DescriptionMixin, QualificationMixin, EquipmentMixin, models.Model):
 
     objects = TopicManager()
 
@@ -38,16 +38,17 @@ class Topic(SeasonMixin, TimeMixin, DescriptionMixin, QualificationMixin, Equipm
     order = fields.OrderField()
 
     def natural_key(self):
-        return self.season.name, self.title
+        return self.title, self.internal
 
     natural_key.dependencies = ['server.season']
 
     def __str__(self):
-        return "{} [{}]".format(self.title, self.season.name)
+        return "{}{}".format(self.title, " internal" if self.internal else "")
 
     class Meta:
         verbose_name = "Kursinhalt"
         verbose_name_plural = "Kursinhalte"
+        unique_together = ('title', 'internal')
         ordering = ('season__name', 'order', 'name')
 
 
@@ -55,7 +56,7 @@ class InstructionManager(models.Manager):
 
     def get_by_natural_key(self, season, reference):
         instruction = Event.objects.get_by_natural_key(season, reference)
-        return instruction.meeting
+        return instruction.instruction
 
 
 class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, ChapterMixin, models.Model):
@@ -85,10 +86,10 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
 
     @property
     def season(self):
-        return self.topic.season
+        return self.instruction.season
 
     def natural_key(self):
-        return self.instruction.natural_key()
+        return self.instruction.season, "{}".format(self.instruction.reference)
 
     natural_key.dependencies = ['server.season', 'server.event', 'server.topic']
 

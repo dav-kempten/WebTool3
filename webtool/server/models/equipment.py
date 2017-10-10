@@ -1,24 +1,24 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 
-from .mixins import SeasonMixin
+from .mixins import SeasonsMixin
 from .time_base import TimeMixin
 from . import fields
 
 
 class EquipmentManager(models.Manager):
 
-    def get_by_natural_key(self, season, code):
-        return self.get(season__name=season, code=code)
+    def get_by_natural_key(self, code):
+        return self.get(code=code)
 
 
-class Equipment(SeasonMixin, TimeMixin, models.Model):
+class Equipment(SeasonsMixin, TimeMixin, models.Model):
 
     objects = EquipmentManager()
 
     code = models.CharField(
         'Kurzzeichen',
-        db_index=True,
+        unique=True,
         max_length=10,
         help_text="Kurzzeichen für die Ausrüstung",
     )
@@ -39,15 +39,15 @@ class Equipment(SeasonMixin, TimeMixin, models.Model):
     )
 
     def natural_key(self):
-        return self.season.name, self.code
+        return self.code
 
     natural_key.dependencies = ['server.season']
 
     def __str__(self):
-        return "{} ({}) [{}]".format(self.name, self.code, self.season.name)
+        return "{} ({})".format(self.name, self.code)
 
     class Meta:
         verbose_name = "Ausrüstung"
         verbose_name_plural = "Ausrüstungen"
-        unique_together = (('season', 'code'), ('season', 'name'))
-        ordering = ('season__name', 'code')
+        unique_together = ('code', 'name')
+        ordering = ('code', )

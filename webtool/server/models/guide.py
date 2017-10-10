@@ -2,40 +2,27 @@
 from django.conf import settings
 from django.db import models
 from django.contrib.postgres import fields as postgres
-from .mixins import SeasonMixin
+
+from .mixins import SeasonsMixin
 from .time_base import TimeMixin
 
 
 class GuideManager(models.Manager):
 
-    def get_by_natural_key(self, season, username):
-        return self.get(season__name=season, user__username=username)
+    def get_by_natural_key(self, username):
+        return self.get(user__username=username)
 
 
-class Guide(SeasonMixin, TimeMixin, models.Model):
+class Guide(SeasonsMixin, TimeMixin, models.Model):
 
     objects = GuideManager()
 
-    user = models.ForeignKey(
+    user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
-        db_index=True,
+        primary_key=True,
         verbose_name='Leiter',
-        related_name='guide_list',
+        related_name='guide',
         on_delete=models.PROTECT,
-    )
-
-    # first_name and last_name are independent from their counterparts in the user model!
-
-    first_name = models.CharField(
-        'Vorname',
-        max_length=30,
-        blank=True, default='Unbekannt'
-    )
-
-    last_name = models.CharField(
-        'Nachname',
-        max_length=30,
-        blank=True, default=''
     )
 
     unknown = models.BooleanField(
@@ -80,18 +67,17 @@ class Guide(SeasonMixin, TimeMixin, models.Model):
 
     @property
     def name(self):
-        return ' '.join((self.first_name.strip(), self.last_name.strip()))
+        return self.user.get_username()
 
     def natural_key(self):
-        return self.season.name, self.user.get_username()
+        return self.user.get_username()
 
     natural_key.dependencies = ['auth.user', 'server.season']
 
     def __str__(self):
-        return "{} [{}]".format(self.name, self.season.name)
+        return "{}".format(self.name)
 
     class Meta:
         verbose_name = "Touren/Kurs/Gruppenleiter"
         verbose_name_plural = "Touren/Kurs/Gruppenleiter"
-        unique_together = ('season', 'user')
-        ordering = ('season__name', 'last_name', 'first_name')
+        ordering = ('user__last_name', 'user__first_name')

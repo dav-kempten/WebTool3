@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 
-from .mixins import SeasonMixin
+from .mixins import SeasonsMixin
 from .category import Category
 from .time_base import TimeMixin
 from . import fields
@@ -11,16 +11,17 @@ from . import fields
 
 class SkillManager(models.Manager):
 
-    def get_by_natural_key(self, season, code):
-        return self.get(season__name=season, code=code)
+    def get_by_natural_key(self, code):
+        return self.get(code=code)
 
 
-class Skill(SeasonMixin, TimeMixin, models.Model):
+class Skill(SeasonsMixin, TimeMixin, models.Model):
 
     objects = SkillManager()
 
     code = models.CharField(
         'Kurzbeschreibung',
+        unique=True,
         max_length=3,
         help_text="Technische Anforderungen",
     )
@@ -33,27 +34,26 @@ class Skill(SeasonMixin, TimeMixin, models.Model):
     )
 
     def natural_key(self):
-        return self.season.name, self.code
+        return self.code
 
     natural_key.dependencies = ['server.season']
 
     def __str__(self):
-        return "{} [{}]".format(self.code, self.season.name)
+        return "{}".format(self.code)
 
     class Meta:
         verbose_name = "Technische Anforderung"
         verbose_name_plural = "Technische Anforderungen"
-        unique_together = ('season', 'code')
-        ordering = ('season__name', 'order', 'code')
+        ordering = ('order', 'code')
 
 
 class SkillDescriptionManager(models.Manager):
 
-    def get_by_natural_key(self, season, fitness, category):
-        return self.get(season__name=season, fitness__code=fitness, category__code=category)
+    def get_by_natural_key(self, fitness, category):
+        return self.get(fitness__code=fitness, category__code=category)
 
 
-class SkillDescription(SeasonMixin, TimeMixin, models.Model):
+class SkillDescription(TimeMixin, models.Model):
 
     # SeasonMixin is needed only for namespace checking. See unique_together
     # check skill and category belongs to the same season
@@ -82,15 +82,15 @@ class SkillDescription(SeasonMixin, TimeMixin, models.Model):
     )
 
     def natural_key(self):
-        return self.season.name, self.skill.code, self.category.code
+        return self.skill.code, self.category.code
 
-    natural_key.dependencies = ['server.season']
+    natural_key.dependencies = ['server.category']
 
     def __str__(self):
-        return "{} - {} [{}]".format(self.skill.code, self.category.code, self.skill.season)
+        return "{} - {}".format(self.skill.code, self.category.code)
 
     class Meta:
-        unique_together = ('season', 'skill', 'category')
+        unique_together = ('skill', 'category')
         verbose_name = "Beschreibung der technischen Anforderung"
         verbose_name_plural = "Beschreibung der technischen Anforderungen"
-        ordering = ('season__name', 'skill__code', 'category__order')
+        ordering = ('skill__code', 'category__order')

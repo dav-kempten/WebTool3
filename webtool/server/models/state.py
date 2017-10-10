@@ -1,23 +1,24 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 
-from .mixins import SeasonMixin
+from .mixins import SeasonsMixin
 from .time_base import TimeMixin
 from . import fields, Season
 
 
 class StateManager(models.Manager):
 
-    def get_by_natural_key(self, season, name):
-        return self.get(season__name=season, name=name)
+    def get_by_natural_key(self, name):
+        return self.get(name=name)
 
 
-class State(SeasonMixin, TimeMixin, models.Model):
+class State(SeasonsMixin, TimeMixin, models.Model):
 
     objects = StateManager()
 
     name = fields.TitleField(
         'Kurzbeschreibung',
+        unique=True,
         help_text="Bearbeitungsstand",
     )
 
@@ -59,15 +60,14 @@ class State(SeasonMixin, TimeMixin, models.Model):
     )
 
     def natural_key(self):
-        return self.season.name, self.name
+        return self.name
 
     natural_key.dependencies = ['server.season']
 
     def __str__(self):
-        return "{} [{}]".format(self.name, self.season.name)
+        return "{}".format(self.name)
 
     class Meta:
         verbose_name = "Bearbeitungsstand"
         verbose_name_plural = "Bearbeitungsstände"
-        unique_together = ('season', 'name')
-        ordering = ('season__name', 'order', 'name')
+        ordering = ('order', 'name')

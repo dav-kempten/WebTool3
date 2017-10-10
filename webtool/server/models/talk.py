@@ -39,6 +39,23 @@ class Talk(SeasonMixin, TimeMixin, StateMixin, ChapterMixin, models.Model):
         help_text="Teilnehmerbeitrag in €"
     )
 
+    min_quantity = models.PositiveIntegerField(
+        'Min. Tln',
+        blank=True, default=0,
+        help_text="Wieviel Teilnehemr müssen mindestens teilnehmen",
+    )
+
+    max_quantity = models.PositiveIntegerField(
+        'Max. Tln',
+        help_text="Wieviel Teilnehemr können maximal teilnehmen",
+    )
+
+    cur_quantity = models.PositiveIntegerField(
+        'Anmeldungen',
+        blank=True, default=0,
+        help_text="Wieviel Teilnehemr sind aktuell angemeldet",
+    )
+
     tariffs = models.ManyToManyField(
         'Tariff',
         db_index=True,
@@ -47,7 +64,7 @@ class Talk(SeasonMixin, TimeMixin, StateMixin, ChapterMixin, models.Model):
     )
 
     def natural_key(self):
-        return self.talk.natural_key()
+        return self.talk.season, self.talk.reference
 
     natural_key.dependencies = ['server.season', 'server.event']
 

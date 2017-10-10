@@ -73,6 +73,7 @@ def init_calendar():
     for data in values:
         anniversary = Anniversary(**data)
         anniversary.save()
+        anniversary.calendars.add(calendar)
 
     calendar.calc_anniversary_order()
 
@@ -101,12 +102,14 @@ def init_part():
         {'name': 'Events', 'description': 'Vorträge & Events', 'order': 50},
         {'name': 'Gruppen', 'description': 'Gruppen', 'order': 60},
         {'name': 'Obergünzburg', 'description': 'Ortsgruppe Obergünzburg', 'order': 70},
-        {'name': 'Vorschläge', 'description': 'Vorschläge für Veranstalungen', 'order': 80},
+        {'name': 'Vorschläge', 'description': 'Vorschläge für Veranstaltungen', 'order': 80},
     ]
 
+    season = get_default_season()
     for data in values:
         part = Part(**data)
         part.save()
+        part.seasons.add(season)
 
 
 def init_section():
@@ -133,8 +136,8 @@ def init_section():
     season = get_default_season()
     for data in values:
         part_name = data.pop('part')
-        part = Part.objects.get(season=season, name=part_name)
-        section = Section(season=season, part=part, **data)
+        part = Part.objects.get(seasons=season, name=part_name)
+        section = Section(part=part, **data)
         section.save()
 
 
@@ -157,30 +160,17 @@ def init_category():
         {'talk': True, 'order': 140, 'code': 'TLK', 'name': 'Vortrag'},
     ]
 
+    season = get_default_season()
     for data in values:
         category = Category(**data)
         category.save()
-
-
-def init_approximate():
-
-    values = [
-        {'name': 'morgens', 'description': 'bis 9:00', 'start_time': datetime.time(7, 0), 'default': True},
-        {'name': 'vormittags', 'description': 'ab 9:00 bis 12:00', 'start_time': datetime.time(9, 0)},
-        {'name': 'mittags', 'description': 'ab 12:00 bis 14:00', 'start_time': datetime.time(12, 00)},
-        {'name': 'nachmittags', 'description': 'ab 14:00 bis 17:00', 'start_time': datetime.time(14, 00)},
-        {'name': 'abends', 'description': 'ab 17:00', 'start_time': datetime.time(17, 00)},
-    ]
-
-    for data in values:
-        approximate = Approximate(**data)
-        approximate.save()
+        category.seasons.add(season)
 
 
 def init_chapter():
 
     season = get_default_season()
-    categories = Category.objects.filter(season=season, tour=True, deprecated=False)
+    categories = Category.objects.filter(seasons=season, tour=True, deprecated=False)
     for category in categories:
         name = category.name
         order = category.order
@@ -193,10 +183,27 @@ def init_chapter():
             part = 'Sommer'
             section = 'Touren'
         for part in (part, 'Vorschläge'):
-            chapter = Chapter(
-                name=name, order=order, section=Section.objects.get(season=season, part__name=part, name=section)
-            )
+            p = Part.objects.get(seasons=season, name=part)
+            s = Section.objects.get(part=p, name=section)
+            chapter = Chapter(name=name, order=order, section=s)
             chapter.save()
+
+
+def init_approximate():
+
+    values = [
+        {'name': 'morgens', 'description': 'bis 9:00', 'start_time': datetime.time(7, 0), 'default': True},
+        {'name': 'vormittags', 'description': 'ab 9:00 bis 12:00', 'start_time': datetime.time(9, 0)},
+        {'name': 'mittags', 'description': 'ab 12:00 bis 14:00', 'start_time': datetime.time(12, 00)},
+        {'name': 'nachmittags', 'description': 'ab 14:00 bis 17:00', 'start_time': datetime.time(14, 00)},
+        {'name': 'abends', 'description': 'ab 17:00', 'start_time': datetime.time(17, 00)},
+    ]
+
+    season = get_default_season()
+    for data in values:
+        approximate = Approximate(**data)
+        approximate.save()
+        approximate.seasons.add(season)
 
 
 def init_skill():
@@ -264,8 +271,9 @@ def init_skill():
         skill = Skill(**data)
         skill.default = (data['order'] == 1)
         skill.save()
+        skill.seasons.add(season)
         for code, description in description.items():
-            category = Category.objects.get(season=season, code=code)
+            category = Category.objects.get(seasons=season, code=code)
             skill_description = SkillDescription(skill=skill, category=category, description=description)
             skill_description.save()
 
@@ -335,8 +343,9 @@ def init_fitness():
         fitness = Fitness(**data)
         fitness.default = (data['order'] == 1)
         fitness.save()
+        fitness.seasons.add(season)
         for code, description in description.items():
-            category = Category.objects.get(season=season, code=code)
+            category = Category.objects.get(seasons=season, code=code)
             fitness_description = FitnessDescription(fitness=fitness, category=category, description=description)
             fitness_description.save()
 
@@ -427,9 +436,11 @@ def init_equipment():
         },
     ]
 
+    season = get_default_season()
     for data in values:
         equipment = Equipment(**data)
         equipment.save()
+        equipment.seasons.add(season)
 
 
 def init_state():
@@ -536,9 +547,11 @@ def init_state():
         }
     ]
 
+    season = get_default_season()
     for data in values:
         state = State(**data)
         state.save()
+        state.seasons.add(season)
 
 
 class Command(BaseCommand):
@@ -550,8 +563,8 @@ class Command(BaseCommand):
         init_part()
         init_section()
         init_category()
-        init_approximate()
         init_chapter()
+        init_approximate()
         init_skill()
         init_fitness()
         init_equipment()

@@ -21,6 +21,20 @@ class SeasonMixin(models.Model):
         abstract = True
 
 
+class SeasonsMixin(models.Model):
+
+    # noinspection PyUnresolvedReferences
+    seasons = models.ManyToManyField(
+        'Season',
+        db_index=True,
+        verbose_name='Saison',
+        related_name='%(class)s_list',
+    )
+
+    class Meta:
+        abstract = True
+
+
 class PartMixin(models.Model):
 
     # noinspection PyUnresolvedReferences

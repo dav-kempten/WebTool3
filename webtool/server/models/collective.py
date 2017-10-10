@@ -4,19 +4,19 @@ from django.db import models
 from .event import Event
 from .guide import Guide
 from .mixins import (
-    SeasonMixin, SectionMixin, DescriptionMixin, GuidedEventMixin,
-    RequirementMixin, EquipmentMixin, StateMixin, ChapterMixin)
+    SectionMixin, DescriptionMixin, GuidedEventMixin,
+    RequirementMixin, EquipmentMixin, StateMixin, ChapterMixin, SeasonsMixin)
 from .time_base import TimeMixin
 from . import fields
 
 
 class CollectiveManager(models.Manager):
 
-    def get_by_natural_key(self, season, title):
-        return self.get(season__name=season, title=title)
+    def get_by_natural_key(self, title, internal):
+        return self.get(title=title, internal=internal)
 
 
-class Collective(SeasonMixin, SectionMixin, TimeMixin, DescriptionMixin, models.Model):
+class Collective(SeasonsMixin, SectionMixin, TimeMixin, DescriptionMixin, models.Model):
 
     # SeasonMixin is needed only for namespace checking. See unique_together
 
@@ -42,18 +42,18 @@ class Collective(SeasonMixin, SectionMixin, TimeMixin, DescriptionMixin, models.
     order = fields.OrderField()
 
     def natural_key(self):
-        return self.season.name, self.title
+        return self.title, self.internal
 
     natural_key.dependencies = ['server.season']
 
     def __str__(self):
-        return "{} [{}]".format(self.title, self.season.name)
+        return "{}{}".format(self.title, " internal" if self.internal else "")
 
     class Meta:
         verbose_name = "Gruppe"
         verbose_name_plural = "Gruppen"
-        unique_together = (('season', 'title'), ('season', 'name'), ('season', 'title', 'name'))
-        ordering = ('season__name', 'order', 'name')
+        unique_together = ('title', 'internal')
+        ordering = ('order', 'name')
 
 
 class SessionManager(models.Manager):
@@ -99,12 +99,8 @@ class Session(TimeMixin, GuidedEventMixin, RequirementMixin, EquipmentMixin, Sta
         help_text="Eine URL zum Tourenportal der Alpenvereine",
     )
 
-    @property
-    def season(self):
-        return self.collective.season
-
     def natural_key(self):
-        return self.session.natural_key()
+        return self.session.season, "{}".format(self.session.reference)
 
     natural_key.dependencies = ['server.season', 'server.event', 'server.collective']
 

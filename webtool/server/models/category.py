@@ -1,25 +1,25 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 
+from .mixins import SeasonsMixin
 from . import fields
-from .mixins import SeasonMixin
 from .time_base import TimeMixin
 
 
 class CategoryManager(models.Manager):
 
-    def get_by_natural_key(self, season, code):
-        return self.get(season__name=season, code=code)
+    def get_by_natural_key(self, code):
+        return self.get(code=code)
 
 
-class Category(SeasonMixin, TimeMixin, models.Model):
+class Category(SeasonsMixin, TimeMixin, models.Model):
 
     objects = CategoryManager()
 
     code = models.CharField(
         'Kurzzeichen',
         max_length=3,
-        db_index=True,
+        unique=True,
         help_text="Kurzzeichen der Kategorie",
     )
 
@@ -77,15 +77,15 @@ class Category(SeasonMixin, TimeMixin, models.Model):
     )
 
     def natural_key(self):
-        return self.season.name, self.code
+        return self.code
 
     natural_key.dependencies = ['server.season']
 
     def __str__(self):
-        return "{} ({}) [{}]".format(self.name, self.code, self.season.name)
+        return "{} ({})".format(self.name, self.code)
 
     class Meta:
         verbose_name = "Kategorie"
         verbose_name_plural = "Kategorien"
-        unique_together = (('season', 'code'), ('season', 'code', 'name'))
-        ordering = ('season__name', 'order', 'code', 'name')
+        unique_together = ('code', 'name')
+        ordering = ('order', 'code', 'name')
