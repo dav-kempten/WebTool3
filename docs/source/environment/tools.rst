@@ -16,6 +16,9 @@ Werkzeuge
 * GitHub_ (`GitHub Standard Fork & Pull Request Workflow <https://gist.github.com/Chaser324/ce0505fbed06b947d962>`_)
 * `Travis CI`_
 * `Django REST Framework`_ 3.6.3
+* uWSGI
+* Nginx
+
 
 .. _PyCharm: https://www.jetbrains.com/pycharm/download/
 .. _VirtualBox: https://www.virtualbox.org
@@ -30,3 +33,7 @@ Werkzeuge
 .. _GitHub: https://github.com
 .. _`Travis CI`: https://travis-ci.org
 .. _`Django REST Framework`: http://www.django-rest-framework.org
+
+See:
+
+* https://www.snowflake.ch/fileadmin/snowflake/Documents/Varnish/varnish_explained_by_its_architect_web.pdf
