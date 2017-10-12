@@ -14,7 +14,6 @@ class SeasonMixin(models.Model):
         verbose_name='Saison',
         related_name='%(class)s_list',
         on_delete=models.PROTECT,
-        blank=True, default=defaults.get_default_season
     )
 
     class Meta:
