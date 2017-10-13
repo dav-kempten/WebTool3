@@ -21,8 +21,7 @@ def init_season(name='2017'):
 
 def init_calendar():
 
-    season = get_default_season()
-    calendar = Calendar(season=season)
+    calendar = Calendar()
     calendar.save()
 
     values = [
@@ -89,7 +88,7 @@ def init_calendar():
     ]
 
     for data in values:
-        vacation = Vacation(calendar=calendar, **data)
+        vacation = Vacation(**data)
         vacation.save()
 
 

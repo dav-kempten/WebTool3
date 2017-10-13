@@ -66,6 +66,7 @@ class Calendar(TimeMixin, models.Model):
         verbose_name='Saison',
         related_name='calendar',
         on_delete=models.PROTECT,
+        blank=True, default=defaults.get_default_season
     )
 
     @property
@@ -365,6 +366,7 @@ class Vacation(TimeMixin, models.Model):
         verbose_name='Kalender',
         related_name='vacation_list',
         on_delete=models.PROTECT,
+        blank=True, default=defaults.get_default_calendar
     )
 
     name = fields.NameField(
