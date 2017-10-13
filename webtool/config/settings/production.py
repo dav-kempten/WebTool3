@@ -2,7 +2,8 @@ from .base import *
 
 DEBUG = False
 
-USE_X_FORWARDED_HOST = True
+USE_X_FORWARDED_HOST = False
+USE_X_FORWARDED_PORT = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 ALLOWED_HOSTS = ['webtool.dav-kempten.de', '46.252.16.44']
