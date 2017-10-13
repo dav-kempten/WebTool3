@@ -10,6 +10,7 @@ from server.models import Skill, SkillDescription
 from server.models import Fitness, FitnessDescription
 from server.models import Equipment
 from server.models import State
+from server.models import QualificationGroup, Qualification
 from server.models import get_default_season
 
 
@@ -554,6 +555,68 @@ def init_state():
         state.seasons.add(season)
 
 
+def init_qualification():
+
+    values = {
+        'Trainer': [
+            ['TBH', 'Trainer B Hochtouren'],
+            ['TBSHT', 'Trainer B Skihochtour'],
+            ['TBA', 'Trainer B Alpinklettern'],
+            ['TBE', 'Trainer B Eisfallklettern'],
+            ['TBP', 'Trainer B Plaisirklettern'],
+            ['TBK', 'Trainer B Klettersteig'],
+            ['TBLS', 'Trainer B Sportklettern Leistungssport'],
+            ['TBSP', 'Trainer B Sportklettern Breitensport'],
+            ['TCB', 'Trainer C Bergsteigen'],
+            ['TCLS', 'Trainer C Sportklettern Leistungssport'],
+            ['TCSP', 'Trainer C Sportklettern Breitensport'],
+            ['TCK', 'Trainer C Kajak'],
+            ['TCBW', 'Trainer C Bergwandern'],
+            ['TCBM', 'Trainer C Klettern für Menschen mit Behinderung'],
+            ['TCBO', 'Trainer C Bouldern Breitensport'],
+        ],
+        'Fachübungsleiter': [
+            ['FUL_HT', 'Fachübungsleiter Hochtouren'],
+            ['FUL_SB', 'Fachübungsleiter Skibergsteigen'],
+            ['FUL_AK', 'Fachübungsleiter Alpinklettern'],
+            ['FUL_BS', 'Fachübungsleiter Bergsteigen'],
+            ['FUL_MTB', 'Fachübungsleiter Mountainbike'],
+            ['FUL_SK', 'Fachübungsleiter Skilauf'],
+            ['FUL_SLL', 'Fachübungsleiter Skilanglauf'],
+        ],
+        'Leiter + Zusatzqualifikation': [
+            ['JL', 'JDAV-Jugendleiter'],
+            ['KB', 'Kletterbetreuer'],
+            ['WL', 'Wanderleiter'],
+            ['FGL', 'Familiengruppenleiter'],
+            ['ZQ_LBS', 'Zusatzqualifikation Leistungsbergsteigen'],
+            ['ZQ_SSB', 'Zusatzqualifikation Schneeschuhbergsteigen'],
+            ['ZQ_EK', 'Zusatzqualifikation Eisfallklettern'],
+            ['ZQ_FR', 'Zusatzqualifikation Freeride'],
+            ['ZQ_RB', 'Zusatzqualifikation Routenbau Breitensport'],
+            ['FRG', 'Freeride Guide'],
+        ],
+        'Berufsausbildungen': [
+            ['BSF', 'staatl. gepr. Berg- und Skiführer (UIAGM)'],
+            ['SL', 'staatl. gepr. Skilehrer'],
+        ],
+        'Weitere': [
+            ['BR', 'Bergrettung'],
+            ['AW', 'Anwärter'],
+            ['KLA', 'Kletterassistent (Kempten)'],
+        ]
+    }
+
+    for group_order, data in enumerate(values.items(), 1):
+        group_name, member = data
+        group = QualificationGroup(order=group_order, name=group_name)
+        group.save()
+        for order, q_data in enumerate(member, 1 + (group_order - 1) * 20):
+            code, name = q_data
+            qualification = Qualification(order=order, code=code, name=name, group=group)
+            qualification.save()
+
+
 class Command(BaseCommand):
     help = 'Init season data'
 
@@ -568,4 +631,5 @@ class Command(BaseCommand):
         init_skill()
         init_fitness()
         init_equipment()
+        init_qualification()
         init_state()
