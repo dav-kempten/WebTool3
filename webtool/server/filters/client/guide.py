@@ -5,9 +5,8 @@ from server.models import Guide
 
 class GuideFilter(filters.FilterSet):
 
-    id = filters.NumberFilter(name='user_id', label='id', min_value=1)
-    firstName = filters.CharFilter(name='first_name', label='firstName')
-    lastName = filters.CharFilter(name='last_name', label='lastName')
+    firstName = filters.CharFilter(name='user__first_name', label='firstName')
+    lastName = filters.CharFilter(name='user__last_name', label='lastName')
     collective = filters.NumberFilter(label='collective', method='collective_filter', min_value=1)
 
     def collective_filter(self, queryset, name, value):
@@ -16,7 +15,6 @@ class GuideFilter(filters.FilterSet):
     class Meta:
         model = Guide
         fields = (
-            'id',
             'firstName',
             'lastName',
             'collective',

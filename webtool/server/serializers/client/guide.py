@@ -9,7 +9,7 @@ from server.models import Guide
 
 class GuideListSerializer(serializers.ModelSerializer):
 
-    id = serializers.PrimaryKeyRelatedField(source='pk', read_only=True)
+    id = serializers.SerializerMethodField()
     firstName = serializers.CharField(source='user.first_name')
     lastName = serializers.CharField(source='user.last_name')
     portrait = serializers.SerializerMethodField()
@@ -24,6 +24,9 @@ class GuideListSerializer(serializers.ModelSerializer):
             'detail'
         )
 
+    def get_id(self, obj):
+        return "{}".format(obj.pk)
+
     def get_detail(self, obj):
         request = self.context['request']
         return reverse('guide-detail', kwargs={'pk': obj.pk}, request=request)
@@ -32,7 +35,7 @@ class GuideListSerializer(serializers.ModelSerializer):
         request = self.context['request']
         url = request.build_absolute_uri()
         parts = urlparse(url)
-        return "{}://{}/images/guides/{}".format(parts.scheme, parts.netloc, obj.portrait) if obj.portrait else None
+        return "{}://{}/guides/{}".format(parts.scheme, parts.netloc, obj.portrait) if obj.portrait else None
 
 
 class GuideSerializer(GuideListSerializer):
