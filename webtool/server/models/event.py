@@ -388,6 +388,7 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
         return None
 
     class Meta:
+        get_latest_by = "updated"
         verbose_name = "Veranstaltungstermin"
         verbose_name_plural = "Veranstaltungstermine"
         ordering = ('start_date', )

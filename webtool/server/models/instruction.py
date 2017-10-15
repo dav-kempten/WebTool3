@@ -46,6 +46,7 @@ class Topic(SeasonsMixin, TimeMixin, DescriptionMixin, QualificationMixin, Equip
         return "{}{}".format(self.title, " internal" if self.internal else "")
 
     class Meta:
+        get_latest_by = "updated"
         verbose_name = "Kursinhalt"
         verbose_name_plural = "Kursinhalte"
         unique_together = ('title', 'internal')
@@ -102,6 +103,7 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
         )
 
     class Meta:
+        get_latest_by = "updated"
         verbose_name = "Kurs"
         verbose_name_plural = "Kurse"
         ordering = ('instruction__start_date', 'topic__order')

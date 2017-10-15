@@ -108,6 +108,7 @@ class Profile(TimeMixin, models.Model):
         return "{}'s Steckbrief".format(self.user.username)
 
     class Meta:
+        get_latest_by = "updated"
         verbose_name = "Steckbrief"
         verbose_name_plural = "Steckbriefe"
         ordering = ('user__last_name', 'user__first_name')

@@ -77,7 +77,8 @@ class Guide(SeasonsMixin, TimeMixin, models.Model):
     def __str__(self):
         return "{}".format(self.name)
 
-    class Meta:
+    class Meta():
+        get_latest_by = "updated"
         verbose_name = "Touren/Kurs/Gruppenleiter"
         verbose_name_plural = "Touren/Kurs/Gruppenleiter"
         ordering = ('user__last_name', 'user__first_name')

@@ -50,6 +50,7 @@ class Collective(SeasonsMixin, SectionMixin, TimeMixin, DescriptionMixin, models
         return "{}{}".format(self.title, " internal" if self.internal else "")
 
     class Meta:
+        get_latest_by = "updated"
         verbose_name = "Gruppe"
         verbose_name_plural = "Gruppen"
         unique_together = ('title', 'internal')
@@ -110,6 +111,7 @@ class Session(TimeMixin, GuidedEventMixin, RequirementMixin, EquipmentMixin, Sta
         )
 
     class Meta:
+        get_latest_by = "updated"
         verbose_name = "Gruppentermin"
         verbose_name_plural = "Gruppentermine"
         ordering = ('collective__season__name', 'collective__name', 'session__start_date', )

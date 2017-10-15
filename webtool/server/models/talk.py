@@ -72,6 +72,7 @@ class Talk(SeasonMixin, TimeMixin, StateMixin, ChapterMixin, models.Model):
         return "{}, {} [{}]".format(self.talk.title, self.talk.long_date(with_year=True), self.season.name)
 
     class Meta:
+        get_latest_by = "updated"
         verbose_name = "Vortrag"
         verbose_name_plural = "Vortäge"
         ordering = ('talk__start_date', )

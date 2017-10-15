@@ -42,6 +42,7 @@ class Skill(SeasonsMixin, TimeMixin, models.Model):
         return "{}".format(self.code)
 
     class Meta:
+        get_latest_by = "updated"
         verbose_name = "Technische Anforderung"
         verbose_name_plural = "Technische Anforderungen"
         ordering = ('order', 'code')
@@ -90,6 +91,7 @@ class SkillDescription(TimeMixin, models.Model):
         return "{} - {}".format(self.skill.code, self.category.code)
 
     class Meta:
+        get_latest_by = "updated"
         unique_together = ('skill', 'category')
         verbose_name = "Beschreibung der technischen Anforderung"
         verbose_name_plural = "Beschreibung der technischen Anforderungen"

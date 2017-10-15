@@ -52,6 +52,7 @@ class Approximate(SeasonsMixin, TimeMixin, models.Model):
         return "{}".format(self.name)
 
     class Meta:
+        get_latest_by = "updated"
         verbose_name = "Ungefährer Zeitpunkt"
         verbose_name_plural = "Ungefähre Zeitpunkte"
         ordering = ('start_time', )

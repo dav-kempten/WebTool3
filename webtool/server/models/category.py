@@ -85,6 +85,7 @@ class Category(SeasonsMixin, TimeMixin, models.Model):
         return "{} ({})".format(self.name, self.code)
 
     class Meta:
+        get_latest_by = "updated"
         verbose_name = "Kategorie"
         verbose_name_plural = "Kategorien"
         unique_together = ('code', 'name')

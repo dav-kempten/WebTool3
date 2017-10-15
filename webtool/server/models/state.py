@@ -68,6 +68,7 @@ class State(SeasonsMixin, TimeMixin, models.Model):
         return "{}".format(self.name)
 
     class Meta:
+        get_latest_by = "updated"
         verbose_name = "Bearbeitungsstand"
         verbose_name_plural = "Bearbeitungsstände"
         ordering = ('order', 'name')

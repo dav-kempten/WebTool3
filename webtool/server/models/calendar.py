@@ -86,6 +86,7 @@ class Calendar(TimeMixin, models.Model):
         return "Kalender für {}".format(self.season.name)
 
     class Meta:
+        get_latest_by = "updated"
         verbose_name = "Kalender"
         verbose_name_plural = "Kalender"
         ordering = ('season__name', )
@@ -185,6 +186,7 @@ class Anniversary(TimeMixin, models.Model):
         return "{} {}".format(self.name, self.public_holiday)
 
     class Meta:
+        get_latest_by = "updated"
         verbose_name = "Gedenktag"
         verbose_name_plural = "Gedenktage"
         unique_together = ('name', 'public_holiday')
@@ -391,6 +393,7 @@ class Vacation(TimeMixin, models.Model):
         return "{} [{}]".format(self.name, self.calendar.season.name)
 
     class Meta:
+        get_latest_by = "updated"
         verbose_name = "Ferien"
         verbose_name_plural = "Ferien"
         unique_together = ('calendar', 'name')

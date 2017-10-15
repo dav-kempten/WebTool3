@@ -94,6 +94,7 @@ class Tour(
         return "{}, {} [{}]".format(self.tour.title, self.tour.long_date(with_year=True), self.season)
 
     class Meta:
+        get_latest_by = "updated"
         verbose_name = "Gemeinschaftstour"
         verbose_name_plural = "Gemeinschaftstouren"
         ordering = ('tour__start_date', )

@@ -39,6 +39,7 @@ class Part(SeasonsMixin, TimeMixin, models.Model):
         return "{}".format(self.name)
 
     class Meta:
+        get_latest_by = "updated"
         verbose_name = "Abschnitt"
         verbose_name_plural = "Abschnitte"
         ordering = ('order', 'name')

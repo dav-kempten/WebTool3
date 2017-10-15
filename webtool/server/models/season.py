@@ -42,6 +42,7 @@ class Season(TimeMixin, models.Model):
         return self.name
 
     class Meta:
+        get_latest_by = "updated"
         verbose_name = "Saison"
         verbose_name_plural = "Saisonen"
         ordering = ('name', )

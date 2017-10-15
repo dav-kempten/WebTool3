@@ -42,6 +42,7 @@ class Fitness(SeasonsMixin, TimeMixin, models.Model):
         return "{}".format(self.code)
 
     class Meta:
+        get_latest_by = "updated"
         verbose_name = "Konditionelle Anforderung"
         verbose_name_plural = "Konditionelle Anforderungen"
         ordering = ('order', 'code')
@@ -90,6 +91,7 @@ class FitnessDescription(TimeMixin, models.Model):
         return "{} - {}".format(self.fitness.code, self.category.code)
 
     class Meta:
+        get_latest_by = "updated"
         unique_together = ('fitness', 'category')
         verbose_name = "Beschreibung der Konditionelle Anforderung"
         verbose_name_plural = "Beschreibungen der Konditionelle Anforderungen"

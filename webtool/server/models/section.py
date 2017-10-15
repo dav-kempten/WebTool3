@@ -38,6 +38,7 @@ class Section(TimeMixin, PartMixin, models.Model):
         return "{} - {}".format(self.name, self.part.name)
 
     class Meta:
+        get_latest_by = "updated"
         verbose_name = "Unterabschnitt"
         verbose_name_plural = "Unterabschnitte"
         unique_together = ('part', 'name')

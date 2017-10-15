@@ -70,6 +70,7 @@ class Retraining(TimeMixin, models.Model):
         return "{}'s Fortbildung {}".format(self.user.get_full_name(), self.year)
 
     class Meta:
+        get_latest_by = "updated"
         ordering = ['year', 'order']
         verbose_name = "Fortbildung"
         verbose_name_plural = "Fortbildungen"

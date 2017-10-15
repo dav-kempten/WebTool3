@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from rest_framework import viewsets
+from rest_framework.response import Response
 
 from server.models import Guide
 from server.serializers.client import GuideSerializer, GuideListSerializer
@@ -12,6 +13,22 @@ class GuideViewSet(viewsets.ReadOnlyModelViewSet):
     search_fields = ('user__last_name', 'user__first_name')
     filter_class = GuideFilter
 
+    def list(self, request, *args, **kwargs):
+        response = super(GuideViewSet, self).list(request, *args, **kwargs)
+        latest = Guide.objects.latest()
+        response['Cache-Control'] = "public"
+        response['ETag'] = latest.get_etag()
+        response['Last-Modified'] = latest.updated
+        return response
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        response = super(GuideViewSet, self).retrieve(request, *args, **kwargs)
+        response['Cache-Control'] = "public"
+        response['ETag'] = instance.get_etag()
+        response['Last-Modified'] = instance.updated
+        return response
+
     def get_serializer_class(self):
         if self.action == 'list':
             return GuideListSerializer
@@ -19,3 +36,4 @@ class GuideViewSet(viewsets.ReadOnlyModelViewSet):
 
     class Meta:
         model = Guide
+

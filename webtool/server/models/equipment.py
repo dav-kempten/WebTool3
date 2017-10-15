@@ -47,6 +47,7 @@ class Equipment(SeasonsMixin, TimeMixin, models.Model):
         return "{} ({})".format(self.name, self.code)
 
     class Meta:
+        get_latest_by = "updated"
         verbose_name = "Ausrüstung"
         verbose_name_plural = "Ausrüstungen"
         unique_together = ('code', 'name')
