@@ -17,7 +17,7 @@ class GuideViewSet(viewsets.ReadOnlyModelViewSet):
         response = super(GuideViewSet, self).list(request, *args, **kwargs)
         latest = Guide.objects.latest()
         response['Cache-Control'] = "public"
-        response['ETag'] = latest.get_etag()
+        response['ETag'] = '"{}"'.format(latest.get_etag())
         response['Last-Modified'] = latest.updated
         return response
 
@@ -25,7 +25,7 @@ class GuideViewSet(viewsets.ReadOnlyModelViewSet):
         instance = self.get_object()
         response = super(GuideViewSet, self).retrieve(request, *args, **kwargs)
         response['Cache-Control'] = "public"
-        response['ETag'] = instance.get_etag()
+        response['ETag'] = '"{}"'.format(instance.get_etag())
         response['Last-Modified'] = instance.updated
         return response
 
