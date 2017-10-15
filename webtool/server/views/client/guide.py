@@ -19,7 +19,7 @@ class GuideViewSet(viewsets.ReadOnlyModelViewSet):
         latest = Guide.objects.latest()
         response['Cache-Control'] = "public"
         response['ETag'] = '"{}"'.format(latest.get_etag())
-        response['Last-Modified'] = date(latest.updated, "%D, %d %M %Y %H:%i:%s GMT")
+        response['Last-Modified'] = "{} GMT".format(date(latest.updated, "D, d M Y H:i:s"))
         return response
 
     def retrieve(self, request, *args, **kwargs):
@@ -27,7 +27,7 @@ class GuideViewSet(viewsets.ReadOnlyModelViewSet):
         response = super(GuideViewSet, self).retrieve(request, *args, **kwargs)
         response['Cache-Control'] = "public"
         response['ETag'] = '"{}"'.format(instance.get_etag())
-        response['Last-Modified'] = date(instance.updated, "%D, %d %M %Y %H:%i:%s GMT")
+        response['Last-Modified'] = "{} GMT".format(date(instance.updated, "D, d M Y H:i:s"))
         return response
 
     def get_serializer_class(self):
