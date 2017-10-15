@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.template.defaultfilters import date
 from rest_framework import viewsets
 from rest_framework.response import Response
 
@@ -18,7 +19,7 @@ class GuideViewSet(viewsets.ReadOnlyModelViewSet):
         latest = Guide.objects.latest()
         response['Cache-Control'] = "public"
         response['ETag'] = '"{}"'.format(latest.get_etag())
-        response['Last-Modified'] = latest.updated
+        response['Last-Modified'] = date(latest.updated, "%D, %d %M %Y %H:%i:%s GMT")
         return response
 
     def retrieve(self, request, *args, **kwargs):
@@ -26,7 +27,7 @@ class GuideViewSet(viewsets.ReadOnlyModelViewSet):
         response = super(GuideViewSet, self).retrieve(request, *args, **kwargs)
         response['Cache-Control'] = "public"
         response['ETag'] = '"{}"'.format(instance.get_etag())
-        response['Last-Modified'] = instance.updated
+        response['Last-Modified'] = date(instance.updated, "%D, %d %M %Y %H:%i:%s GMT")
         return response
 
     def get_serializer_class(self):
