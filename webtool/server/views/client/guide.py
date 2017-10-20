@@ -10,6 +10,9 @@ from server.filters.client import GuideFilter
 
 class GuideViewSet(viewsets.ReadOnlyModelViewSet):
 
+    lookup_field = "user__username"
+    lookup_url_kwarg = "username"
+
     queryset = Guide.objects.filter(seasons__current=True, deprecated=False)
     search_fields = ('user__last_name', 'user__first_name')
     filter_class = GuideFilter
