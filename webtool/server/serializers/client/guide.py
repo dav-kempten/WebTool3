@@ -9,7 +9,7 @@ from server.models import Guide
 
 class GuideListSerializer(serializers.ModelSerializer):
 
-    id = serializers.PrimaryKeyRelatedField(source='user.username', read_only=True)
+    id = serializers.CharField(source='user.username')
     firstName = serializers.CharField(source='user.first_name')
     lastName = serializers.CharField(source='user.last_name')
     portrait = serializers.SerializerMethodField()
@@ -52,7 +52,7 @@ class GuideSerializer(GuideListSerializer):
         )
 
     def get_profile(self, obj):
-        return json.loads(obj.profile,encoding='utf-8') if obj.profile else None
+        return json.loads(obj.profile, encoding='utf-8') if obj.profile else None
 
     def get_links(self, obj):
         request = self.context['request']

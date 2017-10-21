@@ -91,7 +91,7 @@ class Tour(
     natural_key.dependencies = ['server.season', 'server.event']
 
     def __str__(self):
-        return "{}, {} [{}]".format(self.tour.title, self.tour.long_date(with_year=True), self.season)
+        return "{} - {}, {} [{}]".format(self.tour.reference, self.tour.title, self.tour.long_date(with_year=True), self.season)
 
     class Meta:
         get_latest_by = "updated"

@@ -33,7 +33,7 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
         'Reference',
         primary_key=True,
         verbose_name='Buchungscode',
-        related_name='event_list',
+        related_name='event',
         on_delete=models.PROTECT,
     )
 
@@ -140,7 +140,7 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
     natural_key.dependencies = ['server.season', 'server.reference']
 
     def __str__(self):
-        return "{}, {} [{}]".format(self.title, self.long_date(with_year=True), self.season.name)
+        return "{} - {}, {} [{}]".format(self.reference, self.title, self.long_date(with_year=True), self.season.name)
 
     def long_date(self, with_year=False, with_time=False):
         """
@@ -269,13 +269,13 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
 
     @property
     def activity(self):
-        if self.tour:
+        if hasattr(self, 'tour') and self.tour:
             return "tour"
-        if self.talk:
+        if hasattr(self, 'talk') and self.talk:
             return "talk"
-        if self.instruction:
+        if hasattr(self, 'instruction') and self.instruction:
             return "instruction"
-        if self.session:
+        if hasattr(self, 'session') and self.session:
             return "session"
 
     @property
@@ -295,16 +295,16 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
 
     @property
     def state(self):
-        state = None
-
-        if self.tour:
+        if hasattr(self, 'tour') and self.tour:
             state = self.tour.state
-        elif self.talk:
+        elif hasattr(self, 'talk') and self.talk:
             state = self.talk.state
-        elif self.instruction:
+        elif hasattr(self, 'instruction') and self.instruction:
             state = self.instruction.state
-        if self.session:
+        elif hasattr(self, 'session') and self.session:
             state = self.session.state
+        else:
+            return None
 
         if state:
             if state.done:
@@ -317,27 +317,25 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
                 return "unfeasible"
             if state.public:
                 return "public"
-        else:
-            return "private"
+            else:
+                return "private"
 
     @property
     def quantity(self):
-        min_quantity = 0
-        max_quantity = 0
-        cur_quantity = 0
-
-        if self.tour:
+        if hasattr(self, 'tour') and self.tour:
             min_quantity = self.tour.min_quantity
             max_quantity = self.tour.max_quantity
             cur_quantity = self.tour.cur_quantity
-        elif self.instruction:
-            min_quantity = self.instruction.min_quantity
-            max_quantity = self.instruction.max_quantity
-            cur_quantity = self.instruction.cur_quantity
-        elif self.talk:
+        elif hasattr(self, 'talk') and self.talk:
             min_quantity = self.talk.min_quantity
             max_quantity = self.talk.max_quantity
             cur_quantity = self.talk.cur_quantity
+        elif hasattr(self, 'instruction') and self.instruction:
+            min_quantity = self.instruction.min_quantity
+            max_quantity = self.instruction.max_quantity
+            cur_quantity = self.instruction.cur_quantity
+        else:
+            return None
 
         return {
             "min": min_quantity,
@@ -347,43 +345,42 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
 
     @property
     def speaker(self):
-        if self.talk:
+        if hasattr(self, 'talk') and self.talk:
             return self.talk.speaker
-        if self.session:
+        if hasattr(self, 'session') and self.session:
             return self.session.speaker
         return None
 
     @property
     def guide(self):
-        if self.tour:
+        if hasattr(self, 'tour') and self.tour:
             return self.tour.guide
-        if self.instruction:
+        if hasattr(self, 'instruction') and self.instruction:
             return self.instruction.guide
-        if self.session:
+        if hasattr(self, 'session') and self.session:
             return self.session.guide
-        return None
 
     @property
     def skill(self):
-        if self.tour:
+        if hasattr(self, 'tour') and self.tour:
             return self.tour.skill
-        if self.session:
+        if hasattr(self, 'session') and self.session:
             return self.session.skill
         return None
 
     @property
     def fitness(self):
-        if self.tour:
+        if hasattr(self, 'tour') and self.tour:
             return self.tour.fitness
-        if self.session:
+        if hasattr(self, 'session') and self.session:
             return self.session.fitness
         return None
 
     @property
     def ladies_only(self):
-        if self.tour:
+        if hasattr(self, 'tour') and self.tour:
             return self.tour.ladies_only
-        if self.instruction:
+        if hasattr(self, 'instruction') and self.instruction:
             return self.instruction.ladies_only
         return None
 

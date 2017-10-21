@@ -5,6 +5,7 @@ from django.db import models
 from .category import Category
 from .mixins import SeasonMixin
 from .time_base import TimeMixin
+from . import defaults
 
 
 class ReferenceManager(models.Manager):
@@ -37,7 +38,7 @@ class Reference(SeasonMixin, TimeMixin, models.Model):
     natural_key.dependencies = ['server.season', 'server.category']
 
     def __str__(self):
-        return "{}-{}{:02d}".format(self.category, self.season.name[-1], self.reference)
+        return "{}-{}{:02d}".format(self.category.code, self.season.name[-1], self.reference)
 
     class Meta:
         verbose_name = "Buchungscode"
@@ -45,19 +46,19 @@ class Reference(SeasonMixin, TimeMixin, models.Model):
         unique_together = ('season', 'category', 'reference')
         ordering = ('season__name', 'category__order', 'reference')
 
-
-def get_reference(value, season=None):
-    try:
-        code, reference = value.split('-')
-        category = Category.objects.get(code=code)
-        if season is None:
-            season = '201' + reference[0]
-    except ValueError:
-        raise Reference.DoesNotExist("Reference matching query does not exist.")
-    try:
-        reference = int(reference[1:])
-    except ValueError:
-        raise Reference.DoesNotExist("Reference matching query does not exist.")
-    if not reference < 0x7fffffffffffffff:
-        raise Reference.DoesNotExist("Reference matching query does not exist.")
-    return Reference.objects.get(category=category, season__name=season, reference=reference)
+    @staticmethod
+    def get_reference(value, season=None):
+        try:
+            code, reference = value.split('-')
+            category = Category.objects.get(code=code)
+            if season is None:
+                season = str(defaults.get_default_year())[:3] + reference[0]
+        except ValueError:
+            raise Reference.DoesNotExist("Reference matching query does not exist.")
+        try:
+            reference = int(reference[1:])
+        except ValueError:
+            raise Reference.DoesNotExist("Reference matching query does not exist.")
+        if not reference < 0x7fffffffffffffff:
+            raise Reference.DoesNotExist("Reference matching query does not exist.")
+        return Reference.objects.get(category=category, season__name=season, reference=reference)

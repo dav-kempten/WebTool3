@@ -19,8 +19,7 @@ def get_default_params():
             whole_tour_day_compensation=30.00,
             half_tour_day_compensation=20.00,
             min_admission=5.00
-        ),
-        talk_categories='TLK',
+        )
     )
 
 

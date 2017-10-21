@@ -159,6 +159,8 @@ def init_category():
         {'tour': True, 'order': 120, 'code': 'EBK', 'name': 'E-Bike', 'summer': True},
         {'tour': True, 'order': 130, 'code': 'RDT', 'name': 'Radtour', 'summer': True},
         {'talk': True, 'order': 140, 'code': 'TLK', 'name': 'Vortrag'},
+        {'deadline': True, 'order': 150, 'code': 'AS0', 'name': 'Anmeldeschluss'},
+        {'preliminary': True, 'order': 160, 'code': 'VB0', 'name': 'Vorbesprechung'},
     ]
 
     season = get_default_season()

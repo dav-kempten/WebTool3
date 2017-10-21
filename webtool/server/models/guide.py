@@ -70,7 +70,7 @@ class Guide(SeasonsMixin, TimeMixin, models.Model):
         return self.user.get_username()
 
     def natural_key(self):
-        return self.user.get_username()
+        return self.user.get_username(),
 
     natural_key.dependencies = ['auth.user', 'server.season']
 

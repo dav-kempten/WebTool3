@@ -36,6 +36,20 @@ class Category(SeasonsMixin, TimeMixin, models.Model):
         help_text = 'Kategorie für Touren'
     )
 
+    deadline = models.BooleanField(
+        'Anmeldeschluss',
+        db_index=True,
+        blank=True, default=False,
+        help_text = 'Kategorie für den Anmeldeschluss'
+    )
+
+    preliminary = models.BooleanField(
+        'Vorbesprechung',
+        db_index=True,
+        blank=True, default=False,
+        help_text = 'Kategorie für die Vorbesprechung'
+    )
+
     talk = models.BooleanField(
         'Vorträge',
         db_index=True,
