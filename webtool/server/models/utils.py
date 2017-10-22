@@ -11,6 +11,7 @@ REFERENCE_RANGE = set(range(1, 100))
 
 def create_reference(category=None, season=None, **kwargs):
 
+    reference = None
     if isinstance(category, str):
         try:
             category = Category.objects.get(code=category, **kwargs)
@@ -31,20 +32,19 @@ def create_reference(category=None, season=None, **kwargs):
     free_references = REFERENCE_RANGE - cur_references
     if free_references:
         reference = Reference.objects.create(season=season, category=category, reference=min(free_references))
-        if reference is None:
-            category_code = category.code
-            category_index = category_code[-1]
-            if category_index < "0" or category_index > "9":
-                print('Category "{}" hat keinen Zähler'.format(category_code))
-                return None
-            category.pk = None
-            category_index = int(category_index) + 1
-            category.code = "{}{:1d}".format(category_code[:2], category_index)
-            category.save()
-            category.seasons.add(season)
-            reference = create_reference(category=category, season=season, **kwargs)
-        return reference
-    print('Keine freien Buchungscodes für "{}"'.format(category.code))
+    if reference is None:
+        category_code = category.code
+        category_index = category_code[-1]
+        if category_index < "0" or category_index > "9":
+            print('Category "{}" hat keinen Zähler'.format(category_code))
+            return None
+        category.pk = None
+        category_index = int(category_index) + 1
+        category.code = "{}{:1d}".format(category_code[:2], category_index)
+        category.save()
+        category.seasons.add(season)
+        reference = create_reference(category=category, season=season, **kwargs)
+    return reference
 
 
 def create_deadline(reference, start_date, season=None):
