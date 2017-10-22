@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import json
 from decimal import Decimal
 from django.utils.dateparse import parse_date, parse_time
 
@@ -14,6 +15,7 @@ def create_reference(category=None, season=None, **kwargs):
         try:
             category = Category.objects.get(code=category, **kwargs)
         except Category.DoesNotExist:
+            print('Category "{}" nicht gefunden'.format(category))
             return None
 
     if season is None:
@@ -22,6 +24,7 @@ def create_reference(category=None, season=None, **kwargs):
     if category is None:
         category = Category.objects.filter(seasons=season, **kwargs).order_by('code').last()
         if category is None:
+            print('Category "{}" nicht gefunden'.format(json.loads(kwargs)))
             return None
 
     cur_references = set(Reference.objects.filter(category=category, season=season).values_list('reference', flat=True))
@@ -32,6 +35,7 @@ def create_reference(category=None, season=None, **kwargs):
             category_code = category.code
             category_index = category_code[-1]
             if category_index < "0" or category_index > "9":
+                print('Category "{}" hat keinen Zähler'.format(category_code))
                 return None
             category.pk = None
             category_index = int(category_index) + 1
@@ -199,6 +203,7 @@ def create_tour(
         try:
             approximate = Approximate.objects.get(name=approximate, seasons=season)
         except Approximate.DoesNotExist:
+            print('Approximate "{}" nicht gefunden'.format(approximate))
             return None
 
     reference = create_reference(category, season=season, tour=True)
@@ -257,12 +262,32 @@ def delete_reference(reference):
     if hasattr(event, 'tour') and event.tour:
         tour = event.tour
         deadline = tour.deadline
+        deadline_reference = deadline.reference
         preliminary = None
+        preliminary_reference = None
         if hasattr(tour, 'preliminary') and tour.preliminary:
             preliminary = tour.preliminary
-        tour.delete()
-        deadline.delete()
+            preliminary_reference = preliminary.reference
+        n = tour.delete()
+        if n[0] > 0:
+            print("Tour {} gelöscht".format(tour.tour.reference), end='')
+        n = deadline.delete()
+        if n[0] > 0:
+            print(", Anmeldeschluss {} gelöscht".format(deadline_reference), end='')
+        n = deadline_reference.delete()
+        if n[0] > 0:
+            print(", Buchugscode {} gelöscht".format(deadline_reference), end='')
         if preliminary:
-            preliminary.delete()
-    event.delete()
-    reference.delete()
+            n = preliminary.delete()
+            if n[0] > 0:
+                print(" Vorbesprechung {} gelöscht".format(preliminary_reference), end='')
+            n = preliminary_reference.delete()
+            if n[0] > 0:
+                print(" Buchungscode {} gelöscht".format(preliminary_reference), end='')
+    n = event.delete()
+    if n[0] > 0:
+        print(", Tourentermin {} gelöscht".format(event.reference), end='')
+    n = reference.delete()
+    if n[0] > 0:
+        print(", Buchungscode {} gelöscht".format(reference), end='')
+    print()
