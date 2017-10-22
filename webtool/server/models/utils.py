@@ -24,7 +24,7 @@ def create_reference(category=None, season=None, **kwargs):
     if category is None:
         category = Category.objects.filter(seasons=season, **kwargs).order_by('code').last()
         if category is None:
-            print('Category "{}" nicht gefunden'.format(json.loads(kwargs)))
+            print('Category "{}" nicht gefunden'.format(repr(kwargs)))
             return None
 
     cur_references = set(Reference.objects.filter(category=category, season=season).values_list('reference', flat=True))
