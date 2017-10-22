@@ -39,7 +39,7 @@ class Equipment(SeasonsMixin, TimeMixin, models.Model):
     )
 
     def natural_key(self):
-        return self.code
+        return self.code,
 
     natural_key.dependencies = ['server.season']
 

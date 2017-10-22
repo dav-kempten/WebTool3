@@ -34,12 +34,12 @@ class Fitness(SeasonsMixin, TimeMixin, models.Model):
     )
 
     def natural_key(self):
-        return self.code
+        return self.code,
 
     natural_key.dependencies = ['server.season']
 
     def __str__(self):
-        return "{}".format(self.code)
+        return self.code
 
     class Meta:
         get_latest_by = "updated"

@@ -100,8 +100,12 @@ class Session(TimeMixin, GuidedEventMixin, RequirementMixin, EquipmentMixin, Sta
         help_text="Eine URL zum Tourenportal der Alpenvereine",
     )
 
+    @property
+    def season(self):
+        return self.session.season
+
     def natural_key(self):
-        return self.session.season, "{}".format(self.session.reference)
+        return self.session.season, str(self.session.reference)
 
     natural_key.dependencies = ['server.season', 'server.event', 'server.collective']
 
@@ -114,4 +118,4 @@ class Session(TimeMixin, GuidedEventMixin, RequirementMixin, EquipmentMixin, Sta
         get_latest_by = "updated"
         verbose_name = "Gruppentermin"
         verbose_name_plural = "Gruppentermine"
-        ordering = ('collective__season__name', 'collective__name', 'session__start_date', )
+        ordering = ('session__season__name', 'collective__name', 'session__start_date', )

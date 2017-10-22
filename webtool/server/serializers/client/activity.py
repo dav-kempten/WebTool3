@@ -12,7 +12,7 @@ class ActivityListSerializer(serializers.ModelSerializer):
     category = serializers.CharField(source='reference.category.name')
     description = serializers.SerializerMethodField()
     startDate = serializers.DateField(source='start_date')
-    startTime = serializers.TimeField(source='start_time')
+    startTime = serializers.SerializerMethodField()
     endDate = serializers.DateField(source='end_date')
     guide = serializers.SerializerMethodField()
     ladiesOnly = serializers.BooleanField(source='ladies_only')
@@ -34,6 +34,12 @@ class ActivityListSerializer(serializers.ModelSerializer):
             )
         else:
             return "{}".format(obj.name)
+
+    def get_startTime(self, obj):
+        if obj.start_time is None:
+            return obj.approximate.name if obj.approximate else None
+        else:
+            return obj.start_time
 
     def get_guide(self, obj):
         request = self.context['request']
@@ -100,6 +106,7 @@ class ActivitySerializer(ActivityListSerializer):
             'startDate', 'startTime',
             'endDate',
             'quantity',
+            'admission',
             'speaker',
             'guide',
             'division',

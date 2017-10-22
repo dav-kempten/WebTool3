@@ -50,7 +50,7 @@ class Topic(SeasonsMixin, TimeMixin, DescriptionMixin, QualificationMixin, Equip
         verbose_name = "Kursinhalt"
         verbose_name_plural = "Kursinhalte"
         unique_together = ('title', 'internal')
-        ordering = ('season__name', 'order', 'name')
+        ordering = ('seasons__name', 'order', 'name')
 
 
 class InstructionManager(models.Manager):
@@ -90,7 +90,7 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
         return self.instruction.season
 
     def natural_key(self):
-        return self.instruction.season, "{}".format(self.instruction.reference)
+        return self.instruction.season, str(self.instruction.reference)
 
     natural_key.dependencies = ['server.season', 'server.event', 'server.topic']
 

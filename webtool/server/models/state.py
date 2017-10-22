@@ -60,12 +60,12 @@ class State(SeasonsMixin, TimeMixin, models.Model):
     )
 
     def natural_key(self):
-        return self.name
+        return self.name,
 
     natural_key.dependencies = ['server.season']
 
     def __str__(self):
-        return "{}".format(self.name)
+        return self.name
 
     class Meta:
         get_latest_by = "updated"

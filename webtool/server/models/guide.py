@@ -75,7 +75,7 @@ class Guide(SeasonsMixin, TimeMixin, models.Model):
     natural_key.dependencies = ['auth.user', 'server.season']
 
     def __str__(self):
-        return "{}".format(self.name)
+        return self.name
 
     class Meta():
         get_latest_by = "updated"

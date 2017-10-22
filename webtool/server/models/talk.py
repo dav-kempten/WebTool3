@@ -64,7 +64,7 @@ class Talk(SeasonMixin, TimeMixin, StateMixin, ChapterMixin, models.Model):
     )
 
     def natural_key(self):
-        return self.talk.season, self.talk.reference
+        return self.talk.season, str(self.talk.reference)
 
     natural_key.dependencies = ['server.season', 'server.event']
 

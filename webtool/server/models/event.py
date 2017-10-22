@@ -135,7 +135,7 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
     )
 
     def natural_key(self):
-        return self.season.name, "{}".format(self.reference)
+        return self.season.name, str(self.reference)
 
     natural_key.dependencies = ['server.season', 'server.reference']
 
@@ -342,6 +342,15 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
             "max": max_quantity,
             "current": cur_quantity
         }
+
+    @property
+    def admission(self):
+        if hasattr(self, 'tour') and self.tour:
+            return self.tour.admission
+        if hasattr(self, 'instruction') and self.instruction:
+            return self.instruction.admission
+        if hasattr(self, 'talk') and self.talk:
+            return self.talk.admission
 
     @property
     def speaker(self):

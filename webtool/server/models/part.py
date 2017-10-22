@@ -31,12 +31,12 @@ class Part(SeasonsMixin, TimeMixin, models.Model):
     order = fields.OrderField()
 
     def natural_key(self):
-        return self.name
+        return self.name,
 
     natural_key.dependencies = ['server.season']
 
     def __str__(self):
-        return "{}".format(self.name)
+        return self.name
 
     class Meta:
         get_latest_by = "updated"
