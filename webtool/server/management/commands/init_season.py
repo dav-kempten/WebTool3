@@ -194,14 +194,6 @@ def init_chapter():
 
 def init_approximate():
 
-
-    # approximate = 1 => Genau
-    # approximate = 2 => Morgens
-    # approximate = 3 => Vormittags
-    # approximate = 4 => Mittags
-    # approximate = 5 => Nachmittags
-    # approximate = 6 => Abends
-
     values = [
         {'name': 'morgens', 'description': 'bis 9:00', 'start_time': datetime.time(7, 0), 'default': True},
         {'name': 'vormittags', 'description': 'ab 9:00 bis 12:00', 'start_time': datetime.time(9, 0)},

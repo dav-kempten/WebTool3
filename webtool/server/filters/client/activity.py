@@ -4,37 +4,37 @@ from django_filters import rest_framework as filters, STRICTNESS
 
 from server.models import Event, Category, Reference, Tour, State
 
-ACTIVITY_CHOICES = (
-    ('tour', 'tour'),
-    ('topic', 'topic'),
-    ('collective', 'collective'),
-    ('talk', 'talk')
-)
-
-DIVISION_CHOICES = (
-    ('winter', 'winter'),
-    ('summer', 'summer'),
-    ('indoor', 'indoor'),
-)
-
-CATEGORY_CHOICES = [
-    (c.lower(), c.lower()) for c in Category.objects
-    .filter(deprecated=False, seasons__current=True)
-    .exclude(deadline=True).exclude(preliminary=True)
-    .order_by('code')
-    .values_list('code', flat=True)
-]
-
-STATE_CHOICES = (
-    ('done', 'done'),
-    ('moved', 'moved'),
-    ('canceled', 'canceled'),
-    ('unfeasible', 'unfeasible'),
-    ('public', 'public'),
-)
-
 
 class ActivityFilter(filters.FilterSet):
+
+    ACTIVITY_CHOICES = (
+        ('tour', 'tour'),
+        ('topic', 'topic'),
+        ('collective', 'collective'),
+        ('talk', 'talk')
+    )
+
+    DIVISION_CHOICES = (
+        ('winter', 'winter'),
+        ('summer', 'summer'),
+        ('indoor', 'indoor'),
+    )
+
+    STATE_CHOICES = (
+        ('done', 'done'),
+        ('moved', 'moved'),
+        ('canceled', 'canceled'),
+        ('unfeasible', 'unfeasible'),
+        ('public', 'public'),
+    )
+
+    CATEGORY_CHOICES = [
+        (c.lower(), c.lower()) for c in Category.objects
+            .filter(deprecated=False, seasons__current=True)
+            .exclude(deadline=True).exclude(preliminary=True)
+            .order_by('code')
+            .values_list('code', flat=True)
+    ]
 
     activity = filters.ChoiceFilter(label='activity', method='activity_filter', choices=ACTIVITY_CHOICES)
     division = filters.ChoiceFilter(label='division', method='division_filter', choices=DIVISION_CHOICES)
