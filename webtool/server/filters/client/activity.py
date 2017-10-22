@@ -28,17 +28,17 @@ class ActivityFilter(filters.FilterSet):
         ('public', 'public'),
     )
 
-    CATEGORY_CHOICES = [
-        (c.lower(), c.lower()) for c in Category.objects
-            .filter(deprecated=False, seasons__current=True)
-            .exclude(deadline=True).exclude(preliminary=True)
-            .order_by('code')
-            .values_list('code', flat=True)
-    ]
+    # CATEGORY_CHOICES = [
+    #    (c.lower(), c.lower()) for c in Category.objects
+    #        .filter(deprecated=False, seasons__current=True)
+    #        .exclude(deadline=True).exclude(preliminary=True)
+    #        .order_by('code')
+    #        .values_list('code', flat=True)
+    # ]
 
     activity = filters.ChoiceFilter(label='activity', method='activity_filter', choices=ACTIVITY_CHOICES)
     division = filters.ChoiceFilter(label='division', method='division_filter', choices=DIVISION_CHOICES)
-    category = filters.ChoiceFilter(label='category', method='category_filter', choices=CATEGORY_CHOICES)
+    category = filters.CharFilter(label='category', method='category_filter')  # , choices=CATEGORY_CHOICES)
     guide = filters.CharFilter(label='guide', method='guide_filter')
     month = filters.NumberFilter(label='month', method='month_filter', min_value=1, max_value=12)
     ladiesOnly = filters.BooleanFilter(label='ladiesOnly', method='ladies_only_filter')
