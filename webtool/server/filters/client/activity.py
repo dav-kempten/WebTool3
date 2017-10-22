@@ -18,7 +18,7 @@ DIVISION_CHOICES = (
 )
 
 CATEGORY_CHOICES = [
-    (c, c) for c in Category.objects
+    (c.lower(), c.lower()) for c in Category.objects
     .filter(deprecated=False, seasons__current=True)
     .exclude(deadline=True).exclude(preliminary=True)
     .order_by('code')

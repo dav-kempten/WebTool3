@@ -22,9 +22,9 @@ class GuideViewSet(viewsets.ReadOnlyModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         response =  Response(serializer.data)
 
+        response['Cache-Control'] = "public, max-age=86400"
         if queryset.exists():
             latest = queryset.latest()
-            response['Cache-Control'] = "public, max-age=86400"
             response['ETag'] = '"{}"'.format(latest.get_etag())
             response['Last-Modified'] = "{} GMT".format(date(latest.updated, "D, d M Y H:i:s"))
         return response
