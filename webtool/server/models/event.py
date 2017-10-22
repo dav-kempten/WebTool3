@@ -282,13 +282,13 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
     def division(self):
         winter = self.reference.category.winter
         summer = self.reference.category.summer
-        climbing = self.reference.category.climbing
+        indoor = self.reference.category.climbing
 
-        if winter and not summer and not climbing:
+        if winter and not summer and not indoor:
             return "winter"
-        elif not winter and summer and not climbing:
+        elif not winter and summer and not indoor:
             return "summer"
-        elif not winter and not summer and climbing:
+        elif not winter and not summer and indoor:
             return "indoor"
         else:
             return "misc"

@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 from django.shortcuts import get_object_or_404
+from django.template.defaultfilters import date
 from rest_framework import viewsets
+from rest_framework.response import Response
+
+from server.filters.client import ActivityFilter
 from server.serializers.client import ActivityListSerializer, ActivitySerializer
 from server.models import Event, Tour, Talk, Instruction, Session, Reference
 
@@ -21,6 +25,27 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
     ).exclude(
         session__isnull=False, session__state__public=False
     )
+    filter_class = ActivityFilter
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        response =  Response(serializer.data)
+
+        if queryset.exists():
+            latest = queryset.latest()
+            response['Cache-Control'] = "public, max-age=86400"
+            response['ETag'] = '"{}"'.format(latest.get_etag())
+            response['Last-Modified'] = "{} GMT".format(date(latest.updated, "D, d M Y H:i:s"))
+        return response
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        response = super(ActivityViewSet, self).retrieve(request, *args, **kwargs)
+        response['Cache-Control'] = "public, max-age=86400"
+        response['ETag'] = '"{}"'.format(instance.get_etag())
+        response['Last-Modified'] = "{} GMT".format(date(instance.updated, "D, d M Y H:i:s"))
+        return response
 
     def get_serializer_class(self):
         if self.action == 'list':
@@ -51,3 +76,4 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
 
     class Meta:
         model = Event
+

@@ -56,7 +56,7 @@ class GuideSerializer(GuideListSerializer):
 
     def get_links(self, obj):
         request = self.context['request']
-        return {
+        result =  {
             'guidedTours': None,
             'supportedTours': None,
             'guidedSessions': None,
@@ -65,3 +65,9 @@ class GuideSerializer(GuideListSerializer):
             'supportedInstructions': None,
             'managedCollectives': None
         }
+
+        if obj.tour_guides.exists():
+            username = obj.user.get_username()
+            result["guidedTours"] = "{}?guide={}".format(reverse('event-list', request=request), username)
+
+        return result

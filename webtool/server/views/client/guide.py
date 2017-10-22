@@ -18,11 +18,15 @@ class GuideViewSet(viewsets.ReadOnlyModelViewSet):
     filter_class = GuideFilter
 
     def list(self, request, *args, **kwargs):
-        response = super(GuideViewSet, self).list(request, *args, **kwargs)
-        latest = Guide.objects.latest()
-        response['Cache-Control'] = "public, max-age=86400"
-        response['ETag'] = '"{}"'.format(latest.get_etag())
-        response['Last-Modified'] = "{} GMT".format(date(latest.updated, "D, d M Y H:i:s"))
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        response =  Response(serializer.data)
+
+        if queryset.exists():
+            latest = queryset.latest()
+            response['Cache-Control'] = "public, max-age=86400"
+            response['ETag'] = '"{}"'.format(latest.get_etag())
+            response['Last-Modified'] = "{} GMT".format(date(latest.updated, "D, d M Y H:i:s"))
         return response
 
     def retrieve(self, request, *args, **kwargs):
