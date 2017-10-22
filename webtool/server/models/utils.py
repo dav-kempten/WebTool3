@@ -44,6 +44,7 @@ def create_reference(category=None, season=None, **kwargs):
             category.seasons.add(season)
             reference = create_reference(category=category, season=season, **kwargs)
         return reference
+    print('Keine freien Buchungscodes für "{}"'.format(category.code))
 
 
 def create_deadline(reference, start_date, season=None):
@@ -220,8 +221,9 @@ def create_tour(
     if preliminary_date is not None and preliminary_time is not None and info is None:
         preliminary = create_preliminary(reference, preliminary_date, preliminary_time, rendezvous, season)
         if preliminary is None:
-            reference.delete()
+            deadline.reference.delete()
             deadline.delete()
+            reference.delete()
             return None
         info = ''
 
