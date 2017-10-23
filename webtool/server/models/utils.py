@@ -172,12 +172,18 @@ def create_tour(
 
     if isinstance(start_time, str):
         start_time = parse_time(start_time)
+    if not start_time:
+        start_time = None
 
     if isinstance(end_date, str):
         end_date = parse_date(end_date)
+        if end_date == start_date:
+            end_date = None
 
     if isinstance(end_time, str):
         end_time = parse_time(end_time)
+    if not end_time:
+        end_time = None
 
     if distal is None:
         distal = bool((distance > 0) or source)

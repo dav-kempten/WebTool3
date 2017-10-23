@@ -55,10 +55,6 @@ class ActivityFilter(filters.FilterSet):
         if value in ("winter", "summer", "indoor"):
             return queryset.filter(**{"reference__category__{}".format(value): True})
 
-    def gudie_filter(self, queryset, name, value):
-        if value in ("winter", "summer", "indoor"):
-            return queryset.filter(**{"reference__category__{}".format(value): True})
-
     def category_filter(self, queryset, name, value):
         return queryset.filter(reference__category__code__iexact=value)
 
@@ -89,9 +85,9 @@ class ActivityFilter(filters.FilterSet):
     class Meta:
         model = Event
         fields = (
+            'activity',
             'division',
             'category',
-            'activity',
             'guide',
             'month',
             'ladiesOnly',
