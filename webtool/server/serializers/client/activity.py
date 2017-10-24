@@ -11,6 +11,7 @@ class ActivityListSerializer(serializers.ModelSerializer):
     id = serializers.StringRelatedField(source='reference')
     category = serializers.CharField(source='reference.category.name')
     description = serializers.SerializerMethodField()
+    title = serializers.SerializerMethodField()
     startDate = serializers.DateField(source='start_date')
     startTime = serializers.SerializerMethodField()
     endDate = serializers.DateField(source='end_date')
@@ -35,6 +36,9 @@ class ActivityListSerializer(serializers.ModelSerializer):
         else:
             return "{}".format(obj.name)
 
+    def get_title(self, obj):
+        return obj.title
+
     def get_startTime(self, obj):
         if obj.start_time is None:
             return obj.approximate.name if obj.approximate else None
@@ -45,6 +49,7 @@ class ActivityListSerializer(serializers.ModelSerializer):
         request = self.context['request']
         guide = obj.guide
         return {
+            'id': guide.user.get_username(),
             'detail': reverse('guide-detail', kwargs={'username': guide.user.username}, request=request),
             'firstName': guide.user.first_name,
             'lastName': guide.user.last_name
@@ -60,6 +65,7 @@ class ActivityListSerializer(serializers.ModelSerializer):
             'id',
             'activity', 'category',
             'description',
+            'title',
             'startDate', 'startTime',
             'endDate',
             'quantity',
@@ -103,6 +109,7 @@ class ActivitySerializer(ActivityListSerializer):
             'id',
             'activity', 'category',
             'description',
+            'title',
             'startDate', 'startTime',
             'endDate',
             'quantity',
