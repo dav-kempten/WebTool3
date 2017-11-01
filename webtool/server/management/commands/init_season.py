@@ -16,6 +16,14 @@ from server.models import get_default_season
 
 def init_season(name='2017'):
 
+    try:
+        season = Season.objects.get(current=True)
+    except Season.DoesNotExist:
+        pass
+    else:
+        season.current = False
+        season.save()
+
     season = Season(name=name, current=True)
     season.save()
 
@@ -24,6 +32,9 @@ def init_calendar():
 
     calendar = Calendar()
     calendar.save()
+
+    season = get_default_season()
+    year = int(season.name)
 
     values = [
         {'public_holiday': True, 'fixed_date': u'01.01.', 'name': u'Neujahr', 'weekday': None, 'month': None, 'day_occurrence': None, 'easter_offset': None, 'advent_offset': None},
@@ -41,7 +52,7 @@ def init_calendar():
         {'public_holiday': False, 'fixed_date': None, 'name': u'Herz-Jesu-Sonntag', 'weekday': None, 'month': None, 'day_occurrence': None, 'easter_offset': 70, 'advent_offset': None},
         {'public_holiday': True, 'fixed_date': None, 'name': u'Fronleichnam', 'weekday': None, 'month': None, 'day_occurrence': None, 'easter_offset': 60, 'advent_offset': None},
         {'public_holiday': False, 'fixed_date': u'27.06.', 'name': u'Siebenschläfer', 'weekday': None, 'month': None, 'day_occurrence': None, 'easter_offset': None, 'advent_offset': None},
-        {'public_holiday': True, 'fixed_date': u'31.10.', 'name': u'Reformationstag', 'weekday': None, 'month': None, 'day_occurrence': None, 'easter_offset': None, 'advent_offset': None},
+        {'public_holiday': (year == 2017), 'fixed_date': u'31.10.', 'name': u'Reformationstag', 'weekday': None, 'month': None, 'day_occurrence': None, 'easter_offset': None, 'advent_offset': None},
         {'public_holiday': False, 'fixed_date': u'20.03.', 'name': u'Frühlingsanfang', 'weekday': None, 'month': None, 'day_occurrence': None, 'easter_offset': None, 'advent_offset': None},
         {'public_holiday': False, 'fixed_date': u'21.06.', 'name': u'Sommeranfang', 'weekday': None, 'month': None, 'day_occurrence': None, 'easter_offset': None, 'advent_offset': None},
         {'public_holiday': False, 'fixed_date': u'23.09.', 'name': u'Herbstanfang', 'weekday': None, 'month': None, 'day_occurrence': None, 'easter_offset': None, 'advent_offset': None},
@@ -68,30 +79,38 @@ def init_calendar():
         {'public_holiday': False, 'fixed_date': u'24.12.', 'name': u'Heiligabend', 'weekday': None, 'month': None, 'day_occurrence': None, 'easter_offset': None, 'advent_offset': None},
         {'public_holiday': True, 'fixed_date': u'25.12.', 'name': u'1. Weihnachtsfeiertag', 'weekday': None, 'month': None, 'day_occurrence': None, 'easter_offset': None, 'advent_offset': None},
         {'public_holiday': True, 'fixed_date': u'26.12.', 'name': u'2. Weihnachtsfeiertag', 'weekday': None, 'month': None, 'day_occurrence': None, 'easter_offset': None, 'advent_offset': None},
-        {'public_holiday': False, 'fixed_date': u'31.12.', 'name': u'Sylvester', 'weekday': None, 'month': None, 'day_occurrence': None, 'easter_offset': None, 'advent_offset': None},
+        {'public_holiday': False, 'fixed_date': u'31.12.', 'name': u'Silvester', 'weekday': None, 'month': None, 'day_occurrence': None, 'easter_offset': None, 'advent_offset': None},
     ]
 
     for data in values:
-        anniversary = Anniversary(**data)
-        anniversary.save()
+        anniversary, _ = Anniversary.objects.get_or_create(**data)
         anniversary.calendars.add(calendar)
 
     calendar.calc_anniversary_order()
 
-    values = [
-        {'start_date': datetime.date(2016, 12, 24), 'end_date': datetime.date(2017, 1, 5), 'name': u'Weihnachtsferien 2016/2017'},
-        {'start_date': datetime.date(2017, 2, 27), 'end_date': datetime.date(2017, 3, 3), 'name': u'Frühjahrsferien'},
-        {'start_date': datetime.date(2017, 4, 10), 'end_date': datetime.date(2017, 4, 22), 'name': u'Osterferien'},
-        {'start_date': datetime.date(2017, 6, 6), 'end_date': datetime.date(2017, 6, 16), 'name': u'Pfingstferien'},
-        {'start_date': datetime.date(2017, 7, 29), 'end_date': datetime.date(2017, 9, 11), 'name': u'Sommerferien'},
-        {'start_date': datetime.date(2017, 10, 30), 'end_date': datetime.date(2017, 11, 3), 'name': u'Herbstferien'},
-        {'start_date': datetime.date(2017, 12, 23), 'end_date': datetime.date(2018, 1, 5), 'name': u'Weihnachtsferien 2017/2018'},
-    ]
+    if year == 2017:
+        values = [
+            {'start_date': datetime.date(2016, 12, 24), 'end_date': datetime.date(2017, 1, 5), 'name': u'Weihnachtsferien 2016/2017'},
+            {'start_date': datetime.date(2017, 2, 27), 'end_date': datetime.date(2017, 3, 3), 'name': u'Frühjahrsferien'},
+            {'start_date': datetime.date(2017, 4, 10), 'end_date': datetime.date(2017, 4, 22), 'name': u'Osterferien'},
+            {'start_date': datetime.date(2017, 6, 6), 'end_date': datetime.date(2017, 6, 16), 'name': u'Pfingstferien'},
+            {'start_date': datetime.date(2017, 7, 29), 'end_date': datetime.date(2017, 9, 11), 'name': u'Sommerferien'},
+            {'start_date': datetime.date(2017, 10, 30), 'end_date': datetime.date(2017, 11, 3), 'name': u'Herbstferien'},
+            {'start_date': datetime.date(2017, 12, 23), 'end_date': datetime.date(2018, 1, 5), 'name': u'Weihnachtsferien 2017/2018'}
+        ]
+    elif year == 2018:
+        values = [
+            {'start_date': datetime.date(2017, 12, 23), 'end_date': datetime.date(2018, 1, 5), 'name': u'Weihnachtsferien 2017/2018'},
+            {'start_date': datetime.date(2018, 2, 12), 'end_date': datetime.date(2018, 2, 16), 'name': u'Frühjahrsferien'},
+            {'start_date': datetime.date(2018, 3, 26), 'end_date': datetime.date(2018, 4, 7), 'name': u'Osterferien'},
+            {'start_date': datetime.date(2018, 5, 22), 'end_date': datetime.date(2018, 6, 2), 'name': u'Pfingstferien'},
+            {'start_date': datetime.date(2018, 7, 30), 'end_date': datetime.date(2018, 9, 10), 'name': u'Sommerferien'},
+            {'start_date': datetime.date(2018, 10, 29), 'end_date': datetime.date(2018, 11, 2), 'name': u'Herbstferien'},
+            {'start_date': datetime.date(2018, 12, 22), 'end_date': datetime.date(2019, 1, 5), 'name': u'Weihnachtsferien 2018/2019'}
+        ]
 
     for data in values:
-        vacation = Vacation(**data)
-        vacation.save()
-
+        vacation, _ = Vacation.objects.get_or_create(**data)
 
 def init_part():
 
@@ -108,8 +127,7 @@ def init_part():
 
     season = get_default_season()
     for data in values:
-        part = Part(**data)
-        part.save()
+        part, _ = Part.objects.get_or_create(**data)
         part.seasons.add(season)
 
 
@@ -138,8 +156,7 @@ def init_section():
     for data in values:
         part_name = data.pop('part')
         part = Part.objects.get(seasons=season, name=part_name)
-        section = Section(part=part, **data)
-        section.save()
+        section, _ = Section.objects.get_or_create(part=part, **data)
 
 
 def init_category():
@@ -153,7 +170,7 @@ def init_category():
         {'tour': True, 'order': 60,  'code': 'FRD', 'name': 'Freeride', 'winter': True},
         {'tour': True, 'order': 70,  'code': 'BGT', 'name': 'Bergtour', 'summer': True},
         {'tour': True, 'order': 80,  'code': 'KSG', 'name': 'Klettersteig', 'summer': True},
-        {'tour': True, 'order': 90,  'code': 'KLT', 'name': 'Klettertour', 'summer': True},
+        {'tour': True, 'order': 90,  'code': 'AKT', 'name': 'Klettertour', 'summer': True},
         {'tour': True, 'order': 100, 'code': 'GHT', 'name': 'Gletschertour / Hochtour', 'summer': True},
         {'tour': True, 'order': 110, 'code': 'MTB', 'name': 'Mountainbike', 'summer': True},
         {'tour': True, 'order': 120, 'code': 'EBK', 'name': 'E-Bike', 'summer': True},
@@ -165,8 +182,7 @@ def init_category():
 
     season = get_default_season()
     for data in values:
-        category = Category(**data)
-        category.save()
+        category, _ = Category.objects.get_or_create(**data)
         category.seasons.add(season)
 
 
@@ -188,8 +204,7 @@ def init_chapter():
         for part in (part, 'Vorschläge'):
             p = Part.objects.get(seasons=season, name=part)
             s = Section.objects.get(part=p, name=section)
-            chapter = Chapter(name=name, order=order, section=s)
-            chapter.save()
+            chapter, _ = Chapter.objects.get_or_create(name=name, order=order, section=s)
 
 
 def init_approximate():
@@ -204,8 +219,7 @@ def init_approximate():
 
     season = get_default_season()
     for data in values:
-        approximate = Approximate(**data)
-        approximate.save()
+        approximate, _ = Approximate.objects.get_or_create(**data)
         approximate.seasons.add(season)
 
 
@@ -271,14 +285,13 @@ def init_skill():
     season = get_default_season()
     for data in values:
         description = data.pop('description')
-        skill = Skill(**data)
+        skill, _ = Skill.objects.get_or_create(**data)
         skill.default = (data['order'] == 1)
         skill.save()
         skill.seasons.add(season)
         for code, description in description.items():
             category = Category.objects.get(seasons=season, code=code)
-            skill_description = SkillDescription(skill=skill, category=category, description=description)
-            skill_description.save()
+            skill_description, _ = SkillDescription.objects.get_or_create(skill=skill, category=category, description=description)
 
 
 def init_fitness():
@@ -343,14 +356,13 @@ def init_fitness():
     season = get_default_season()
     for data in values:
         description = data.pop('description')
-        fitness = Fitness(**data)
+        fitness, _ = Fitness.objects.get_or_create(**data)
         fitness.default = (data['order'] == 1)
         fitness.save()
         fitness.seasons.add(season)
         for code, description in description.items():
             category = Category.objects.get(seasons=season, code=code)
-            fitness_description = FitnessDescription(fitness=fitness, category=category, description=description)
-            fitness_description.save()
+            fitness_description, _ = FitnessDescription.objects.get_or_create(fitness=fitness, category=category, description=description)
 
 
 def init_equipment():
@@ -441,8 +453,7 @@ def init_equipment():
 
     season = get_default_season()
     for data in values:
-        equipment = Equipment(**data)
-        equipment.save()
+        equipment, _ = Equipment.objects.get_or_create(**data)
         equipment.seasons.add(season)
 
 
@@ -552,8 +563,7 @@ def init_state():
 
     season = get_default_season()
     for data in values:
-        state = State(**data)
-        state.save()
+        state, _ = State.objects.get_or_create(**data)
         state.seasons.add(season)
 
 
@@ -611,19 +621,17 @@ def init_qualification():
 
     for group_order, data in enumerate(values.items(), 1):
         group_name, member = data
-        group = QualificationGroup(order=group_order, name=group_name)
-        group.save()
+        group, _ = QualificationGroup.objects.get_or_create(order=group_order, name=group_name)
         for order, q_data in enumerate(member, 1 + (group_order - 1) * 20):
             code, name = q_data
-            qualification = Qualification(order=order, code=code, name=name, group=group)
-            qualification.save()
+            qualification, _ = Qualification.objects.get_or_create(order=order, code=code, name=name, group=group)
 
 
 class Command(BaseCommand):
     help = 'Init season data'
 
     def handle(self, *args, **options):
-        init_season('2017')
+        init_season('2018')
         init_calendar()
         init_part()
         init_section()
