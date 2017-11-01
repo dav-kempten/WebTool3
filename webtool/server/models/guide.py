@@ -67,7 +67,7 @@ class Guide(SeasonsMixin, TimeMixin, models.Model):
 
     @property
     def name(self):
-        return self.user.get_username()
+        return self.user.get_full_name()
 
     def natural_key(self):
         return self.user.get_username(),

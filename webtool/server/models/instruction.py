@@ -11,8 +11,8 @@ from .time_base import TimeMixin
 
 class TopicManager(models.Manager):
 
-    def get_by_natural_key(self, title, internal):
-        return self.get(title=title, internal=internal)
+    def get_by_natural_key(self, category):
+        return self.get(category_code=category)
 
 
 class Topic(SeasonsMixin, TimeMixin, DescriptionMixin, QualificationMixin, EquipmentMixin, models.Model):
@@ -20,11 +20,11 @@ class Topic(SeasonsMixin, TimeMixin, DescriptionMixin, QualificationMixin, Equip
     objects = TopicManager()
 
     # noinspection PyUnresolvedReferences
-    category = models.ForeignKey(
+    category = models.OneToOneField(
         'Category',
-        db_index=True,
+        primary_key=True,
         verbose_name='Kategorie',
-        related_name='topic_list',
+        related_name='category_topic',
         on_delete=models.PROTECT,
     )
 
@@ -38,12 +38,12 @@ class Topic(SeasonsMixin, TimeMixin, DescriptionMixin, QualificationMixin, Equip
     order = fields.OrderField()
 
     def natural_key(self):
-        return self.title, self.internal
+        return self.category.code,
 
     natural_key.dependencies = ['server.season']
 
     def __str__(self):
-        return "{}{}".format(self.title, " internal" if self.internal else "")
+        return "{} ({}){}".format(self.title, self.category.code, "- internal" if self.internal else "")
 
     class Meta:
         get_latest_by = "updated"

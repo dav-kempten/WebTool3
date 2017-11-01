@@ -50,6 +50,13 @@ class Category(SeasonsMixin, TimeMixin, models.Model):
         help_text = 'Kategorie für die Vorbesprechung'
     )
 
+    meeting = models.BooleanField(
+        'Kurstermin',
+        db_index=True,
+        blank=True, default=False,
+        help_text = 'Kategorie für Kurstreffen Theorie/Praxis'
+    )
+
     talk = models.BooleanField(
         'Vorträge',
         db_index=True,

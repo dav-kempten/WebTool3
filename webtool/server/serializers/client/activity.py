@@ -90,7 +90,7 @@ class ActivitySerializer(ActivityListSerializer):
     ics = serializers.SerializerMethodField()
 
     def get_description(self, obj):
-        return "Das ist ein langer <b>formartierter</b> Text..."
+        return '<br/>\n'.join(obj.tour.description())
 
     def get_cover(self, obj):
         return None

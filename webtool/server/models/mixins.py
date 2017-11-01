@@ -180,7 +180,7 @@ class EquipmentMixin(models.Model):
         db_index=True,
         related_name='%(class)s_list',
         verbose_name='Ausrüstung',
-        blank=True, default=defaults.get_default_equipment_list
+        blank=True
     )
 
     misc_equipment = fields.MiscField(
@@ -191,8 +191,8 @@ class EquipmentMixin(models.Model):
         abstract = True
 
     def equipment_list(self):
-        equipment_list = list(self.equipments.exclude(code='?').values_list('code', flat=True))
-        if self.equipments.filter(code='?').exists() and self.misc_equipment:
+        equipment_list = list(self.equipments.values_list('code', flat=True))
+        if self.misc_equipment:
             equipment_list.append(self.misc_equipment)
         return ', '.join(equipment_list)
 
@@ -214,10 +214,13 @@ class AdmissionMixin(models.Model):
         help_text="Begründung für die Vorrauszahlung",
     )
 
-    extra_charges = models.CharField(
+    extra_charges = fields.AdmissionField(
+        verbose_name='Zusatzkosten',
+        help_text="Betrag in € für weiter Kosten",
+    )
+
+    extra_charges_info = fields.InfoField(
         'Zusatzkosten',
-        blank=True, default='',
-        max_length=75,
         help_text="Welche weiteren Kosten kommen auf die Teilnehmer zu? z.B. Kosten für Seilbahn",
     )
 
@@ -292,5 +295,5 @@ class QualificationMixin(models.Model):
         abstract = True
 
     def qualification_list(self):
-        qualifications = list(self.qualifications.all().values_list('title', flat=True))
+        qualifications = list(self.qualifications.all().values_list('category__code', flat=True))
         return ", ".join(qualifications)

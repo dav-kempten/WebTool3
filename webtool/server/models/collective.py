@@ -12,22 +12,20 @@ from . import fields
 
 class CollectiveManager(models.Manager):
 
-    def get_by_natural_key(self, title, internal):
-        return self.get(title=title, internal=internal)
+    def get_by_natural_key(self, category):
+        return self.get(category_code=category)
 
 
 class Collective(SeasonsMixin, SectionMixin, TimeMixin, DescriptionMixin, models.Model):
 
-    # SeasonMixin is needed only for namespace checking. See unique_together
-
     objects = CollectiveManager()
 
     # noinspection PyUnresolvedReferences
-    categories = models.ManyToManyField(
+    category = models.OneToOneField(
         'Category',
-        db_index=True,
+        primary_key=True,
         verbose_name='Kategorie',
-        related_name='collective_list',
+        related_name='category_collective',
     )
 
     managers = models.ManyToManyField(
@@ -42,12 +40,12 @@ class Collective(SeasonsMixin, SectionMixin, TimeMixin, DescriptionMixin, models
     order = fields.OrderField()
 
     def natural_key(self):
-        return self.title, self.internal
+        return self.category.code,
 
     natural_key.dependencies = ['server.season']
 
     def __str__(self):
-        return "{}{}".format(self.title, " internal" if self.internal else "")
+        return "{} ({}){}".format(self.title, self.category.code, "- internal" if self.internal else "")
 
     class Meta:
         get_latest_by = "updated"
@@ -65,8 +63,6 @@ class SessionManager(models.Manager):
 
 
 class Session(TimeMixin, GuidedEventMixin, RequirementMixin, EquipmentMixin, StateMixin, ChapterMixin, models.Model):
-
-    # check: category.season and self.season belongs to the same season!
 
     objects = SessionManager()
 

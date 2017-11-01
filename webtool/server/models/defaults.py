@@ -43,9 +43,9 @@ def get_default_approximate():
     return season.approximate_list.get(default=True) if season else None
 
 
-def get_default_equipment_list():
+def get_default_equipments():
     season = get_default_season()
-    return [season.equipment_list.get(default=True)] if season else None
+    return season.equipment_list.filter(default=True) if season else None
 
 
 def get_default_fitness():

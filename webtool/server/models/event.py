@@ -246,7 +246,7 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
         else:
             end_time = ''
 
-        departure = "{}, {}r".format(start_date, start_time)
+        departure = "{}, {}".format(start_date, start_time)
         if self.rendezvous:
             departure = "{}, {}".format(departure, self.rendezvous)
         if end_time:
