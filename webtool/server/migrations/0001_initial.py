@@ -407,7 +407,7 @@ class Migration(migrations.Migration):
                 ('preconditions', models.TextField(blank=True, default='', help_text='Sonstige, spezielle Vorraussetzungen für eine Teilnahme an diesem Kurs', verbose_name='Voraussetzung')),
                 ('order', server.models.fields.OrderField(blank=True, db_index=True, default=0, help_text='Reihenfolge in der Druckausgabe', verbose_name='Reihenfolge')),
                 ('category', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='topic_list', to='server.Category', verbose_name='Kategorie')),
-                ('equipments', models.ManyToManyField(blank=True, db_index=True, default=server.models.defaults.get_default_equipment_list, related_name='topic_list', to='server.Equipment', verbose_name='Ausrüstung')),
+                ('equipments', models.ManyToManyField(blank=True, db_index=True, default=server.models.defaults.get_default_equipments, related_name='topic_list', to='server.Equipment', verbose_name='Ausrüstung')),
                 ('qualifications', models.ManyToManyField(blank=True, db_index=True, help_text='Welche Kurseinhalte müssen von den Teilnahmern für den Kurs beherrscht werden', related_name='topic_list', to='server.Topic', verbose_name='Voraussetzungen (Kurse)')),
             ],
             options={
@@ -774,7 +774,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='tour',
             name='equipments',
-            field=models.ManyToManyField(blank=True, db_index=True, default=server.models.defaults.get_default_equipment_list, related_name='tour_list', to='server.Equipment', verbose_name='Ausrüstung'),
+            field=models.ManyToManyField(blank=True, db_index=True, default=server.models.defaults.get_default_equipments, related_name='tour_list', to='server.Equipment', verbose_name='Ausrüstung'),
         ),
         migrations.AddField(
             model_name='tour',
@@ -849,7 +849,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='session',
             name='equipments',
-            field=models.ManyToManyField(blank=True, db_index=True, default=server.models.defaults.get_default_equipment_list, related_name='session_list', to='server.Equipment', verbose_name='Ausrüstung'),
+            field=models.ManyToManyField(blank=True, db_index=True, default=server.models.defaults.get_default_equipments, related_name='session_list', to='server.Equipment', verbose_name='Ausrüstung'),
         ),
         migrations.AddField(
             model_name='session',
