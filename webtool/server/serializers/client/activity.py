@@ -10,6 +10,7 @@ class ActivityListSerializer(serializers.ModelSerializer):
 
     id = serializers.StringRelatedField(source='reference')
     category = serializers.CharField(source='reference.category.name')
+    categories = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
     title = serializers.SerializerMethodField()
     startDate = serializers.DateField(source='start_date')
@@ -20,6 +21,12 @@ class ActivityListSerializer(serializers.ModelSerializer):
     publicTransport = serializers.BooleanField(source='public_transport')
     lowEmissionAdventure = serializers.BooleanField(source='lea')
     detail = serializers.SerializerMethodField()
+
+    def get_categories(self, obj):
+        categories = [obj.reference.category.name]
+        if hasattr(obj, 'tour') and obj.tour:
+            categories.extend(obj.tour.categories.values_list('name', flat=True))
+        return categories
 
     def get_description(self, obj):
         category = obj.reference.category
@@ -63,7 +70,7 @@ class ActivityListSerializer(serializers.ModelSerializer):
         model = Event
         fields = (
             'id',
-            'activity', 'category',
+            'activity', 'category', 'categories',
             'description',
             'title',
             'startDate', 'startTime',
@@ -107,7 +114,7 @@ class ActivitySerializer(ActivityListSerializer):
     class Meta(ActivityListSerializer.Meta):
         fields = (
             'id',
-            'activity', 'category',
+            'activity', 'category', 'categories',
             'description',
             'title',
             'startDate', 'startTime',
