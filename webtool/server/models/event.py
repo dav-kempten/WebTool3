@@ -274,9 +274,9 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
         if hasattr(self, 'talk') and self.talk:
             return "talk"
         if hasattr(self, 'instruction') and self.instruction:
-            return "instruction"
+            return "topic"
         if hasattr(self, 'session') and self.session:
-            return "session"
+            return "collective"
 
     @property
     def division(self):
@@ -374,7 +374,9 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
         if hasattr(self, 'tour') and self.tour:
             return self.tour.skill
         if hasattr(self, 'session') and self.session:
-            return self.session.skill
+            skill = self.session.skill
+            if skill.code != "x":
+                return skill
         return None
 
     @property
@@ -382,7 +384,9 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
         if hasattr(self, 'tour') and self.tour:
             return self.tour.fitness
         if hasattr(self, 'session') and self.session:
-            return self.session.fitness
+            fitness = self.session.fitness
+            if fitness.code != "x":
+                return fitness
         return None
 
     @property
@@ -391,7 +395,7 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
             return self.tour.ladies_only
         if hasattr(self, 'instruction') and self.instruction:
             return self.instruction.ladies_only
-        return None
+        return False
 
     class Meta:
         get_latest_by = "updated"

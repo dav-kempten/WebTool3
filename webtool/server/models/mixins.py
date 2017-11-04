@@ -255,7 +255,6 @@ class RequirementMixin(models.Model):
         related_name='%(class)s_list',
         help_text="Technische Anforderungen",
         on_delete=models.PROTECT,
-        blank=True, default=defaults.get_default_skill
     )
 
     # noinspection PyUnresolvedReferences
@@ -266,7 +265,6 @@ class RequirementMixin(models.Model):
         related_name='%(class)s_list',
         help_text="Konditionelle Anforderungen",
         on_delete=models.PROTECT,
-        blank=True, default=defaults.get_default_fitness
     )
 
     class Meta:

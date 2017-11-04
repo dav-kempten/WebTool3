@@ -18,6 +18,7 @@ class ActivityFilter(filters.FilterSet):
         ('winter', 'winter'),
         ('summer', 'summer'),
         ('indoor', 'indoor'),
+        ('misc', 'misc'),
     )
 
     STATE_CHOICES = (
@@ -53,8 +54,16 @@ class ActivityFilter(filters.FilterSet):
             return queryset.filter(**{"reference__category__{}".format(value): True})
 
     def division_filter(self, queryset, name, value):
-        if value in ("winter", "summer", "indoor"):
+        if value in ("winter", "summer"):
             return queryset.filter(**{"reference__category__{}".format(value): True})
+        elif value == "indoor":
+            return queryset.filter(reference__category__climbing=False)
+        else:
+            return queryset.filter(
+                reference__category__winter=False,
+                reference__category__summer=False,
+                reference__category__climbing=False,
+            )
 
     def category_filter(self, queryset, name, value):
         return queryset.filter(Q(reference__category__code__iexact=value) | Q(tour__categories__code__iexact=value))

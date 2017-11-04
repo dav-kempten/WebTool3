@@ -53,9 +53,19 @@ def get_default_fitness():
     return season.fitness_list.get(default=True) if season else None
 
 
+def get_no_fitness():
+    season = get_default_season()
+    return season.fitness_list.get(code="x") if season else None
+
+
 def get_default_skill():
     season = get_default_season()
     return season.skill_list.get(default=True) if season else None
+
+
+def get_no_skill():
+    season = get_default_season()
+    return season.skill_list.get(code="x") if season else None
 
 
 def get_default_state():

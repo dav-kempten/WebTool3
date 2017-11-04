@@ -89,15 +89,28 @@ class ActivityListSerializer(serializers.ModelSerializer):
 class ActivitySerializer(ActivityListSerializer):
 
     description = serializers.SerializerMethodField()
-    skill = serializers.IntegerField(source='skill.order')
-    fitness = serializers.IntegerField(source='fitness.order')
+    skill = serializers.SerializerMethodField()
+    fitness = serializers.SerializerMethodField()
     cover = serializers.SerializerMethodField()
     portal = serializers.SerializerMethodField()
     map = serializers.SerializerMethodField()
     ics = serializers.SerializerMethodField()
 
     def get_description(self, obj):
-        return '<br/>\n'.join(obj.tour.description())
+        if hasattr(obj, 'tour') and obj.tour:
+            return '<br/>\n'.join(obj.tour.description())
+        if hasattr(obj, 'session') and obj.session:
+            return obj.name
+
+    def get_skill(self, obj):
+        skill = obj.skill
+        if skill:
+            return skill.order
+
+    def get_fitness(self, obj):
+        fitness = obj.fitness
+        if fitness:
+            return fitness.order
 
     def get_cover(self, obj):
         return None
