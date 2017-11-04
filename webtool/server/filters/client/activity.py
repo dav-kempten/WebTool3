@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.db.models import F
+from django.db.models import F, Q
 from django_filters import rest_framework as filters, STRICTNESS
 
 from server.models import Event, Category, Reference, Tour, State
@@ -56,7 +56,7 @@ class ActivityFilter(filters.FilterSet):
             return queryset.filter(**{"reference__category__{}".format(value): True})
 
     def category_filter(self, queryset, name, value):
-        return queryset.filter(reference__category__code__iexact=value)
+        return queryset.filter(Q(reference__category__code__iexact=value) | Q(tour__categories__code__iexact=value))
 
     def guide_filter(self, queryset, name, value):
         return queryset.filter(tour__guide__user__username__iexact=value)
