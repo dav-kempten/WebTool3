@@ -40,6 +40,7 @@ class ActivityFilter(filters.FilterSet):
     division = filters.ChoiceFilter(label='division', method='division_filter', choices=DIVISION_CHOICES)
     category = filters.CharFilter(label='category', method='category_filter')  # , choices=CATEGORY_CHOICES)
     guide = filters.CharFilter(label='guide', method='guide_filter')
+    team = filters.CharFilter(label='team', method='team_filter')
     month = filters.NumberFilter(label='month', method='month_filter', min_value=1, max_value=12)
     ladiesOnly = filters.BooleanFilter(label='ladiesOnly', method='ladies_only_filter')
     publicTransport = filters.BooleanFilter(label='publicTransport', method='public_transport_filter')
@@ -59,7 +60,18 @@ class ActivityFilter(filters.FilterSet):
         return queryset.filter(Q(reference__category__code__iexact=value) | Q(tour__categories__code__iexact=value))
 
     def guide_filter(self, queryset, name, value):
-        return queryset.filter(tour__guide__user__username__iexact=value)
+        return queryset.filter(
+            Q(tour__guide__user__username__iexact=value) |
+            Q(instruction__guide__user__username__iexact=value) |
+            Q(session__guide__user__username__iexact=value)
+        )
+
+    def team_filter(self, queryset, name, value):
+        return queryset.filter(
+            Q(tour__team__user__username__iexact=value) |
+            Q(instruction__team__user__username__iexact=value) |
+            Q(session__team__user__username__iexact=value)
+        )
 
     def month_filter(self, queryset, name, value):
         return queryset.filter(start_date__month=value)
@@ -89,6 +101,7 @@ class ActivityFilter(filters.FilterSet):
             'division',
             'category',
             'guide',
+            'team',
             'month',
             'ladiesOnly',
             'publicTransport',

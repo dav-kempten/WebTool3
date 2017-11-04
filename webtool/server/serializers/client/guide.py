@@ -68,6 +68,10 @@ class GuideSerializer(GuideListSerializer):
 
         if obj.tour_guides.exists():
             username = obj.user.get_username()
-            result["guidedTours"] = "{}?guide={}".format(reverse('event-list', request=request), username)
+            result["guidedTours"] = "{}?activity=tour&guide={}".format(reverse('event-list', request=request), username)
+
+        if obj.tour_teamers.exists():
+            username = obj.user.get_username()
+            result["supportedTours"] = "{}?activity=tour&team={}".format(reverse('event-list', request=request), username)
 
         return result
