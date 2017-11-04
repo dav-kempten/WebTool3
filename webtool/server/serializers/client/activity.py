@@ -40,6 +40,9 @@ class ActivityListSerializer(serializers.ModelSerializer):
                     cn=category.name, cc=category.code, n=obj.name, ref=obj.reference
                 )
             )
+        if hasattr(obj, 'session') and obj.session and obj.session.speaker:
+            session = obj.session
+            return "{}, Referent: {}".format(session.session.name, session.speaker)
         else:
             return "{}".format(obj.name)
 
@@ -54,16 +57,21 @@ class ActivityListSerializer(serializers.ModelSerializer):
 
     def get_guide(self, obj):
         request = self.context['request']
-        guide = obj.guide
-        return {
-            'id': guide.user.get_username(),
-            'detail': reverse('guide-detail', kwargs={'username': guide.user.username}, request=request),
-            'firstName': guide.user.first_name,
-            'lastName': guide.user.last_name
-        } if guide else None
+        if hasattr(obj, 'session') and obj.session:
+            return None
+        else:
+            guide = obj.guide
+            return {
+                'id': guide.user.get_username(),
+                'detail': reverse('guide-detail', kwargs={'username': guide.user.username}, request=request),
+                'firstName': guide.user.first_name,
+                'lastName': guide.user.last_name
+            } if guide else None
 
     def get_detail(self, obj):
         request = self.context['request']
+        if obj.reference.category.code == "SKA":
+            return None
         return reverse('event-detail', kwargs={'reference': str(obj.reference)}, request=request)
 
     class Meta:
