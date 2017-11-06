@@ -71,14 +71,14 @@ class ActivityFilter(filters.FilterSet):
     def guide_filter(self, queryset, name, value):
         return queryset.filter(
             Q(tour__guide__user__username__iexact=value) |
-            Q(instruction__guide__user__username__iexact=value) |
+            Q(meeting__guide__user__username__iexact=value) |
             Q(session__guide__user__username__iexact=value)
         )
 
     def team_filter(self, queryset, name, value):
         return queryset.filter(
             Q(tour__team__user__username__iexact=value) |
-            Q(instruction__team__user__username__iexact=value) |
+            Q(meeting__team__user__username__iexact=value) |
             Q(session__team__user__username__iexact=value)
         )
 

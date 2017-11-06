@@ -40,6 +40,17 @@ class ActivityListSerializer(serializers.ModelSerializer):
                     cn=category.name, cc=category.code, n=obj.name, ref=obj.reference
                 )
             )
+        if hasattr(obj, 'meeting') and obj.meeting:
+            instruction = obj.meeting
+            return (
+                '<a href="/aktivitaeten/touren/details/{ref}/">'
+                '<span class="category" title="{cn}">{cc}</span>'
+                '<strong class="title">{n}</strong>'
+                '<span class="reference">({ref})</span>'
+                '</a>'.format(
+                    cn=category.name, cc=category.code, n=instruction.topic.name, ref=obj.reference
+                )
+            )
         if hasattr(obj, 'session') and obj.session and obj.session.speaker:
             session = obj.session
             return "{}, Referent: {}".format(session.session.name, session.speaker)
@@ -47,7 +58,10 @@ class ActivityListSerializer(serializers.ModelSerializer):
             return "{}".format(obj.name)
 
     def get_title(self, obj):
-        return obj.title
+        if hasattr(obj, 'meeting') and obj.meeting:
+            return obj.meeting.topic.title
+        else:
+            return obj.title
 
     def get_startTime(self, obj):
         if obj.start_time is None:
@@ -109,6 +123,8 @@ class ActivitySerializer(ActivityListSerializer):
             return '<br/>\n'.join(obj.tour.description())
         if hasattr(obj, 'session') and obj.session:
             return obj.name
+        if hasattr(obj, 'meeting') and obj.meeting:
+            return obj.meeting.topic.name
 
     def get_skill(self, obj):
         skill = obj.skill

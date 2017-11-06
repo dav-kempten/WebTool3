@@ -273,7 +273,7 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
             return "tour"
         if hasattr(self, 'talk') and self.talk:
             return "talk"
-        if hasattr(self, 'instruction') and self.instruction:
+        if hasattr(self, 'meeting') and self.meeting:
             return "topic"
         if hasattr(self, 'session') and self.session:
             return "collective"
@@ -299,8 +299,8 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
             state = self.tour.state
         elif hasattr(self, 'talk') and self.talk:
             state = self.talk.state
-        elif hasattr(self, 'instruction') and self.instruction:
-            state = self.instruction.state
+        elif hasattr(self, 'meeting') and self.meeting:
+            state = self.meeting.state
         elif hasattr(self, 'session') and self.session:
             state = self.session.state
         else:
@@ -330,10 +330,10 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
             min_quantity = self.talk.min_quantity
             max_quantity = self.talk.max_quantity
             cur_quantity = self.talk.cur_quantity
-        elif hasattr(self, 'instruction') and self.instruction:
-            min_quantity = self.instruction.min_quantity
-            max_quantity = self.instruction.max_quantity
-            cur_quantity = self.instruction.cur_quantity
+        elif hasattr(self, 'meeting') and self.meeting:
+            min_quantity = self.meeting.min_quantity
+            max_quantity = self.meeting.max_quantity
+            cur_quantity = self.meeting.cur_quantity
         else:
             return None
 
@@ -347,8 +347,8 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
     def admission(self):
         if hasattr(self, 'tour') and self.tour:
             return self.tour.admission
-        if hasattr(self, 'instruction') and self.instruction:
-            return self.instruction.admission
+        if hasattr(self, 'meeting') and self.meeting:
+            return self.meeting.admission
         if hasattr(self, 'talk') and self.talk:
             return self.talk.admission
 
@@ -364,8 +364,8 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
     def guide(self):
         if hasattr(self, 'tour') and self.tour:
             return self.tour.guide
-        if hasattr(self, 'instruction') and self.instruction:
-            return self.instruction.guide
+        if hasattr(self, 'meeting') and self.meeting:
+            return self.meeting.guide
         if hasattr(self, 'session') and self.session:
             return self.session.guide
 
@@ -393,8 +393,8 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
     def ladies_only(self):
         if hasattr(self, 'tour') and self.tour:
             return self.tour.ladies_only
-        if hasattr(self, 'instruction') and self.instruction:
-            return self.instruction.ladies_only
+        if hasattr(self, 'meeting') and self.meeting:
+            return self.meeting.ladies_only
         return False
 
     class Meta:

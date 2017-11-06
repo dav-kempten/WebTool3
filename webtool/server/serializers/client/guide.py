@@ -82,4 +82,12 @@ class GuideSerializer(GuideListSerializer):
             username = obj.user.get_username()
             result["supportedSessions"] = "{}?activity=collective&team={}".format(reverse('event-list', request=request), username)
 
+        if obj.instruction_guides.exists():
+            username = obj.user.get_username()
+            result["guidedInstructions"] = "{}?activity=topic&guide={}".format(reverse('event-list', request=request), username)
+
+        if obj.instruction_teamers.exists():
+            username = obj.user.get_username()
+            result["supportedInstructions"] = "{}?activity=topic&team={}".format(reverse('event-list', request=request), username)
+
         return result
