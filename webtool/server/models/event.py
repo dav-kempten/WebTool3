@@ -2,6 +2,7 @@
 from django.db import models
 from django.template.defaultfilters import date, time
 
+from .equipment import Equipment
 from .approximate import Approximate
 from .mixins import SeasonMixin, DescriptionMixin
 from .time_base import TimeMixin
@@ -371,23 +372,21 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
 
     @property
     def skill(self):
+        skill = None
         if hasattr(self, 'tour') and self.tour:
-            return self.tour.skill
+            skill = self.tour.skill
         if hasattr(self, 'session') and self.session:
-            skill = self.session.skill
-            if skill.code != "x":
-                return skill
-        return None
+            skill = self.session.skill if skill.code != "x" else None
+        return skill.order if skill else None
 
     @property
     def fitness(self):
+        fitness = None
         if hasattr(self, 'tour') and self.tour:
-            return self.tour.fitness
+            fitness = self.tour.fitness
         if hasattr(self, 'session') and self.session:
-            fitness = self.session.fitness
-            if fitness.code != "x":
-                return fitness
-        return None
+            fitness = self.session.fitness if self.fitness.code != "x" else None
+        return fitness.order if fitness else None
 
     @property
     def ladies_only(self):
@@ -396,6 +395,37 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
         if hasattr(self, 'meeting') and self.meeting:
             return self.meeting.ladies_only
         return False
+
+    @property
+    def preconditions(self):
+        if hasattr(self, 'tour') and self.tour:
+            return self.tour.preconditions
+        if hasattr(self, 'meeting') and self.meeting:
+            return self.meeting.topic.preconditions
+        return None
+
+    @property
+    def equipments(self):
+        equipments = Equipment.objects.none()
+        misc = ''
+        if hasattr(self, 'tour') and self.tour:
+            equipments = self.tour.equipments
+            misc = self.tour.misc_equipment
+        if hasattr(self, 'meeting') and self.meeting:
+            equipments = self.meeting.topic.equipments
+            misc = self.meeting.topic.misc_equipment
+        if hasattr(self, 'session') and self.session:
+            equipments = self.session.equipments
+            misc = self.session.misc_equipment
+        equipment_list = []
+        for equipment in equipments.all():
+            equipment_list.append(dict(code=equipment.code, name=equipment.name))
+        equipments = {}
+        if equipment_list:
+            equipments.update(dict(list=equipment_list))
+        if misc:
+            equipments.update(dict(misc=misc))
+        return equipments if equipments else None
 
     class Meta:
         get_latest_by = "updated"

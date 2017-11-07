@@ -111,8 +111,6 @@ class ActivityListSerializer(serializers.ModelSerializer):
 class ActivitySerializer(ActivityListSerializer):
 
     description = serializers.SerializerMethodField()
-    skill = serializers.SerializerMethodField()
-    fitness = serializers.SerializerMethodField()
     cover = serializers.SerializerMethodField()
     portal = serializers.SerializerMethodField()
     map = serializers.SerializerMethodField()
@@ -125,16 +123,6 @@ class ActivitySerializer(ActivityListSerializer):
             return obj.name
         if hasattr(obj, 'meeting') and obj.meeting:
             return obj.meeting.topic.name
-
-    def get_skill(self, obj):
-        skill = obj.skill
-        if skill:
-            return skill.order
-
-    def get_fitness(self, obj):
-        fitness = obj.fitness
-        if fitness:
-            return fitness.order
 
     def get_cover(self, obj):
         return None
@@ -163,6 +151,8 @@ class ActivitySerializer(ActivityListSerializer):
             'division',
             'skill',
             'fitness',
+            'preconditions',
+            'equipments',
             'ladiesOnly', 'publicTransport', 'lowEmissionAdventure',
             'state',
             'cover', 'portal', 'map', 'ics'
