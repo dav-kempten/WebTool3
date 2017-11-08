@@ -96,7 +96,7 @@ class ActivityFilter(filters.FilterSet):
 
     def state_filter(self, queryset, name, value):
         if value == "public":
-            return queryset.filter(tour__state=5)
+            return queryset.filter(tour__state_id=5)
         else:
             return queryset.filter(**{"tour__state__{}".format(value): True})
 
