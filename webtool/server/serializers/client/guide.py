@@ -12,6 +12,7 @@ class GuideListSerializer(serializers.ModelSerializer):
     id = serializers.CharField(source='user.username')
     firstName = serializers.CharField(source='user.first_name')
     lastName = serializers.CharField(source='user.last_name')
+    qualification = serializers.SerializerMethodField()
     portrait = serializers.SerializerMethodField()
     detail = serializers.SerializerMethodField()
 
@@ -20,10 +21,25 @@ class GuideListSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'firstName', 'lastName',
+            'qualification',
             'portrait',
             'detail'
         )
         extra_kwargs = {'id': {'lookup_field': 'username'}}
+
+    def get_qualification(self, obj):
+        qualification_list = (
+            obj.user.qualification_list.exclude(
+                qualification__name__in=["Anwärter", "Kletterassistent (Kempten)"]
+            ).values_list('qualification__name',flat=True)
+        )
+        qualification =  ', '.join(qualification_list)
+        return (
+            qualification.replace('Fachübungsleiter', 'FÜL')
+                .replace('Zusatzqualifikation', 'ZQ')
+                .replace('Trainer ', 'T')
+                .replace('JDAV-', '')
+        ) if qualification else None
 
     def get_detail(self, obj):
         request = self.context['request']
