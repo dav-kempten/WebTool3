@@ -66,7 +66,7 @@ class ActivityFilter(filters.FilterSet):
             )
 
     def category_filter(self, queryset, name, value):
-        return queryset.filter(Q(reference__category__code__iexact=value) | Q(tour__categories__code__iexact=value))
+        return queryset.filter(Q(reference__category__code__iexact=value) | Q(tour__categories__code__iexact=value)).distinct()
 
     def guide_filter(self, queryset, name, value):
         return queryset.filter(
