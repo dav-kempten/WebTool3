@@ -66,7 +66,12 @@ class ActivityFilter(filters.FilterSet):
             )
 
     def category_filter(self, queryset, name, value):
-        return queryset.filter(Q(reference__category__code__iexact=value) | Q(tour__categories__code__iexact=value)).distinct()
+        return queryset.filter(
+            Q(reference__category__code__iexact=value) |
+            Q(tour__categories__code__iexact=value) |
+            Q(meeting__topic__category__code__iexact=value) |
+            Q(session__collective__category__code__iexact=value)
+        ).distinct()
 
     def guide_filter(self, queryset, name, value):
         return queryset.filter(
@@ -86,7 +91,10 @@ class ActivityFilter(filters.FilterSet):
         return queryset.filter(start_date__month=value)
 
     def ladies_only_filter(self, queryset, name, value):
-        return queryset.filter(tour__ladies_only=value)
+        return queryset.filter(
+            Q(tour__ladies_only=value) |
+            Q(meeting__ladies_only=value)
+        ).distinct()
 
     def public_transport_filter(self, queryset, name, value):
         return queryset.filter(public_transport=value)
