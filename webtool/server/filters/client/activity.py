@@ -146,11 +146,12 @@ class ActivityFilter(filters.FilterSet):
 
     def open_filter(self, queryset, name, value):
         if value:
-            return queryset.filter(
-                Q(tour__cur_quantity__lt=F('tour__max_quantity')) |
-                Q(meeting__cur_quantity__lt=F('meeting__max_quantity')) |
-                Q(talk__cur_quantity__lt=F('talk__max_quantity'))
-            ).distinct()
+            return (
+                queryset
+                    .exclude(tour__cur_quantity__gte=F('tour__max_quantity'))
+                    .exclude(meeting__cur_quantity__gte=F('meeting__max_quantity'))
+                    .exclude(talk__cur_quantity__gte=F('talk__max_quantity'))
+            )
         else:
             return queryset.filter(
                 Q(tour__cur_quantity__gte=F('tour__max_quantity')) |
