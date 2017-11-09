@@ -50,7 +50,10 @@ class Reference(SeasonMixin, TimeMixin, models.Model):
     def get_reference(value, season=None):
         try:
             code, reference = value.split('-')
-            category = Category.objects.get(code=code)
+            try:
+                category = Category.objects.get(code=code)
+            except Category.DoesNotExist:
+                raise Reference.DoesNotExist("Reference matching query does not exist.")
             if season is None:
                 season = str(defaults.get_default_year())[:3] + reference[0]
         except ValueError:

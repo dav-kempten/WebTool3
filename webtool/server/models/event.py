@@ -123,6 +123,12 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
         blank=True, default=False
     )
 
+    new = models.BooleanField(
+        'Markierung für Neue Veranstaltungen',
+        db_index=True,
+        blank=True, default=False
+    )
+
     # check event.season == instruction.topic.season
 
     # noinspection PyUnresolvedReferences
@@ -426,6 +432,17 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
         if misc:
             equipments.update(dict(misc=misc))
         return equipments if equipments else None
+
+    @property
+    def team(self):
+        team = None
+        if hasattr(self, 'tour') and self.tour:
+            team = self.tour.team
+        if hasattr(self, 'meeting') and self.meeting:
+            team = self.meeting.team
+        if hasattr(self, 'session') and self.session:
+            team = self.session.team
+        return ', '.join(team.values_list('user__username', flat=True)) if team else None
 
     class Meta:
         get_latest_by = "updated"

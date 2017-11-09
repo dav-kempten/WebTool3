@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import date
 from rest_framework import viewsets
@@ -15,13 +16,13 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
     lookup_url_kwarg = "reference"
     queryset = Event.objects.filter(
         season__current=True, deprecated=False, internal=False,
-        deadline__isnull=True, preliminary__isnull=True,
+        deadline__isnull=True, preliminary__isnull=True, instruction__isnull=True
     ).exclude(
         tour__isnull=False, tour__state__public=False
     ).exclude(
         talk__isnull=False, talk__state__public=False
     ).exclude(
-        instruction__isnull=False, talk__state__public=False
+        meeting__isnull=False, talk__state__public=False
     ).exclude(
         session__isnull=False, session__state__public=False
     )
@@ -66,8 +67,11 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
             (self.__class__.__name__, lookup_url_kwarg)
         )
 
-        reference = Reference.get_reference(self.kwargs[self.lookup_url_kwarg])
-        obj = get_object_or_404(queryset, reference=reference)
+        try:
+            reference = Reference.get_reference(self.kwargs[self.lookup_url_kwarg])
+            obj = get_object_or_404(queryset, reference=reference)
+        except Reference.DoesNotExist:
+            raise Http404('No %s matches the given query.' % 'Reference')
 
         # May raise a permission denied
         self.check_object_permissions(self.request, obj)
