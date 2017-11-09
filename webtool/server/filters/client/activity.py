@@ -2,7 +2,7 @@
 from django.db.models import F, Q
 from django_filters import rest_framework as filters, STRICTNESS
 
-from server.models import Event, Category, Reference, Tour, State
+from server.models import Event, Category, Reference, Tour, State, Guide
 
 
 class ActivityFilter(filters.FilterSet):
@@ -27,6 +27,7 @@ class ActivityFilter(filters.FilterSet):
         ('canceled', 'canceled'),
         ('unfeasible', 'unfeasible'),
         ('public', 'public'),
+        ('published', 'published'),
     )
 
     # CATEGORY_CHOICES = [
@@ -39,7 +40,7 @@ class ActivityFilter(filters.FilterSet):
 
     activity = filters.ChoiceFilter(label='activity', method='activity_filter', choices=ACTIVITY_CHOICES)
     division = filters.ChoiceFilter(label='division', method='division_filter', choices=DIVISION_CHOICES)
-    category = filters.CharFilter(label='category', method='category_filter')  # , choices=CATEGORY_CHOICES)
+    category = filters.CharFilter(label='category', method='category_filter', max_length=3, min_length=3)  # , choices=CATEGORY_CHOICES)
     guide = filters.CharFilter(label='guide', method='guide_filter')
     team = filters.CharFilter(label='team', method='team_filter')
     month = filters.NumberFilter(label='month', method='month_filter', min_value=1, max_value=12)
@@ -52,40 +53,50 @@ class ActivityFilter(filters.FilterSet):
     def activity_filter(self, queryset, name, value):
         if value in ("tour", "topic", "collective", "talk"):
             return queryset.filter(**{"reference__category__{}".format(value): True})
+        else:
+            Event.objects.none()
 
     def division_filter(self, queryset, name, value):
         if value in ("winter", "summer"):
             return queryset.filter(**{"reference__category__{}".format(value): True})
         elif value == "indoor":
-            return queryset.filter(reference__category__climbing=False)
-        else:
+            return queryset.filter(reference__category__climbing=True)
+        elif value == "misc":
             return queryset.filter(
                 reference__category__winter=False,
                 reference__category__summer=False,
                 reference__category__climbing=False,
             )
+        else:
+            Event.objects.none()
 
     def category_filter(self, queryset, name, value):
         return queryset.filter(
             Q(reference__category__code__iexact=value) |
-            Q(tour__categories__code__iexact=value) |
-            Q(meeting__topic__category__code__iexact=value) |
-            Q(session__collective__category__code__iexact=value)
+            Q(tour__categories__code__iexact=value)
         ).distinct()
 
     def guide_filter(self, queryset, name, value):
+        try:
+            guide = Guide.objects.get(user__username__iexact=value)
+        except Guide.DoesNotExist:
+            return Event.objects.none()
         return queryset.filter(
-            Q(tour__guide__user__username__iexact=value) |
-            Q(meeting__guide__user__username__iexact=value) |
-            Q(session__guide__user__username__iexact=value)
-        )
+            Q(tour__guide=guide) |
+            Q(meeting__guide=guide) |
+            Q(session__guide=guide)
+        ).distinct()
 
     def team_filter(self, queryset, name, value):
+        try:
+            guide = Guide.objects.get(user__username__iexact=value)
+        except Guide.DoesNotExist:
+            return Event.objects.none()
         return queryset.filter(
-            Q(tour__team__user__username__iexact=value) |
-            Q(meeting__team__user__username__iexact=value) |
-            Q(session__team__user__username__iexact=value)
-        )
+            Q(tour__team=guide) |
+            Q(meeting__team=guide) |
+            Q(session__team=guide)
+        ).distinct()
 
     def month_filter(self, queryset, name, value):
         return queryset.filter(start_date__month=value)
@@ -103,16 +114,37 @@ class ActivityFilter(filters.FilterSet):
         return queryset.filter(lea=value)
 
     def state_filter(self, queryset, name, value):
-        if value == "public":
-            return queryset.filter(tour__state_id=5)
+        if value == "published":
+            published = State.objects.get(done=False, moved=False, canceled=False, unfeasible=False, public=True)
+            return queryset.filter(
+                Q(tour__state=published) |
+                Q(meeting__state=published) |
+                Q(session__state=published) |
+                Q(talk__state=published)
+            ).distinct()
+        elif value in ("done", "moved", "canceled", "unfeasible", "public"):
+            return queryset.filter(
+                Q(**{"tour__state__{}".format(value): True}) |
+                Q(**{"meeting__state__{}".format(value): True}) |
+                Q(**{"session__state__{}".format(value): True}) |
+                Q(**{"talk__state__{}".format(value): True})
+            ).distinct()
         else:
-            return queryset.filter(**{"tour__state__{}".format(value): True})
+            Event.objects.none()
 
     def open_filter(self, queryset, name, value):
         if value:
-            return queryset.filter(tour__cur_quantity__lt=F('tour__max_quantity'))
+            return queryset.filter(
+                Q(tour__cur_quantity__lt=F('tour__max_quantity')) |
+                Q(meeting__cur_quantity__lt=F('meeting__max_quantity')) |
+                Q(talk__cur_quantity__lt=F('talk__max_quantity'))
+            ).distinct()
         else:
-            return queryset.filter(tour__cur_quantity__gte=F('tour__max_quantity'))
+            return queryset.filter(
+                Q(tour__cur_quantity__gte=F('tour__max_quantity')) |
+                Q(meeting__cur_quantity__gte=F('meeting__max_quantity')) |
+                Q(talk__cur_quantity__gte=F('talk__max_quantity'))
+            ).distinct()
 
     class Meta:
         model = Event
