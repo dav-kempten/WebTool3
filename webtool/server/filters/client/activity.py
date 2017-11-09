@@ -27,7 +27,6 @@ class ActivityFilter(filters.FilterSet):
         ('canceled', 'canceled'),
         ('unfeasible', 'unfeasible'),
         ('public', 'public'),
-        ('published', 'published'),
     )
 
     # CATEGORY_CHOICES = [
@@ -71,9 +70,13 @@ class ActivityFilter(filters.FilterSet):
             Event.objects.none()
 
     def category_filter(self, queryset, name, value):
+        try:
+            category = Category.objects.get(code__iexact=value)
+        except Category.DoesNotExist:
+            return Event.objects.none()
         return queryset.filter(
-            Q(reference__category__code__iexact=value) |
-            Q(tour__categories__code__iexact=value)
+            Q(reference__category=category) |
+            Q(tour__categories=category)
         ).distinct()
 
     def guide_filter(self, queryset, name, value):
@@ -99,13 +102,19 @@ class ActivityFilter(filters.FilterSet):
         ).distinct()
 
     def month_filter(self, queryset, name, value):
-        return queryset.filter(start_date__month=value)
+        if value >= 1 or value <= 12:
+            return queryset.filter(start_date__month=value)
+        else:
+            Event.objects.none()
 
     def ladies_only_filter(self, queryset, name, value):
-        return queryset.filter(
-            Q(tour__ladies_only=value) |
-            Q(meeting__ladies_only=value)
-        ).distinct()
+        if value:
+            return queryset.filter(
+                Q(tour__ladies_only=True) |
+                Q(meeting__ladies_only=True)
+            ).distinct()
+        else:
+            return queryset.exclude(tour__ladies_only=True).exclude(meeting__ladies_only=True)
 
     def public_transport_filter(self, queryset, name, value):
         return queryset.filter(public_transport=value)
@@ -114,15 +123,18 @@ class ActivityFilter(filters.FilterSet):
         return queryset.filter(lea=value)
 
     def state_filter(self, queryset, name, value):
-        if value == "published":
-            published = State.objects.get(done=False, moved=False, canceled=False, unfeasible=False, public=True)
+        if value == "public":
+            try:
+                public = State.objects.get(done=False, moved=False, canceled=False, unfeasible=False, public=True)
+            except State.DoesNotExist:
+                return Event.objects.none()
             return queryset.filter(
-                Q(tour__state=published) |
-                Q(meeting__state=published) |
-                Q(session__state=published) |
-                Q(talk__state=published)
+                Q(tour__state=public) |
+                Q(meeting__state=public) |
+                Q(session__state=public) |
+                Q(talk__state=public)
             ).distinct()
-        elif value in ("done", "moved", "canceled", "unfeasible", "public"):
+        elif value in ("done", "moved", "canceled", "unfeasible"):
             return queryset.filter(
                 Q(**{"tour__state__{}".format(value): True}) |
                 Q(**{"meeting__state__{}".format(value): True}) |
