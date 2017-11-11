@@ -63,11 +63,6 @@ class Reference(SeasonMixin, TimeMixin, models.Model):
         except ValueError:
             raise Reference.DoesNotExist("Reference matching query does not exist.")
 
-        try:
-            category = Category.objects.get(code=code)
-        except Category.DoesNotExist:
-            raise Reference.DoesNotExist("Reference matching query does not exist.")
-
         if isinstance(season, str):
             try:
                 season = Season.objects.get(name=season)
@@ -75,9 +70,11 @@ class Reference(SeasonMixin, TimeMixin, models.Model):
                 raise Reference.DoesNotExist("Reference matching query does not exist.")
 
         if season is None:
-            try:
-                season = Season.objects.get(name__endswith=str(prefix))
-            except Season.DoesNotExist:
-                season = Season.objects.get(current=True)
+            season = Season.objects.get(current=True)
+
+        try:
+            category = Category.objects.get(seasons=season, code=code)
+        except Category.DoesNotExist:
+            raise Reference.DoesNotExist("Reference matching query does not exist.")
 
         return Reference.objects.get(season=season, category=category, prefix=prefix, reference=reference)
