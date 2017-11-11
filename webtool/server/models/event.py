@@ -392,7 +392,7 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
         if hasattr(self, 'tour') and self.tour:
             fitness = self.tour.fitness
         if hasattr(self, 'session') and self.session:
-            fitness = self.session.fitness if self.fitness.code != "x" else None
+            fitness = self.session.fitness if fitness.code != "x" else None
         return fitness.order if fitness else None
 
     @property
