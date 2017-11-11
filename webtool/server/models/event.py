@@ -2,6 +2,7 @@
 from django.db import models
 from django.template.defaultfilters import date, time
 
+from .reference import Reference
 from .equipment import Equipment
 from .approximate import Approximate
 from .mixins import SeasonMixin, DescriptionMixin
@@ -12,8 +13,8 @@ from . import fields
 class EventManager(models.Manager):
 
     def get_by_natural_key(self, season, reference):
-        category, code = reference.split('-')
-        return self.get(season__name=season, reference__category__code=category, reference__reference=int(code[1:]))
+        reference = Reference.get_reference(reference, season)
+        return reference.event
 
 
 class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):

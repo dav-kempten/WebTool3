@@ -86,7 +86,7 @@ class Tour(
     )
 
     def natural_key(self):
-        return self.tour.season, self.tour.reference
+        return self.season.name, self.tour.reference
 
     natural_key.dependencies = ['server.season', 'server.event']
 

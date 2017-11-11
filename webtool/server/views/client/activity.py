@@ -15,17 +15,26 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
     lookup_field = "reference"
     lookup_url_kwarg = "reference"
     queryset = Event.objects.filter(
-        season__current=True, deprecated=False, internal=False,
-        deadline__isnull=True, preliminary__isnull=True, instruction__isnull=True
+        season__current=True
+    ).exclude(
+        deprecated=True
+    ).exclude(
+        internal=True
+    ).exclude(
+        deadline__isnull=False
+    ).exclude(
+        preliminary__isnull=False
+    ).exclude(
+        instruction__isnull=False
     ).exclude(
         tour__isnull=False, tour__state__public=False
     ).exclude(
         talk__isnull=False, talk__state__public=False
     ).exclude(
-        meeting__isnull=False, talk__state__public=False
+        meeting__isnull=False, meeting__state__public=False
     ).exclude(
         session__isnull=False, session__state__public=False
-    )
+    ).distinct()
     filter_class = ActivityFilter
 
     def list(self, request, *args, **kwargs):

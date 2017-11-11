@@ -90,7 +90,7 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
         return self.instruction.season
 
     def natural_key(self):
-        return self.instruction.season, str(self.instruction.reference)
+        return self.season.name, str(self.instruction.reference)
 
     natural_key.dependencies = ['server.season', 'server.event', 'server.topic']
 

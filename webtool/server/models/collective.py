@@ -101,7 +101,7 @@ class Session(TimeMixin, GuidedEventMixin, RequirementMixin, EquipmentMixin, Sta
         return self.session.season
 
     def natural_key(self):
-        return self.session.season, str(self.session.reference)
+        return self.season.name, str(self.session.reference)
 
     natural_key.dependencies = ['server.season', 'server.event', 'server.collective']
 

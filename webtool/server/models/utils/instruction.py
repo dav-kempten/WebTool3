@@ -2,7 +2,7 @@
 from decimal import Decimal
 from django.utils.dateparse import parse_date, parse_time
 
-from .. import Season, Approximate, Reference, Instruction, Event, Guide, Topic
+from .. import Season, Topic, Guide, Approximate, Reference, Instruction, Event
 from .. import defaults
 from . import create_reference
 
@@ -227,55 +227,3 @@ def create_instruction(
     #tour.chapter.add(chapter)
 
     return instruction
-
-
-def test():
-
-    values = [
-        # {
-        #     "topic": "LVS",
-        #     "title": "",
-        #     "name": "",
-        #     "description": "",
-        #     "start_date": "2018-12-01",
-        #     "start_time": "09:30",
-        #     "end_time": "15:00",
-        #     "rendezvous": "Parkplatz oberhalb des Eschacher Weiher",
-        #     "guide": "Helmut-Schneider",
-        #     "team": "Wolfgang-Doll",
-        #     "min_quantity": 1,
-        #     "max_quantity": 16,
-        #     "admission": "5.00",
-        # },
-        {
-            "topic": "BKS",
-            "title": "",
-            "name": "",
-            "description": "Theorie und Praxis finden im Umkreis der Erfurter Hütte über dem Achensee im Rofangebirge statt.",
-            "start_date": "2018-05-18",
-            "start_time": None,
-            "approximate": "mittags",
-            "end_date": "2018-05-21",
-            "end_time": "17:00",
-            "rendezvous": "swoboda alpin",
-            "location": "Erfurter Hütte",
-            "source": "Maurach",
-            "link": "",
-            "map": "",
-            "cover": "",
-            "distance": 370,
-            "public_transport": False,
-            "low_emission_adventure": False,
-            "ladies_only": False,
-            "guide": "Wolfgang-Doll",
-            "team": "Daniela-Rothermel",
-            "min_quantity": 7,
-            "max_quantity": 14,
-            "admission": "73.00",
-            "advances": "20.00",
-            "advances_info": "Anzahlung Hütte",
-            "extra_charges": "80",
-            "extra_charges_info": "Mehrbettzimmer, Frühstück vom Buffet",
-        },
-    ]
-    create_instruction(**values[0])

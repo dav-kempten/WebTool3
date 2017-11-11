@@ -110,6 +110,7 @@ class GuidedEventMixin(models.Model):
         related_name='%(class)s_guides',
         help_text="Verantwortlich für Organisaton und Durchführung",
         on_delete=models.PROTECT,
+        blank=True, null=True, default=None
     )
 
     # noinspection PyUnresolvedReferences
@@ -255,6 +256,7 @@ class RequirementMixin(models.Model):
         related_name='%(class)s_list',
         help_text="Technische Anforderungen",
         on_delete=models.PROTECT,
+        blank=True, default=defaults.get_default_skill
     )
 
     # noinspection PyUnresolvedReferences
@@ -265,6 +267,7 @@ class RequirementMixin(models.Model):
         related_name='%(class)s_list',
         help_text="Konditionelle Anforderungen",
         on_delete=models.PROTECT,
+        blank=True, default=defaults.get_default_fitness
     )
 
     class Meta:
