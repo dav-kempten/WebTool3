@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import datetime
 from django.db.models import F, Q
 from django_filters import rest_framework as filters, STRICTNESS
 
@@ -47,7 +48,8 @@ class ActivityFilter(filters.FilterSet):
     publicTransport = filters.BooleanFilter(label='publicTransport', method='public_transport_filter')
     lowEmissionAdventure = filters.BooleanFilter(label='lowEmissionAdventure', method='low_emission_adventure_filter')
     state = filters.ChoiceFilter(label='state', method='state_filter', choices=STATE_CHOICES)
-    open =filters.BooleanFilter(label='open', method='open_filter')
+    open = filters.BooleanFilter(label='open', method='open_filter')
+    next = filters.NumberFilter(label='next', method='next_filter', min_value=1, max_value=10)
 
     def activity_filter(self, queryset, name, value):
         if value in ("tour", "topic", "collective", "talk"):
@@ -102,7 +104,7 @@ class ActivityFilter(filters.FilterSet):
         ).distinct()
 
     def month_filter(self, queryset, name, value):
-        if value >= 1 or value <= 12:
+        if 1 <= value <= 12:
             return queryset.filter(start_date__month=value)
         else:
             Event.objects.none()
@@ -159,6 +161,18 @@ class ActivityFilter(filters.FilterSet):
                 Q(talk__cur_quantity__gte=F('talk__max_quantity'))
             ).distinct()
 
+    def next_filter(self, queryset, name, value):
+            today = datetime.date.today()
+            q1 = (
+                queryset
+                    .filter(start_date__gte=today).exclude(session__isnull=False)
+                    .exclude(tour__cur_quantity__gte=F('tour__max_quantity'))
+                    .exclude(meeting__cur_quantity__gte=F('meeting__max_quantity'))
+                    .exclude(talk__cur_quantity__gte=F('talk__max_quantity'))
+            )
+            q2 = queryset.filter(start_date__gte=today, reference__category__code__in=['VST', 'SKA', 'AAS'])
+            return q1.union(q2).order_by('start_date')
+
     class Meta:
         model = Event
         fields = (
@@ -172,6 +186,7 @@ class ActivityFilter(filters.FilterSet):
             'publicTransport',
             'lowEmissionAdventure',
             'state',
-            'open'
+            'open',
+            'next'
         )
         strict = STRICTNESS.RAISE_VALIDATION_ERROR

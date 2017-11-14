@@ -39,12 +39,23 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
+
+        limit = request.query_params.get('next')
+        limit = int(limit) if limit and limit.isnumeric() and int(limit) > 0 else None
+        if limit and limit > 10:
+            limit = 10
+        if limit:
+            queryset = queryset[:limit]
+
         serializer = self.get_serializer(queryset, many=True)
-        response =  Response(serializer.data)
+        response = Response(serializer.data)
 
         response['Cache-Control'] = "public, max-age=86400"
         if queryset.exists():
-            latest = queryset.latest()
+            if limit:
+                latest = list(queryset)[-1]
+            else:
+                latest = queryset.latest()
             response['ETag'] = '"{}"'.format(latest.get_etag())
             response['Last-Modified'] = "{} GMT".format(date(latest.updated, "D, d M Y H:i:s"))
         return response
