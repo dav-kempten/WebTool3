@@ -29,7 +29,7 @@ class Collective(SeasonsMixin, SectionMixin, TimeMixin, DescriptionMixin, models
     )
 
     managers = models.ManyToManyField(
-        Guide,
+        Guide, through="Role",
         db_index=True,
         verbose_name='Manager',
         related_name='collectives',
@@ -115,3 +115,34 @@ class Session(TimeMixin, GuidedEventMixin, RequirementMixin, EquipmentMixin, Sta
         verbose_name = "Gruppentermin"
         verbose_name_plural = "Gruppentermine"
         ordering = ('session__season__name', 'collective__name', 'session__start_date', )
+
+
+class Role(TimeMixin, models.Model):
+
+    collective = models.ForeignKey(
+        Collective,
+        db_index=True,
+        verbose_name='Gruppe',
+        related_name='role_list',
+        on_delete=models.CASCADE,
+    )
+
+    manager = models.ForeignKey(
+        Guide,
+        db_index=True,
+        verbose_name='Manager',
+        related_name='role_list',
+        on_delete=models.CASCADE,
+    )
+
+    def __str__(self):
+        return "{} - {}".format(self.manager.user.get_full_name(), self.collective.name)
+
+    order = fields.OrderField()
+    description = fields.DescriptionField(blank=True, default='')
+
+    class Meta:
+        get_latest_by = "updated"
+        verbose_name = "Aufgabe"
+        verbose_name_plural = "Aufgaben"
+        ordering = ('order', 'manager__user__last_name', 'manager__user__first_name')

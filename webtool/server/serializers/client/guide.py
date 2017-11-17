@@ -13,6 +13,7 @@ class GuideListSerializer(serializers.ModelSerializer):
     firstName = serializers.CharField(source='user.first_name')
     lastName = serializers.CharField(source='user.last_name')
     qualification = serializers.SerializerMethodField()
+    job = serializers.SerializerMethodField()
     portrait = serializers.SerializerMethodField()
     detail = serializers.SerializerMethodField()
 
@@ -22,10 +23,17 @@ class GuideListSerializer(serializers.ModelSerializer):
             'id',
             'firstName', 'lastName',
             'qualification',
+            'job',
             'portrait',
             'detail'
         )
         extra_kwargs = {'id': {'lookup_field': 'username'}}
+
+    def get_job(self, obj):
+        profile = json.loads(obj.profile, encoding='utf-8') if obj.profile else None
+        if profile:
+            return profile.get('job')
+        return None
 
     def get_qualification(self, obj):
         qualification_list = (
@@ -33,7 +41,7 @@ class GuideListSerializer(serializers.ModelSerializer):
                 qualification__name__in=["Anwärter", "Kletterassistent (Kempten)"]
             ).values_list('qualification__name',flat=True)
         )
-        qualification =  ', '.join(qualification_list)
+        qualification = ', '.join(qualification_list)
         return (
             qualification.replace('Fachübungsleiter', 'FÜL')
                 .replace('Zusatzqualifikation', 'ZQ')
