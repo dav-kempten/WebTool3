@@ -75,7 +75,7 @@ class ActivityFilter(filters.FilterSet):
     def category_filter(self, queryset, name, value):
         try:
             category = Category.objects.get(code__iexact=value)
-        except CategoryGroup.DoesNotExist:
+        except Category.DoesNotExist:
             return Event.objects.none()
         return queryset.filter(
             Q(reference__category=category) |
@@ -86,7 +86,7 @@ class ActivityFilter(filters.FilterSet):
     def categorygroup_filter(self, queryset, name, value):
         try:
             group = CategoryGroup.objects.get(pk=value)
-        except Category.DoesNotExist:
+        except CategoryGroup.DoesNotExist:
             return Event.objects.none()
         return queryset.filter(
             reference__category__in=group.categories.all()
