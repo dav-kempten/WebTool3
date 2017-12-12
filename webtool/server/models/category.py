@@ -111,3 +111,48 @@ class Category(SeasonsMixin, TimeMixin, models.Model):
         verbose_name_plural = "Kategorien"
         unique_together = ('code', 'name')
         ordering = ('order', 'code', 'name')
+
+
+class CategoryGroupManager(models.Manager):
+
+    def get_by_natural_key(self, name):
+        return self.get(name=name)
+
+
+class CategoryGroup(SeasonsMixin, TimeMixin, models.Model):
+
+    objects = CategoryGroupManager()
+
+    categories = models.ManyToManyField(
+        Category,
+        db_index=True,
+        verbose_name='Gruppe',
+        related_name='category_list',
+    )
+
+    name = fields.NameField(
+        'Bezeichnung',
+        help_text="Bezeichnung der Gruppe",
+        unique=True
+    )
+
+    description = fields.DescriptionField(
+        'Beschreibung',
+        help_text="Beschreibung der Gruppe",
+        blank=True, default=''
+    )
+
+    order = fields.OrderField()
+
+    def natural_key(self):
+        return self.name
+
+    natural_key.dependencies = ['server.category']
+
+    def __str__(self):
+        return "{}".format(self.name)
+
+    class Meta:
+        verbose_name = "Kategoriegruppe"
+        verbose_name_plural = "Kategoriegruppen"
+        ordering = ('order', 'name')

@@ -3,7 +3,7 @@
 
 from .season import Season
 from .approximate import Approximate
-from .category import Category
+from .category import Category, CategoryGroup
 from .collective import Collective, Session, Role
 from .equipment import Equipment
 from .event import Event

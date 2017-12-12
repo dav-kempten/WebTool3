@@ -3,7 +3,7 @@ import datetime
 from django.db.models import F, Q
 from django_filters import rest_framework as filters, STRICTNESS
 
-from server.models import Event, Category, Reference, Tour, State, Guide
+from server.models import Event, Category, Reference, Tour, State, Guide, CategoryGroup
 
 
 class ActivityFilter(filters.FilterSet):
@@ -41,6 +41,7 @@ class ActivityFilter(filters.FilterSet):
     activity = filters.ChoiceFilter(label='activity', method='activity_filter', choices=ACTIVITY_CHOICES)
     division = filters.ChoiceFilter(label='division', method='division_filter', choices=DIVISION_CHOICES)
     category = filters.CharFilter(label='category', method='category_filter', max_length=3, min_length=3)  # , choices=CATEGORY_CHOICES)
+    group = filters.NumberFilter(label='group', method='categorygroup_filter')
     guide = filters.CharFilter(label='guide', method='guide_filter')
     team = filters.CharFilter(label='team', method='team_filter')
     month = filters.NumberFilter(label='month', method='month_filter', min_value=1, max_value=12)
@@ -79,6 +80,16 @@ class ActivityFilter(filters.FilterSet):
         return queryset.filter(
             Q(reference__category=category) |
             Q(tour__categories=category)
+        ).distinct()
+
+
+    def categorygroup_filter(self, queryset, name, value):
+        try:
+            group = CategoryGroup.objects.get(pk=value)
+        except Category.DoesNotExist:
+            return Event.objects.none()
+        return queryset.filter(
+            reference__category__in=group.categories.all()
         ).distinct()
 
     def guide_filter(self, queryset, name, value):
