@@ -75,7 +75,7 @@ class ActivityFilter(filters.FilterSet):
     def category_filter(self, queryset, name, value):
         try:
             category = Category.objects.get(code__iexact=value)
-        except Category.DoesNotExist:
+        except CategoryGroup.DoesNotExist:
             return Event.objects.none()
         return queryset.filter(
             Q(reference__category=category) |
