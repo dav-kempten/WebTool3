@@ -365,7 +365,11 @@ class Tour(
             output.write('</div>')
 
         output.write('<p>')
-        lines = ['<strong>Abfahrt:</strong> {}'.format(self.tour.departure())]
+        lines = []
+        preliminary = self._preliminary()
+        if preliminary[0]:
+            lines.append("<strong>{}:</strong> {}".format(*preliminary))
+        lines.append('<strong>Abfahrt:</strong> {}'.format(self.tour.departure()))
         if self.tour.source:
             lines.append('<strong>Ausgangspunkt:</strong> {}'.format(self.tour.source))
         if self.tour.location:
@@ -373,17 +377,11 @@ class Tour(
         output.write('<br />'.join(lines))
         output.write('</p>')
 
-        output.write('<div class="additional"><p>')
-        lines = [
-            "Anmeldung bis zum {}, mindestens {}, maximal {} Teilnehmer".format(
-                self._deadline(), self.min_quantity, self.max_quantity
-            )
-        ]
-        preliminary = self._preliminary()
-        if preliminary[0]:
-            lines.append("{}: {}".format(*preliminary))
-        output.write('<br />'.join(lines))
-        output.write('</p></div>')
+        output.write('<div class="additional">')
+        output.write("<p>Anmeldung bis zum {}, mindestens {}, maximal {} Teilnehmer.</p>".format(
+                self._deadline(), self.min_quantity, self.max_quantity)
+        )
+        output.write('</div>')
 
         output.write('<p>')
         lines = []
@@ -417,14 +415,13 @@ class Tour(
             output.write(advances)
             output.write('</div>')
 
-        output.write('<p>'
+        output.write('<p>Es gelten unsere'
                      '<a href="https://www.dav-kempten.de/aktivitaeten/teilnahmebedingungen/" '
-                     'title="Teilnamebedingungen">Teilnamebedingungen</a>'
-                     ' - '
+                     'title="Teilnamebedingungen">Teilname-</a>'
+                     ' und '
                      '<a href="https://www.dav-kempten.de/aktivitaeten/stornobedingungen/" '
-                     'title="Stornobedingungen">Stornobedingungen</a>'
+                     'title="Stornobedingungen">Stornobedingungen</a>.'
                      '</p>'
         )
 
         return output.getvalue()
-
