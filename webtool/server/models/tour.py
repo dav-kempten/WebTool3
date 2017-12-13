@@ -351,17 +351,16 @@ class Tour(
 
         output.write('<h3>{}</h3>'.format(self.tour.name))
         output.write('<p>{}</p>'.format(self.tour.description))
-        output.write('<p><strong>Organisation:</strong> {}</p>'.format(self.guides()))
 
         if self.qualifications.exists():
             output.write('<div class="additional">')
             qualifications = [
                 "<p>Für die Teilnahme an dieser Tour ist die Beherrschung folgender "
-                "Kursinhalte Voraussetzung:</p><ul>"
+                "Kursinhalte Voraussetzung:<br /><ul>"
             ]
             for qualification in self.qualifications.all().values_list('category__name', flat=True):
                 qualifications.append("<li>{}</li>".format(qualification))
-            qualifications.append("</ul>")
+            qualifications.append("</ul></p>")
             output.write(''.join(qualifications))
             output.write('</div>')
 
@@ -374,12 +373,17 @@ class Tour(
         output.write('<br />'.join(lines))
         output.write('</p>')
 
-        output.write('<div class="additional">')
-        output.write("<p>Anmeldung bis zum {}, mindestens {}, maximal {} Teilnehmer</p>".format(self._deadline(), self.min_quantity, self.max_quantity))
+        output.write('<div class="additional"><p>')
+        lines = [
+            "Anmeldung bis zum {}, mindestens {}, maximal {} Teilnehmer".format(
+                self._deadline(), self.min_quantity, self.max_quantity
+            )
+        ]
         preliminary = self._preliminary()
         if preliminary[0]:
-            output.write("<p>{}: {}</p>".format(*preliminary))
-        output.write('</div>')
+            lines.append("{}: {}".format(*preliminary))
+        output.write('<br />'.join(lines))
+        output.write('</p></div>')
 
         output.write('<p>')
         lines = []
@@ -399,6 +403,7 @@ class Tour(
                 int(0.07 * float(self.tour.distance)), self.tour.distance
             )
             lines.append(travel_cost)
+        lines.append('<strong>Organisation:</strong> {}'.format(self.guides()))
         output.write('<br />'.join(lines))
         output.write('</p>')
 
