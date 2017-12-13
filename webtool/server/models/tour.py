@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import io
 from django.db import models
 from django.template.defaultfilters import date, time
 
@@ -121,8 +122,10 @@ class Tour(
             else:
                 start_time = time(self.preliminary.start_time, "G")
             return 'Vorbesprechung', "{}, {} Uhr".format(preliminary, start_time)
-        else:
+        elif self.info:
             return 'Toureninformation', self.info
+        else:
+            return '', ''
 
     def _tour_date(self):
         season_year = int(self.season.name)
@@ -323,3 +326,100 @@ class Tour(
             output.append(travel_cost)
 
         return output
+
+    def subject(self):
+        return ""
+
+    def details(self):
+        """
+            {name}
+            Vorausgesetzte Kursinhalte: {qualifications}
+            Abfahrt: {start_date}, {start_time}, {rendezvous}, Heimkehr am {end_date} gegen {end_time} Uhr
+            Ausgangspunkt: {source}
+            Übernachtung: {location}
+            Beschreibung: {description}
+            Anmeldung bis zum {deadline}, Mindestens {min_quantity}, Maximal {max_quantity} Teilnehmer.
+            Vorbesprechung: {preliminary_date}, {preliminary_time} Uhr
+            Toureninformation: {info}
+            Organisation: {guides}
+            Vorauszahlung: {advances} € {advances_info}
+            Teilnehmergebühr: {admission} € {admission_info}
+            Zusatzkosten: {extra_charges} € {extra_charges_info}
+            Fahrtkostenbeteiligung: ca. {travel_cost} € für {distance} km
+        """
+        output = io.StringIO()
+
+        output.write('<h3>{}</h3>'.format(self.tour.name))
+        output.write('<p>{}</p>'.format(self.tour.description))
+        output.write('<p><strong>Organisation:</strong> {}</p>'.format(self.guides()))
+
+        if self.qualifications.exists():
+            output.write('<div class="additional">')
+            qualifications = [
+                "<p>Für die Teilnahme an dieser Tour ist die Beherrschung folgender "
+                "Kursinhalte Voraussetzung:</p><ul>"
+            ]
+            for qualification in self.qualifications.all().values_list('category__name', flat=True):
+                qualifications.append("<li>{}</li>".format(qualification))
+            qualifications.append("</ul>")
+            output.write(''.join(qualifications))
+            output.write('</div>')
+
+        output.write('<p>')
+        lines = ['<strong>Abfahrt:</strong> {}'.format(self.tour.departure())]
+        if self.tour.source:
+            lines.append('<strong>Ausgangspunkt:</strong> {}'.format(self.tour.source))
+        if self.tour.location:
+            lines.append('<strong>Übernachtung:</strong> {}'.format(self.tour.location))
+        output.write('<br />'.join(lines))
+        output.write('</p>')
+
+        output.write('<div class="additional">')
+        output.write("<p>Anmeldung bis zum {}, mindestens {}, maximal {} Teilnehmer</p>".format(self._deadline(), self.min_quantity, self.max_quantity))
+        preliminary = self._preliminary()
+        if preliminary[0]:
+            output.write("<p>{}: {}</p>".format(*preliminary))
+        output.write('</div>')
+
+        output.write('<p>')
+        lines = []
+        if self.advances:
+            advances = "<strong>Vorauszahlung:</strong> {} €{}".format(
+                int(self.advances), " für {}".format(self.advances_info) if self.advances_info else ''
+            )
+            lines.append(advances)
+        lines.append("<strong>Teilnehmergebühr:</strong> {} €".format(int(self.admission)))
+        if self.extra_charges:
+            extra_charges = "<strong>Zusatzkosten:</strong> {} €{}".format(
+                self.extra_charges, " für {}".format(self.extra_charges_info) if self.extra_charges_info else ''
+            )
+            lines.append(extra_charges)
+        if self.tour.distance:
+            travel_cost = "<strong>Fahrtkostenbeteiligung:</strong> ca. {} € für ungefähr {} km".format(
+                int(0.07 * float(self.tour.distance)), self.tour.distance
+            )
+            lines.append(travel_cost)
+        output.write('<br />'.join(lines))
+        output.write('</p>')
+
+        if self.advances:
+            output.write('<div class="additional">')
+            advances = (
+                "<p>Im Teilnehmerbeitrag von {} € ist eine Vorauszahlung von {} € enthalten. "
+                "Diese Vorauszahlung wird bei Stornierung der Teilnahme nur zurückerstattet, wenn der freigewordene "
+                "Platz wieder besetzt werden kann.</p>"
+            ).format(self.admission, int(self.advances))
+            output.write(advances)
+            output.write('</div>')
+
+        output.write('<p>'
+                     '<a href="https://www.dav-kempten.de/aktivitaeten/teilnahmebedingungen/" '
+                     'title="Teilnamebedingungen">Teilnamebedingungen</a>'
+                     ' - '
+                     '<a href="https://www.dav-kempten.de/aktivitaeten/stornobedingungen/" '
+                     'title="Stornobedingungen">Stornobedingungen</a>'
+                     '</p>'
+        )
+
+        return output.getvalue()
+

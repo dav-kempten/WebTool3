@@ -127,10 +127,13 @@ class GuidedEventMixin(models.Model):
         abstract = True
 
     def guides(self):
-        guides = [self.guide]
+        guide = self.guide
+        if guide:
+            guides = [self.guide]
+        else:
+            guides = []
         guides.extend(self.team.all())
-        guides = ', '.join([g.name for g in guides])
-        return guides.replace('Unbekannt', 'DAV-Trainer')
+        return ', '.join([g.name for g in guides])
 
 
 class StateMixin(models.Model):

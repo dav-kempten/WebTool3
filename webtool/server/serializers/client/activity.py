@@ -29,33 +29,7 @@ class ActivityListSerializer(serializers.ModelSerializer):
         return categories
 
     def get_description(self, obj):
-        category = obj.reference.category
-        if hasattr(obj, 'tour') and obj.tour:
-            return (
-                '<a href="/aktivitaeten/touren/details/{ref}/">'
-                '<span class="category" title="{cn}">{cc}</span>'
-                '<strong class="title">{n}</strong>'
-                '<span class="reference">({ref})</span>'
-                '</a>'.format(
-                    cn=category.name, cc=category.code, n=obj.name, ref=obj.reference
-                )
-            )
-        if hasattr(obj, 'meeting') and obj.meeting:
-            instruction = obj.meeting
-            return (
-                '<a href="/aktivitaeten/touren/details/{ref}/">'
-                '<span class="category" title="{cn}">{cc}</span>'
-                '<strong class="title">{n}</strong>'
-                '<span class="reference">({ref})</span>'
-                '</a>'.format(
-                    cn=category.name, cc=category.code, n=instruction.topic.name, ref=obj.reference
-                )
-            )
-        if hasattr(obj, 'session') and obj.session and obj.session.speaker:
-            session = obj.session
-            return "{}, Referent: {}".format(session.session.name, session.speaker)
-        else:
-            return "{}".format(obj.name)
+        return obj.subject
 
     def get_title(self, obj):
         if hasattr(obj, 'meeting') and obj.meeting:
@@ -117,12 +91,7 @@ class ActivitySerializer(ActivityListSerializer):
     ics = serializers.SerializerMethodField()
 
     def get_description(self, obj):
-        if hasattr(obj, 'tour') and obj.tour:
-            return '<br/>\n'.join(obj.tour.description())
-        if hasattr(obj, 'session') and obj.session:
-            return obj.name
-        if hasattr(obj, 'meeting') and obj.meeting:
-            return obj.meeting.topic.name
+        return obj.details
 
     def get_cover(self, obj):
         return None

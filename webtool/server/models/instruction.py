@@ -102,6 +102,12 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
             self.season
         )
 
+    def subject(self):
+        return ""
+
+    def details(self):
+        return ""
+
     class Meta:
         get_latest_by = "updated"
         verbose_name = "Kurs"

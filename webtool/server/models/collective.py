@@ -110,6 +110,12 @@ class Session(TimeMixin, GuidedEventMixin, RequirementMixin, EquipmentMixin, Sta
             self.session.title, self.collective.title, self.session.long_date(with_year=True), self.season
         )
 
+    def subject(self):
+        return ""
+
+    def details(self):
+        return ""
+
     class Meta:
         get_latest_by = "updated"
         verbose_name = "Gruppentermin"

@@ -445,6 +445,28 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
             team = self.session.team
         return ', '.join(team.values_list('user__username', flat=True)) if team else None
 
+    @property
+    def subject(self):
+        if hasattr(self, 'tour') and self.tour:
+            return self.tour.subject()
+        if hasattr(self, 'talk') and self.talk:
+            return self.talk.subject()
+        if hasattr(self, 'meeting') and self.meeting:
+            return self.meeting.subject()
+        if hasattr(self, 'session') and self.session:
+            return self.session.subject()
+
+    @property
+    def details(self):
+        if hasattr(self, 'tour') and self.tour:
+            return self.tour.details()
+        if hasattr(self, 'talk') and self.talk:
+            return self.talk.details()
+        if hasattr(self, 'meeting') and self.meeting:
+            return self.meeting.details()
+        if hasattr(self, 'session') and self.session:
+            return self.session.details()
+
     class Meta:
         get_latest_by = "updated"
         verbose_name = "Veranstaltungstermin"
