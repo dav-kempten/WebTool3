@@ -376,8 +376,8 @@ class Tour(
         output.write('</p>')
 
         output.write('<div class="additional">')
-        output.write("<p>Anmeldung bis zum {}, mindestens {}, maximal {} Teilnehmer.</p>".format(
-                self._deadline(), self.min_quantity, self.max_quantity)
+        output.write("<p>Anmeldung bis zum {}, mindestens {}, maximal {} {}Teilnehmer.</p>".format(
+                self._deadline(), self.min_quantity, self.max_quantity, "weibliche " if self.ladies_only else '')
         )
         output.write('</div>')
 
