@@ -135,7 +135,9 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
         if self.instruction.distal:
             lines.append('<strong>Abfahrt:</strong> {}'.format(self.instruction.departure()))
         else:
-            lines.append('<strong>{}:</strong> {}'.format(self.instruction.name, self.instruction.appointment()))
+            lines.append('<strong>{}:</strong> {}'.format(
+                self.instruction.name if self.instruction.name else "Termin", self.instruction.appointment()
+            ))
         if self.instruction.source:
             lines.append('<strong>Ausgangspunkt:</strong> {}'.format(self.instruction.source))
         if self.instruction.location and self.instruction.distal:
