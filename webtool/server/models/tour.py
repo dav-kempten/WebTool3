@@ -354,14 +354,12 @@ class Tour(
 
         if self.qualifications.exists():
             output.write('<div class="additional">')
-            qualifications = [
+            output.write(
                 "<p>Für die Teilnahme an dieser Tour ist die Beherrschung folgender "
-                "Kursinhalte Voraussetzung:<br /><ul>"
-            ]
-            for qualification in self.qualifications.all().values_list('name', flat=True):
-                qualifications.append("<li>{}</li>".format(qualification))
-            qualifications.append("</ul></p>")
-            output.write(''.join(qualifications))
+                "Kursinhalte Voraussetzung: {}</p>".format(
+                    ', '.join([q for q in self.qualifications.values_list('name', flat=True)])
+                )
+            )
             output.write('</div>')
 
         output.write('<p>')
@@ -416,10 +414,10 @@ class Tour(
             output.write('</div>')
 
         output.write('<p>Es gelten unsere '
-                     '<a href="https://www.dav-kempten.de/aktivitaeten/teilnahmebedingungen/" '
+                     '<a href="/aktivitaeten/teilnahmebedingungen/" '
                      'title="Teilnamebedingungen">Teilname-</a>'
                      ' und '
-                     '<a href="https://www.dav-kempten.de/aktivitaeten/stornobedingungen/" '
+                     '<a href="/aktivitaeten/stornobedingungen/" '
                      'title="Stornobedingungen">Stornobedingungen</a>.'
                      '</p>'
         )

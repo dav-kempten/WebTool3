@@ -114,15 +114,18 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
 
         if self.topic.qualifications.exists():
             output.write('<div class="additional">')
-            qualifications = [
+            output.write(
                 "<p>Für die Teilnahme an diesem Kurs ist die Beherrschung folgender "
-                "Kursinhalte Voraussetzung:<br /><ul>"
-            ]
-            for qualification in self.topic.qualifications.all().values_list('name', flat=True):
-                qualifications.append("<li>{}</li>".format(qualification))
-            qualifications.append("</ul></p>")
-            output.write(''.join(qualifications))
+                "Kursinhalte Voraussetzung: {}</p>".format(
+                    ', '.join([q for q in self.topic.qualifications.values_list('name', flat=True)])
+                )
+            )
             output.write('</div>')
+
+        if self.meeting_list.exists():
+            pass
+        else:
+            pass
 
         output.write('<p>')
         lines = [
@@ -161,13 +164,47 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
             output.write('</div>')
 
         output.write('<p>Es gelten unsere '
-                     '<a href="https://www.dav-kempten.de/aktivitaeten/teilnahmebedingungen/" '
+                     '<a href="/aktivitaeten/teilnahmebedingungen/" '
                      'title="Teilnamebedingungen">Teilname-</a>'
                      ' und '
-                     '<a href="https://www.dav-kempten.de/aktivitaeten/stornobedingungen/" '
+                     '<a href="/aktivitaeten/stornobedingungen/" '
                      'title="Stornobedingungen">Stornobedingungen</a>.'
                      '</p>'
         )
+
+        return output.getvalue()
+
+        """
+            {name}
+            Vorausgesetzte Kursinhalte: {qualifications}
+            Abfahrt: {start_date}, {start_time}, {rendezvous}, Heimkehr am {end_date} gegen {end_time} Uhr
+            Ausgangspunkt: {source}
+            Übernachtung: {location}
+            Beschreibung: {description}
+            Anmeldung bis zum {deadline}, Mindestens {min_quantity}, Maximal {max_quantity} Teilnehmer.
+            Vorbesprechung: {preliminary_date}, {preliminary_time} Uhr
+            Toureninformation: {info}
+            Organisation: {guides}
+            Vorauszahlung: {advances} € {advances_info}
+            Teilnehmergebühr: {admission} € {admission_info}
+            Zusatzkosten: {extra_charges} € {extra_charges_info}
+            Fahrtkostenbeteiligung: ca. {travel_cost} € für {distance} km
+        """
+
+        output.write('<p>')
+        lines = []
+        preliminary = self._preliminary()
+        if preliminary[0]:
+            lines.append("<strong>{}:</strong> {}".format(*preliminary))
+        lines.append('<strong>Abfahrt:</strong> {}'.format(self.tour.departure()))
+        if self.tour.source:
+            lines.append('<strong>Ausgangspunkt:</strong> {}'.format(self.tour.source))
+        if self.tour.location:
+            lines.append('<strong>Übernachtung:</strong> {}'.format(self.tour.location))
+        output.write('<br />'.join(lines))
+        output.write('</p>')
+
+
 
         return output.getvalue()
 

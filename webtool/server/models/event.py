@@ -264,6 +264,47 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
             departure = "{} gegen {} Uhr".format(departure, end_time)
         return departure
 
+    def appointment(self):
+        """
+            {start_date}, {start_time}, {rendezvous} bis {end_date} gegen {end_time} Uhr
+        """
+        season_year = int(self.season.name)
+        with_year = season_year != self.start_date.year or (self.end_date and season_year != self.end_date.year)
+        y = 'Y' if with_year else ''
+        start_date = date(self.start_date, "j.n." + y)
+
+        if self.start_time:
+            if self.start_time.minute:
+                start_time = time(self.start_time, "G.i")
+            else:
+                start_time = time(self.start_time, "G")
+            start_time = "{} Uhr".format(start_time)
+        else:
+            start_time = self.approximate.name if self.approximate else ''
+
+        if self.end_date and self.end_date != self.start_date:
+            end_date = date(self.end_date, "j.n." + y)
+        else:
+            end_date = ''
+
+        if self.end_time:
+            if self.end_time.minute:
+                end_time = time(self.end_time, "G.i")
+            else:
+                end_time = time(self.end_time, "G")
+        else:
+            end_time = ''
+
+        departure = "{}, {}".format(start_date, start_time)
+        if self.rendezvous:
+            departure = "{}, {}".format(departure, self.rendezvous)
+        if end_time:
+            departure = "{}, Heimkehr".format(departure)
+            if end_date:
+                departure = "{} am {}".format(departure, end_date)
+            departure = "{} gegen {} Uhr".format(departure, end_time)
+        return departure
+
     def prefixed_date(self, prefix, formatter, with_year=False):
         """
         Beispiel: "Anmeldung bis 10.03."
