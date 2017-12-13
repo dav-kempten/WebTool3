@@ -135,10 +135,10 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
         if self.instruction.distal:
             lines.append('<strong>Abfahrt:</strong> {}'.format(self.instruction.departure()))
         else:
-            lines.append('<strong>Kurs {}:</strong> {}'.format(self.instruction.reference, self.instruction.appointment()))
+            lines.append('{}: {}'.format(self.instruction.name, self.instruction.appointment()))
         if self.instruction.source:
             lines.append('<strong>Ausgangspunkt:</strong> {}'.format(self.instruction.source))
-        if self.instruction.location:
+        if self.instruction.location and self.instruction.distal:
             lines.append('<strong>Übernachtung:</strong> {}'.format(self.instruction.location))
         output.write('<br />'.join(lines))
         output.write('</p>')
@@ -174,7 +174,9 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
                 int(0.07 * float(self.instruction.distance)), self.instruction.distance
             )
             lines.append(travel_cost)
-        lines.append('<strong>Organisation:</strong> {}'.format(self.guides()))
+        guides = self.guides()
+        if guides:
+            lines.append('<strong>Organisation:</strong> {}'.format(guides))
         output.write('<br />'.join(lines))
         output.write('</p>')
 

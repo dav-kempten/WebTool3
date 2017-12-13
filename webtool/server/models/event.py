@@ -268,17 +268,21 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
         """
             {start_date}, {start_time} bis {end_time} Uhr, {name}, {location}, {rendezvous}
         """
-
+        appointment = ''
         season_year = int(self.season.name)
         with_year = season_year != self.start_date.year or (self.end_date and season_year != self.end_date.year)
         y = 'Y' if with_year else ''
         start_date = date(self.start_date, "j.n." + y)
+        approximate = ''
 
         if self.start_time:
             if self.start_time.minute:
                 start_time = time(self.start_time, "G.i")
             else:
                 start_time = time(self.start_time, "G")
+        elif self.approximate:
+            start_time = ''
+            approximate = self.approximate.name
         else:
             start_time = ''
 
@@ -290,10 +294,13 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
         else:
             end_time = ''
 
-        appointment = "{}, {}".format(start_date, start_time)
-        if end_time:
-            appointment = "{} bis {}".format(appointment, end_time)
-        appointment = "{} Uhr".format(appointment)
+        if start_time:
+            appointment = "{}, {}".format(start_date, start_time)
+            if end_time:
+                appointment = "{} bis {}".format(appointment, end_time)
+            appointment = "{} Uhr".format(appointment)
+        if approximate:
+            appointment = "{}, {}".format(start_date, approximate)
         if self.name:
             appointment = "{}, {}".format(appointment, self.name)
         if self.location:
