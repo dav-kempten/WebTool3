@@ -127,6 +127,9 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
         else:
             pass
 
+        if self.instruction.description:
+            output.write('<p>{}</p>'.format(self.instruction.description))
+
         output.write('<p>')
         lines = [
             "<strong>Teilnehmerzahl:</strong>{} maximal {} Teilnehmer".format(
