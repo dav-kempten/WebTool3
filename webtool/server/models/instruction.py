@@ -163,7 +163,8 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
                 int(self.advances), " für {}".format(self.advances_info) if self.advances_info else ''
             )
             lines.append(advances)
-        lines.append("<strong>Teilnehmergebühr:</strong> {} €".format(int(self.admission)))
+        if self.admission > 0:
+            lines.append("<strong>Teilnehmergebühr:</strong> {} €".format(int(self.admission)))
         if self.extra_charges:
             extra_charges = "<strong>Zusatzkosten:</strong> {} €{}".format(
                 self.extra_charges, " für {}".format(self.extra_charges_info) if self.extra_charges_info else ''
