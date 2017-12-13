@@ -141,6 +141,11 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
         output.write('<br />'.join(lines))
         output.write('</p>')
 
+        if self.meeting_list.exists():
+            output.write('<p><strong>Weitere Termine:</strong><br />')
+            output.write('<br />'.join([e.appointment() for e in self.meeting_list.all()]))
+            output.write('</p>')
+
         if self.instruction.description:
             output.write('<div class="additional"><p>{}</p></div>'.format(self.instruction.description))
 

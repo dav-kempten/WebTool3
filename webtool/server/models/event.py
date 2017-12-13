@@ -266,7 +266,7 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
 
     def appointment(self):
         """
-            {start_date}, {start_time}, {rendezvous} bis {end_date} gegen {end_time} Uhr
+            {start_date}, {start_time} bis {end_time} Uhr, {location}, {rendezvous}
         """
         season_year = int(self.season.name)
         with_year = season_year != self.start_date.year or (self.end_date and season_year != self.end_date.year)
@@ -282,11 +282,6 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
         else:
             start_time = self.approximate.name if self.approximate else ''
 
-        if self.end_date and self.end_date != self.start_date:
-            end_date = date(self.end_date, "j.n." + y)
-        else:
-            end_date = ''
-
         if self.end_time:
             if self.end_time.minute:
                 end_time = time(self.end_time, "G.i")
@@ -295,15 +290,15 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
         else:
             end_time = ''
 
-        departure = "{}, {}".format(start_date, start_time)
-        if self.rendezvous:
-            departure = "{}, {}".format(departure, self.rendezvous)
+        appointment = "{}, {}".format(start_date, start_time)
         if end_time:
-            departure = "{}, Heimkehr".format(departure)
-            if end_date:
-                departure = "{} am {}".format(departure, end_date)
-            departure = "{} gegen {} Uhr".format(departure, end_time)
-        return departure
+            appointment = "{} bis {}".format(appointment, end_time)
+        appointment = "{} Uhr".format(appointment)
+        if self.location:
+            appointment = "{}, {}".format(appointment, self.location)
+        if self.rendezvous:
+            appointment = "{}, {}".format(appointment, self.rendezvous)
+        return appointment
 
     def prefixed_date(self, prefix, formatter, with_year=False):
         """
