@@ -138,8 +138,8 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
             lines.append('<strong>Termin:</strong> {}'.format(self.instruction.appointment()))
         if self.instruction.source:
             lines.append('<strong>Ausgangspunkt:</strong> {}'.format(self.instruction.source))
-        if self.instruction.location and self.instruction.distal:
-            lines.append('<strong>Übernachtung:</strong> {}'.format(self.instruction.location))
+        if self.instruction.location:
+            lines.append('<strong>{}:</strong> {}'.format("Übernachtung" if self.instruction.end_date else "Ausgangspunkt", self.instruction.location))
         output.write('<br />'.join(lines))
         output.write('</p>')
 
