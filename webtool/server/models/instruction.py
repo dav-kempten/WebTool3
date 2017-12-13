@@ -109,7 +109,10 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
     def details(self):
         output = io.StringIO()
 
-        output.write('<h3>{}</h3>'.format(self.topic.name))
+        if self.instruction.name.startswith('!'):
+            output.write('<h3>{}</h3>'.format(self.instruction.name[1:]))
+        else:
+            output.write('<h3>{}</h3>'.format(self.topic.name))
         output.write('<p>{}</p>'.format(self.topic.description))
 
         if self.topic.qualifications.exists():
