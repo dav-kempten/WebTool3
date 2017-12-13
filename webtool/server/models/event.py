@@ -301,7 +301,7 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
             appointment = "{} Uhr".format(appointment)
         if approximate:
             appointment = "{}, {}".format(start_date, approximate)
-        if self.name:
+        if self.name and self.distal:
             appointment = "{}, {}".format(appointment, self.name)
         if self.location:
             appointment = "{}, {}".format(appointment, self.location)
