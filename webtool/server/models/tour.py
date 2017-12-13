@@ -415,7 +415,7 @@ class Tour(
             output.write(advances)
             output.write('</div>')
 
-        output.write('<p>Es gelten unsere'
+        output.write('<p>Es gelten unsere '
                      '<a href="https://www.dav-kempten.de/aktivitaeten/teilnahmebedingungen/" '
                      'title="Teilnamebedingungen">Teilname-</a>'
                      ' und '
