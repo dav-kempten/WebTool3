@@ -130,6 +130,16 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
         else:
             pass
 
+        output.write('<p>')
+        lines = []
+        lines.append('<strong>Abfahrt:</strong> {}'.format(self.instruction.departure()))
+        if self.instruction.source:
+            lines.append('<strong>Ausgangspunkt:</strong> {}'.format(self.instruction.source))
+        if self.instruction.location:
+            lines.append('<strong>Übernachtung:</strong> {}'.format(self.instruction.location))
+        output.write('<br />'.join(lines))
+        output.write('</p>')
+
         if self.instruction.description:
             output.write('<div class="additional"><p>{}</p></div>'.format(self.instruction.description))
 
