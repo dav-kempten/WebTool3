@@ -132,8 +132,9 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
 
         output.write('<p>')
         lines = [
-            "<strong>Teilnehmerzahl:</strong>{} maximal {} Teilnehmer".format(
-                " Mindestens {},".format(self.min_quantity) if self.min_quantity else '', self.max_quantity
+            "<strong>Teilnehmerzahl:</strong>{} maximal {} {}Teilnehmer".format(
+                " Mindestens {},".format(self.min_quantity) if self.min_quantity else '',
+                self.max_quantity, "weibliche " if self.ladies_only else ''
             )
         ]
         if self.advances:
