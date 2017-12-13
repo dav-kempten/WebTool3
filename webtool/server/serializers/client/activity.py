@@ -33,7 +33,7 @@ class ActivityListSerializer(serializers.ModelSerializer):
 
     def get_title(self, obj):
         if hasattr(obj, 'meeting') and obj.meeting:
-            return obj.meeting.topic.title
+            return obj.meeting.topic.name
         else:
             return obj.title
 

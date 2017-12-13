@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import io
 from django.db import models
 
 from . import fields
@@ -106,7 +107,69 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
         return ""
 
     def details(self):
-        return ""
+        output = io.StringIO()
+
+        output.write('<h3>{}</h3>'.format(self.topic.name))
+        output.write('<p>{}</p>'.format(self.topic.description))
+
+        if self.topic.qualifications.exists():
+            output.write('<div class="additional">')
+            qualifications = [
+                "<p>Für die Teilnahme an diesem Kurs ist die Beherrschung folgender "
+                "Kursinhalte Voraussetzung:<br /><ul>"
+            ]
+            for qualification in self.topic.qualifications.all().values_list('name', flat=True):
+                qualifications.append("<li>{}</li>".format(qualification))
+            qualifications.append("</ul></p>")
+            output.write(''.join(qualifications))
+            output.write('</div>')
+
+        output.write('<p>')
+        lines = [
+            "<strong>Teilnehmerzahl:</strong>{} maximal {} Teilnehmer".format(
+                " Mindestens {},".format(self.min_quantity) if self.min_quantity else '', self.max_quantity
+            )
+        ]
+        if self.advances:
+            advances = "<strong>Vorauszahlung:</strong> {} €{}".format(
+                int(self.advances), " für {}".format(self.advances_info) if self.advances_info else ''
+            )
+            lines.append(advances)
+        lines.append("<strong>Teilnehmergebühr:</strong> {} €".format(int(self.admission)))
+        if self.extra_charges:
+            extra_charges = "<strong>Zusatzkosten:</strong> {} €{}".format(
+                self.extra_charges, " für {}".format(self.extra_charges_info) if self.extra_charges_info else ''
+            )
+            lines.append(extra_charges)
+        if self.instruction.distance:
+            travel_cost = "<strong>Fahrtkostenbeteiligung:</strong> ca. {} € für ungefähr {} km".format(
+                int(0.07 * float(self.instruction.distance)), self.instruction.distance
+            )
+            lines.append(travel_cost)
+        lines.append('<strong>Organisation:</strong> {}'.format(self.guides()))
+        output.write('<br />'.join(lines))
+        output.write('</p>')
+
+        if self.advances:
+            output.write('<div class="additional">')
+            advances = (
+                "<p>Im Teilnehmerbeitrag von {} € ist eine Vorauszahlung von {} € enthalten. "
+                "Diese Vorauszahlung wird bei Stornierung der Teilnahme nur zurückerstattet, wenn der freigewordene "
+                "Platz wieder besetzt werden kann.</p>"
+            ).format(self.admission, int(self.advances))
+            output.write(advances)
+            output.write('</div>')
+
+        output.write('<p>Es gelten unsere '
+                     '<a href="https://www.dav-kempten.de/aktivitaeten/teilnahmebedingungen/" '
+                     'title="Teilnamebedingungen">Teilname-</a>'
+                     ' und '
+                     '<a href="https://www.dav-kempten.de/aktivitaeten/stornobedingungen/" '
+                     'title="Stornobedingungen">Stornobedingungen</a>.'
+                     '</p>'
+        )
+
+        return output.getvalue()
 
     class Meta:
         get_latest_by = "updated"

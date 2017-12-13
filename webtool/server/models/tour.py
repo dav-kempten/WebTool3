@@ -358,7 +358,7 @@ class Tour(
                 "<p>Für die Teilnahme an dieser Tour ist die Beherrschung folgender "
                 "Kursinhalte Voraussetzung:<br /><ul>"
             ]
-            for qualification in self.qualifications.all().values_list('category__name', flat=True):
+            for qualification in self.qualifications.all().values_list('name', flat=True):
                 qualifications.append("<li>{}</li>".format(qualification))
             qualifications.append("</ul></p>")
             output.write(''.join(qualifications))
