@@ -128,7 +128,7 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
             pass
 
         if self.instruction.description:
-            output.write('<p>{}</p>'.format(self.instruction.description))
+            output.write('<div class="additional"><p>{}</p></div>'.format(self.instruction.description))
 
         output.write('<p>')
         lines = [
