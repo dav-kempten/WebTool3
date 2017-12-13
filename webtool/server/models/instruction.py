@@ -132,7 +132,8 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
 
         output.write('<p>')
         lines = []
-        lines.append('<strong>Abfahrt:</strong> {}'.format(self.instruction.departure()))
+        if self.instruction.distal:
+            lines.append('<strong>Abfahrt:</strong> {}'.format(self.instruction.departure()))
         if self.instruction.source:
             lines.append('<strong>Ausgangspunkt:</strong> {}'.format(self.instruction.source))
         if self.instruction.location:
