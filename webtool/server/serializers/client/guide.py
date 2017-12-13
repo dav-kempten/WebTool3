@@ -36,18 +36,7 @@ class GuideListSerializer(serializers.ModelSerializer):
         return None
 
     def get_qualification(self, obj):
-        qualification_list = (
-            obj.user.qualification_list.exclude(
-                qualification__name__in=["Anwärter", "Kletterassistent (Kempten)"]
-            ).values_list('qualification__name',flat=True)
-        )
-        qualification = ', '.join(qualification_list)
-        return (
-            qualification.replace('Fachübungsleiter', 'FÜL')
-                .replace('Zusatzqualifikation', 'ZQ')
-                .replace('Trainer ', 'T')
-                .replace('JDAV-', '')
-        ) if qualification else None
+        return obj.qualification_list()
 
     def get_detail(self, obj):
         request = self.context['request']
@@ -76,7 +65,11 @@ class GuideSerializer(GuideListSerializer):
         )
 
     def get_profile(self, obj):
-        return json.loads(obj.profile, encoding='utf-8') if obj.profile else None
+        profile = json.loads(obj.profile, encoding='utf-8') if obj.profile else None
+        if profile:
+            qualification_list = obj.qualification_list()
+            profile.update({"qualification": qualification_list})
+        return profile
 
     def get_links(self, obj):
         request = self.context['request']

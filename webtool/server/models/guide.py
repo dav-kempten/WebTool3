@@ -77,6 +77,20 @@ class Guide(SeasonsMixin, TimeMixin, models.Model):
     def __str__(self):
         return self.name
 
+    def qualification_list(self):
+        qualification_list = (
+            self.user.qualification_list.exclude(
+                qualification__name__in=["Anwärter", "Kletterassistent (Kempten)"]
+            ).values_list('qualification__name',flat=True)
+        )
+        qualification = ', '.join(qualification_list)
+        return (
+            qualification.replace('Fachübungsleiter', 'FÜL')
+                .replace('Zusatzqualifikation', 'ZQ')
+                .replace('Trainer ', 'T')
+                .replace('JDAV-', '')
+        ) if qualification else None
+
     class Meta():
         get_latest_by = "updated"
         verbose_name = "Touren/Kurs/Gruppenleiter"
