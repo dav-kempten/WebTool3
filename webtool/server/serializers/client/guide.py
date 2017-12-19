@@ -107,4 +107,8 @@ class GuideSerializer(GuideListSerializer):
             username = obj.user.get_username()
             result["supportedInstructions"] = "{}?activity=topic&team={}".format(reverse('event-list', request=request), username)
 
+        if obj.collectives.filter(internal=False).exists():
+            username = obj.user.get_username()
+            result["managedCollectives"] = "{}?manager={}".format(reverse('collective-list', request=request), username)
+
         return result
