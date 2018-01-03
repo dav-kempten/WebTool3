@@ -74,6 +74,27 @@ class Session(TimeMixin, GuidedEventMixin, RequirementMixin, EquipmentMixin, Sta
         on_delete=models.PROTECT,
     )
 
+    # noinspection PyUnresolvedReferences
+    categories = models.ManyToManyField(
+        'Category',
+        db_index=True,
+        verbose_name='Weitere Kategorien',
+        related_name='session_list',
+        blank=True,
+    )
+
+    misc_category = models.CharField(
+        'Sonstiges',
+        max_length=75,
+        blank=True, default='',
+        help_text="Kategoriebezeichnung, wenn unter Kategorie „Sonstiges“ gewählt wurde",
+    )
+
+    ladies_only = models.BooleanField(
+        'Von Frauen für Frauen',
+        default=False,
+    )
+
     session = models.OneToOneField(
         Event,
         primary_key=True,
@@ -86,7 +107,7 @@ class Session(TimeMixin, GuidedEventMixin, RequirementMixin, EquipmentMixin, Sta
         verbose_name='Referent',
         max_length=125,
         blank=True, default='',
-        help_text="Name des Referenten",
+        help_text="Name der/des Referenten",
 
     )
 
@@ -95,6 +116,9 @@ class Session(TimeMixin, GuidedEventMixin, RequirementMixin, EquipmentMixin, Sta
         blank=True, default='',
         help_text="Eine URL zum Tourenportal der Alpenvereine",
     )
+
+    message = models.TextField(blank=True, default='')  # Info vom Guide an Referat
+    comment = models.TextField(blank=True, default='')  # Interna!
 
     @property
     def season(self):
