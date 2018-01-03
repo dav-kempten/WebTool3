@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import io
 from django.db import models
 
 from .event import Event
@@ -138,7 +139,12 @@ class Session(TimeMixin, GuidedEventMixin, RequirementMixin, EquipmentMixin, Sta
         return ""
 
     def details(self):
-        return ""
+        output = io.StringIO()
+
+        output.write('<h3>{}</h3>'.format(self.session.name))
+        output.write('<p>{}</p>'.format(self.session.description))
+
+        return output.getvalue()
 
     class Meta:
         get_latest_by = "updated"
