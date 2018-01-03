@@ -38,10 +38,10 @@ class SessionSerializer(MeetingSerializer):
             guide = Guide.objects.get(user__username=username)
 
         guide_list = None
-        team = session.pop('team').split(', ')
+        team = session.pop('team')
         if isinstance(team, str):
-            guide_list = Guide.objects.filter(user__username__in=team)
-            if guide_list.count() != len(team):
+            guide_list = Guide.objects.filter(user__username__in=team.split(', '))
+            if guide_list.count() != len(team.split(', ')):
                 pass
 
         speaker = session.pop('speaker')
