@@ -6,7 +6,6 @@ from django.http import Http404
 from rest_framework.authentication import TokenAuthentication
 from rest_framework import viewsets
 from rest_framework.response import Response
-from rest_framework.routers import DefaultRouter, APIRootView
 
 from server.models import Event, Reference
 from server.permissions import IsApprovedOrReadOnly
@@ -47,14 +46,3 @@ class InstructionViewSet(viewsets.ViewSet):
 
     def destroy(self, request, pk=None):
         pass
-
-
-class AdminRootView(APIRootView):
-
-    authentication_classes = (TokenAuthentication, )
-    permission_classes = (IsApprovedOrReadOnly, )
-
-
-router = DefaultRouter()
-router.APIRootView = AdminRootView
-router.register(r'instructions', InstructionViewSet, base_name='instruction')

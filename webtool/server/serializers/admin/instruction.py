@@ -3,37 +3,10 @@
 from rest_framework.reverse import reverse
 from rest_framework import serializers
 
-from server.models import Event, Instruction, Guide, Topic
+from server.models import Event, Instruction, Guide, Topic, Approximate
 from server.models.utils import create_reference
 
-
-class MeetingSerializer(serializers.Serializer):
-
-    title = serializers.CharField(allow_blank=True, allow_null=True, default='')
-    name = serializers.CharField(allow_blank=True, allow_null=True, default='')
-    description = serializers.CharField(allow_blank=True, default='')
-    startDate = serializers.DateField(source="start_date")
-    startTime = serializers.TimeField(source="start_time", default=None, allow_null=True)
-    approximate = serializers.CharField(default=None, allow_null=True)
-    endDate = serializers.DateField(source="end_date", default=None, allow_null=True)
-    endTime = serializers.TimeField(source="end_time", default=None, allow_null=True)
-    rendezvous = serializers.CharField(allow_blank=True, default='')
-    location = serializers.CharField(allow_blank=True, default='')
-    source = serializers.CharField(allow_blank=True, default='')
-    link = serializers.CharField(allow_blank=True, default='')
-    map = serializers.CharField(allow_blank=True, default='')
-    distal = serializers.BooleanField(default=False)
-    distance = serializers.IntegerField(default=0)
-    publicTransport = serializers.BooleanField(source="public_transport", default=False)
-    reference = serializers.CharField(default=None, allow_null=True)
-
-
-class QuantitySerializer(serializers.Serializer):
-
-    min = serializers.IntegerField(source="min_quantity", default=3)
-    max = serializers.IntegerField(source="max_quantity", default=6)
-    current = serializers.IntegerField(source="cur_quantity")
-
+from .core import MeetingSerializer, QuantitySerializer
 
 class InstructionSerializer(MeetingSerializer):
 
@@ -77,8 +50,14 @@ class InstructionSerializer(MeetingSerializer):
         reference = create_reference(category, prefix=prefix, topic=True)
         category = reference.category
         season = reference.season
+
+        approximate = None
+        approximate_name = validated_data.pop('approximate')
+        if approximate_name:
+            approximate = Approximate.objects.get(seasons=season, name=approximate_name)
+
         topic = Topic.objects.get(seasons=season, category=category)
-        event = Event.objects.create(season=season, reference=reference, new=True, **validated_data)
+        event = Event.objects.create(season=season, reference=reference, new=True, approximate=approximate, **validated_data)
         instruction = Instruction.objects.create(
             topic=topic, guide=guide, instruction=event, state_id=5, **instruction
         )
@@ -90,7 +69,15 @@ class InstructionSerializer(MeetingSerializer):
                 reference = meeting.pop('reference')
                 assert reference is None
                 reference = create_reference(prefix=prefix, meeting=True)
-                event = Event.objects.create(season=season, reference=reference, instruction=instruction, **meeting)
+
+                approximate = None
+                approximate_name = meeting.pop('approximate')
+                if approximate_name:
+                    approximate = Approximate.objects.get(seasons=season, name=approximate_name)
+
+                event = Event.objects.create(
+                    season=season, reference=reference, instruction=instruction, approximate=approximate, **meeting
+                )
 
         return instruction
 

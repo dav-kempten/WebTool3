@@ -143,6 +143,11 @@ class Session(TimeMixin, GuidedEventMixin, RequirementMixin, EquipmentMixin, Sta
 
         output.write('<h3>{}</h3>'.format(self.session.name))
         output.write('<p>{}</p>'.format(self.session.description))
+
+        output.write('<p><strong>Termin:</strong>')
+        output.write(self.session.appointment())
+        output.write('</p>')
+
         guides = self.guides()
         if guides:
             output.write('<p><strong>Organisation:</strong> {}</p>'.format(self.guides()))

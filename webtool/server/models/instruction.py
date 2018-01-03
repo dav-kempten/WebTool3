@@ -232,8 +232,6 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
         output.write('<br />'.join(lines))
         output.write('</p>')
 
-
-
         return output.getvalue()
 
     class Meta:
