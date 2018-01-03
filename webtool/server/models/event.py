@@ -446,6 +446,8 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
             return self.tour.ladies_only
         if hasattr(self, 'meeting') and self.meeting:
             return self.meeting.ladies_only
+        if hasattr(self, 'session') and self.session:
+            return self.session.ladies_only
         return False
 
     @property
