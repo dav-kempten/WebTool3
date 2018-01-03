@@ -26,6 +26,8 @@ class ActivityListSerializer(serializers.ModelSerializer):
         categories = [obj.reference.category.name]
         if hasattr(obj, 'tour') and obj.tour:
             categories.extend(obj.tour.categories.values_list('name', flat=True))
+        elif hasattr(obj, 'session') and obj.session:
+            categories.extend(obj.session.categories.values_list('name', flat=True))
         return categories
 
     def get_description(self, obj):
@@ -34,6 +36,8 @@ class ActivityListSerializer(serializers.ModelSerializer):
     def get_title(self, obj):
         if hasattr(obj, 'meeting') and obj.meeting:
             return obj.meeting.topic.name
+        elif hasattr(obj, 'session') and obj.session:
+            return obj.name
         else:
             return obj.title
 
