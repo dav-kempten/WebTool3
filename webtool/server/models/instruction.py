@@ -193,7 +193,7 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
 
         output.write('<p>Es gelten unsere '
                      '<a href="/aktivitaeten/teilnahmebedingungen/" '
-                     'title="Teilnamebedingungen">Teilname-</a>'
+                     'title="Teilnahmebedingungen">Teilnahme-</a>'
                      ' und '
                      '<a href="/aktivitaeten/stornobedingungen/" '
                      'title="Stornobedingungen">Stornobedingungen</a>.'
