@@ -39,7 +39,7 @@ class Skill(SeasonsMixin, TimeMixin, models.Model):
     natural_key.dependencies = ['server.season']
 
     def __str__(self):
-        return self.order
+        return self.code
 
     class Meta:
         get_latest_by = "updated"

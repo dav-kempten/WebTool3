@@ -41,7 +41,7 @@ class Topic(SeasonsMixin, TimeMixin, DescriptionMixin, QualificationMixin, Equip
     def natural_key(self):
         return self.category.code,
 
-    natural_key.dependencies = ['server.season']
+    natural_key.dependencies = ['server.season', 'server.category']
 
     def __str__(self):
         return "{} ({}){}".format(self.title, self.category.code, "- internal" if self.internal else "")

@@ -147,7 +147,7 @@ class CategoryGroup(SeasonsMixin, TimeMixin, models.Model):
     def natural_key(self):
         return self.name
 
-    natural_key.dependencies = ['server.category']
+    natural_key.dependencies = ['server.season', 'server.category']
 
     def __str__(self):
         return "{}".format(self.name)
