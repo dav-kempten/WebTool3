@@ -11,8 +11,8 @@ from . import fields
 
 class FitnessManager(models.Manager):
 
-    def get_by_natural_key(self, season, code):
-        return self.get(season__name=season, code=code)
+    def get_by_natural_key(self, order):
+        return self.get(order=order)
 
 
 class Fitness(SeasonsMixin, TimeMixin, models.Model):
@@ -34,7 +34,7 @@ class Fitness(SeasonsMixin, TimeMixin, models.Model):
     )
 
     def natural_key(self):
-        return self.code,
+        return self.order
 
     natural_key.dependencies = ['server.season']
 
@@ -85,7 +85,7 @@ class FitnessDescription(TimeMixin, models.Model):
     def natural_key(self):
         return self.fitness.code, self.category.code
 
-    natural_key.dependencies = ['server.category']
+    natural_key.dependencies = ['server.category', 'server.fitness']
 
     def __str__(self):
         return "{} - {}".format(self.fitness.code, self.category.code)

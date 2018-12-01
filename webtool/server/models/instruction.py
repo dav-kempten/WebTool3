@@ -33,7 +33,7 @@ class Topic(SeasonsMixin, TimeMixin, DescriptionMixin, QualificationMixin, Equip
         'Tariff',
         db_index=True,
         verbose_name='Preisaufschläge',
-        related_name='instruction_list',
+        related_name='tariff_list',
     )
 
     order = fields.OrderField()
@@ -58,7 +58,7 @@ class InstructionManager(models.Manager):
 
     def get_by_natural_key(self, season, reference):
         instruction = Event.objects.get_by_natural_key(season, reference)
-        return instruction.instruction
+        return instruction.meeting
 
 
 class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, ChapterMixin, models.Model):

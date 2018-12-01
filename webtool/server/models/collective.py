@@ -43,7 +43,7 @@ class Collective(SeasonsMixin, SectionMixin, TimeMixin, DescriptionMixin, models
     def natural_key(self):
         return self.category.code,
 
-    natural_key.dependencies = ['server.season']
+    natural_key.dependencies = ['server.category']
 
     def __str__(self):
         return "{} ({}){}".format(self.title, self.category.code, "- internal" if self.internal else "")

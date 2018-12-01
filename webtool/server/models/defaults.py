@@ -72,5 +72,6 @@ def get_default_state():
     season = get_default_season()
     return season.state_list.get(default=True) if season else None
 
+
 def get_default_prefix():
     return int(str(datetime.now().year)[-1])

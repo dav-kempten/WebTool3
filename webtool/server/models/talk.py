@@ -14,7 +14,7 @@ class TalkManager(models.Manager):
         return talk.talk
 
 
-class Talk(SeasonMixin, TimeMixin, StateMixin, ChapterMixin, models.Model):
+class Talk(TimeMixin, StateMixin, ChapterMixin, models.Model):
 
     objects = TalkManager()
 
@@ -31,7 +31,6 @@ class Talk(SeasonMixin, TimeMixin, StateMixin, ChapterMixin, models.Model):
         max_length=125,
         blank=True, default='',
         help_text="Name des Referenten",
-
     )
 
     admission = fields.AdmissionField(
@@ -62,6 +61,10 @@ class Talk(SeasonMixin, TimeMixin, StateMixin, ChapterMixin, models.Model):
         verbose_name='Preisaufschläge',
         related_name='talk_list',
     )
+
+    @property
+    def season(self):
+        return self.talk.season
 
     def natural_key(self):
         return self.season.name, str(self.talk.reference)

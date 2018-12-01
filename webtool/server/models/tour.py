@@ -18,7 +18,7 @@ class TourManager(models.Manager):
 
 
 class Tour(
-    SeasonMixin, TimeMixin, QualificationMixin, EquipmentMixin, GuidedEventMixin, ChapterMixin,
+    TimeMixin, QualificationMixin, EquipmentMixin, GuidedEventMixin, ChapterMixin,
     AdminMixin, RequirementMixin, AdmissionMixin, models.Model
 ):
 
@@ -86,8 +86,12 @@ class Tour(
         help_text="Eine URL zum Tourenportal der Alpenvereine",
     )
 
+    @property
+    def season(self):
+        return self.tour.season
+
     def natural_key(self):
-        return self.season.name, self.tour.reference
+        return self.season.name, str(self.tour.reference)
 
     natural_key.dependencies = ['server.season', 'server.event']
 
@@ -110,7 +114,7 @@ class Tour(
     def _deadline(self):
         season_year = int(self.season.name)
         with_year = self.deadline.start_date.year != season_year
-        return self.deadline.short_date(with_year=with_year)
+        return self.deadline.long_date(with_year=with_year)
 
     def _preliminary(self):
         if self.preliminary:
@@ -275,20 +279,20 @@ class Tour(
         requirements = "Anforderungen: Technik {}, Kondition {}".format(self.skill.code, self.fitness.code)
         output.append(requirements)
 
-        if self.preconditions:
-            preconditions = "Spezielle Voraussetzungen: {}".format(self.preconditions)
-            output.append(preconditions)
+        #if self.preconditions:
+        #    preconditions = "Spezielle Voraussetzungen: {}".format(self.preconditions)
+        #    output.append(preconditions)
 
-        departure = "Abfahrt: {}".format(self.tour.departure())
-        output.append(departure)
+        #departure = "Abfahrt: {}".format(self.tour.departure())
+        #output.append(departure)
 
-        if self.tour.source:
-            source = "Ausgangspunkt: {}".format(self.tour.source)
-            output.append(source)
+        #if self.tour.source:
+        #    source = "Ausgangspunkt: {}".format(self.tour.source)
+        #    output.append(source)
 
-        if self.tour.location:
-            location = "Übernachtung: {}".format(self.tour.location)
-            output.append(location)
+        #if self.tour.location:
+        #    location = "Übernachtung: {}".format(self.tour.location)
+        #    output.append(location)
 
         #description = "Beschreibung: {}".format(self.tour.description)
         #output.append(description)
@@ -298,9 +302,9 @@ class Tour(
         )
         output.append(deadline)
 
-        if self.preliminary:
-            preliminary = "{}: {}".format(*self._preliminary())
-            output.append(preliminary)
+        #if self.preliminary:
+        #    preliminary = "{}: {}".format(*self._preliminary())
+        #    output.append(preliminary)
 
         guides = "Organisation: {}".format(self.guides())
         output.append(guides)
@@ -321,9 +325,12 @@ class Tour(
         #    extra_charges = "Zusatzkosten: {}".format(self.extra_charges)
         #    output.append(extra_charges)
 
-        if self.tour.distance:
-            travel_cost = "Fahrtkostenbeteiligung: ca. {} € für {} km".format(int(0.07 * float(self.tour.distance)), self.tour.distance)
-            output.append(travel_cost)
+        #if self.tour.distance:
+        #    travel_cost = "Fahrtkostenbeteiligung: ca. {} € für {} km".format(int(0.07 * float(self.tour.distance)), self.tour.distance)
+        #    output.append(travel_cost)
+
+        info = "Alle Info's zur Tour unter: dav-ke.info/{}".format(self.tour.reference)
+        output.append(info)
 
         return output
 

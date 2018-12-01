@@ -11,8 +11,8 @@ from . import fields
 
 class SkillManager(models.Manager):
 
-    def get_by_natural_key(self, code):
-        return self.get(code=code)
+    def get_by_natural_key(self, order):
+        return self.get(order=order)
 
 
 class Skill(SeasonsMixin, TimeMixin, models.Model):
@@ -34,12 +34,12 @@ class Skill(SeasonsMixin, TimeMixin, models.Model):
     )
 
     def natural_key(self):
-        return self.code,
+        return self.order
 
     natural_key.dependencies = ['server.season']
 
     def __str__(self):
-        return self.code
+        return self.order
 
     class Meta:
         get_latest_by = "updated"
@@ -85,7 +85,7 @@ class SkillDescription(TimeMixin, models.Model):
     def natural_key(self):
         return self.skill.code, self.category.code
 
-    natural_key.dependencies = ['server.category']
+    natural_key.dependencies = ['server.category', 'server.skill']
 
     def __str__(self):
         return "{} - {}".format(self.skill.code, self.category.code)
