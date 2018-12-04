@@ -13,7 +13,7 @@ from .time_base import TimeMixin
 class TopicManager(models.Manager):
 
     def get_by_natural_key(self, category):
-        return self.get(category_code=category)
+        return self.get(category__code=category)
 
 
 class Topic(SeasonsMixin, TimeMixin, DescriptionMixin, QualificationMixin, EquipmentMixin, models.Model):
@@ -197,8 +197,13 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
                      ' und '
                      '<a href="/aktivitaeten/stornobedingungen/" '
                      'title="Stornobedingungen">Stornobedingungen</a>.'
-                     '</p>'
-        )
+                     '</p>')
+
+        output.write('<p><strong>Hinweis zum Buchungsstand:</strong>Die oben '
+                     'unter „Teilnehmer“ aufgeführten Buchungsstände werden nicht '
+                     'in Echtzeit aktualisiert, so dass die reale Verfügbarkeit '
+                     'abweichen kann. '
+                     'Die Geschäftsstelle gibt euch gerne Auskunft über den aktuellsten Stand</p>')
 
         return output.getvalue()
 
