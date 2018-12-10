@@ -302,7 +302,7 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
         if approximate:
             appointment = "{}, {}".format(start_date, approximate)
         if self.name:
-            appointment = "{}, {}".format(appointment, self.name)
+            appointment = "{}, {}".format(appointment, self.name[1:] if self.name.startswith('!') else self.name)
         if self.location:
             appointment = "{}, {}".format(appointment, self.location)
         if self.rendezvous:
