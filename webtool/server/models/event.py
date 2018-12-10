@@ -455,7 +455,10 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
         if hasattr(self, 'tour') and self.tour:
             return self.tour.preconditions
         if hasattr(self, 'meeting') and self.meeting:
-            return self.meeting.topic.preconditions
+            if self.name.startswith('!'):
+                return self.meeting.preconditions
+            else:
+                return self.meeting.topic.preconditions
         return None
 
     @property
@@ -466,8 +469,12 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
             equipments = self.tour.equipments
             misc = self.tour.misc_equipment
         if hasattr(self, 'meeting') and self.meeting:
-            equipments = self.meeting.topic.equipments
-            misc = self.meeting.topic.misc_equipment
+            if self.name.startswith('!'):
+                equipments = self.meeting.equipments
+                misc = self.meeting.misc_equipment
+            else:
+                equipments = self.meeting.topic.equipments
+                misc = self.meeting.topic.misc_equipment
         if hasattr(self, 'session') and self.session:
             equipments = self.session.equipments
             misc = self.session.misc_equipment
