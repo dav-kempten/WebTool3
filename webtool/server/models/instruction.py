@@ -153,7 +153,7 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
             output.write('<br />'.join([e.appointment() for e in self.meeting_list.all()]))
             output.write('</p>')
 
-        if self.instruction.description:
+        if normal and self.instruction.description:
             output.write('<div class="additional"><p>{}</p></div>'.format(self.instruction.description))
 
         output.write('<p>')
