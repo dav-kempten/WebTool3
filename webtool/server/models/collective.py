@@ -135,6 +135,13 @@ class Session(TimeMixin, GuidedEventMixin, RequirementMixin, EquipmentMixin, Sta
             self.session.title, self.collective.title, self.session.long_date(with_year=True), self.season
         )
 
+    def category_list(self):
+        categories = [self.session.reference.category.code]
+        categories += list(self.categories.exclude(code='?').values_list('code', flat=True))
+        if self.categories.filter(code='?').exists() and self.misc_category:
+            categories.append(self.misc_category)
+        return ', '.join(categories)
+
     def subject(self):
         return ""
 

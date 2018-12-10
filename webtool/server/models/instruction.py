@@ -61,7 +61,8 @@ class InstructionManager(models.Manager):
         return instruction.meeting
 
 
-class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, ChapterMixin, models.Model):
+class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, ChapterMixin,
+                  QualificationMixin, EquipmentMixin, models.Model):
 
     objects = InstructionManager()
 
@@ -108,19 +109,23 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
 
     def details(self):
         output = io.StringIO()
+        normal = True
 
         if self.instruction.name.startswith('!'):
-            output.write('<h3>{}</h3>'.format(self.instruction.name[1:]))
-        else:
-            output.write('<h3>{}</h3>'.format(self.topic.name))
-        output.write('<p>{}</p>'.format(self.topic.description))
+            normal = False
+        output.write('<h3>{}</h3>'.format(self.topic.name if normal else self.instruction.name[1:]))
+        output.write('<p>{}</p>'.format(self.topic.description if normal else self.instruction.description))
 
-        if self.topic.qualifications.exists():
+        if (normal and self.topic.qualifications.exists()) or (not normal and self.qualifications.exists()):
             output.write('<div class="additional">')
+            if normal:
+                qs = self.topic.qualifications.values_list('name', flat=True)
+            else:
+                qs = self.qualifications.values_list('name', flat=True)
             output.write(
                 "<p>Für die Teilnahme an diesem Kurs ist die Beherrschung folgender "
                 "Kursinhalte Voraussetzung: {}</p>".format(
-                    ', '.join([q for q in self.topic.qualifications.values_list('name', flat=True)])
+                    ', '.join([q for q in qs])
                 )
             )
             output.write('</div>')
