@@ -35,8 +35,8 @@ class ActivityListSerializer(serializers.ModelSerializer):
 
     def get_title(self, obj):
         if hasattr(obj, 'meeting') and obj.meeting:
-            if obj.meeting.name.startswith('!'):
-                return obj.meeting.name[1:]
+            if obj.name.startswith('!'):
+                return obj.name[1:]
             else:
                 return obj.meeting.topic.name
         else:
