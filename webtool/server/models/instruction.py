@@ -84,7 +84,13 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
 
     ladies_only = models.BooleanField(
         'Von Frauen für Frauen',
-        default=False,
+        blank=True, default=False,
+    )
+
+    is_special = models.BooleanField(
+        'Spezialkurs',
+        blank=True, default=False,
+        help_text = 'Kreative Kursinhalte'
     )
 
     @property
@@ -111,7 +117,7 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
         output = io.StringIO()
         normal = True
 
-        if self.instruction.name.startswith('!'):
+        if self.is_special:
             normal = False
         output.write('<h3>{}</h3>'.format(self.topic.name if normal else self.instruction.name[1:]))
         output.write('<p>{}</p>'.format(self.topic.description if normal else self.instruction.description))

@@ -309,7 +309,7 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
         if approximate:
             appointment = "{}, {}".format(start_date, approximate)
         if self.name:
-            appointment = "{}, {}".format(appointment, self.name[1:] if self.name.startswith('!') else self.name)
+            appointment = "{}, {}".format(appointment, self.name)
         if self.location:
             appointment = "{}, {}".format(appointment, self.location)
         if self.rendezvous:
@@ -462,7 +462,7 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
         if hasattr(self, 'tour') and self.tour:
             return self.tour.preconditions
         if hasattr(self, 'meeting') and self.meeting:
-            if self.name.startswith('!'):
+            if self.meeting.is_special:
                 return self.meeting.preconditions
             else:
                 return self.meeting.topic.preconditions
@@ -476,7 +476,7 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
             equipments = self.tour.equipments
             misc = self.tour.misc_equipment
         if hasattr(self, 'meeting') and self.meeting:
-            if self.name.startswith('!'):
+            if self.meeting.is_special:
                 equipments = self.meeting.equipments
                 misc = self.meeting.misc_equipment
             else:
