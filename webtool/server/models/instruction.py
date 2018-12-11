@@ -120,18 +120,19 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
         output.write('<p>{}</p>'.format(self.instruction.description if self.is_special else self.topic.description))
 
         if (self.is_special and self.topic.qualifications.exists()) or (not self.is_special and self.qualifications.exists()):
-            output.write('<div class="additional">')
             if self.is_special:
                 qs = self.qualifications.values_list('name', flat=True)
             else:
                 qs = self.topic.qualifications.values_list('name', flat=True)
-            output.write(
-                "<p>Für die Teilnahme an diesem Kurs ist die Beherrschung folgender "
-                "Kursinhalte Voraussetzung: {}</p>".format(
-                    ', '.join([q for q in qs])
+            if qs.exists():
+                output.write('<div class="additional">')
+                output.write(
+                    "<p>Für die Teilnahme an diesem Kurs ist die Beherrschung folgender "
+                    "Kursinhalte Voraussetzung: {}</p>".format(
+                        ', '.join([q for q in qs])
+                    )
                 )
-            )
-            output.write('</div>')
+                output.write('</div>')
 
         if self.meeting_list.exists():
             pass
