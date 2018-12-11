@@ -23,4 +23,5 @@ from .section import Section
 from .calendar import Calendar, Anniversary, Vacation, OCCURRENCE_CHOICES, DAY_CHOICES, MONTH_CHOICES
 from .tariff import Tariff
 from .chapter import Chapter
+from .booklet import Booklet
 from .defaults import *
