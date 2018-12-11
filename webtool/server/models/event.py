@@ -266,6 +266,7 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
 
     def appointment(self):
         """
+            {start_date}, {start_time} Uhr, {name}, {location}, {rendezvous}
             {start_date}, {start_time} bis {end_time} Uhr, {name}, {location}, {rendezvous}
             {start_date}, {start_time} Uhr bis {end_date}, {end_time} Uhr, {name}, {location}, {rendezvous}
             {start_date}, {start_time} Uhr bis {end_date}, {name}, {location}, {rendezvous}
@@ -299,13 +300,13 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
 
         if start_time:
             appointment = "{}, {}".format(start_date, start_time)
-            if end_date:
-                appointment = "{} Uhr".format(appointment)
             if end_time:
                 if end_date:
                     appointment = "{} bis {}, {} Uhr".format(appointment, end_date, end_time)
                 else:
                     appointment = "{} bis {} Uhr".format(appointment, end_time)
+            else:
+                appointment = "{} Uhr".format(appointment)
         if approximate:
             appointment = "{}, {}".format(start_date, approximate)
         if self.name:
