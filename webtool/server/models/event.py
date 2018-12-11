@@ -302,7 +302,7 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
             appointment = "{}, {}".format(start_date, start_time)
             if end_time:
                 if end_date:
-                    appointment = "{} bis {}, {} Uhr".format(appointment, end_date, end_time)
+                    appointment = "{} Uhr bis {}, {} Uhr".format(appointment, end_date, end_time)
                 else:
                     appointment = "{} bis {} Uhr".format(appointment, end_time)
             else:
