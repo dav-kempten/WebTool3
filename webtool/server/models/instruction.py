@@ -115,19 +115,16 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
 
     def details(self):
         output = io.StringIO()
-        normal = True
 
-        if self.is_special:
-            normal = False
-        output.write('<h3>{}</h3>'.format(self.topic.name if normal else self.instruction.name[1:]))
-        output.write('<p>{}</p>'.format(self.topic.description if normal else self.instruction.description))
+        output.write('<h3>{}</h3>'.format(self.instruction.name if self.is_special else self.topic.name))
+        output.write('<p>{}</p>'.format(self.instruction.description if self.is_special else self.topic.description))
 
-        if (normal and self.topic.qualifications.exists()) or (not normal and self.qualifications.exists()):
+        if (self.is_special and self.topic.qualifications.exists()) or (not self.is_special and self.qualifications.exists()):
             output.write('<div class="additional">')
-            if normal:
-                qs = self.topic.qualifications.values_list('name', flat=True)
-            else:
+            if self.is_special:
                 qs = self.qualifications.values_list('name', flat=True)
+            else:
+                qs = self.topic.qualifications.values_list('name', flat=True)
             output.write(
                 "<p>Für die Teilnahme an diesem Kurs ist die Beherrschung folgender "
                 "Kursinhalte Voraussetzung: {}</p>".format(
@@ -159,7 +156,7 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
             output.write('<br />'.join([e.appointment() for e in self.meeting_list.all()]))
             output.write('</p>')
 
-        if normal and self.instruction.description:
+        if not self.is_special and self.instruction.description:
             output.write('<div class="additional"><p>{}</p></div>'.format(self.instruction.description))
 
         output.write('<p>')
