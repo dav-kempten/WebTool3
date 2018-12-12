@@ -36,7 +36,11 @@ class GuideListSerializer(serializers.ModelSerializer):
         return None
 
     def get_qualification(self, obj):
-        return obj.qualification_list()
+        qualification_list = obj.qualification_list()
+        if qualification_list:
+            return qualification_list
+        else:
+            return None
 
     def get_detail(self, obj):
         request = self.context['request']
@@ -67,7 +71,8 @@ class GuideSerializer(GuideListSerializer):
     def get_profile(self, obj):
         profile = json.loads(obj.profile, encoding='utf-8') if obj.profile else {}
         qualification_list = obj.qualification_list()
-        profile.update({"qualification": qualification_list})
+        if qualification_list:
+            profile.update({"qualification": qualification_list})
         return profile
 
     def get_links(self, obj):

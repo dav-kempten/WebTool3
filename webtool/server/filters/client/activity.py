@@ -54,11 +54,12 @@ class ActivityFilter(filters.FilterSet):
 
     def activity_filter(self, queryset, name, value):
         if value in ("tour", "topic", "collective", "talk"):
-            return queryset.filter(**{"reference__category__{}".format(value): True})
+            return queryset.filter(**{"reference__category__{}".format(value): True}).exclude(deprecaded=True)
         else:
             Event.objects.none()
 
     def division_filter(self, queryset, name, value):
+        queryset = queryset.exclude(deprecaded=True)
         if value in ("winter", "summer"):
             return queryset.filter(**{"reference__category__{}".format(value): True})
         elif value == "indoor":
@@ -73,6 +74,7 @@ class ActivityFilter(filters.FilterSet):
             Event.objects.none()
 
     def category_filter(self, queryset, name, value):
+        queryset = queryset.exclude(deprecaded=True)
         try:
             category = Category.objects.get(code__iexact=value)
         except Category.DoesNotExist:
@@ -84,6 +86,7 @@ class ActivityFilter(filters.FilterSet):
 
 
     def categorygroup_filter(self, queryset, name, value):
+        queryset = queryset.exclude(deprecaded=True)
         try:
             group = CategoryGroup.objects.get(pk=value)
         except CategoryGroup.DoesNotExist:
@@ -93,6 +96,7 @@ class ActivityFilter(filters.FilterSet):
         ).distinct()
 
     def guide_filter(self, queryset, name, value):
+        queryset = queryset.exclude(deprecaded=True)
         try:
             guide = Guide.objects.get(user__username__iexact=value)
         except Guide.DoesNotExist:
@@ -104,6 +108,7 @@ class ActivityFilter(filters.FilterSet):
         ).distinct()
 
     def team_filter(self, queryset, name, value):
+        queryset = queryset.exclude(deprecaded=True)
         try:
             guide = Guide.objects.get(user__username__iexact=value)
         except Guide.DoesNotExist:
@@ -115,27 +120,31 @@ class ActivityFilter(filters.FilterSet):
         ).distinct()
 
     def month_filter(self, queryset, name, value):
+        queryset = queryset.exclude(deprecaded=True)
         if 1 <= value <= 12:
             return queryset.filter(start_date__month=value)
         else:
             Event.objects.none()
 
     def ladies_only_filter(self, queryset, name, value):
+        queryset = queryset.exclude(deprecaded=True)
         if value:
             return queryset.filter(
                 Q(tour__ladies_only=True) |
-                Q(meeting__ladies_only=True)
+                Q(meeting__ladies_only=True) |
+                Q(session__ladies_only=True)
             ).distinct()
         else:
-            return queryset.exclude(tour__ladies_only=True).exclude(meeting__ladies_only=True)
+            return queryset.exclude(tour__ladies_only=True).exclude(meeting__ladies_only=True).exclude(session__ladies_only=True)
 
     def public_transport_filter(self, queryset, name, value):
-        return queryset.filter(public_transport=value)
+        return queryset.filter(public_transport=value).exclude(deprecaded=True)
 
     def low_emission_adventure_filter(self, queryset, name, value):
-        return queryset.filter(lea=value)
+        return queryset.filter(lea=value).exclude(deprecaded=True)
 
     def state_filter(self, queryset, name, value):
+        queryset = queryset.exclude(deprecaded=True)
         if value == "public":
             try:
                 public = State.objects.get(done=False, moved=False, canceled=False, unfeasible=False, public=True)
@@ -158,6 +167,7 @@ class ActivityFilter(filters.FilterSet):
             Event.objects.none()
 
     def open_filter(self, queryset, name, value):
+        queryset = queryset.exclude(deprecaded=True)
         if value:
             return (
                 queryset
@@ -173,16 +183,18 @@ class ActivityFilter(filters.FilterSet):
             ).distinct()
 
     def next_filter(self, queryset, name, value):
-            today = datetime.date.today()
-            q1 = (
-                queryset
-                    .filter(start_date__gte=today).exclude(session__isnull=False)
-                    .exclude(tour__cur_quantity__gte=F('tour__max_quantity'))
-                    .exclude(meeting__cur_quantity__gte=F('meeting__max_quantity'))
-                    .exclude(talk__cur_quantity__gte=F('talk__max_quantity'))
-            )
-            q2 = queryset.filter(start_date__gte=today, reference__category__code__in=['VST', 'SKA', 'AAS'])
-            return q1.union(q2).order_by('start_date')
+        queryset = queryset.exclude(deprecaded=True)
+        today = datetime.date.today()
+        queryset = queryset.exclude(deprecated=True)
+        q1 = (
+            queryset
+                .filter(start_date__gte=today).exclude(session__isnull=False)
+                .exclude(tour__cur_quantity__gte=F('tour__max_quantity'))
+                .exclude(meeting__cur_quantity__gte=F('meeting__max_quantity'))
+                .exclude(talk__cur_quantity__gte=F('talk__max_quantity'))
+        )
+        q2 = queryset.filter(start_date__gte=today, reference__category__code__in=['VST', 'SKA', 'AAS', "EVT"])
+        return q1.union(q2).order_by('start_date')
 
     class Meta:
         model = Event
