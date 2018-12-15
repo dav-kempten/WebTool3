@@ -14,7 +14,8 @@ Saison
 ~~~~~~
 
 Für die Abgrenzung der verschiedenen Veranstaltungszeiträume wird eine Saison (``Season``) definiert.
-So haben alle folgenden Objekte einen Bezug zu genau einer ``Season``.
+Es gibt Objekte, die über die Jahre unverändert Verwendung finden (Siehe: ``SeasonsMixin``),
+andere haben einen festen Bezug zu genau einer ``Season`` (Siehe: ``SeasonMixin``).
 
 .. code-block:: python
 
