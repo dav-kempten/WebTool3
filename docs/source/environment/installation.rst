@@ -297,7 +297,6 @@ Cerbot
     > sudo certbot --nginx -d example.com -d www.example.com
 
 ..
-
     IMPORTANT NOTES:
      - Congratulations! Your certificate and chain have been saved at:
        /etc/letsencrypt/live/alpinexplorer.eu/fullchain.pem
@@ -322,8 +321,8 @@ Django
 Varnish
 ~~~~~~~
 
-https://www.digitalocean.com/community/tutorials/how-to-configure-varnish-cache-4-0-with-ssl-termination-on-ubuntu-14-04
-http://chase-seibert.github.io/blog/2011/09/23/varnish-caching-for-unauthenticated-django-views.html
+| https://www.digitalocean.com/community/tutorials/how-to-configure-varnish-cache-4-0-with-ssl-termination-on-ubuntu-14-04
+| http://chase-seibert.github.io/blog/2011/09/23/varnish-caching-for-unauthenticated-django-views.html
 
 
 TeXLive
@@ -334,8 +333,8 @@ TeXLive
     > mkdir install-tl && cd install-tl
     > wget -O - -- http://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz | tar xzf - --strip-components=1
     > sudo -s
-    $ apt install tex-common texinfo equivs perl-tk perl-doc
-    $ ./install-tl
+    # apt install tex-common texinfo equivs perl-tk perl-doc
+    # ./install-tl
 
 * Menüpunkt „Options“ wählen: O
 * Menüpunkt „create symlinks in standard directories“ wählen: L
@@ -350,9 +349,11 @@ TeXLive
 
 .. code-block:: none
 
-    $ exit
+    # exit
     > cd .. && rm -ir install_tl
 
 RabbitMQ
 ~~~~~~~~
 
+| https://www.digitalocean.com/community/tutorials/how-to-install-and-manage-rabbitmq
+| https://tecadmin.net/install-rabbitmq-server-on-ubuntu/
