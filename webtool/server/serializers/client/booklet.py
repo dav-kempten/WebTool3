@@ -38,14 +38,28 @@ class BookletRetrieveSerializer(BookletListSerializer):
 
 class BookletSerializer(BookletRetrieveSerializer):
 
-    subHeader = serializers.CharField(source='sub_header', allow_blank=True, default='', label='Untertitel', help_text="Das ist der Untertitel für das Titelblatt")
-    mainHeader = serializers.CharField(source='main_header', allow_blank=True, default='', label='Hauptitel', help_text='Das ist der Haupttitel für das Titelblatt')
+    subHeader = serializers.CharField(
+        source='sub_header',
+        max_length=125,
+        allow_blank=True, default='',
+        label='Untertitel',
+        help_text="Das ist der Untertitel für das Titelblatt"
+    )
+
+    mainHeader = serializers.CharField(
+        source='main_header',
+        max_length=125,
+        allow_blank=True, default='',
+        label='Hauptitel',
+        help_text='Das ist der Haupttitel für das Titelblatt'
+    )
 
     class Meta(BookletRetrieveSerializer.Meta):
         fields = ("id", "references", "format", "header", "subHeader", "mainHeader", "status", "booklet")
 
     def validate_references(self, value):
         invalid_codes = set()
+        value = set(value)
         for code in value:
             try:
                 reference = Reference.get_reference(code)
