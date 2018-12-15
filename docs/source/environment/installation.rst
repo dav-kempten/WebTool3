@@ -355,9 +355,9 @@ TeXLive
 RabbitMQ
 ~~~~~~~~
 
-.. code-block:: none
-
 Öffentliche Schlüssel für die neuen Repositories zur Packetverwaltung hinzufügen
+
+.. code-block:: none
 
     > wget -O - "https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc" | sudo apt-key add -
 
