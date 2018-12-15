@@ -122,7 +122,7 @@ class ActivityFilter(filters.FilterSet):
     def month_filter(self, queryset, name, value):
         queryset = queryset.exclude(deprecated=True)
         if 1 <= value <= 12:
-            this_year = datetime.date.today().year
+            this_year = 2019 # datetime.date.today().year
             return queryset.filter(start_date__month=value, start_date__year=this_year)
         else:
             Event.objects.none()
