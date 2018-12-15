@@ -355,5 +355,38 @@ TeXLive
 RabbitMQ
 ~~~~~~~~
 
+.. code-block:: none
+
+Öffentliche Schlüssel für die neuen Repositories zur Packetverwaltung hinzufügen
+
+    > wget -O - "https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc" | sudo apt-key add -
+
+Erlang und RabbitMQ Repositiories anmelden
+
+.. code-block:: none
+
+    > sudo tee /etc/apt/sources.list.d/bintray.rabbitmq.list <<EOF
+    deb https://dl.bintray.com/rabbitmq-erlang/debian xenial erlang
+    deb https://dl.bintray.com/rabbitmq/debian xenial main
+    EOF
+
+RabbitMQ Server installieren
+
+.. code-block:: none
+
+    > sudo apt-get update
+    > sudo apt-get install rabbitmq-server
+
+
+| http://www.rabbitmq.com/install-debian.html
 | https://www.digitalocean.com/community/tutorials/how-to-install-and-manage-rabbitmq
 | https://tecadmin.net/install-rabbitmq-server-on-ubuntu/
+
+
+| http://www.rabbitmq.com/configure.html
+| http://www.rabbitmq.com/production-checklist.html
+
+.. code-block:: none
+
+    > sudo rabbitmqctl delete_user guest
+    > sudo service rabbitmq-server restart
