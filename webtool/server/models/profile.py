@@ -42,7 +42,7 @@ class Profile(TimeMixin, models.Model):
     member_id = models.CharField(
         'MitgliedsNr',
         max_length=13,
-        unique=True,
+        unique=True, null=True, blank=True,
         help_text="Format:sss-oo-mmmmmm s=Sektionsnummer(008) o=Ortsgruppe(00|01) m=Mitgliedsnummer",
         validators=[RegexValidator(MEMBER_ID_REGEX, 'Bitte auf den richtigen Aufbau achten')],
     )
