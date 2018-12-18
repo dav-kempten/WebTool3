@@ -36,7 +36,7 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
         talk__state__canceled=True
     ).exclude(
         meeting__isnull=False, meeting__state__public=False
-    ).exlude(
+    ).exclude(
         meeting__state__canceled=True
     ).exclude(
         session__isnull=False, session__state__public=False
