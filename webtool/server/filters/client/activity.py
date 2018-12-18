@@ -190,13 +190,9 @@ class ActivityFilter(filters.FilterSet):
     def next_filter(self, queryset, name, value):
         queryset = queryset.exclude(deprecated=True)
         today = datetime.date.today()
-        queryset = queryset.exclude(deprecated=True)
         q1 = (
             queryset
                 .filter(start_date__gte=today).exclude(session__isnull=False)
-                .exclude(tour__cur_quantity__gte=F('tour__max_quantity'))
-                .exclude(meeting__cur_quantity__gte=F('meeting__max_quantity'))
-                .exclude(talk__cur_quantity__gte=F('talk__max_quantity'))
         )
         q2 = queryset.filter(start_date__gte=today, reference__category__code__in=['VST', 'SKA', 'AAS', "EVT"])
         return q1.union(q2).order_by('start_date')
