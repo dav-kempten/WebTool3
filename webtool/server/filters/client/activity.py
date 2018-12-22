@@ -93,7 +93,8 @@ class ActivityFilter(filters.FilterSet):
         except CategoryGroup.DoesNotExist:
             return Event.objects.none()
         return queryset.filter(
-            reference__category__in=group.categories.all()
+            Q(reference__category__in=group.categories.all()) |
+            Q(meeting__category__in=group.categories.all())
         ).distinct()
 
     def guide_filter(self, queryset, name, value):
