@@ -51,6 +51,11 @@ class Tour(
         default=False,
     )
 
+    youth_on_tour = models.BooleanField(
+        'Jugend on Tour',
+        default=False,
+    )
+
     deadline = models.OneToOneField(
         Event,
         verbose_name='Anmeldeschluss',

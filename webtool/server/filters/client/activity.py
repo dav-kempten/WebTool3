@@ -46,6 +46,7 @@ class ActivityFilter(filters.FilterSet):
     team = filters.CharFilter(label='team', method='team_filter')
     month = filters.NumberFilter(label='month', method='month_filter', min_value=1, max_value=12)
     ladiesOnly = filters.BooleanFilter(label='ladiesOnly', method='ladies_only_filter')
+    youthOnTour = filters.BooleanFilter(label="youthOnTour", method='youth_on_tour')
     publicTransport = filters.BooleanFilter(label='publicTransport', method='public_transport_filter')
     lowEmissionAdventure = filters.BooleanFilter(label='lowEmissionAdventure', method='low_emission_adventure_filter')
     state = filters.ChoiceFilter(label='state', method='state_filter', choices=STATE_CHOICES)
@@ -143,6 +144,13 @@ class ActivityFilter(filters.FilterSet):
             ).distinct()
         else:
             return queryset.exclude(tour__ladies_only=True).exclude(meeting__ladies_only=True).exclude(session__ladies_only=True)
+
+    def youth_on_tour(self, queryset, name, value):
+        queryset = queryset.exclude(deprecated=True)
+        if value:
+            return queryset.filter(tour__youth_on_tour=True)
+        else:
+            return queryset.exclude(tour__youth_on_tour=True)
 
     def public_transport_filter(self, queryset, name, value):
         return queryset.filter(public_transport=value).exclude(deprecated=True)
