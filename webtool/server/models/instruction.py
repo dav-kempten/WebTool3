@@ -93,6 +93,15 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
         help_text = 'Kreative Kursinhalte'
     )
 
+    # category is valid only, if instruction is_special
+    category = models.OneToOneField(
+        'Category',
+        verbose_name='Sonder Kategorie',
+        related_name='special_instruction',
+        blank=True, null=True,
+        on_delete=models.PROTECT,
+    )
+
     @property
     def season(self):
         return self.instruction.season

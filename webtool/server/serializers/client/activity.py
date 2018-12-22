@@ -28,6 +28,9 @@ class ActivityListSerializer(serializers.ModelSerializer):
             categories.extend(obj.tour.categories.values_list('name', flat=True))
         elif hasattr(obj, 'session') and obj.session:
             categories.extend(obj.session.categories.values_list('name', flat=True))
+        elif hasattr(obj, 'instruction') and obj.meeting and obj.meeting.category:
+            categories.append(obj.meeting.category.name)
+
         return categories
 
     def get_description(self, obj):

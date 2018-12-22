@@ -81,7 +81,8 @@ class ActivityFilter(filters.FilterSet):
             return Event.objects.none()
         return queryset.filter(
             Q(reference__category=category) |
-            Q(tour__categories=category)
+            Q(tour__categories=category) |
+            Q(meeting__category=category)
         ).distinct()
 
 

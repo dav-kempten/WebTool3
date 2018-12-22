@@ -14,7 +14,7 @@ from . import fields
 class CollectiveManager(models.Manager):
 
     def get_by_natural_key(self, category):
-        return self.get(category_code=category)
+        return self.get(category__code=category)
 
 
 class Collective(SeasonsMixin, SectionMixin, TimeMixin, DescriptionMixin, models.Model):
