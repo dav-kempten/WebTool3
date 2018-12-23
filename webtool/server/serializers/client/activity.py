@@ -26,6 +26,8 @@ class ActivityListSerializer(serializers.ModelSerializer):
     def get_categories(self, obj):
         categories = [obj.reference.category.name]
         if hasattr(obj, 'tour') and obj.tour:
+            if obj.tour.youth_on_tour:
+                categories = ['Jugend'] + categories
             categories.extend(obj.tour.categories.values_list('name', flat=True))
         elif hasattr(obj, 'session') and obj.session:
             categories.extend(obj.session.categories.values_list('name', flat=True))
