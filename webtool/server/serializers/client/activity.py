@@ -18,6 +18,7 @@ class ActivityListSerializer(serializers.ModelSerializer):
     endDate = serializers.DateField(source='end_date')
     guide = serializers.SerializerMethodField()
     ladiesOnly = serializers.BooleanField(source='ladies_only')
+    youthOnTour = serializers.BooleanField(source='youth_on_tour')
     publicTransport = serializers.BooleanField(source='public_transport')
     lowEmissionAdventure = serializers.BooleanField(source='lea')
     detail = serializers.SerializerMethodField()
@@ -83,7 +84,7 @@ class ActivityListSerializer(serializers.ModelSerializer):
             'speaker',
             'guide',
             'division',
-            'ladiesOnly', 'publicTransport', 'lowEmissionAdventure',
+            'ladiesOnly', 'youthOnTour', 'publicTransport', 'lowEmissionAdventure',
             'state',
             'detail'
         )
@@ -130,7 +131,7 @@ class ActivitySerializer(ActivityListSerializer):
             'fitness',
             'preconditions',
             'equipments',
-            'ladiesOnly', 'publicTransport', 'lowEmissionAdventure',
+            'ladiesOnly', 'youthOnTour', 'publicTransport', 'lowEmissionAdventure',
             'state',
             'cover', 'portal', 'map', 'ics'
         )

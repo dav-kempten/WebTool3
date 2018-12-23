@@ -459,6 +459,12 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
         return False
 
     @property
+    def youth_on_tour(self):
+        if hasattr(self, 'tour') and self.tour:
+            return self.tour.youth_on_tour
+        return False
+
+    @property
     def preconditions(self):
         if hasattr(self, 'tour') and self.tour:
             return self.tour.preconditions
