@@ -352,6 +352,10 @@ TeXLive
     # exit
     > cd .. && rm -ir install_tl
 
+.. code-block:: none
+
+    > sudo apt-get install poppler-utils
+
 RabbitMQ
 ~~~~~~~~
 
@@ -366,7 +370,7 @@ Erlang und RabbitMQ Repositiories anmelden
 .. code-block:: none
 
     > sudo tee /etc/apt/sources.list.d/bintray.rabbitmq.list <<EOF
-    deb https://dl.bintray.com/rabbitmq-erlang/debian xenial erlang
+    deb https://dl.bintray.com/rabbitmq-erlang/debian xenial erlang-19.3.x
     deb https://dl.bintray.com/rabbitmq/debian xenial main
     EOF
 
@@ -390,3 +394,12 @@ RabbitMQ Server installieren
 
     > sudo rabbitmqctl delete_user guest
     > sudo service rabbitmq-server restart
+
+dramatiq
+~~~~~~~~
+
+https://dramatiq.io/v1.4.0/index.html
+
+.. code-block:: none
+
+    > sudo -H pip3.6 install -U 'dramatiq[rabbitmq, watch]'
