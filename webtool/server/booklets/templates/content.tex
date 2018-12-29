@@ -1,0 +1,124 @@
+\documentclass[paper=a5,ngerman,fontsize=9pt,pagesize,twoside,footwidth=:-130mm:-120.4mm,parskip=half-]{scrreprt}
+\usepackage[default,regular,bold,osf]{sourceserifpro}
+\usepackage[T1]{fontenc}
+\usepackage{scrlayer-scrpage}
+\usepackage{setspace}
+\usepackage{ragged2e}
+\usepackage[inner=36.7mm,outer=10mm,bottom=25.7mm,top=10mm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{soulutf8}
+\usepackage{babel}
+\usepackage{eurosym}
+\usepackage{blindtext}
+\usepackage{pdfpages}
+\usepackage{background}
+
+\graphicspath{{%%GraphicsPath%%}}
+
+\definecolor{davGrey}{RGB}{87,87,87}
+\definecolor{davGreen}{RGB}{90,175,51}
+\definecolor{davPink}{cmyk}{0,100,0,0}
+\definecolor{davPageOdd}{RGB}{161,197,102}
+\definecolor{davPageEven}{RGB}{63,152,193}
+
+\DeclareFixedFont{\davHeaderFont}{T1}{SourceSansPro-LF}{b}{n}{12}
+\DeclareFixedFont{\davSubHeaderFont}{T1}{SourceSansPro-LF}{b}{n}{9}
+\DeclareFixedFont{\davMainHeaderFont}{T1}{SourceSansPro-LF}{b}{n}{28}
+\DeclareFixedFont{\davPagenumberFont}{T1}{SourceSansPro-LF}{b}{n}{9}
+\DeclareFixedFont{\davCategoryFont}{T1}{SourceSansPro-LF}{b}{n}{19}
+\DeclareFixedFont{\davReferenceFont}{T1}{SourceSansPro-LF}{b}{n}{6}
+\DeclareFixedFont{\davTitleFont}{T1}{SourceSansPro-LF}{b}{sc}{10}
+\DeclareFixedFont{\davNameFont}{T1}{SourceSansPro-LF}{b}{n}{9}
+
+\sodef\soDavTitle{\davTitleFont}{.06em}{0pt}{0pt}
+\sodef\soDavName{\davNameFont}{.01em}{0pt}{0pt}
+
+\newsavebox{\davFrontPage}
+\sbox{\davFrontPage}{\includegraphics[width=\paperwidth,height=\paperheight,keepaspectratio]{D1a.pdf}}
+\newsavebox{\davLastPage}
+\sbox{\davLastPage}{\includegraphics[width=\paperwidth,height=\paperheight,keepaspectratio]{D2a.pdf}}
+\newsavebox{\davEvenPage}
+\sbox{\davEvenPage}{\includegraphics[width=\paperwidth,height=\paperheight,keepaspectratio]{S1a.pdf}}
+\newsavebox{\davOddPage}
+\sbox{\davOddPage}{\includegraphics[width=\paperwidth,height=\paperheight,keepaspectratio]{S2a.pdf}}
+\newsavebox{\davArrow}
+\sbox{\davArrow}{\raisebox{-3pt}{\includegraphics[height=19pt,keepaspectratio]{Pfeila.pdf}}}
+\newsavebox{\davReferenceBox}
+\sbox{\davReferenceBox}{\includegraphics[width=\widthof{\davReferenceFont JXXX-XXXJ}]{Box.pdf}}
+\newsavebox{\davReferenceLadiesOnlyBox}
+\sbox{\davReferenceLadiesOnlyBox}{\includegraphics[width=\widthof{\davReferenceFont JXXX-XXXXXJ}]{BoxLadiesOnly.pdf}}
+
+\backgroundsetup{
+scale=1,
+angle=0,
+opacity=1,
+contents={%
+\ifnum\value{page}=0
+  \usebox{\davFrontPage}
+\else
+  \ifodd\value{page}
+    \usebox{\davEvenPage}
+  \else
+    \usebox{\davOddPage}
+  \fi
+\fi
+}
+}
+
+\renewcommand{\thepage}{\makebox[6mm]{\arabic{page}}}
+
+\makeatletter
+\newcommand{\checkmultibleoffour}{%
+  \newpage %
+  \count@=\the\c@page%
+  \advance\count@ 1\relax
+  \@tempcnta=\count@
+  \divide\@tempcnta by 4
+  \multiply\@tempcnta by 4
+  \count@=\numexpr\count@-\@tempcnta\relax
+  \ifnum\count@>0
+    \loop\ifnum\count@<4
+      \null\newpage
+      \advance\count@ 1\relax
+    \repeat
+  \fi
+  \thispagestyle{empty}
+  \NoBgThispage
+  \usebox{\davLastPage}
+}
+\makeatother
+
+\newcommand{\davCategory}[1]{%
+{\usebox{\davArrow}\enspace\davCategoryFont\color{davGreen}#1}}
+
+\newcommand{\davReference}[1]{%
+\raisebox{-2pt}{\makebox[\widthof{\davReferenceFont JXXX-XXXJ}]{\makebox[0pt]{\usebox{\davReferenceBox}}\makebox[0pt]{\raisebox{2.5pt}{\mbox{\davReferenceFont\color{white}#1}}}}}\enspace}
+
+\newcommand{\davReferenceLadiesOnly}[1]{%
+\raisebox{-2pt}{\makebox[\widthof{\davReferenceFont JXXX-XXXXXJ}]{\makebox[0pt]{\usebox{\davReferenceLadiesOnlyBox}}\makebox[0pt]{\raisebox{2.5pt}{\mbox{\kern -0.8em\davReferenceFont\color{white}#1}}}}}\enspace}
+
+\newcommand{\davTitle}[1]{%
+{\color{davGreen}\soDavTitle{\MakeUppercase{#1}}}}
+
+\newcommand{\davName}[1]{%
+{\color{davGreen}\soDavName{#1}}}
+
+\setkomafont{pagenumber}{\davPagenumberFont\ifodd\value{page}\color{davPageOdd}\else\color{davPageEven}\fi}
+\pagestyle{plain.scrheadings}
+
+\begin{document}
+\setcounter{page}{0}
+\pagestyle{empty}
+\onehalfspacing
+\RaggedRight
+\color{white}
+\vspace*{3cm}
+{\davHeaderFont{%%Header%%}\\\relax
+\davSubHeaderFont{%%SubHeader%%}}\par
+{\davMainHeaderFont{%%MainHeader%%}}
+\newpage
+\color{davGrey}
+\pagestyle{plain}
+%%Content%%
+\checkmultibleoffour
+\end{document}
