@@ -83,8 +83,13 @@ contents={%
     \repeat
   \fi
   \thispagestyle{empty}
-  \NoBgThispage
-  \usebox{\davLastPage}
+  \backgroundsetup{
+    scale=1,
+    angle=0,
+    opacity=1,
+    contents={\usebox{\davLastPage}}%
+  }%
+  \null
 }
 \makeatother
 
