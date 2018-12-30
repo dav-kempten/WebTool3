@@ -57,9 +57,16 @@ class BookletSerializer(BookletRetrieveSerializer):
     class Meta(BookletRetrieveSerializer.Meta):
         fields = ("id", "references", "format", "header", "subHeader", "mainHeader", "status", "booklet")
 
+    def create(self, validated_data):
+        from server.actors import create_booklet_pdf
+
+        booklet = Booklet.objects.create(**validated_data)
+        create_booklet_pdf.send(str(booklet.pk))
+        return booklet
+
     def validate_references(self, value):
         invalid_codes = set()
-        value = set(value)
+        value = sorted(list(set(value)))
         for code in value:
             try:
                 reference = Reference.get_reference(code)

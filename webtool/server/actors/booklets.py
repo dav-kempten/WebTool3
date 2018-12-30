@@ -1,91 +1,111 @@
 # -*- coding: utf-8 -*-
 
 import os
+import uuid
 import shutil
 import tempfile
 from subprocess import PIPE, run
 
+from requests import request
 import dramatiq
 
 @dramatiq.actor
-def create_booklet_pdf(booklet_id):
+def create_booklet_pdf(pk):
 
-    graphics_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../actors/booklets/graphics'))
+    import django
+    django.setup()
 
-    content = os.path.abspath(os.path.join(os.path.dirname(__file__), '../actors/booklets/templates/content.tex'))
+    from django import db
+    from server.models import Booklet
+
+    try:
+        uuid.UUID(str(pk))
+    except ValueError:
+        print(f'Booklet {pk} not available')
+        return
+
+    try:
+        booklet = Booklet.objects.get(pk=str(pk))
+    except Booklet.DoesNotExist:
+        print(f'Booklet {pk} not available')
+        return
+
+    graphics_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'booklets/graphics'))
+
+    content = os.path.abspath(os.path.join(os.path.dirname(__file__), 'booklets/templates/content.tex'))
     with open(content, 'r', encoding='utf-8') as f:
         source = f.read()
     source = source.replace(
         '%%GraphicsPath%%', f'{graphics_path}/'
     ).replace(
-      '%%Header%%', 'Ortsgruppe Obergünzburg'
+      '%%Header%%', booklet.header
     ).replace(
-        '%%SubHeader%%', 'der Sektion Allgäu-Kempten des Deustchen Alpenvereins e.V.'
+        '%%SubHeader%%', booklet.sub_header
     ).replace(
-        '%%MainHeader%%', 'Programmheft 2019'
+        '%%MainHeader%%', booklet.main_header
     ).replace(
         '%%Content%%', (
-            r'\davCategory{Alpenverein Obergünzburg}\par'
-            r'\textbf{Leitung:}\\\relax '
-            r'Marianne Lorenz, Aurikelweg 7, 87634 Obergünzburg, Tel. 08372/7653\par '
-            r'\textbf{2. Leitung:}\\\relax '
-            r'Siegfried Kronschnabl, Obergünzburg\\\relax '
-            r'Peter Wertek, Ronsberg\par'
-            r'\textbf{Kassier:}\\\relax '
-            r'Christian Altthaler, Eglofs\par '
-            r'\textbf{Schriftführer:}\\\relax '
-            r'Andrea Guggemos, Untrasried\par '
-            r'\vfill '
-            r'Alle Informationen zur Ortsgruppe\\\relax '
-            r'und unseren Veranstaltungen finden sich auch auf unserer Website:\\\relax '
-            r'dav-kempten.de/ortsgruppe-oberguenzburg'
+            f'\\davCategory{{Inhalt}}\\par '
+            f'{", ".join(booklet.references)}\\par '
+            f'\\vfill '
+            f'Alle Informationen zur Sektion\\\\\\relax '
+            f'und unseren Veranstaltungen finden sich auch auf unserer Website:\\\\\\relax '
+            f'dav-kempten.de'
         )
     )
 
-    transform = os.path.abspath(os.path.join(os.path.dirname(__file__), '../actors/booklets/templates/booklet.tex'))
+    transform = os.path.abspath(os.path.join(os.path.dirname(__file__), 'booklets/templates/booklet.tex'))
     with open(transform, 'r', encoding='utf-8') as f:
-        booklet = f.read()
-    booklet = booklet.replace(
+        transformer = f.read()
+    transformer = transformer.replace(
         '%%Author%%', 'WebTool3'
     ).replace(
-        '%%Title%%', 'Programmheft 2019'
+        '%%Title%%', 'Veranstaltungen 2019'
     ).replace(
-        '%%Subject%%', 'DAV Kempten'
+        '%%Subject%%', 'Sektion Allgäu-Kempten des Deutschen Alpenvereins e.V.'
     )
 
-    result = os.path.join('/var/www/webtool/booklets/', 'booklet.pdf')
+    result = os.path.join('/var/www/webtool/booklets/', f'{pk}.pdf')
 
     with tempfile.TemporaryDirectory() as tempdir:
-        filename = os.path.join(tempdir, 'content.tex')
-        with open(filename, 'x', encoding='utf-8') as f:
-            f.write(source)
-        latex_interpreter = 'pdflatex'
-        latex_command = f'cd "{tempdir}" && {latex_interpreter} -interaction=batchmode {os.path.basename(filename)}'
-        process = run(latex_command, shell=True, stdout=PIPE, stderr=PIPE)
-        if process.returncode == 0:
-            process = run(latex_command, shell=True, stdout=PIPE, stderr=PIPE)
         try:
-            if process.returncode == 1:
-                # with open(os.path.join(tempdir, 'content.log'), 'rb') as f:
-                #    log = f.read()
-                # raise TexError(log=log, source=source)
-                return
-            if transform:
+            filename = os.path.join(tempdir, 'content.tex')
+            with open(filename, 'x', encoding='utf-8') as f:
+                f.write(source)
+            latex_interpreter = 'pdflatex'
+            latex_command = f'cd "{tempdir}" && {latex_interpreter} -interaction=batchmode {os.path.basename(filename)}'
+            process = run(latex_command, shell=True, stdout=PIPE, stderr=PIPE)
+            if process.returncode == 0:
+                process = run(latex_command, shell=True, stdout=PIPE, stderr=PIPE)
+            if process.returncode > 0:
+                print(f'Not able to process {filename} with LaTex')
+                booklet.status = Booklet.STATUS_FAILED
+                booklet.save()
+            if process.returncode == 0 and booklet.format == Booklet.FORMAT_PRINT:
                 filename = os.path.join(tempdir, 'booklet.tex')
                 with open(filename, 'x', encoding='utf-8') as f:
-                    f.write(booklet)
+                    f.write(transformer)
                 latex_command = f'cd "{tempdir}" && {latex_interpreter} -interaction=batchmode {os.path.basename(filename)}'
                 process = run(latex_command, shell=True, stdout=PIPE, stderr=PIPE)
-                if process.returncode == 1:
-                    # with open(os.path.join(tempdir, 'booklet.log'), 'rb') as f:
-                    #     log = f.read()
-                    # raise TexError(log=log, source=source)
-                    return
-                shutil.move(os.path.join(tempdir, 'booklet.pdf'), result)
-            else:
+                if process.returncode > 0:
+                    print(f'Not able to process {filename} with LaTex')
+                    booklet.status = Booklet.STATUS_FAILED
+                    booklet.save()
+                else:
+                    shutil.move(os.path.join(tempdir, 'booklet.pdf'), result)
+                    print(f'booklet {pk} is ready for download')
+                    booklet.status = Booklet.STATUS_DONE
+                    booklet.save()
+            elif process.returncode == 0:
                 shutil.move(os.path.join(tempdir, 'content.pdf'), result)
-        except FileNotFoundError:
-            # if process.stderr:
-            #     raise Exception(process.stderr.decode('utf-8'))
-            # raise
-            return
+                print(f'content {pk} is ready for download')
+                booklet.status = Booklet.STATUS_DONE
+                booklet.save()
+        except Exception:
+            print('Exception occurred!')
+            booklet.status = Booklet.STATUS_FAILED
+            booklet.save()
+
+    db.connections.close_all()
+    r = request('REFRESH', f'https://webtool.dav-kempten.de/api/client/booklets/{pk}/')
+    r = request('REFRESH', 'https://webtool.dav-kempten.de/api/client/booklets/')
