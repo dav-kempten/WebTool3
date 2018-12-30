@@ -30,9 +30,9 @@ def create_booklet_pdf(pk):
         print(f'Booklet {pk} not available')
         return
 
-    graphics_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'booklets/graphics'))
+    graphics_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'assets/graphics'))
 
-    content = os.path.abspath(os.path.join(os.path.dirname(__file__), 'booklets/templates/content.tex'))
+    content = os.path.abspath(os.path.join(os.path.dirname(__file__), 'assets/templates/content.tex'))
     with open(content, 'r', encoding='utf-8') as f:
         source = f.read()
     source = source.replace(
@@ -54,7 +54,7 @@ def create_booklet_pdf(pk):
         )
     )
 
-    transform = os.path.abspath(os.path.join(os.path.dirname(__file__), 'booklets/templates/booklet.tex'))
+    transform = os.path.abspath(os.path.join(os.path.dirname(__file__), 'assets/templates/booklet.tex'))
     with open(transform, 'r', encoding='utf-8') as f:
         transformer = f.read()
     transformer = transformer.replace(
