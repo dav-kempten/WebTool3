@@ -128,7 +128,7 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
         output.write('<h3>{}</h3>'.format(self.instruction.name if self.is_special else self.topic.name))
         output.write('<p>{}</p>'.format(self.instruction.description if self.is_special else self.topic.description))
 
-        if (self.is_special and self.topic.qualifications.exists()) or (not self.is_special and self.qualifications.exists()):
+        if (self.is_special and self.qualifications.exists()) or (not self.is_special and self.topic.qualifications.exists()):
             if self.is_special:
                 qs = self.qualifications.values_list('name', flat=True)
             else:
