@@ -29,19 +29,11 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
     ).exclude(
         tour__isnull=False, tour__state__public=False
     ).exclude(
-        tour__state__canceled=True
-    ).exclude(
         talk__isnull=False, talk__state__public=False
-    ).exclude(
-        talk__state__canceled=True
     ).exclude(
         meeting__isnull=False, meeting__state__public=False
     ).exclude(
-        meeting__state__canceled=True
-    ).exclude(
         session__isnull=False, session__state__public=False
-    ).exclude(
-        session__state__canceled=True
     ).distinct()
     filter_class = ActivityFilter
 

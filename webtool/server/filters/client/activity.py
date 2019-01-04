@@ -198,7 +198,17 @@ class ActivityFilter(filters.FilterSet):
             ).distinct()
 
     def next_filter(self, queryset, name, value):
-        queryset = queryset.exclude(deprecated=True)
+        queryset = queryset.exclude(
+            deprecated=True
+        ).exclude(
+            tour__state__canceled=True
+        ).exclude(
+            meeting__state__canceled=True
+        ).exclude(
+            talk__state__canceled=True
+        ).exclude(
+            session__state__canceled=True
+        )
         today = datetime.date.today()
         q1 = (
             queryset
