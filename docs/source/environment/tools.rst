@@ -19,8 +19,8 @@ Werkzeuge
 * uWSGI
 * Nginx
 * Varnish
-* TeX-Live
-* RabbitMQ
+* TeX-Live 2018
+* RabbitMQ 3.7.9
 
 .. _PyCharm: https://www.jetbrains.com/pycharm/download/
 .. _VirtualBox: https://www.virtualbox.org

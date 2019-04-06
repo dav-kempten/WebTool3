@@ -1,0 +1,12 @@
+<label for="{{id}}">{{label}}: </label>
+<p-autoComplete
+  id="{{id}}"
+  [suggestions]="suggestions"
+  field="name"
+  (completeMethod)="filterSuggestions($event)"
+  [forceSelection]="true"
+  [multiple]="true"
+  [formControl]="team"
+  placeholder="Nachname Vorname">
+</p-autoComplete>
+&nbsp;<i [ngStyle]="{'color':formControl?.valid ? 'green' : 'red'}" class="pi pi-users"></i>

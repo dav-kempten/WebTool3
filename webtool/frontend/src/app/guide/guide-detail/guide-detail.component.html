@@ -1,0 +1,29 @@
+<h1>Trainer #{{(guideId$ | async)}}</h1>
+<ng-container *ngIf="!(isLoading$ | async) else loading">
+<form [formGroup]="guideForm">
+  <p>
+    <avk-guide
+        formControlName="guideId"
+        [nameIdList]="team.value"
+        required>
+    </avk-guide>
+  </p>
+  <p>
+    <avk-team
+        formControlName="teamIds"
+        [nameId]="guide.value">
+    </avk-team>
+  </p>
+</form>
+<p>Guide: {{guide.value | name}}</p>
+<p>Team: {{(team.value | names).join(', ')}}</p>
+<p>{{guideForm.value | json}}</p>
+<ul>
+  <li>Valid: {{guideForm.valid}}</li>
+  <li>Dirty: {{guideForm.dirty}}</li>
+  <li>Pristine: {{guideForm.pristine}}</li>
+  <li>Touched: {{guideForm.touched}}</li>
+</ul>
+<p><a routerLink="../">Zurück</a></p>
+</ng-container>
+<ng-template #loading>Einen kleinen Moment bitte...</ng-template>
