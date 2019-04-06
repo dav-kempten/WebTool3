@@ -1,0 +1,8 @@
+{
+  "/api/frontend/*": {
+    "target": "https://webtool.dav-kempten.de",
+    "secure": true,
+    "logLevel": "debug",
+    "changeOrigin": true
+  }
+}

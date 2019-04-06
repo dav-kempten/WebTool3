@@ -1,0 +1,38 @@
+<h1>Tour #{{tourId$ | async}}</h1>
+<form [formGroup]="tourForm">
+<p><avk-date formControlName="deadline"
+             id="d1" label="Anmeldung"
+             [optMax]="preliminary.value"
+             [optMaxInclude]="true"
+             [max]="tourStart.value"
+             required
+></avk-date></p>
+<p><avk-date formControlName="preliminary"
+             id="d2" label="Besprechung"
+             [min]="deadline.value"
+             [minInclude]="true"
+             [max]="tourStart.value"
+></avk-date></p>
+<p><avk-date formControlName="tourStart"
+             id="d3" label="Start"
+             [min]="deadline.value"
+             [optMin]="preliminary.value"
+             [max]="tourEnd.value"
+             [maxInclude]="true"
+             required>
+></avk-date></p>
+<p><avk-date formControlName="tourEnd"
+             id="d4" label="Ende"
+             [min]="tourStart.value"
+             [minInclude]="true"
+></avk-date></p>
+</form>
+<p>{{deadline.value}} &lt;= [{{preliminary.value}}] &lt; {{tourStart.value}} &lt;= [{{tourEnd.value}}]</p>
+<p>{{tourForm.value | json}}</p>
+<ul>
+  <li>Valid: {{tourForm.valid}}</li>
+  <li>Dirty: {{tourForm.dirty}}</li>
+  <li>Pristine: {{tourForm.pristine}}</li>
+  <li>Touched: {{tourForm.touched}}</li>
+</ul>
+<p><a routerLink="../">Zurück</a></p>

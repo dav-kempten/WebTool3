@@ -123,14 +123,8 @@ class Tour(
 
     def _preliminary(self):
         if self.preliminary:
-            season_year = int(self.season.name)
-            with_year = self.preliminary.start_date.year != season_year
-            preliminary = self.preliminary.short_date(with_year=with_year)
-            if self.preliminary.start_time.minute:
-                start_time = time(self.preliminary.start_time, "G.i")
-            else:
-                start_time = time(self.preliminary.start_time, "G")
-            return 'Vorbesprechung', "{}, {} Uhr".format(preliminary, start_time)
+            preliminary = self.preliminary.departure()
+            return 'Vorbesprechung', "{}".format(preliminary)
         elif self.info:
             return 'Toureninformation', self.info
         else:

@@ -1,0 +1,20 @@
+<label for="{{id}}">{{label}}: </label>
+<p-calendar
+  id="{{id}}"
+  dateFormat="dd.mm.yy"
+  selectOtherMonths="true"
+  [locale]="de"
+  showIcon="true"
+  showOnFocus="true"
+  dataType="string"
+  showButtonBar="false"
+  monthNavigator = "true"
+  yearNavigator = "true"
+  placeholder="tt.mm.jjjj"
+  [minDate]="minDate"
+  [maxDate]="maxDate"
+  [yearRange]="yearRange"
+  [defaultDate]="defaultDate">
+</p-calendar>
+&nbsp;<i [ngStyle]="{'color':formControl?.valid ? 'green' : 'red'}" class="pi pi-calendar"></i>
+<i *ngIf="isRequired" class="pi pi-info-circle"></i>
