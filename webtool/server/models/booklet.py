@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 import re
 import uuid
 
@@ -269,7 +270,6 @@ class Booklet(TimeMixin, models.Model):
             return s.getvalue()
 
     def render_source(self):
-
         with io.StringIO() as s:
             events = set()
             for value in set(self.references):
@@ -296,35 +296,33 @@ class Booklet(TimeMixin, models.Model):
                 s.write(self.render_events(events))
             else:
                 s.write('\\null\n')
-            return s.getvalue()
+            content = s.getvalue()
+            graphics_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'assets/graphics'))
+            template = os.path.abspath(os.path.join(os.path.dirname(__file__), 'assets/templates/content.tex'))
+            with open(template, 'r', encoding='utf-8') as f:
+                source = f.read()
+                source = source.replace(
+                    '%%GraphicsPath%%', f'{graphics_path}/'
+                ).replace(
+                    '%%Header%%', Booklet.texify(self.header)
+                ).replace(
+                    '%%SubHeader%%', Booklet.texify(self.sub_header)
+                ).replace(
+                    '%%MainHeader%%', Booklet.texify(self.main_header)
+                ).replace(
+                    '%%Content%%', content
+                )
+            return source
 
-    def render_transformer(self):
-        pass
-
-    # graphics_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'assets/graphics'))
-    #
-    # content = os.path.abspath(os.path.join(os.path.dirname(__file__), 'assets/templates/content.tex'))
-    # with open(content, 'r', encoding='utf-8') as f:
-    #     source = f.read()
-    # source = source.replace(
-    #     '%%GraphicsPath%%', f'{graphics_path}/'
-    # ).replace(
-    #   '%%Header%%', Booklet.texify(booklet.header)
-    # ).replace(
-    #     '%%SubHeader%%', Booklet.texify(booklet.sub_header)
-    # ).replace(
-    #     '%%MainHeader%%', Booklet.texify(booklet.main_header)
-    # ).replace(
-    #     '%%Content%%', Booklet.texify(booklet.content)
-    # )
-    #
-    # transform = os.path.abspath(os.path.join(os.path.dirname(__file__), 'assets/templates/booklet.tex'))
-    # with open(transform, 'r', encoding='utf-8') as f:
-    #     transformer = f.read()
-    # transformer = transformer.replace(
-    #     '%%Author%%', 'WebTool3'
-    # ).replace(
-    #     '%%Title%%', 'Veranstaltungen 2019'
-    # ).replace(
-    #     '%%Subject%%', 'Sektion Allgäu-Kempten des Deutschen Alpenvereins e.V.'
-    # )
+    def render_transformer(self, author='WebTool3', year='2019'):
+        transform = os.path.abspath(os.path.join(os.path.dirname(__file__), 'assets/templates/booklet.tex'))
+        with open(transform, 'r', encoding='utf-8') as f:
+            transformer = f.read()
+            transformer = transformer.replace(
+                '%%Author%%', f'{author}'
+            ).replace(
+                '%%Title%%', f'Veranstaltungen {year}'
+            ).replace(
+                '%%Subject%%', 'Sektion Allgäu-Kempten des Deutschen Alpenvereins e.V.'
+            )
+        return transformer

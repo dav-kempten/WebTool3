@@ -9,6 +9,7 @@ from subprocess import PIPE, run
 from requests import request
 import dramatiq
 
+
 @dramatiq.actor
 def create_booklet_pdf(pk):
 
