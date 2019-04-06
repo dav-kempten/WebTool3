@@ -148,7 +148,11 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
     natural_key.dependencies = ['server.season', 'server.reference']
 
     def __str__(self):
-        return "{} - {}, {} [{}]".format(self.reference, self.title, self.long_date(with_year=True), self.season.name)
+        if hasattr(self, 'meeting') and not self.meeting.is_special:
+            title = self.meeting.topic.title
+        else:
+            title = self.title
+        return "{} - {}, {} [{}]".format(self.reference, title, self.long_date(with_year=True), self.season.name)
 
     def long_date(self, with_year=False, with_time=False):
         """
@@ -414,6 +418,34 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
             return self.talk.admission
 
     @property
+    def extra_charges(self):
+        if hasattr(self, 'tour') and self.tour:
+            return self.tour.extra_charges
+        if hasattr(self, 'meeting') and self.meeting:
+            return self.meeting.extra_charges
+
+    @property
+    def extra_charges_info(self):
+        if hasattr(self, 'tour') and self.tour:
+            return self.tour.extra_charges_info
+        if hasattr(self, 'meeting') and self.meeting:
+            return self.meeting.extra_charges_info
+
+    @property
+    def advances(self):
+        if hasattr(self, 'tour') and self.tour:
+            return self.tour.advances
+        if hasattr(self, 'meeting') and self.meeting:
+            return self.meeting.advances
+
+    @property
+    def advances_info(self):
+        if hasattr(self, 'tour') and self.tour:
+            return self.tour.advances_info
+        if hasattr(self, 'meeting') and self.meeting:
+            return self.meeting.advances_info
+
+    @property
     def speaker(self):
         if hasattr(self, 'talk') and self.talk:
             return self.talk.speaker
@@ -429,6 +461,15 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
             return self.meeting.guide
         if hasattr(self, 'session') and self.session:
             return self.session.guide
+
+    @property
+    def guides(self):
+        if hasattr(self, 'tour') and self.tour:
+            return self.tour.guides()
+        if hasattr(self, 'meeting') and self.meeting:
+            return self.meeting.guides()
+        if hasattr(self, 'session') and self.session:
+            return self.session.guides()
 
     @property
     def skill(self):

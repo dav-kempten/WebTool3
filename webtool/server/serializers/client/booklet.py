@@ -66,15 +66,29 @@ class BookletSerializer(BookletRetrieveSerializer):
 
     def validate_references(self, value):
         invalid_codes = set()
-        value = sorted(list(set(value)))
-        for code in value:
+        value_set = set(value)
+        for code in value_set:
             try:
                 reference = Reference.get_reference(code)
                 if reference.deprecated:
+                    invalid_codes.add(code)
+                elif reference.event.deprecated:
+                    invalid_codes.add(code)
+                elif hasattr(reference.event, 'tour') and reference.event.tour.deprecated:
+                    invalid_codes.add(code)
+                elif hasattr(reference.event, 'meeting') and reference.event.meeting.deprecated:
+                    invalid_codes.add(code)
+                elif hasattr(reference.event, 'session') and reference.event.session.deprecated:
+                    invalid_codes.add(code)
+                elif hasattr(reference.event, 'talk') and reference.event.talk.deprecated:
                     invalid_codes.add(code)
             except Reference.DoesNotExist:
                 invalid_codes.add(code)
         if invalid_codes:
             n = len(invalid_codes)
-            raise serializers.ValidationError(f"Reference{'s' if n>1 else ''} '{', '.join(invalid_codes)}' {'are' if n>1 else 'is'} not valid.")
+            raise serializers.ValidationError(
+                f"Reference{'s' if n>1 else ''} "
+                f"'{', '.join(sorted(list(invalid_codes)))}' "
+                f"{'are' if n>1 else 'is'} not valid."
+            )
         return value
