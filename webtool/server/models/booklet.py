@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import uuid
-
+import re
 import io
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
@@ -88,6 +88,10 @@ class Booklet(TimeMixin, models.Model):
     RELAX = '\\\\\\relax'
 
     @classmethod
+    def to_upper(cls, text):
+        return re.sub(r"([^A-Z\s])", r"{\1}", text.upper())
+
+    @classmethod
     def texify(cls, text):
         return text.replace(
             '\\', '\\textbackslash{}'
@@ -109,20 +113,6 @@ class Booklet(TimeMixin, models.Model):
             '~', '\\textasciitilde{}'
         ).replace(
             '^', '\\textasciicircum{}'
-        ).replace(
-            'Ö', '{\\"O}'
-        ).replace(
-            'Ä', '{\\"A}'
-        ).replace(
-            'Ü', '{\\"U}'
-        ).replace(
-            'ö', '{\\"o}'
-        ).replace(
-            'ä', '{\\"a}'
-        ).replace(
-            'ü', '{\\"u}'
-        ).replace(
-            'ß', '{\\"ss}'
         )
 
     @classmethod
@@ -169,7 +159,7 @@ class Booklet(TimeMixin, models.Model):
                 if tour and tour.qualifications.exists():
                     qualifications = tour.qualifications.values_list('name', flat=True)
 
-                s.write(f'\\davTitle{{{cls.texify(title.upper())}}}{cls.RELAX}\n')
+                s.write(f'\\davTitle{{{cls.to_upper(cls.texify(title))}}}{cls.RELAX}\n')
 
                 if name:
                     s.write(f'\\davName{{{cls.texify(name)}}}\\par\n')
@@ -201,7 +191,7 @@ class Booklet(TimeMixin, models.Model):
                 if tour:
                     preliminary = event.tour._preliminary()
                     if preliminary[0]:
-                        lines.append(f'\\textbf{{{preliminary[0]}:}} {preliminary[1]}')
+                        lines.append(f'\\textbf{{{cls.texify(preliminary[0])}:}} {cls.texify(preliminary[1])}')
                     lines.append(f'\\textbf{{Abfahrt:}} {cls.texify(event.departure())}')
                     if event.source:
                         lines.append(f'\\textbf{{Ausgangspunkt:}} {cls.texify(event.source)}')
