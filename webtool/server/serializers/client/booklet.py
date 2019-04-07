@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 from urllib.parse import urlparse
 
+from django import db
+from django.conf import settings
+from requests import request
+
 from rest_framework import serializers
 from server.models import Booklet
 
@@ -62,6 +66,11 @@ class BookletSerializer(BookletRetrieveSerializer):
 
         booklet = Booklet.objects.create(**validated_data)
         create_booklet_pdf.send(str(booklet.pk))
+
+        if not settings.DEBUG:
+            db.connections.close_all()
+            request('REFRESH', 'https://webtool.dav-kempten.de/api/client/booklets/')
+
         return booklet
 
     def validate_references(self, value):

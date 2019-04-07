@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 import os
-import re
 import uuid
 
 import io
-from django.conf import settings
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 
@@ -111,6 +109,20 @@ class Booklet(TimeMixin, models.Model):
             '~', '\\textasciitilde{}'
         ).replace(
             '^', '\\textasciicircum{}'
+        ).replace(
+            'Ö', '{\\"O}'
+        ).replace(
+            'Ä', '{\\"A}'
+        ).replace(
+            'Ü', '{\\"U}'
+        ).replace(
+            'ö', '{\\"o}'
+        ).replace(
+            'ä', '{\\"a}'
+        ).replace(
+            'ü', '{\\"u}'
+        ).replace(
+            'ß', '{\\"ss}'
         )
 
     @classmethod

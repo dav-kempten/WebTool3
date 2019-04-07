@@ -12,4 +12,20 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
 
+CORS_ORIGIN_ALLOW_ALL = False
+
+CORS_ORIGIN_WHITELIST = (
+    'www.dav-kempten-neue-hoempage.de',
+    'www.dav-kempten.de'
+    'dav-kempten-neue-hoempage.de',
+    'dav-kempten.de'
+)
+
+CORS_TRUSTED_ORIGINS = (
+    'www.dav-kempten-neue-hoempage.de',
+    'www.dav-kempten.de'
+    'dav-kempten-neue-hoempage.de',
+    'dav-kempten.de'
+)
+
 STATIC_ROOT = "/home/djcode/static"
