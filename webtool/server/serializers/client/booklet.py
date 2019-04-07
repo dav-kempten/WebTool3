@@ -61,7 +61,7 @@ class BookletSerializer(BookletRetrieveSerializer):
         from server.actors import create_booklet_pdf, update_booklet_list
 
         booklet = Booklet.objects.create(**validated_data)
-        update_booklet_list.send(booklet.pk)
+        update_booklet_list.send(str(booklet.pk))
         create_booklet_pdf.send(str(booklet.pk))
         return booklet
 
