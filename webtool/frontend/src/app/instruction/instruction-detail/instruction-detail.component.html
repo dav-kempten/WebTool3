@@ -1,21 +1,32 @@
 <h1>Instruction #{{instructionId$ | async}}</h1>
 
 <!--GuideComponent // Abrechnung -->
+<form [formGroup]="instructionForm">
+  <p>
+    <avk-guide formControlName="guide" required></avk-guide>
+  </p>
+</form>
 
 <!--TeamComponent-->
-
+<!--<avk-team></avk-team>-->
 <!--Buchungscode, Status, Kurskonzept, InfoBox-->
 
 <!--Kurztitel, Langtitel-->
 
 <!--Beschreibung-->
-<textarea
-    rows="4"
-    cols="50"
-    name="instructionDetail"
-    form="usrform"
-    placeholder="Beschreibung">
-</textarea>
+<div class="content-section implementation">
+    <div class="ui-g ui-fluid">
+        <div class="ui-g-12 ui-md-4">
+            <textarea
+                rows="4"
+                cols="50"
+                name="instructionDetail"
+                form="usrform"
+                placeholder="Beschreibung">
+            </textarea>
+        </div>
+    </div>
+</div>
 
 <!--Zusatzausrüstung, Besondere Vorausssetzungen-->
 
