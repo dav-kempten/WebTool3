@@ -4,6 +4,7 @@ import {RouterModule, Routes} from '@angular/router';
 import {InstructionListComponent} from './instruction-list/instruction-list.component';
 import {InstructionDetailComponent} from './instruction-detail/instruction-detail.component';
 import {CoreModule} from '../core/core.module';
+import {ReactiveFormsModule} from '@angular/forms';
 
 const routes: Routes = [
   {path: ':id', component: InstructionDetailComponent},
@@ -16,6 +17,7 @@ const routes: Routes = [
     CommonModule,
     CoreModule,
     RouterModule.forChild(routes),
+    ReactiveFormsModule
   ]
 })
 export class InstructionModule {
