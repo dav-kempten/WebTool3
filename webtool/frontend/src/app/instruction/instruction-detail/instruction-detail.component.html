@@ -3,15 +3,24 @@
 <!--GuideComponent // TeamComponent // Abrechnung-->
 <form [formGroup]="instructionForm">
   <p>
-    <avk-guide formControlName="guide" required></avk-guide>
+    <avk-guide
+        formControlName="guide"
+        id = "g1"
+        label = "Trainer"
+        [nameIdList]="team.value"
+        required
+    ></avk-guide>
   </p>
   <p>
-    <avk-team formControlName="team" required></avk-team>
+    <avk-team
+        formControlName="team"
+        id = "g2"
+        label = "Team"
+        [nameId]="guide.value"
+    ></avk-team>
   </p>
 </form>
 
-<!---->
-<!--<avk-team></avk-team>-->
 <!--Buchungscode, Status, Kurskonzept, InfoBox-->
 
 <!--Kurztitel, Langtitel-->
