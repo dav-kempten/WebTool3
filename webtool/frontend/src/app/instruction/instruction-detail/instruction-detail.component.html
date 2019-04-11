@@ -1,13 +1,16 @@
 <h1>Instruction #{{instructionId$ | async}}</h1>
 
-<!--GuideComponent // Abrechnung -->
+<!--GuideComponent // TeamComponent // Abrechnung-->
 <form [formGroup]="instructionForm">
   <p>
     <avk-guide formControlName="guide" required></avk-guide>
   </p>
+  <p>
+    <avk-team formControlName="team" required></avk-team>
+  </p>
 </form>
 
-<!--TeamComponent-->
+<!---->
 <!--<avk-team></avk-team>-->
 <!--Buchungscode, Status, Kurskonzept, InfoBox-->
 
