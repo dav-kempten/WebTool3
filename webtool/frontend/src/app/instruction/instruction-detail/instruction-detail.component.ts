@@ -3,6 +3,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {select, Store} from '@ngrx/store';
 import {AppState, selectRouterDetailId} from '../../app.state';
 import {FormControl, FormGroup} from "@angular/forms";
+import {NameListRequested} from "../../core/store/name.actions";
 
 @Component({
   selector: 'avk-instruction-detail',
@@ -21,7 +22,9 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     team: this.team
   });
 
-  constructor(private store: Store<AppState>) {}
+  constructor(private store: Store<AppState>) {
+    this.store.dispatch(new NameListRequested());
+  }
 
   ngOnInit(): void {
     this.instructionId$ = this.store.pipe(select(selectRouterDetailId));
