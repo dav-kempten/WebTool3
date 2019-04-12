@@ -7,6 +7,7 @@ import {NameListRequested} from "../../core/store/name.actions";
 
 @Component({
   selector: 'avk-instruction-detail',
+  "styles": ["node_modules/primeflex/primeflex.css"],
   templateUrl: './instruction-detail.component.html',
   styleUrls: ['./instruction-detail.component.css']
 })
