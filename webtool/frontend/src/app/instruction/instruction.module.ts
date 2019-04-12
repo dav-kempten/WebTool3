@@ -6,6 +6,8 @@ import {InstructionDetailComponent} from './instruction-detail/instruction-detai
 import {CoreModule} from '../core/core.module';
 import {ReactiveFormsModule} from '@angular/forms';
 
+import {InputTextareaModule} from 'primeng/inputtextarea';
+
 const routes: Routes = [
   {path: ':id', component: InstructionDetailComponent},
   {path: '', component: InstructionListComponent, pathMatch: 'full'}
@@ -17,7 +19,8 @@ const routes: Routes = [
     CommonModule,
     CoreModule,
     RouterModule.forChild(routes),
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    InputTextareaModule
   ]
 })
 export class InstructionModule {

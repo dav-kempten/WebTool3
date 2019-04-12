@@ -30,12 +30,12 @@
     <div class="ui-g ui-fluid">
         <div class="ui-g-12 ui-md-4">
             <textarea
-                rows="4"
-                cols="50"
-                name="instructionDetail"
-                form="usrform"
-                placeholder="Beschreibung">
-            </textarea>
+                formControlName="description"
+                [rows]="5"
+                [cols]="30"
+                pInputTextarea
+                autoResize="autoResize"
+            ></textarea>
         </div>
     </div>
 </div>

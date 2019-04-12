@@ -16,11 +16,12 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
 
   guide = new FormControl('');
   team = new FormControl('');
-
   instructionForm = new FormGroup({
     guide: this.guide,
     team: this.team
   });
+
+  description = new FormControl('');
 
   constructor(private store: Store<AppState>) {
     this.store.dispatch(new NameListRequested());
