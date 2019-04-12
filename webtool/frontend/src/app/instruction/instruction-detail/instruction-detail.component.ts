@@ -23,6 +23,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   });
 
   description = new FormControl('');
+  notes = new FormControl('');
 
   constructor(private store: Store<AppState>) {
     this.store.dispatch(new NameListRequested());
