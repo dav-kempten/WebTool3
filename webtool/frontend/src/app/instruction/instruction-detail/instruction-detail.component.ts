@@ -17,13 +17,29 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
 
   guide = new FormControl('');
   team = new FormControl('');
+  costs = new FormControl('');
+  revenue = new FormControl('');
+  description = new FormControl('');
+  notes = new FormControl('')
+  bookingnr = new FormControl('');
+  status = new FormControl('');
+  concept = new FormControl('');
+  shorttitle = new FormControl('');
+  longtitle = new FormControl('');
+
   instructionForm = new FormGroup({
     guide: this.guide,
-    team: this.team
+    team: this.team,
+    costs: this.costs,
+    revenue: this.revenue,
+    description: this.description,
+    notes: this.notes,
+    bookingnr: this.bookingnr,
+    status: this.status,
+    concept: this.concept,
+    shorttitle: this.shorttitle,
+    longtitle: this.longtitle
   });
-
-  description = new FormControl('');
-  notes = new FormControl('');
 
   constructor(private store: Store<AppState>) {
     this.store.dispatch(new NameListRequested());
@@ -34,7 +50,16 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
 
     this.instructionForm.setValue({
       guide: '',
-      team: ''
+      team: '',
+      costs: '',
+      revenue: '',
+      description: '',
+      notes: '',
+      bookingnr: '',
+      status: '',
+      concept: '',
+      shorttitle: '',
+      longtitle: ''
     });
   }
 

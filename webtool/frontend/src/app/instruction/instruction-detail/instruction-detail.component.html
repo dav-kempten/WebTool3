@@ -1,76 +1,107 @@
 <h1>Instruction #{{instructionId$ | async}}</h1>
 
-<!--GuideComponent // TeamComponent // Abrechnung-->
 <form [formGroup]="instructionForm">
+
+<!--GuideComponent // TeamComponent // Abrechnung-->
   <div class="p-grid">
     <div class="p-col">
       <avk-guide
-        formControlName="guide"
-        id = "g1"
-        label = "Trainer"
-        [nameIdList]="team.value"
-        required
+          formControlName="guide"
+          id="g1"
+          label="Trainer"
+          [nameIdList]="team.value"
+          required
       ></avk-guide>
     </div>
-    <div class="p-col">
+    <div class="p-grid">
+      <div class="p-col">
+        <input formControlName="costs" id="costs" placeholder="Kosten" type="text" size="30" pInputText>
+      </div>
+      <div class="p-col">
+        <input formControlName="revenue" id="revenue" placeholder="Einnahmen" type="text" size="30" pInputText>
+      </div>
     </div>
   </div>
   <div class="p-grid">
     <div class="p-col">
       <avk-team
-        formControlName="team"
-        id = "g2"
-        label = "Team"
-        [nameId]="guide.value"
+          formControlName="team"
+          id="g2"
+          label="Team"
+          [nameId]="guide.value"
       ></avk-team>
     </div>
   </div>
+
+  <!--Buchungscode, Status, Kurskonzept, InfoBox-->
+  <div class="content-section implementation">
+    <div class="ui-g ui-fluid">
+      <div class="ui-g-12 ui-md-3">
+        <input formControlName="bookingnr" id="bookingnr" placeholder="Buchungsnummer" type="text" size="30" pInputText>
+      </div>
+      <div class="ui-g-12 ui-md-3">
+        <input formControlName="status" id="status" placeholder="Status" type="text" size="30" pInputText>
+      </div>
+      <div class="ui-g-12 ui-md-6">
+        <input formControlName="concept" id="concept" placeholder="Kurskonzept" type="text" size="30" pInputText>
+      </div>
+    </div>
+  </div>
+
+  <!--Kurztitel, Langtitel-->
+  <div class="content-section implementation">
+    <div class="ui-g ui-fluid">
+      <div class="ui-g-12 ui-md-3">
+        <input formControlName="shorttitle" id="shorttitle" placeholder="Kurztitel" type="text" size="30" pInputText>
+      </div>
+      <div class="ui-g-12 ui-md-9">
+        <input formControlName="longtitle" id="longtitle" placeholder="Langtitel" type="text" size="30" pInputText>
+      </div>
+    </div>
+  </div>
+
+  <!--Beschreibung-->
+  <div class="content-section implementation">
+    <div class="ui-g ui-fluid">
+      <div class="ui-g-12 ui-md-12">
+        <textarea
+            formControlName="description"
+            [rows]="5"
+            [cols]="30"
+            pInputTextarea
+            placeholder="Beschreibung"
+            autoResize="autoResize"
+        ></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!--Zusatzausrüstung, Besondere Vorausssetzungen-->
+
+  <!--Teilnehmeranzahl, Strecke, Materialservice-->
+
+  <!--Liste mit Parametern (Tabelle)-->
+
+  <!--Fahrtkosten, Zusatzkosten, Anzahlung-->
+
+  <!--Kostenrahmen mit Tabelle-->
+
+  <!--Teilnehmergebühr-->
+
+  <!--Bemerkung-->
+  <div class="content-section implementation">
+    <div class="ui-g ui-fluid">
+      <div class="ui-g-12 ui-md-12">
+        <textarea
+            formControlName="notes"
+            [rows]="2"
+            [cols]="30"
+            pInputTextarea
+            placeholder="Bemerkungen"
+            autoResize="autoResize"
+        ></textarea>
+      </div>
+    </div>
+  </div>
+
 </form>
-
-<!--Buchungscode, Status, Kurskonzept, InfoBox-->
-
-<!--Kurztitel, Langtitel-->
-
-<!--Beschreibung-->
-<div class="content-section implementation">
-    <div class="ui-g ui-fluid">
-        <div class="ui-g-12 ui-md-12">
-            <textarea
-                formControlName="description"
-                [rows]="5"
-                [cols]="30"
-                pInputTextarea
-                placeholder="Beschreibung"
-                autoResize="autoResize"
-            ></textarea>
-        </div>
-    </div>
-</div>
-
-<!--Zusatzausrüstung, Besondere Vorausssetzungen-->
-
-<!--Teilnehmeranzahl, Strecke, Materialservice-->
-
-<!--Liste mit Parametern (Tabelle)-->
-
-<!--Fahrtkosten, Zusatzkosten, Anzahlung-->
-
-<!--Kostenrahmen mit Tabelle-->
-
-<!--Teilnehmergebühr-->
-
-<!--Bemerkung-->
-<div class="content-section implementation">
-    <div class="ui-g ui-fluid">
-        <div class="ui-g-12 ui-md-12">
-            <textarea
-                formControlName="notes"
-                [rows]="2"
-                [cols]="30"
-                pInputTextarea
-                placeholder="Bemerkungen"
-                autoResize="autoResize"
-            ></textarea>
-        </div>
-    </div>
-</div>
