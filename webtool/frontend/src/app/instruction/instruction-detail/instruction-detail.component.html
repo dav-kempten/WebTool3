@@ -2,9 +2,9 @@
 
 <form [formGroup]="instructionForm">
 
-<!--GuideComponent // TeamComponent // Abrechnung-->
+  <!--GuideComponent // TeamComponent // Abrechnung-->
   <div class="p-grid">
-    <div class="p-col">
+    <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
       <avk-guide
           formControlName="guide"
           id="g1"
@@ -13,17 +13,16 @@
           required
       ></avk-guide>
     </div>
-    <div class="p-grid">
-      <div class="p-col">
-        <input formControlName="costs" id="costs" placeholder="Kosten" type="text" size="30" pInputText>
-      </div>
-      <div class="p-col">
-        <input formControlName="revenue" id="revenue" placeholder="Einnahmen" type="text" size="30" pInputText>
-      </div>
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <input formControlName="costs" id="costs" placeholder="Kosten" type="text" style='width:100%' pInputText>
+    </div>
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <input formControlName="revenue" id="revenue" placeholder="Einnahmen" type="text" style='width:100%' pInputText>
     </div>
   </div>
+
   <div class="p-grid">
-    <div class="p-col">
+    <div class="p-sm-12 p-md-12 p-lg-12">
       <avk-team
           formControlName="team"
           id="g2"
@@ -33,46 +32,41 @@
     </div>
   </div>
 
+
   <!--Buchungscode, Status, Kurskonzept, InfoBox-->
-  <div class="content-section implementation">
-    <div class="ui-g ui-fluid">
-      <div class="ui-g-12 ui-md-3">
-        <input formControlName="bookingnr" id="bookingnr" placeholder="Buchungsnummer" type="text" size="30" pInputText>
-      </div>
-      <div class="ui-g-12 ui-md-3">
-        <input formControlName="status" id="status" placeholder="Status" type="text" size="30" pInputText>
-      </div>
-      <div class="ui-g-12 ui-md-6">
-        <input formControlName="concept" id="concept" placeholder="Kurskonzept" type="text" size="30" pInputText>
-      </div>
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <input formControlName="bookingnr" id="bookingnr" placeholder="Buchungsnummer" type="text" style='width:100%' pInputText>
+    </div>
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <input formControlName="status" id="status" placeholder="Status" type="text" style='width:100%' pInputText>
+    </div>
+    <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+      <input formControlName="concept" id="concept" placeholder="Kurskonzept" type="text" style='width:100%' pInputText>
     </div>
   </div>
 
   <!--Kurztitel, Langtitel-->
-  <div class="content-section implementation">
-    <div class="ui-g ui-fluid">
-      <div class="ui-g-12 ui-md-3">
-        <input formControlName="shorttitle" id="shorttitle" placeholder="Kurztitel" type="text" size="30" pInputText>
-      </div>
-      <div class="ui-g-12 ui-md-9">
-        <input formControlName="longtitle" id="longtitle" placeholder="Langtitel" type="text" size="30" pInputText>
-      </div>
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <input formControlName="shorttitle" id="shorttitle" placeholder="Kurztitel" type="text" style='width:100%' pInputText>
+    </div>
+    <div class="p-col-12 p-sm-9 p-md-9 p-lg-9">
+      <input formControlName="longtitle" id="longtitle" placeholder="Langtitel" type="text" style='width:100%' pInputText>
     </div>
   </div>
 
   <!--Beschreibung-->
-  <div class="content-section implementation">
-    <div class="ui-g ui-fluid">
-      <div class="ui-g-12 ui-md-12">
-        <textarea
-            formControlName="description"
-            [rows]="5"
-            [cols]="30"
-            pInputTextarea
-            placeholder="Beschreibung"
-            autoResize="autoResize"
-        ></textarea>
-      </div>
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+      <textarea
+          formControlName="description"
+          [rows]="5"
+          pInputTextarea
+          placeholder="Beschreibung"
+          autoResize="autoResize"
+          style='width:100%'
+      ></textarea>
     </div>
   </div>
 
@@ -89,18 +83,16 @@
   <!--Teilnehmergebühr-->
 
   <!--Bemerkung-->
-  <div class="content-section implementation">
-    <div class="ui-g ui-fluid">
-      <div class="ui-g-12 ui-md-12">
-        <textarea
-            formControlName="notes"
-            [rows]="2"
-            [cols]="30"
-            pInputTextarea
-            placeholder="Bemerkungen"
-            autoResize="autoResize"
-        ></textarea>
-      </div>
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+      <textarea
+          formControlName="notes"
+          [rows]="2"
+          pInputTextarea
+          placeholder="Bemerkungen"
+          autoResize="autoResize"
+          style='width:100%'
+      ></textarea>
     </div>
   </div>
 
