@@ -22,11 +22,12 @@ import {SplitButtonModule} from 'primeng/splitbutton';
 import {BreadcrumbComponent} from './breadcrumb/breadcrumb.component';
 import {RequiredDirective as DateRequiredDirective} from './date/required.directive';
 import {RequiredDirective as GuideRequiredDirective} from './guide/required.directive';
+import { InputfieldComponent } from './inputfield/inputfield.component';
 
 @NgModule({
   declarations: [
     GuideComponent, TeamComponent, DateComponent, TimeComponent, NamePipe, NamesPipe, MenuComponent,
-    BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective
+    BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, InputfieldComponent
   ],
   imports: [
     CommonModule,
