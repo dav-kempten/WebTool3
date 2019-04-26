@@ -5,12 +5,18 @@ import {AppState, selectRouterDetailId} from '../../app.state';
 import {FormControl, FormGroup} from "@angular/forms";
 import {NameListRequested} from "../../core/store/name.actions";
 
+interface Equipment {
+  name: string;
+  details: string[];
+}
+
 @Component({
   selector: 'avk-instruction-detail',
   "styles": ["node_modules/primeflex/primeflex.css"],
   templateUrl: './instruction-detail.component.html',
   styleUrls: ['./instruction-detail.component.css']
 })
+
 export class InstructionDetailComponent implements OnInit, OnDestroy {
 
   instructionId$: Observable<number>;
@@ -26,6 +32,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   concept = new FormControl('');
   shorttitle = new FormControl('');
   longtitle = new FormControl('');
+  equipment = new FormControl( '');
 
   instructionForm = new FormGroup({
     guide: this.guide,
@@ -38,8 +45,11 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     status: this.status,
     concept: this.concept,
     shorttitle: this.shorttitle,
-    longtitle: this.longtitle
+    longtitle: this.longtitle,
+    equipment: this.equipment
   });
+
+  equipmentChoice: Equipment[];
 
   constructor(private store: Store<AppState>) {
     this.store.dispatch(new NameListRequested());
@@ -59,8 +69,16 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
       status: '',
       concept: '',
       shorttitle: '',
-      longtitle: ''
+      longtitle: '',
+      equipment: ''
     });
+
+    this.equipmentChoice = [
+      {name: 'Bergtour', details:['Schuhe', 'Regenjacke', 'Brotzeit']},
+      {name: 'Gletscher', details:['Schuhe', 'Regenjacke', 'Steigeisen']},
+      {name: 'Klettern', details:['Schuhe', 'Seil', 'Helm']},
+      {name: 'Mountainbiken', details:['Schuhe', 'Fahrrad', 'Helm']}
+    ]
   }
 
   ngOnDestroy(): void {}
