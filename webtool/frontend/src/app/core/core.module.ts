@@ -45,7 +45,7 @@ import { InputfieldComponent } from './inputfield/inputfield.component';
   ],
   exports: [
     GuideComponent, TeamComponent, DateComponent, TimeComponent, NamePipe, NamesPipe, MenuComponent,
-    BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective
+    BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, InputfieldComponent
   ]
 })
 export class CoreModule { }
