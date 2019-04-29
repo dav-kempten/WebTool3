@@ -8,6 +8,8 @@ import {ReactiveFormsModule} from '@angular/forms';
 
 import {InputTextareaModule} from 'primeng/inputtextarea';
 import {DropdownModule, InputTextModule} from "primeng/primeng";
+import {ListboxModule} from "primeng/listbox";
+import {MultiSelectModule} from 'primeng/multiselect';
 
 const routes: Routes = [
   {path: ':id', component: InstructionDetailComponent},
@@ -23,7 +25,9 @@ const routes: Routes = [
     ReactiveFormsModule,
     InputTextareaModule,
     InputTextModule,
-    DropdownModule
+    DropdownModule,
+    ListboxModule,
+    MultiSelectModule,
   ]
 })
 export class InstructionModule {

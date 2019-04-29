@@ -72,13 +72,25 @@
 
   <!--Zusatzausrüstung, Besondere Vorausssetzungen-->
   <div class="p-grid">
-    <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
-      <p-dropdown
+    <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+      <p-multiSelect
           [options]="equipmentChoice"
           formControlName="equipment"
           optionLabel="name"
-          placeholder="Ausrüstung"
-      ></p-dropdown>
+          defaultLabel="Ausrüstung"
+          multiple="true"
+          checkbox="true"
+      ></p-multiSelect>
+    </div>
+    <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+      <p-multiSelect
+          [options]="requirementChoice"
+          formControlName="requirement"
+          optionLabel="name"
+          defaultLabel="Vorraussetzungen"
+          multiple="true"
+          checkbox="true"
+      ></p-multiSelect>
     </div>
   </div>
 

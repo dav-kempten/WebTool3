@@ -10,6 +10,10 @@ interface Equipment {
   details: string[];
 }
 
+interface Requirements {
+  name: string;
+}
+
 @Component({
   selector: 'avk-instruction-detail',
   "styles": ["node_modules/primeflex/primeflex.css"],
@@ -33,6 +37,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   shorttitle = new FormControl('');
   longtitle = new FormControl('');
   equipment = new FormControl( '');
+  requirement = new FormControl('');
 
   instructionForm = new FormGroup({
     guide: this.guide,
@@ -46,10 +51,12 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     concept: this.concept,
     shorttitle: this.shorttitle,
     longtitle: this.longtitle,
-    equipment: this.equipment
+    equipment: this.equipment,
+    requirement: this.requirement,
   });
 
   equipmentChoice: Equipment[];
+  requirementChoice: Requirements[];
 
   constructor(private store: Store<AppState>) {
     this.store.dispatch(new NameListRequested());
@@ -70,7 +77,8 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
       concept: '',
       shorttitle: '',
       longtitle: '',
-      equipment: ''
+      equipment: '',
+      requirement: '',
     });
 
     this.equipmentChoice = [
@@ -78,7 +86,11 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
       {name: 'Gletscher', details:['Schuhe', 'Regenjacke', 'Steigeisen']},
       {name: 'Klettern', details:['Schuhe', 'Seil', 'Helm']},
       {name: 'Mountainbiken', details:['Schuhe', 'Fahrrad', 'Helm']}
-    ]
+    ];
+
+    this.requirementChoice = [
+      {name:"Grundkurs Alpin"}, {name:"Grundkurs Klettern"}, {name:"Vorstiegsschein"}, {name:"Grundkurs Hochtouren"}
+    ];
   }
 
   ngOnDestroy(): void {}
