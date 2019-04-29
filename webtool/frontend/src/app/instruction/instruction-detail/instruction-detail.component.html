@@ -96,17 +96,17 @@
 
   <!--Teilnehmeranzahl, Strecke, Materialservice-->
   <div class="p-grid">
-    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
       <p-spinner
           formControlName="numbermember"
           placeholder="Teilnehmerzahl"
       ></p-spinner>
     </div>
-    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-      <input formControlName="distance" id="distance" placeholder="PKW Strecke" type="text" pInputText>
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <input formControlName="distance" id="distance" placeholder="PKW Strecke" type="text" style='width:100%' pInputText>
     </div>
-    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-      <p-checkbox [formControl]="instructionForm.controls['service']" label="Materialservice"></p-checkbox>
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <p-checkbox [formControl]="instructionForm.controls['service']" label="Materialservice" ></p-checkbox>
     </div>
   </div>
 
