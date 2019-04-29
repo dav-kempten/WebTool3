@@ -11,6 +11,10 @@ import {DropdownModule, InputTextModule} from "primeng/primeng";
 import {ListboxModule} from "primeng/listbox";
 import {MultiSelectModule} from 'primeng/multiselect';
 import {SpinnerModule} from 'primeng/spinner';
+import {CheckboxModule} from 'primeng/checkbox';
+
+
+
 
 const routes: Routes = [
   {path: ':id', component: InstructionDetailComponent},
@@ -30,6 +34,7 @@ const routes: Routes = [
     ListboxModule,
     MultiSelectModule,
     SpinnerModule,
+    CheckboxModule
   ]
 })
 export class InstructionModule {
