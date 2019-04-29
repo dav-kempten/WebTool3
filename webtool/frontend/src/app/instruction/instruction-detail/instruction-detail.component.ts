@@ -55,6 +55,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     equipment: this.equipment,
     requirement: this.requirement,
     numbermember: this.numbermember,
+    distance: this.distance,
   });
 
   equipmentChoice: Equipment[];
@@ -82,6 +83,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
       equipment: '',
       requirement: '',
       numbermember: '',
+      distance: '',
     });
 
     this.equipmentChoice = [
