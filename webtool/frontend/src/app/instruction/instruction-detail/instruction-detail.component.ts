@@ -41,6 +41,9 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   numbermember = new FormControl('');
   distance = new FormControl('');
   service = new FormControl('');
+  tourcosts = new FormControl('');
+  extracosts = new FormControl('');
+  deposit = new FormControl('');
 
   instructionForm = new FormGroup({
     guide: this.guide,
@@ -58,7 +61,10 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     requirement: this.requirement,
     numbermember: this.numbermember,
     distance: this.distance,
-    service: this.service
+    service: this.service,
+    tourcosts: this.tourcosts,
+    extracosts: this.extracosts,
+    deposit: this.deposit,
   });
 
   equipmentChoice: Equipment[];
@@ -87,7 +93,10 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
       requirement: '',
       numbermember: '',
       distance: '',
-      service: ''
+      service: '',
+      tourcosts: '',
+      extracosts: '',
+      deposit: '',
     });
 
     this.equipmentChoice = [
