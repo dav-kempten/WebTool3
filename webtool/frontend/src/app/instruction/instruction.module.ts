@@ -10,6 +10,7 @@ import {InputTextareaModule} from 'primeng/inputtextarea';
 import {DropdownModule, InputTextModule} from "primeng/primeng";
 import {ListboxModule} from "primeng/listbox";
 import {MultiSelectModule} from 'primeng/multiselect';
+import {SpinnerModule} from 'primeng/spinner';
 
 const routes: Routes = [
   {path: ':id', component: InstructionDetailComponent},
@@ -28,6 +29,7 @@ const routes: Routes = [
     DropdownModule,
     ListboxModule,
     MultiSelectModule,
+    SpinnerModule,
   ]
 })
 export class InstructionModule {
