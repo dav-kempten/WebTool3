@@ -12,8 +12,7 @@ import {ListboxModule} from "primeng/listbox";
 import {MultiSelectModule} from 'primeng/multiselect';
 import {SpinnerModule} from 'primeng/spinner';
 import {CheckboxModule} from 'primeng/checkbox';
-
-
+import {TableModule} from "primeng/table";
 
 
 const routes: Routes = [
@@ -34,7 +33,8 @@ const routes: Routes = [
     ListboxModule,
     MultiSelectModule,
     SpinnerModule,
-    CheckboxModule
+    CheckboxModule,
+    TableModule
   ]
 })
 export class InstructionModule {

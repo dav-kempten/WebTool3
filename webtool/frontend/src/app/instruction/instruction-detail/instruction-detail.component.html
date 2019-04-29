@@ -111,6 +111,32 @@
   </div>
 
   <!--Liste mit Parametern (Tabelle)-->
+  <p-table [value]="tours">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Type</th>
+        <th>SDate</th>
+        <th>STime</th>
+        <th>EDate</th>
+        <th>ETime</th>
+        <th>ShortTitle</th>
+        <th>LongTitle</th>
+        <th>Location</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-tour>
+      <tr>
+        <td>{{tour.type}}</td>
+        <td>{{tour.sdate}}</td>
+        <td>{{tour.stime}}</td>
+        <td>{{tour.edate}}</td>
+        <td>{{tour.etime}}</td>
+        <td>{{tour.shorttitle}}</td>
+        <td>{{tour.longtitle}}</td>
+        <td>{{tour.location}}</td>
+      </tr>
+    </ng-template>
+  </p-table>
 
   <!--Fahrtkosten, Zusatzkosten, Anzahlung-->
   <div class="p-grid">
@@ -126,6 +152,22 @@
   </div>
 
   <!--Kostenrahmen mit Tabelle-->
+  <p-table [value]="totalcosts" [resizableColumns]="true">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Pos</th>
+        <th>Beschreibung</th>
+        <th>Betrag</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-costs>
+      <tr>
+        <td>{{costs.pos}}</td>
+        <td>{{costs.beschreibung}}</td>
+        <td>{{costs.betrag}}</td>
+      </tr>
+    </ng-template>
+  </p-table>
 
   <!--Teilnehmergebühr-->
   <div class="p-grid">

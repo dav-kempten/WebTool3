@@ -14,6 +14,23 @@ interface Requirements {
   name: string;
 }
 
+interface Tour {
+  type;
+  sdate;
+  stime;
+  edate;
+  etime;
+  shorttitle;
+  longtitle;
+  location;
+}
+
+interface Costs {
+  pos;
+  beschreibung;
+  betrag;
+}
+
 @Component({
   selector: 'avk-instruction-detail',
   "styles": ["node_modules/primeflex/primeflex.css"],
@@ -71,6 +88,8 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
 
   equipmentChoice: Equipment[];
   requirementChoice: Requirements[];
+  tours: Tour[];
+  totalcosts: Costs[];
 
   constructor(private store: Store<AppState>) {
     this.store.dispatch(new NameListRequested());
@@ -111,6 +130,23 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
 
     this.requirementChoice = [
       {name:"Grundkurs Alpin"}, {name:"Grundkurs Klettern"}, {name:"Vorstiegsschein"}, {name:"Grundkurs Hochtouren"}
+    ];
+
+    this.tours = [
+      {type:"Bergtour", sdate:"26-07-2019", stime:"1700", edate:"27-07-2019", etime:"1700",
+        shorttitle:"Rangiswanger Horn", longtitle:"", location:"Gunzesried"},
+      {type:"Hochtour", sdate:"28-07-2019", stime:"1500", edate:"29-07-2019", etime:"1800",
+        shorttitle:"Großer Wilder", longtitle:"", location:"Pitztal"},
+      {type:"Klettertour", sdate:"17-07-2019", stime:"1200", edate:"29-07-2019", etime:"700",
+        shorttitle:"Aggenstein", longtitle:"", location:"Tannheimer Tal"},
+      {type:"MTB-Tour", sdate:"27-07-2019", stime:"1430", edate:"29-07-2019", etime:"2000",
+        shorttitle:"Sonthofen", longtitle:"", location:"Allgäu"}
+    ];
+
+    this.totalcosts = [
+      {pos:"1", beschreibung:"Fahrtkosten", betrag:"22,00"},
+      {pos:"2", beschreibung:"Maut", betrag:"12,99"},
+      {pos:"3", beschreibung:"Übernachtung", betrag:"28,00"}
     ];
   }
 
