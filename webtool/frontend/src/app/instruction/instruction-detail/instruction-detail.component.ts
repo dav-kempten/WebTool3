@@ -44,6 +44,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   tourcosts = new FormControl('');
   extracosts = new FormControl('');
   deposit = new FormControl('');
+  memberfee = new FormControl('');
 
   instructionForm = new FormGroup({
     guide: this.guide,
@@ -65,6 +66,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     tourcosts: this.tourcosts,
     extracosts: this.extracosts,
     deposit: this.deposit,
+    memberfee: this.memberfee
   });
 
   equipmentChoice: Equipment[];
@@ -97,6 +99,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
       tourcosts: '',
       extracosts: '',
       deposit: '',
+      memberfee: ''
     });
 
     this.equipmentChoice = [
