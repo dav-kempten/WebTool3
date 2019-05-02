@@ -44,16 +44,12 @@ export class MembernumberComponent implements OnInit, OnDestroy, AfterViewInit, 
   minMemberControl = new FormControl('');
   maxMemberControl = new FormControl('');
   memberValueControl = new FormControl('');
-  minIncludeControl = new FormControl(false);
-  maxIncludeControl = new FormControl(false);
 
   group = new FormGroup({
       original: this.originalControl,
       minMember: this.minMemberControl,
       maxMember: this.maxMemberControl,
-      member: this.memberValueControl,
-      minInclude: this.minIncludeControl,
-      maxInclude: this.maxIncludeControl
+      member: this.memberValueControl
     },
     [memberValidator]
   );
@@ -64,18 +60,8 @@ export class MembernumberComponent implements OnInit, OnDestroy, AfterViewInit, 
   }
 
   @Input()
-  set minInclude(value: boolean) {
-    this.minIncludeControl.setValue(value);
-  }
-
-  @Input()
   set maxMember(value: string) {
     this.maxMemberControl.setValue(value);
-  }
-
-  @Input()
-  set maxInclude(value: boolean) {
-    this.maxIncludeControl.setValue(value);
   }
 
   OnChangeWrapper(onChange: (memberOld: string) => void): (memberNew : string) => void {
@@ -127,27 +113,20 @@ export class MembernumberComponent implements OnInit, OnDestroy, AfterViewInit, 
 }
 
 export const memberValidator: ValidatorFn = (group: FormGroup): ValidationErrors | null => {
-  const minInclude: boolean = group.get('minInclude').value;
   const min: string = group.get('minMember').value;
   const memberField = group.get('member');
   const member = memberField.value;
-  const maxInclude: boolean = group.get('maxInclude').value;
   const max: string = group.get('maxMember').value;
   const originalControl: FormControl = group.get('original').value;
 
-  const curMaxMember = !member.length ? '99' : member;
-  const curMinMember = !member.length ? '0' : member;
-  const minIsSmallerMember = minInclude ? (min <= curMinMember) : (min < curMinMember);
-  const MemberIsSmallerMax = maxInclude ? (curMaxMember <= max) : (curMaxMember < max);
-
-  const checkMinMembers: boolean = curMinMember <= member;
-  const checkMaxMembers: boolean = member <= curMaxMember;
+  const checkMembersNull: boolean = !(member == 0);
+  const checkMinMembers: boolean = min <= member;
+  const checkMaxMembers: boolean = member <= max;
 
   const error: ValidationErrors = {invalidMember: {value: member}};
 
   const valid = (
-    (minIsSmallerMember || MemberIsSmallerMax) &&
-    (checkMinMembers && checkMaxMembers)
+    (checkMinMembers || checkMaxMembers) && checkMembersNull
   );
 
   if (originalControl) {
