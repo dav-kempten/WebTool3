@@ -23,12 +23,13 @@ import {BreadcrumbComponent} from './breadcrumb/breadcrumb.component';
 import {RequiredDirective as DateRequiredDirective} from './date/required.directive';
 import {RequiredDirective as GuideRequiredDirective} from './guide/required.directive';
 import { MembernumberComponent } from './membernumber/membernumber.component';
-import {SpinnerModule} from "primeng/primeng";
+import {DropdownModule, SpinnerModule} from "primeng/primeng";
+import { DropdownComponent } from './dropdown/dropdown.component';
 
 @NgModule({
   declarations: [
     GuideComponent, TeamComponent, DateComponent, TimeComponent, NamePipe, NamesPipe, MenuComponent,
-    BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent
+    BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent, DropdownComponent
   ],
   imports: [
     CommonModule,
@@ -43,11 +44,12 @@ import {SpinnerModule} from "primeng/primeng";
     TreeModule,
     ScrollPanelModule,
     ToastModule,
-    SpinnerModule
+    SpinnerModule,
+    DropdownModule
   ],
   exports: [
     GuideComponent, TeamComponent, DateComponent, TimeComponent, NamePipe, NamesPipe, MenuComponent,
-    BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent
+    BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent, DropdownComponent
   ]
 })
 export class CoreModule { }
