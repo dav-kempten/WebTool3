@@ -24,11 +24,12 @@ import {RequiredDirective as DateRequiredDirective} from './date/required.direct
 import {RequiredDirective as GuideRequiredDirective} from './guide/required.directive';
 import { MembernumberComponent } from './membernumber/membernumber.component';
 import {SpinnerModule} from "primeng/primeng";
+import { MultiselectComponent } from './multiselect/multiselect.component';
 
 @NgModule({
   declarations: [
     GuideComponent, TeamComponent, DateComponent, TimeComponent, NamePipe, NamesPipe, MenuComponent,
-    BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent
+    BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent, MultiselectComponent
   ],
   imports: [
     CommonModule,
@@ -47,7 +48,7 @@ import {SpinnerModule} from "primeng/primeng";
   ],
   exports: [
     GuideComponent, TeamComponent, DateComponent, TimeComponent, NamePipe, NamesPipe, MenuComponent,
-    BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent
+    BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent, MultiselectComponent
   ]
 })
 export class CoreModule { }
