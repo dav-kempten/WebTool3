@@ -98,12 +98,16 @@
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
       <avk-membernumber
           formControlName="numbermembermin"
+          label="MinMember"
+          id="m1"
           [maxMember]="numbermembermax.value"
       ></avk-membernumber>
     </div>
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
       <avk-membernumber
           formControlName="numbermembermax"
+          label="MaxMember"
+          id="m2"
           [minMember]="numbermembermin.value"
       ></avk-membernumber>
     </div>

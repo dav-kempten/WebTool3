@@ -40,6 +40,9 @@ export class MembernumberComponent implements OnInit, OnDestroy, AfterViewInit, 
   delegatedMethodCalls = new ReplaySubject<(_: ControlValueAccessor) => void>();
   delegatedMethodsSubscription: Subscription;
 
+  @Input() id = 'member';
+  @Input() label = 'Teilnehmer';
+
   originalControl = new FormControl(null);
   minMemberControl = new FormControl('');
   maxMemberControl = new FormControl('');

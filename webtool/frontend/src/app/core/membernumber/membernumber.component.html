@@ -1,4 +1,7 @@
+<label for="{{id}}">{{label}}: </label>
 <p-spinner
-    [min] = "0"
-    [max] = "99"
+  id="{{id}}"
+  [min] = "0"
+  [max] = "99"
+  [inputStyle]="{'background-color':formControl?.valid ? null : 'DarkSalmon'}"
 ></p-spinner>
