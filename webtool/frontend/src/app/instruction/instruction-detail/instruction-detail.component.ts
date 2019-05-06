@@ -55,7 +55,8 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   longtitle = new FormControl('');
   equipment = new FormControl( '');
   requirement = new FormControl('');
-  numbermember = new FormControl('');
+  numbermembermin = new FormControl('');
+  numbermembermax = new FormControl('');
   distance = new FormControl('');
   service = new FormControl('');
   tourcosts = new FormControl('');
@@ -77,7 +78,8 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     longtitle: this.longtitle,
     equipment: this.equipment,
     requirement: this.requirement,
-    numbermember: this.numbermember,
+    numbermembermin: this.numbermembermin,
+    numbermembermax: this.numbermembermax,
     distance: this.distance,
     service: this.service,
     tourcosts: this.tourcosts,
@@ -112,7 +114,8 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
       longtitle: '',
       equipment: '',
       requirement: '',
-      numbermember: '',
+      numbermembermin: '',
+      numbermembermax: '',
       distance: '',
       service: '',
       tourcosts: '',

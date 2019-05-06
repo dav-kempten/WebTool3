@@ -32,7 +32,6 @@
     </div>
   </div>
 
-
   <!--Buchungscode, Status, Kurskonzept, InfoBox-->
   <div class="p-grid">
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
@@ -97,10 +96,16 @@
   <!--Teilnehmeranzahl, Strecke, Materialservice-->
   <div class="p-grid">
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <p-spinner
-          formControlName="numbermember"
-          placeholder="Teilnehmerzahl"
-      ></p-spinner>
+      <avk-membernumber
+          formControlName="numbermembermin"
+          [maxMember]="numbermembermax.value"
+      ></avk-membernumber>
+    </div>
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <avk-membernumber
+          formControlName="numbermembermax"
+          [minMember]="numbermembermin.value"
+      ></avk-membernumber>
     </div>
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
       <input formControlName="distance" id="distance" placeholder="PKW Strecke" type="text" style='width:100%' pInputText>
