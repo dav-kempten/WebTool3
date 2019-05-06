@@ -25,6 +25,7 @@ import {RequiredDirective as GuideRequiredDirective} from './guide/required.dire
 import { MembernumberComponent } from './membernumber/membernumber.component';
 import {SpinnerModule} from "primeng/primeng";
 import { MultiselectComponent } from './multiselect/multiselect.component';
+import {MultiSelectModule} from 'primeng/multiselect';
 
 @NgModule({
   declarations: [
@@ -44,7 +45,8 @@ import { MultiselectComponent } from './multiselect/multiselect.component';
     TreeModule,
     ScrollPanelModule,
     ToastModule,
-    SpinnerModule
+    SpinnerModule,
+    MultiSelectModule
   ],
   exports: [
     GuideComponent, TeamComponent, DateComponent, TimeComponent, NamePipe, NamesPipe, MenuComponent,
