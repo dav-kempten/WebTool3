@@ -10,7 +10,14 @@ import {
 } from '@angular/core';
 import {SelectItem} from "primeng/api";
 import {MultiSelect} from "primeng/primeng";
-import {ControlValueAccessor, FormControl, FormControlName, FormGroup, NG_VALUE_ACCESSOR} from "@angular/forms";
+import {
+  ControlValueAccessor,
+  FormControl,
+  FormControlName,
+  FormGroup,
+  NG_VALUE_ACCESSOR, ValidationErrors,
+  ValidatorFn
+} from "@angular/forms";
 import {ReplaySubject, Subscription} from "rxjs";
 import {delay} from "rxjs/operators";
 
@@ -78,7 +85,7 @@ export class MultiselectComponent implements OnInit, AfterViewInit, OnDestroy, A
       choice: this.choiceControl,
       label: this.labelControl,
       choicevalue: this.choiceValueControl,
-    }
+    }, [multiselectValidator]
   );
 
   OnChangeWrapper(onChange: (choiceNew: string) => void): (choiceOld: string) => void {
@@ -129,3 +136,23 @@ export class MultiselectComponent implements OnInit, AfterViewInit, OnDestroy, A
     this.labelControl.setValue(this.label);
   }
 }
+
+export const multiselectValidator: ValidatorFn = (group: FormGroup): ValidationErrors | null => {
+  const choice: string = group.get('choice').value;
+  const choiceValue: any[] = group.get('choicevalue').value;
+  const originalControl: FormControl = group.get('original').value;
+
+  // console.log(choice, choiceValue);
+
+  const error: ValidationErrors = {invalidSelect: {value: choiceValue}};
+
+  const valid = (!!choice && !!choiceValue.length);
+
+  if (originalControl) {
+    setTimeout(() => {
+      originalControl.setErrors(valid ? null : error);
+    });
+  }
+
+  return null;
+};
