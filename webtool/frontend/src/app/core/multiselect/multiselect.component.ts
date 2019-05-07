@@ -15,6 +15,18 @@ import {ReplaySubject, Subscription} from "rxjs";
 import {delay} from "rxjs/operators";
 
 
+const equipment = [
+  {label: 'Gletscher', value: ['Schuhe', 'Regenjacke', 'Steigeisen']},
+  {label: 'Klettern', value: ['Schuhe', 'Seil', 'Helm']},
+  {label: 'Mountainbiken', value: ['Schuhe', 'Fahrrad', 'Helm']}
+];
+
+const requirement = [
+  {label: "Grundkurs Alpin", value: ""}, {label: "Grundkurs Klettern", value: ""},
+  {label: "Vorstiegsschein", value: ""}, {label: "Grundkurs Hochtouren", value: ""}
+];
+
+
 @Component({
   selector: 'avk-multiselect',
   providers: [
@@ -35,15 +47,20 @@ export class MultiselectComponent implements OnInit, AfterViewInit, OnDestroy, A
   delegatedMethodCalls = new ReplaySubject<(_: ControlValueAccessor) => void>();
   delegatedMethodsSubscription: Subscription;
 
-  equipment: SelectItem[];
-  requirement: SelectItem[];
-  choiceString: string = "requirement";
+  choiceArray: SelectItem[];
 
   @Input()
   set choice(value: string) {
     this.choiceControl.setValue(value);
-    if (!value) {
-      this.choiceControl.setValue("requirement")
+    if (value === "requirement") {
+      this.choiceArray = [...requirement];
+    }
+    else if (value === "equipment") {
+      this.choiceArray = [...equipment];
+    }
+    else {
+      this.choiceControl.setValue("requirement");
+      this.choiceArray = [...requirement];
     }
   }
 
@@ -91,17 +108,7 @@ export class MultiselectComponent implements OnInit, AfterViewInit, OnDestroy, A
 
   constructor() {}
 
-  ngOnInit(): void {
-    this.equipment = [
-      {label: 'Gletscher', value: ['Schuhe', 'Regenjacke', 'Steigeisen']},
-      {label: 'Klettern', value: ['Schuhe', 'Seil', 'Helm']},
-      {label: 'Mountainbiken', value: ['Schuhe', 'Fahrrad', 'Helm']}
-    ];
-    this.requirement = [
-      {label: "Grundkurs Alpin", value: ""}, {label: "Grundkurs Klettern", value: ""},
-      {label: "Vorstiegsschein", value: ""}, {label: "Grundkurs Hochtouren", value: ""}
-    ];
-  }
+  ngOnInit(): void {}
 
   ngAfterViewInit(): void {
      this.delegatedMethodsSubscription = this.delegatedMethodCalls.pipe(
