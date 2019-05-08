@@ -53,12 +53,8 @@ import { DropdownComponent } from './dropdown/dropdown.component';
   ],
   exports: [
     GuideComponent, TeamComponent, DateComponent, TimeComponent, NamePipe, NamesPipe, MenuComponent,
-    BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent
-  ],
-  exports: [
-    GuideComponent, TeamComponent, DateComponent, TimeComponent, NamePipe, NamesPipe, MenuComponent,
     BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent, DropdownComponent, 
-	MultiselectComponent
+	  MultiselectComponent
   ]
 })
 export class CoreModule { }
