@@ -14,18 +14,13 @@ STATICFILES_DIRS = [
 
 CORS_ORIGIN_ALLOW_ALL = False
 
-CORS_ORIGIN_WHITELIST = (
-    'www.dav-kempten-neue-hoempage.de',
-    'www.dav-kempten.de'
-    'dav-kempten-neue-hoempage.de',
-    'dav-kempten.de'
-)
+CORS_URLS_REGEX = r'^/api/.*$'
 
-CORS_TRUSTED_ORIGINS = (
+CORS_ORIGIN_WHITELIST = (
+    'www.dav-kempten.de',
     'www.dav-kempten-neue-hoempage.de',
-    'www.dav-kempten.de'
     'dav-kempten-neue-hoempage.de',
-    'dav-kempten.de'
+    'dav-kempten.de',
 )
 
 STATIC_ROOT = "/home/djcode/static"
