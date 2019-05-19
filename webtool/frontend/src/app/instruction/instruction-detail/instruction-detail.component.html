@@ -38,7 +38,7 @@
       <input formControlName="bookingnr" id="bookingnr" placeholder="Buchungsnummer" type="text" style='width:100%' pInputText>
     </div>
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <input formControlName="status" id="status" placeholder="Status" type="text" style='width:100%' pInputText>
+      <avk-dropdown formControlName="status" id="status"></avk-dropdown>
     </div>
     <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
       <input formControlName="concept" id="concept" placeholder="Kurskonzept" type="text" style='width:100%' pInputText>
@@ -72,24 +72,18 @@
   <!--Zusatzausrüstung, Besondere Vorausssetzungen-->
   <div class="p-grid">
     <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
-      <p-multiSelect
-          [options]="equipmentChoice"
+      <avk-multiselect
           formControlName="equipment"
-          optionLabel="name"
-          defaultLabel="Ausrüstung"
-          multiple="true"
-          checkbox="true"
-      ></p-multiSelect>
+          choice="equipment"
+          label="Ausrüstung"
+      ></avk-multiselect>
     </div>
     <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
-      <p-multiSelect
-          [options]="requirementChoice"
+      <avk-multiselect
           formControlName="requirement"
-          optionLabel="name"
-          defaultLabel="Vorraussetzungen"
-          multiple="true"
-          checkbox="true"
-      ></p-multiSelect>
+          choice="requirement"
+          label="Vorraussetzungen"
+      ></avk-multiselect>
     </div>
   </div>
 
