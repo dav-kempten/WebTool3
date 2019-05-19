@@ -30,7 +30,6 @@ class CollectiveListField(serializers.ListField):
 
 class TopicListField(serializers.ListField):
     id = serializers.IntegerField()
-    categoryId = serializers.IntegerField()
     code = serializers.CharField()
     title = serializers.CharField()
     name = serializers.CharField()
@@ -54,7 +53,6 @@ class EquipmentListField(serializers.ListField):
 class SkillListField(serializers.ListField):
     id = serializers.IntegerField()
     level = serializers.CharField()
-    categoryId = serializers.IntegerField()
     code = serializers.CharField()
     description = serializers.CharField()
 
@@ -62,7 +60,6 @@ class SkillListField(serializers.ListField):
 class FitnessListField(serializers.ListField):
     id = serializers.IntegerField()
     level = serializers.CharField()
-    categoryId = serializers.IntegerField()
     code = serializers.CharField()
     description = serializers.CharField()
 
