@@ -35,7 +35,8 @@
   <!--Buchungscode, Status, Kurskonzept, InfoBox-->
   <div class="p-grid">
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <input formControlName="bookingnr" id="bookingnr" placeholder="Buchungsnummer" type="text" style='width:100%' pInputText>
+      <input formControlName="bookingnr" id="bookingnr" placeholder="Buchungsnummer" type="text" style='width:100%'
+             pInputText>
     </div>
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
       <avk-dropdown formControlName="status" id="status"></avk-dropdown>
@@ -48,10 +49,12 @@
   <!--Kurztitel, Langtitel-->
   <div class="p-grid">
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <input formControlName="shorttitle" id="shorttitle" placeholder="Kurztitel" type="text" style='width:100%' pInputText>
+      <input formControlName="shorttitle" id="shorttitle" placeholder="Kurztitel" type="text" style='width:100%'
+             pInputText>
     </div>
     <div class="p-col-12 p-sm-9 p-md-9 p-lg-9">
-      <input formControlName="longtitle" id="longtitle" placeholder="Langtitel" type="text" style='width:100%' pInputText>
+      <input formControlName="longtitle" id="longtitle" placeholder="Langtitel" type="text" style='width:100%'
+             pInputText>
     </div>
   </div>
 
@@ -106,10 +109,11 @@
       ></avk-membernumber>
     </div>
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <input formControlName="distance" id="distance" placeholder="PKW Strecke" type="text" style='width:100%' pInputText>
+      <input formControlName="distance" id="distance" placeholder="PKW Strecke" type="text" style='width:100%'
+             pInputText>
     </div>
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <p-checkbox [formControl]="instructionForm.controls['service']" label="Materialservice" ></p-checkbox>
+      <p-checkbox [formControl]="instructionForm.controls['service']" label="Materialservice"></p-checkbox>
     </div>
   </div>
 
@@ -117,45 +121,33 @@
   <div class="p-grid">
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
       <avk-date formControlName="startdate"
-              id = "dbeginn" label = "Start"
-              [max]="enddate.value"
-              [maxInclude]="true"
+                id="dbeginn" label="Start"
+                [max]="enddate.value"
+                [maxInclude]="true"
       ></avk-date>
     </div>
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
       <avk-date formControlName="enddate"
-              id = "dend" label = "Ende"
-              [min]="startdate.value"
-              [minInclude]="true"
+                id="dend" label="Ende"
+                [min]="startdate.value"
+                [minInclude]="true"
       ></avk-date>
     </div>
     <div class="p-col-12 p-sm-3 p-md-2 p-lg-2">
-      <input formControlName="datetype" id="datetype" placeholder="Art (z.B Besprechung)" type="text" style="width:100%" pInputText>
+      <input formControlName="datetype" id="datetype" placeholder="Art (z.B Besprechung)" type="text" style="width:100%"
+             pInputText>
     </div>
     <div class="p-col-12 p-sm-3 p-md-2 p-lg-2">
-      <input formControlName="location" id="location" placeholder="Ort (z.B Seminarraum)" type="text" style="width:100%" pInputText>
+      <input formControlName="location" id="location" placeholder="Ort (z.B Swoboda Alpin, Gipfel)" type="text" style="width:100%"
+             pInputText>
     </div>
     <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
       <button pButton type="button" label="Add" (click)="getDateData()"></button>
     </div>
   </div>
 
+
   <!--Liste mit Parametern (Tabelle)-->
-  <p-table [value]="tours">
-    <ng-template pTemplate="header">
-      <tr>
-        <th>Type</th>
-        <th>SDate</th>
-        <th>STime</th>
-        <th>EDate</th>
-        <th>ETime</th>
-        <th>ShortTitle</th>
-        <th>LongTitle</th>
-        <th>Location</th>
-      </tr>
-    </ng-template>
-    <ng-template pTemplate="body" let-tour>
-      <tr>
         <td>{{tour.type}}</td>
         <td>{{tour.sdate}}</td>
         <td>{{tour.stime}}</td>
@@ -167,18 +159,40 @@
       </tr>
     </ng-template>
   </p-table>
+              <th>LongTitle</th>
+              <th>Location</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-tour>
+            <tr>
+              <td>{{tour.type}}</td>
+              <td>{{tour.sdate}}</td>
+              <td>{{tour.stime}}</td>
+              <td>{{tour.edate}}</td>
+              <td>{{tour.etime}}</td>
+              <td>{{tour.shorttitle}}</td>
+              <td>{{tour.longtitle}}</td>
+              <td>{{tour.location}}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
 
   <!--Fahrtkosten, Zusatzkosten, Anzahlung-->
   <div class="p-grid">
     <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
       <div class="ui-inputgroup" style='width:100%'>
         <button pButton type="button" label="Add" (click)="getTourCosts()"></button>
-        <input formControlName="costsname" id="coststname" placeholder="Name Kostenpunkt" type="text" style='width:100%' pInputText>
-        <input formControlName="tourcosts" id="tourcosts" placeholder="Betrag (z.B. 12,79)" type="text"  pInputText>
+        <input formControlName="costsname" id="coststname" placeholder="Name Kostenpunkt" type="text" style='width:100%'
+               pInputText>
+        <input formControlName="tourcosts" id="tourcosts" placeholder="Betrag (z.B. 12,79)" type="text" pInputText>
       </div>
     </div>
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <input formControlName="extracosts" id="extracosts" placeholder="Zusatzkosten" type="text" style='width:100%' pInputText>
+      <input formControlName="extracosts" id="extracosts" placeholder="Zusatzkosten" type="text" style='width:100%'
+             pInputText>
     </div>
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
       <input formControlName="deposit" id="deposit" placeholder="Anzahlung" type="text" style='width:100%' pInputText>
@@ -186,27 +200,32 @@
   </div>
 
   <!--Kostenrahmen mit Tabelle-->
-  <p-table [value]="totalcosts" [resizableColumns]="true">
-    <ng-template pTemplate="header">
-      <tr>
-        <th>Pos</th>
-        <th>Beschreibung</th>
-        <th>Betrag</th>
-      </tr>
-    </ng-template>
-    <ng-template pTemplate="body" let-costs>
-      <tr>
-        <td>{{costs.pos}}</td>
-        <td>{{costs.beschreibung}}</td>
-        <td>{{costs.betrag}}</td>
-      </tr>
-    </ng-template>
-  </p-table>
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+      <p-table [value]="totalcosts" [resizableColumns]="true">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Pos</th>
+            <th>Beschreibung</th>
+            <th>Betrag</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-costs>
+          <tr>
+            <td>{{costs.pos}}</td>
+            <td>{{costs.beschreibung}}</td>
+            <td>{{costs.betrag}}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
 
   <!--Teilnehmergebühr-->
   <div class="p-grid">
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <input formControlName="memberfee" id="memberfee" placeholder="Teilnehmergebühr" type="text" style='width:100%' pInputText>
+      <input formControlName="memberfee" id="memberfee" placeholder="Teilnehmergebühr" type="text" style='width:100%'
+             pInputText>
     </div>
   </div>
 

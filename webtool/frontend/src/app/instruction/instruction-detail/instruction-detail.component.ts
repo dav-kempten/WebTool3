@@ -159,7 +159,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {}
 
   getTourCosts(): void {
-    let varCost: Costs =  {pos: 0, betrag: 0, beschreibung: 0};
+    let varCost: Costs =  {pos: '', betrag: '', beschreibung: ''};
 
     if (this.costsname.value !== '' && this.tourcosts.value !== '') {
       varCost.pos = ++this.totalcostsCtr;
