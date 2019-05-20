@@ -113,7 +113,6 @@ export const stateValidator: ValidatorFn = (group: FormGroup): ValidationErrors 
   const choice: string = group.get('choice').value;
   const originalControl: FormControl = group.get('original').value;
 
-  console.log(choice);
   const checkChoice: boolean = !!choice;
 
   const error: ValidationErrors = {invalidChoice: {value: choice}};

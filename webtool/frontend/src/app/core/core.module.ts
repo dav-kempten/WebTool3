@@ -49,12 +49,13 @@ import { DropdownComponent } from './dropdown/dropdown.component';
     ToastModule,
     SpinnerModule,
     DropdownModule,
-    MultiSelectModule
+    MultiSelectModule,
+    ButtonModule
   ],
   exports: [
     GuideComponent, TeamComponent, DateComponent, TimeComponent, NamePipe, NamesPipe, MenuComponent,
     BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent, DropdownComponent, 
-	  MultiselectComponent
+	  MultiselectComponent, ButtonModule
   ]
 })
 export class CoreModule { }
