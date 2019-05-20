@@ -64,6 +64,10 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   extracosts = new FormControl('');
   deposit = new FormControl('');
   memberfee = new FormControl('');
+  startdate = new FormControl('');
+  enddate = new FormControl('');
+  datetype = new FormControl('');
+  location = new FormControl('');
 
   instructionForm = new FormGroup({
     guide: this.guide,
@@ -87,7 +91,11 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     costsname: this.costsname,
     extracosts: this.extracosts,
     deposit: this.deposit,
-    memberfee: this.memberfee
+    memberfee: this.memberfee,
+    startdate: this.startdate,
+    enddate: this.enddate,
+    datetype: this.datetype,
+    location: this.location
   });
 
   equipmentChoice: Equipment[];
@@ -125,7 +133,11 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
       costsname: '',
       extracosts: '',
       deposit: '',
-      memberfee: ''
+      memberfee: '',
+      startdate: '',
+      enddate: '',
+      datetype: '',
+      location: ''
     });
 
     this.equipmentChoice = [
@@ -139,16 +151,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
       {name:"Grundkurs Alpin"}, {name:"Grundkurs Klettern"}, {name:"Vorstiegsschein"}, {name:"Grundkurs Hochtouren"}
     ];
 
-    this.tours = [
-      {type:"Bergtour", sdate:"26-07-2019", stime:"1700", edate:"27-07-2019", etime:"1700",
-        shorttitle:"Rangiswanger Horn", longtitle:"", location:"Gunzesried"},
-      {type:"Hochtour", sdate:"28-07-2019", stime:"1500", edate:"29-07-2019", etime:"1800",
-        shorttitle:"Großer Wilder", longtitle:"", location:"Pitztal"},
-      {type:"Klettertour", sdate:"17-07-2019", stime:"1200", edate:"29-07-2019", etime:"700",
-        shorttitle:"Aggenstein", longtitle:"", location:"Tannheimer Tal"},
-      {type:"MTB-Tour", sdate:"27-07-2019", stime:"1430", edate:"29-07-2019", etime:"2000",
-        shorttitle:"Sonthofen", longtitle:"", location:"Allgäu"}
-    ];
+    this.tours = [];
 
     this.totalcosts = [];
   }
@@ -163,6 +166,18 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
       varCost.beschreibung = this.costsname.value;
       varCost.betrag = this.tourcosts.value;
       this.totalcosts.push(varCost);
+    }
+  }
+
+  getDateData(): void {
+    let dateData: Tour = {type:"", sdate:"", stime:"", edate:"", etime:"", shorttitle:"", longtitle:"", location:""};
+
+    if (this.datetype.value !== '' && this.startdate.value !== '' && this.enddate.value !== '' && this.location.value !== '') {
+      dateData.type = this.datetype.value;
+      dateData.sdate = this.startdate.value;
+      dateData.edate = this.enddate.value;
+      dateData.location = this.location.value;
+      this.tours.push(dateData);
     }
   }
 
