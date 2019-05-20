@@ -143,8 +143,12 @@
 
   <!--Fahrtkosten, Zusatzkosten, Anzahlung-->
   <div class="p-grid">
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <input formControlName="tourcosts" id="tourcosts" placeholder="Fahrtkosten" type="text" style='width:100%' pInputText>
+    <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+      <div class="ui-inputgroup" style='width:100%'>
+        <button pButton type="button" label="Add" (click)="getTourCosts()"></button>
+        <input formControlName="costsname" id="coststname" placeholder="Name Kostenpunkt" type="text" style='width:100%' pInputText>
+        <input formControlName="tourcosts" id="tourcosts" placeholder="Betrag (z.B. 12,79)" type="text"  pInputText>
+      </div>
     </div>
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
       <input formControlName="extracosts" id="extracosts" placeholder="Zusatzkosten" type="text" style='width:100%' pInputText>

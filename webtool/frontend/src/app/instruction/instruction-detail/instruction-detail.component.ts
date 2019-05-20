@@ -60,6 +60,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   distance = new FormControl('');
   service = new FormControl('');
   tourcosts = new FormControl('');
+  costsname = new FormControl('');
   extracosts = new FormControl('');
   deposit = new FormControl('');
   memberfee = new FormControl('');
@@ -83,6 +84,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     distance: this.distance,
     service: this.service,
     tourcosts: this.tourcosts,
+    costsname: this.costsname,
     extracosts: this.extracosts,
     deposit: this.deposit,
     memberfee: this.memberfee
@@ -92,6 +94,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   requirementChoice: Requirements[];
   tours: Tour[];
   totalcosts: Costs[];
+  totalcostsCtr: number = 0;
 
   constructor(private store: Store<AppState>) {
     this.store.dispatch(new NameListRequested());
@@ -119,6 +122,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
       distance: '',
       service: '',
       tourcosts: '',
+      costsname: '',
       extracosts: '',
       deposit: '',
       memberfee: ''
@@ -146,13 +150,20 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
         shorttitle:"Sonthofen", longtitle:"", location:"Allgäu"}
     ];
 
-    this.totalcosts = [
-      {pos:"1", beschreibung:"Fahrtkosten", betrag:"22,00"},
-      {pos:"2", beschreibung:"Maut", betrag:"12,99"},
-      {pos:"3", beschreibung:"Übernachtung", betrag:"28,00"}
-    ];
+    this.totalcosts = [];
   }
 
   ngOnDestroy(): void {}
+
+  getTourCosts(): void {
+    let varCost: Costs =  {pos: 0, betrag: 0, beschreibung: 0};
+
+    if (this.costsname.value !== '' && this.tourcosts.value !== '') {
+      varCost.pos = ++this.totalcostsCtr;
+      varCost.beschreibung = this.costsname.value;
+      varCost.betrag = this.tourcosts.value;
+      this.totalcosts.push(varCost);
+    }
+  }
 
 }
