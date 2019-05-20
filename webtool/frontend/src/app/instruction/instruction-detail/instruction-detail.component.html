@@ -2,6 +2,18 @@
 
 <form [formGroup]="instructionForm">
 
+  <!--Single-Multi-Button  -->
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <p-toggleButton formControlName="multisingle"
+                      onLabel="Mulittermin"
+                      offLabel="Einzeltermin"
+                      data-toggle="collapse"
+                      data-target="#demo, #demo2"
+      ></p-toggleButton>
+    </div>
+  </div>
+
   <!--GuideComponent // TeamComponent // Abrechnung-->
   <div class="p-grid">
     <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
@@ -141,24 +153,27 @@
       <input formControlName="location" id="location" placeholder="Ort (z.B Swoboda Alpin, Gipfel)" type="text" style="width:100%"
              pInputText>
     </div>
-    <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
-      <button pButton type="button" label="Add" (click)="getDateData()"></button>
+    <div id="demo" class="collapse">
+      <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
+        <button pButton type="button" label="Add" (click)="getDateData()"></button>
+      </div>
     </div>
   </div>
 
 
   <!--Liste mit Parametern (Tabelle)-->
-        <td>{{tour.type}}</td>
-        <td>{{tour.sdate}}</td>
-        <td>{{tour.stime}}</td>
-        <td>{{tour.edate}}</td>
-        <td>{{tour.etime}}</td>
-        <td>{{tour.shorttitle}}</td>
-        <td>{{tour.longtitle}}</td>
-        <td>{{tour.location}}</td>
-      </tr>
-    </ng-template>
-  </p-table>
+  <div id="demo2" class="collapse">
+    <div class="p-grid">
+      <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+        <p-table [value]="tours">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Type</th>
+              <th>SDate</th>
+              <th>STime</th>
+              <th>EDate</th>
+              <th>ETime</th>
+              <th>ShortTitle</th>
               <th>LongTitle</th>
               <th>Location</th>
             </tr>

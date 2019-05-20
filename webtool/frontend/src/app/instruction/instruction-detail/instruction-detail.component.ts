@@ -68,6 +68,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   enddate = new FormControl('');
   datetype = new FormControl('');
   location = new FormControl('');
+  multisingle = new FormControl('');
 
   instructionForm = new FormGroup({
     guide: this.guide,
@@ -95,7 +96,8 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     startdate: this.startdate,
     enddate: this.enddate,
     datetype: this.datetype,
-    location: this.location
+    location: this.location,
+    multisingle: this.multisingle
   });
 
   equipmentChoice: Equipment[];
@@ -137,7 +139,8 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
       startdate: '',
       enddate: '',
       datetype: '',
-      location: ''
+      location: '',
+      multisingle: ''
     });
 
     this.equipmentChoice = [

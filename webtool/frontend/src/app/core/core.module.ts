@@ -27,12 +27,13 @@ import {DropdownModule, SpinnerModule} from 'primeng/primeng';
 import {MultiSelectModule} from 'primeng/multiselect';
 import { MultiselectComponent } from './multiselect/multiselect.component';
 import { DropdownComponent } from './dropdown/dropdown.component';
+import {ToggleButtonModule} from 'primeng/togglebutton';
 
 @NgModule({
   declarations: [
     GuideComponent, TeamComponent, DateComponent, TimeComponent, NamePipe, NamesPipe, MenuComponent,
     BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent, DropdownComponent,
-	MultiselectComponent
+	  MultiselectComponent
   ],
   imports: [
     CommonModule,
@@ -50,12 +51,13 @@ import { DropdownComponent } from './dropdown/dropdown.component';
     SpinnerModule,
     DropdownModule,
     MultiSelectModule,
-    ButtonModule
+    ButtonModule,
+    ToggleButtonModule
   ],
   exports: [
     GuideComponent, TeamComponent, DateComponent, TimeComponent, NamePipe, NamesPipe, MenuComponent,
     BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent, DropdownComponent, 
-	  MultiselectComponent, ButtonModule
+	  MultiselectComponent, ButtonModule, ToggleButtonModule
   ]
 })
 export class CoreModule { }
