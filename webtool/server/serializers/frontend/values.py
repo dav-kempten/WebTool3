@@ -88,6 +88,21 @@ class TourCostSerializer(serializers.Serializer):
     admissionMinimum = MoneyField(source='min_admission')
 
 
+class OpeningHourListField(serializers.ListField):
+    days = serializers.CharField()
+    hours = serializers.CharField()
+
+
+class OpeningModeSerializer(serializers.Serializer):
+    default = OpeningHourListField()
+    special = OpeningHourListField()
+
+
+class OpeningHourSerializer(serializers.Serializer):
+    office = OpeningModeSerializer()
+    desk = OpeningModeSerializer()
+
+
 class ValueSerializer(serializers.Serializer):
 
     states = StateListField()
@@ -103,3 +118,4 @@ class ValueSerializer(serializers.Serializer):
     accommodationCostDefault = MoneyField(source='accommodation')
     tourCalculationValues = TourCostSerializer(source='tour_calculation')
     instructionCalculationValues = InstructionCostListField(source='instruction_calculation')
+    openingHours = OpeningHourSerializer(source='opening_hours')

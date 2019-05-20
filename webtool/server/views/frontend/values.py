@@ -36,6 +36,23 @@ class _Values(object):
         self.accommodation = Decimal('20.00')
         self.tour_calculation = self._get_tour_data()
         self.instruction_calculation = None
+        self.opening_hours = dict(
+            office=dict(
+                default=[dict(days='Mo-Fr', hours='11:00-19:00')],
+                special=None
+            ),
+            desk=dict(
+                default=[
+                    dict(days='Mo-Fr', hours='11:00-22:30'),
+                    dict(days='Sa', hours='09:00-22:30'),
+                    dict(days='So', hours='09:00-21:00'),
+                ],
+                special=[
+                    dict(days='Mo-Sa', hours='09:00-22:30'),
+                    dict(days='So', hours='09:00-21:00'),
+                ]
+            )
+        )
 
     def _get_states(self):
         self._updated = max(self._updated, State.objects.latest().updated)
