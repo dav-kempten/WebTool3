@@ -8,7 +8,7 @@ from server.models import Guide
 from server.serializers.frontend.names import NameListSerializer
 
 
-class NamesViewSet(viewsets.ReadOnlyModelViewSet):
+class NamesViewSet(viewsets.mixins.ListModelMixin, viewsets.GenericViewSet):
 
     queryset = Guide.objects\
         .filter(seasons__current=True)\

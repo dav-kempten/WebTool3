@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.http import Http404
 from django.template.defaultfilters import date
 
 from rest_framework import viewsets
@@ -26,13 +27,20 @@ class CalendarsViewSet(viewsets.ReadOnlyModelViewSet):
         return response
 
     def retrieve(self, request, pk=None, *args, **kwargs):
-        calendar = get_object_or_404(self.get_queryset(), pk=pk)
-        serializer = CalendarSerializer(calendar)
+
+        try:
+            pk = int(pk)
+        except ValueError:
+            raise Http404
+
+        queryset = self.get_queryset()
+        instance = get_object_or_404(queryset, pk=pk)
+        serializer = CalendarSerializer(instance)
 
         response = Response(serializer.data)
         response['Cache-Control'] = "public, max-age=86400"
-        response['ETag'] = '"{}"'.format(calendar.get_etag())
-        response['Last-Modified'] = "{} GMT".format(date(calendar.updated, "D, d M Y H:i:s"))
+        response['ETag'] = '"{}"'.format(instance.get_etag())
+        response['Last-Modified'] = "{} GMT".format(date(instance.updated, "D, d M Y H:i:s"))
         return response
 
     class Meta:

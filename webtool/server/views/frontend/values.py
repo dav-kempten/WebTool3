@@ -156,7 +156,7 @@ class _Values(object):
         return self._updated
 
 
-class ValuesViewSet(viewsets.ReadOnlyModelViewSet):
+class ValuesViewSet(viewsets.mixins.ListModelMixin, viewsets.GenericViewSet):
 
     def list(self, request, *args, **kwargs):
 
