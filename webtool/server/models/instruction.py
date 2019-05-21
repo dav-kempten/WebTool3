@@ -51,7 +51,7 @@ class Topic(SeasonsMixin, TimeMixin, DescriptionMixin, QualificationMixin, Equip
         verbose_name = "Kursinhalt"
         verbose_name_plural = "Kursinhalte"
         unique_together = ('title', 'internal')
-        ordering = ('seasons__name', 'order', 'name')
+        ordering = ('order', 'name')
 
 
 class InstructionManager(models.Manager):

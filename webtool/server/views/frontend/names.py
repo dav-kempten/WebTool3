@@ -5,7 +5,6 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 
 from server.models import Guide
-from server.filters.client import GuideFilter
 from server.serializers.frontend.names import NameListSerializer
 
 
@@ -16,8 +15,6 @@ class NamesViewSet(viewsets.mixins.ListModelMixin, viewsets.GenericViewSet):
         .exclude(deprecated=True)\
         .annotate(num_qualifications=Count('user__qualification_list'))\
         .exclude(num_qualifications=0)
-    search_fields = ('user__last_name', 'user__first_name')
-    filter_class = GuideFilter
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
