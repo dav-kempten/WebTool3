@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from .core import MoneyField, QualificationSerializer, EquipmentSerializer
 
 
 class StateListField(serializers.ListField):
@@ -34,6 +35,10 @@ class TopicListField(serializers.ListField):
     title = serializers.CharField()
     name = serializers.CharField()
     description = serializers.CharField()
+    qualificationIds = QualificationSerializer(source='qualifications', many=True)
+    preconditions = serializers.CharField()
+    equipmentIds = EquipmentSerializer(source='equipments', many=True)
+    miscEquipment = serializers.CharField(source='misc_equipment')
 
 
 class ApproximateListField(serializers.ListField):
@@ -62,17 +67,6 @@ class FitnessListField(serializers.ListField):
     level = serializers.CharField()
     code = serializers.CharField()
     description = serializers.CharField()
-
-
-class MoneyField(serializers.DecimalField):
-
-    def __init__(self, source=None):
-
-        super(self.__class__, self).__init__(
-            source=source,
-            decimal_places=2,
-            max_digits=6,
-        )
 
 
 class InstructionCostListField(serializers.ListField):
