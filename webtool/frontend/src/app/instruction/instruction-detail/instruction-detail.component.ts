@@ -60,6 +60,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   distance = new FormControl('');
   service = new FormControl('');
   tourcosts = new FormControl('');
+  costsctr = new FormControl('');
   costsname = new FormControl('');
   extracosts = new FormControl('');
   deposit = new FormControl('');
@@ -88,6 +89,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     numbermembermax: this.numbermembermax,
     distance: this.distance,
     service: this.service,
+    costsctr: this.costsctr,
     tourcosts: this.tourcosts,
     costsname: this.costsname,
     extracosts: this.extracosts,
@@ -103,8 +105,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   equipmentChoice: Equipment[];
   requirementChoice: Requirements[];
   tours: Tour[];
-  totalcosts: Costs[];
-  totalcostsCtr: number = 0;
+  totalcostsTable: Costs[];
 
   constructor(private store: Store<AppState>) {
     this.store.dispatch(new NameListRequested());
@@ -131,6 +132,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
       numbermembermax: '',
       distance: '',
       service: '',
+      costsctr: 0,
       tourcosts: '',
       costsname: '',
       extracosts: '',
@@ -156,30 +158,28 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
 
     this.tours = [];
 
-    this.totalcosts = [];
+    this.totalcostsTable = [];
   }
 
   ngOnDestroy(): void {}
 
   getTourCosts(): void {
-    let varCost: Costs =  {pos: '', betrag: '', beschreibung: ''};
-
     if (this.costsname.value !== '' && this.tourcosts.value !== '') {
-      varCost.pos = ++this.totalcostsCtr;
-      varCost.beschreibung = this.costsname.value;
-      varCost.betrag = this.tourcosts.value;
-      this.totalcosts.push(varCost);
+      /* increasing counter for each cost instance */
+      let ctr = this.costsctr.value;
+      this.costsctr.setValue(++ctr);
+
+      /* list input-data directly on website */
+      let varCost: Costs = {pos: this.costsctr.value, betrag: this.tourcosts.value, beschreibung: this.costsname.value};
+      this.totalcostsTable.push(varCost);
     }
   }
 
   getDateData(): void {
-    let dateData: Tour = {type:"", sdate:"", stime:"", edate:"", etime:"", shorttitle:"", longtitle:"", location:""};
-
     if (this.datetype.value !== '' && this.startdate.value !== '' && this.enddate.value !== '' && this.location.value !== '') {
-      dateData.type = this.datetype.value;
-      dateData.sdate = this.startdate.value;
-      dateData.edate = this.enddate.value;
-      dateData.location = this.location.value;
+      let dateData: Tour = {type: this.datetype.value, sdate: this.startdate.value, stime:"",
+        edate: this.enddate.value, etime:"", shorttitle:"", longtitle:"", location: this.location.value};
+
       this.tours.push(dateData);
     }
   }
