@@ -45,7 +45,7 @@ class ApproximateListField(serializers.ListField):
     id = serializers.IntegerField()
     name = serializers.CharField()
     description = serializers.CharField()
-    startTime = serializers.TimeField()
+    startTime = serializers.TimeField(source='start_time')
 
 
 class EquipmentListField(serializers.ListField):
