@@ -1,5 +1,5 @@
 import {Observable, of} from 'rxjs';
-import {catchError, filter, first, map, shareReplay} from 'rxjs/operators';
+import {catchError, first, map, shareReplay} from 'rxjs/operators';
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse} from '@angular/common/http';
 import {NameList} from '../../model/name';
