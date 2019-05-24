@@ -4,6 +4,7 @@ import {select, Store} from '@ngrx/store';
 import {AppState, selectRouterDetailId} from '../../app.state';
 import {FormControl, FormGroup} from "@angular/forms";
 import {NameListRequested} from "../../core/store/name.actions";
+import {ValuesRequested} from "../../core/store/value.actions";
 
 interface Equipment {
   name: string;
@@ -109,6 +110,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
 
   constructor(private store: Store<AppState>) {
     this.store.dispatch(new NameListRequested());
+    this.store.dispatch(new ValuesRequested());
   }
 
   ngOnInit(): void {

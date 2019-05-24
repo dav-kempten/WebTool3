@@ -4,7 +4,7 @@ import {Values as RawValues} from '../../model/value';
 export enum ValuesActionTypes {
   ValuesRequested = '[values] ValueState requested',
   ValuesLoaded = '[values] ValueState loaded',
-  ValuesNotModified = '[values] ValueState not mdofied'
+  ValuesNotModified = '[values] ValueState not modified'
 }
 
 export class ValuesRequested implements Action {
