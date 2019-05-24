@@ -2,8 +2,8 @@ import {
   Approximates, Categories, Collectives, Equipments, Fitness, Skills, States, Topics, TourCalculation, Values
 } from './value.model';
 import {
-  Approximate, Category, Collective,
-  Equipment, Fitness as RawFitness, Skill, State, Topic, TourCalculation as RawTourCalculation, Values as RawValues
+  Approximate, Category, Collective, Equipment, Fitness as RawFitness,
+  Skill, State, Topic, TourCalculation as RawTourCalculation, Values as RawValues
 } from '../../model/value';
 import {ValuesActions, ValuesActionTypes} from './value.actions';
 
@@ -16,7 +16,35 @@ export interface ValueState {
 export const initialState: ValueState = {
   isLoading: false,
   timestamp: 0,
-  values: null
+  values: {
+    states: [],
+    categories: [],
+    approximates: [],
+    equipments: [],
+    skills: [],
+    fitness: [],
+    topics: [],
+    collectives: [],
+    travelCostFactor: 0,
+    accommodationCostMaximum: 0,
+    accommodationCostDefault: 0,
+    tourCalculationValues: {
+      halfDay: 0,
+      wholeDay: 0,
+      admissionMinimum: 0
+    },
+    instructionCalculationValues: null,
+    openingHours: {
+      office: {
+          default: [],
+          special: []
+      },
+      desk: {
+          default: [],
+          special: []
+      }
+    }
+  }
 };
 
 function convertDecimal(rawValue: string): number {

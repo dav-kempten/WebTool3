@@ -14,40 +14,51 @@ export const getValuesIsLoading = createSelector(getValueState, (state: ValueSta
 export const getValuesTimestamp = createSelector(getValueState, (state: ValueState): number => state.timestamp);
 
 export const getStates = createSelector(getValues, (values: Values): States => values.states);
-export const getStateById = createSelector(getStates, (states: States, props): State => states[props.stateId]);
+export const getStateById = createSelector(getStates, (states: States, props): State =>
+  !!props.stateId ? states[props.stateId] : null
+);
 
 export const getCategories = createSelector(getValues, (values: Values): Categories => values.categories);
 export const getCategoryById = createSelector(
-  getCategories, (categories: Categories, props): Category => categories[props.categoryId]
+  getCategories, (categories: Categories, props): Category =>
+    !!props.categoryId ? categories[props.categoryId] : null
 );
 
 export const getApproximates = createSelector(
   getValues, (values: Values): Approximates => values.approximates
 );
 export const getApproximateById = createSelector(
-  getApproximates, (approximates: Approximates, props): Approximate => approximates[props.approximateId]
+  getApproximates, (approximates: Approximates, props): Approximate =>
+    !!props.approximateId ? approximates[props.approximateId] : null
 );
 
 export const getEquipments = createSelector(getValues, (values: Values): Equipments => values.equipments);
 export const getEquipmentById = createSelector(
-  getEquipments, (equipments: Equipments, props): Equipment => equipments[props.equipmentId]
+  getEquipments, (equipments: Equipments, props): Equipment =>
+    !!props.equipmentId ? equipments[props.equipmentId] : null
 );
 
 export const getSkills = createSelector(getValues, (values: Values): Skills => values.skills);
 export const getSkillById = createSelector(
-  getSkills, (skills: Skills, props): Skill => skills[props.skillId]);
+  getSkills, (skills: Skills, props): Skill =>
+    !!props.skillId ? skills[props.skillId] : null
+);
 
 export const getFitness = createSelector(getValues, (values: Values): Fitness => values.fitness);
 export const getFitnessById = createSelector(
-  getFitness, (fitness: Fitness, props): RawFitness => fitness[props.fitnessId]
+  getFitness, (fitness: Fitness, props): RawFitness =>
+    !!props.fitnessId ? fitness[props.fitnessId] : null
 );
 
 export const getTopics = createSelector(getValues, (values: Values): Topics => values.topics);
-export const getTopicById = createSelector(getTopics, (topics: Topics, props): Topic => topics[props.topicId]);
+export const getTopicById = createSelector(getTopics, (topics: Topics, props): Topic =>
+  !!props.topicId ? topics[props.topicId] : null
+);
 
 export const getCollectives = createSelector(getValues, (values: Values): Collectives => values.collectives);
 export const getCollectiveById = createSelector(
-  getCollectives, (collectives: Collectives, props): Collective => collectives[props.collectiveId]
+  getCollectives, (collectives: Collectives, props): Collective =>
+    !!props.collectiveId ? collectives[props.collectiveId] : null
 );
 
 export const getTravelCostFactor = createSelector(
