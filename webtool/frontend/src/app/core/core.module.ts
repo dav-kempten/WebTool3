@@ -10,7 +10,9 @@ import {TeamComponent} from './team/team.component';
 import {DateComponent} from './date/date.component';
 import {TimeComponent} from './time/time.component';
 import {reducer as NameListReducer} from './store/name.reducer';
+import {reducer as ValueReducer} from './store/value.reducer';
 import {NameListEffects} from './store/name.effects';
+import {ValueEffects} from './store/value.effects';
 import {NamePipe, NamesPipe} from './store/name.pipe';
 import {ButtonModule} from 'primeng/button';
 import {SidebarModule} from 'primeng/sidebar';
@@ -32,13 +34,15 @@ import { DropdownComponent } from './dropdown/dropdown.component';
   declarations: [
     GuideComponent, TeamComponent, DateComponent, TimeComponent, NamePipe, NamesPipe, MenuComponent,
     BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent, DropdownComponent,
-	MultiselectComponent
+    MultiselectComponent
   ],
   imports: [
     CommonModule,
     ReactiveFormsModule,
     StoreModule.forFeature('nameList', NameListReducer),
     EffectsModule.forFeature([NameListEffects]),
+    StoreModule.forFeature('values', ValueReducer),
+    EffectsModule.forFeature([ValueEffects]),
     CalendarModule,
     AutoCompleteModule,
     ButtonModule,
@@ -53,8 +57,8 @@ import { DropdownComponent } from './dropdown/dropdown.component';
   ],
   exports: [
     GuideComponent, TeamComponent, DateComponent, TimeComponent, NamePipe, NamesPipe, MenuComponent,
-    BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent, DropdownComponent, 
-	  MultiselectComponent
+    BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent, DropdownComponent,
+    MultiselectComponent
   ]
 })
 export class CoreModule { }
