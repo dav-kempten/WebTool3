@@ -10,7 +10,9 @@ import {TeamComponent} from './team/team.component';
 import {DateComponent} from './date/date.component';
 import {TimeComponent} from './time/time.component';
 import {reducer as NameListReducer} from './store/name.reducer';
+import {reducer as ValueReducer} from './store/value.reducer';
 import {NameListEffects} from './store/name.effects';
+import {ValueEffects} from './store/value.effects';
 import {NamePipe, NamesPipe} from './store/name.pipe';
 import {ButtonModule} from 'primeng/button';
 import {SidebarModule} from 'primeng/sidebar';
@@ -32,7 +34,7 @@ import {ToggleButtonModule} from 'primeng/togglebutton';
 @NgModule({
   declarations: [
     GuideComponent, TeamComponent, DateComponent, TimeComponent, NamePipe, NamesPipe, MenuComponent,
-    BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent, DropdownComponent,
+    BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent, DropdownComponent, 
 	  MultiselectComponent
   ],
   imports: [
@@ -40,6 +42,8 @@ import {ToggleButtonModule} from 'primeng/togglebutton';
     ReactiveFormsModule,
     StoreModule.forFeature('nameList', NameListReducer),
     EffectsModule.forFeature([NameListEffects]),
+    StoreModule.forFeature('values', ValueReducer),
+    EffectsModule.forFeature([ValueEffects]),
     CalendarModule,
     AutoCompleteModule,
     ButtonModule,

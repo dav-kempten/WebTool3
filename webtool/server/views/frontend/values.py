@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import hashlib
+from collections import Iterable
 from decimal import Decimal
 
 from django.template.defaultfilters import date
@@ -12,7 +13,8 @@ from server.models import (
     Skill, SkillDescription,
     Fitness, FitnessDescription,
     Topic,
-    Collective)
+    Collective
+)
 
 from server.serializers.frontend.values import ValueSerializer
 
@@ -81,7 +83,7 @@ class _Values(object):
     def _get_approximates(self):
         self._updated = max(self._updated, Approximate.objects.latest().updated)
         return [
-            dict(id=a, name=b, description=c, start_time=d)
+            dict(id=a, name=b, description=c, startTime=d)
             for (a, b, c, d) in Approximate.objects
             .exclude(deprecated=True)
             .filter(seasons=self._season)
@@ -123,11 +125,19 @@ class _Values(object):
     def _get_topics(self):
         self._updated = max(self._updated, Topic.objects.latest().updated)
         return [
-            dict(id=a, code=b, title=c, name=d, description=e)
-            for (a, b, c, d, e) in Topic.objects
+            dict(
+                id=a, code=b, title=c, name=d, description=e, preconditions=f,
+                qualificationIds=list(g) if isinstance(g, Iterable) else [g] if g else [],
+                equipmentIds=list(h) if isinstance(h, Iterable) else [h] if h else [],
+                miscEquipment=i
+            )
+            for (a, b, c, d, e, f, g, h, i) in Topic.objects
             .exclude(deprecated=True)
             .filter(seasons=self._season)
-            .values_list('pk', 'category__code', 'title', 'name', 'description')
+            .values_list(
+                'pk', 'category__code', 'title', 'name', 'description',
+                'preconditions', 'qualifications', 'equipments', 'misc_equipment'
+            )
         ]
 
     def _get_collectives(self):
