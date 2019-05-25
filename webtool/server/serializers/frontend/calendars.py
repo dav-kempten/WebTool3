@@ -5,7 +5,7 @@ from server.models import Calendar
 
 class CalendarListSerializer(serializers.HyperlinkedModelSerializer):
 
-    id = serializers.IntegerField(source='pk')
+    id = serializers.PrimaryKeyRelatedField(source='pk', read_only=True)
     year = serializers.SerializerMethodField()
 
     class Meta:
@@ -20,10 +20,10 @@ class CalendarListSerializer(serializers.HyperlinkedModelSerializer):
 
 class AnniversarySerializer(serializers.Serializer):
 
-    id = serializers.IntegerField()
-    name = serializers.CharField()
+    id = serializers.PrimaryKeyRelatedField(source='pk', read_only=True)
+    name = serializers.CharField(read_only=True)
     date = serializers.SerializerMethodField()
-    publicHoliday = serializers.BooleanField(source='public_holiday')
+    publicHoliday = serializers.BooleanField(source='public_holiday', read_only=True)
 
     def get_date(self, obj):
         return obj.date(year=self.context.get('year'))
@@ -31,15 +31,15 @@ class AnniversarySerializer(serializers.Serializer):
 
 class VacationSerializer(serializers.Serializer):
 
-    id = serializers.IntegerField()
-    name = serializers.CharField()
-    startDate = serializers.DateField(source='start_date')
-    endDate = serializers.DateField(source='end_date')
+    id = serializers.PrimaryKeyRelatedField(source='pk', read_only=True)
+    name = serializers.CharField(read_only=True)
+    startDate = serializers.DateField(source='start_date', read_only=True)
+    endDate = serializers.DateField(source='end_date', read_only=True)
 
 
 class CalendarSerializer(serializers.ModelSerializer):
 
-    id = serializers.IntegerField(source='pk')
+    id = serializers.PrimaryKeyRelatedField(source='pk', read_only=True)
     year = serializers.SerializerMethodField()
     anniversaries = serializers.SerializerMethodField()
     vacations = VacationSerializer(source='vacation_list', many=True)

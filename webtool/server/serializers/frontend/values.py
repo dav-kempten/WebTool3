@@ -1,92 +1,91 @@
 from rest_framework import serializers
 
-from server.models import Topic, Equipment
 from .core import MoneyField
 
 
 class StateListField(serializers.ListField):
-    id = serializers.IntegerField()
-    state = serializers.CharField()
-    description = serializers.CharField()
+    id = serializers.PrimaryKeyRelatedField(source='pk', read_only=True)
+    state = serializers.CharField(source='name', read_only=True)
+    description = serializers.CharField(read_only=True)
 
 
 class CategoryListField(serializers.ListField):
-    id = serializers.IntegerField()
-    code = serializers.CharField()
-    name = serializers.CharField()
-    tour = serializers.BooleanField()
-    talk = serializers.BooleanField()
-    instruction = serializers.BooleanField()
-    collective = serializers.BooleanField()
-    winter = serializers.BooleanField()
-    summer = serializers.BooleanField()
-    indoor = serializers.BooleanField()
+    id = serializers.PrimaryKeyRelatedField(source='pk', read_only=True)
+    code = serializers.CharField(read_only=True)
+    name = serializers.CharField(read_only=True)
+    tour = serializers.BooleanField(read_only=True)
+    talk = serializers.BooleanField(read_only=True)
+    instruction = serializers.BooleanField(read_only=True)
+    collective = serializers.BooleanField(read_only=True)
+    winter = serializers.BooleanField(read_only=True)
+    summer = serializers.BooleanField(read_only=True)
+    indoor = serializers.BooleanField(read_only=True)
 
 
 class CollectiveListField(serializers.ListField):
-    id = serializers.IntegerField()
-    code = serializers.CharField()
-    title = serializers.CharField()
-    name = serializers.CharField()
-    description = serializers.CharField()
+    id = serializers.PrimaryKeyRelatedField(source='pk', read_only=True)
+    code = serializers.CharField(source='category.code', read_only=True)
+    title = serializers.CharField(read_only=True)
+    name = serializers.CharField(read_only=True)
+    description = serializers.CharField(read_only=True)
 
 
 class TopicListField(serializers.ListField):
-    id = serializers.IntegerField()
-    code = serializers.CharField()
-    title = serializers.CharField()
-    name = serializers.CharField()
-    description = serializers.CharField()
-    qualificationIds = serializers.PrimaryKeyRelatedField(source='qualifications', many=True, queryset=Topic.objects.all())
-    preconditions = serializers.CharField()
-    equipmentIds = serializers.PrimaryKeyRelatedField(source='equipments', many=True, queryset=Equipment.objects.all())
-    miscEquipment = serializers.CharField(source='misc_equipment')
+    id = serializers.PrimaryKeyRelatedField(source='pk', read_only=True)
+    code = serializers.CharField(source='category.code', read_only=True)
+    title = serializers.CharField(read_only=True)
+    name = serializers.CharField(read_only=True)
+    description = serializers.CharField(read_only=True)
+    qualificationIds = serializers.PrimaryKeyRelatedField(source='qualifications', many=True, read_only=True)
+    preconditions = serializers.CharField(read_only=True)
+    equipmentIds = serializers.PrimaryKeyRelatedField(source='equipments', many=True, read_only=True)
+    miscEquipment = serializers.CharField(source='misc_equipment', read_only=True)
 
 
 class ApproximateListField(serializers.ListField):
-    id = serializers.IntegerField()
-    name = serializers.CharField()
-    description = serializers.CharField()
-    startTime = serializers.TimeField(source='start_time')
+    id = serializers.PrimaryKeyRelatedField(source='pk', read_only=True)
+    name = serializers.CharField(read_only=True)
+    description = serializers.CharField(read_only=True)
+    startTime = serializers.TimeField(source='start_time', read_only=True)
 
 
 class EquipmentListField(serializers.ListField):
-    id = serializers.IntegerField()
-    code = serializers.CharField()
-    name = serializers.CharField()
-    description = serializers.CharField()
+    id = serializers.PrimaryKeyRelatedField(source='pk', read_only=True)
+    code = serializers.CharField(read_only=True)
+    name = serializers.CharField(read_only=True)
+    description = serializers.CharField(read_only=True)
 
 
 class SkillListField(serializers.ListField):
-    id = serializers.IntegerField()
-    level = serializers.CharField()
-    code = serializers.CharField()
-    description = serializers.CharField()
+    id = serializers.PrimaryKeyRelatedField(source='pk', read_only=True)
+    level = serializers.CharField(read_only=True)
+    code = serializers.CharField(read_only=True)
+    description = serializers.CharField(read_only=True)
 
 
 class FitnessListField(serializers.ListField):
-    id = serializers.IntegerField()
-    level = serializers.CharField()
-    code = serializers.CharField()
-    description = serializers.CharField()
+    id = serializers.PrimaryKeyRelatedField(source='pk', read_only=True)
+    level = serializers.CharField(read_only=True)
+    code = serializers.CharField(read_only=True)
+    description = serializers.CharField(read_only=True)
 
 
 class InstructionCostListField(serializers.ListField):
-    id = serializers.IntegerField()
-    level = serializers.IntegerField()
-    duration = serializers.IntegerField()
-    compensation = MoneyField()
+    id = serializers.IntegerField(read_only=True)
+    level = serializers.IntegerField(read_only=True)
+    duration = serializers.IntegerField(read_only=True)
+    compensation = MoneyField(read_only=True)
 
 
 class TourCostSerializer(serializers.Serializer):
-    halfDay = MoneyField(source='half_day')
-    wholeDay = MoneyField(source='whole_day')
-    admissionMinimum = MoneyField(source='min_admission')
+    halfDay = MoneyField(source='half_day', read_only=True)
+    wholeDay = MoneyField(source='whole_day', read_only=True)
+    admissionMinimum = MoneyField(source='min_admission', read_only=True)
 
 
 class OpeningHourListField(serializers.ListField):
-    days = serializers.CharField()
-    hours = serializers.CharField()
+    days = serializers.CharField(read_only=True)
+    hours = serializers.CharField(read_only=True)
 
 
 class OpeningModeSerializer(serializers.Serializer):
