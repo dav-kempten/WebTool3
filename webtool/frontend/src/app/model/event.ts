@@ -18,4 +18,5 @@ export interface Event {
   distance: number;
   publicTransport: boolean;
   shuttleService: boolean;
+  deprecated?: boolean;
 }

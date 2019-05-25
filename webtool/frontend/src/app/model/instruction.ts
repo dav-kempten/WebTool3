@@ -1,6 +1,6 @@
 import {Event} from './event';
 
-export interface Instructions {
+export interface InstructionSummary {
   id: number;
   reference: string;
   title: string;
@@ -19,7 +19,7 @@ export interface Instructions {
 
 export interface Instruction {
   id: number;
-  guideId: number;
+  guideId: number | null;
   teamIds: number[];
   topicId: number;
   instruction: Event;

@@ -2,9 +2,7 @@ import {Observable, of} from 'rxjs';
 import {catchError, first, map, shareReplay} from 'rxjs/operators';
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse} from '@angular/common/http';
-import {Instruction, Instructions as InstructionSummary} from '../../model/instruction';
-
-type InstructionList = InstructionSummary[];
+import {Instruction, InstructionSummary} from '../../model/instruction';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +13,7 @@ export class InstructionService {
 
   constructor(private http: HttpClient) { }
 
-  getInstructionList(): Observable<InstructionList> {
+  getInstructionSummaries(): Observable<InstructionSummary[]> {
     const headers = {
         Accept: 'application/json',
         'Accept-Language': 'de',
@@ -27,23 +25,23 @@ export class InstructionService {
       headers['If-None-Match'] = this.etag;
     }
 
-    return this.http.get<InstructionList>(
+    return this.http.get<InstructionSummary[]>(
       '/api/frontend/instructions/',
       {headers: new HttpHeaders(headers), observe: 'response'}
     ).pipe(
-      catchError((error: HttpErrorResponse): Observable<InstructionList> => {
+      catchError((error: HttpErrorResponse): Observable<InstructionSummary[]> => {
         console.log(error.statusText, error.status);
-        return of([] as InstructionList);
+        return of([] as InstructionSummary[]);
       }),
-      map((response: HttpResponse<InstructionList>): InstructionList => {
+      map((response: HttpResponse<InstructionSummary[]>): InstructionSummary[] => {
         const responseHeaders = response.headers;
         if (responseHeaders) {
           if (responseHeaders.keys().indexOf('etag') > -1) {
             this.etag = responseHeaders.get('etag').replace(/(W\/)?(".+")/g, '$2');
           }
-          return response.body as InstructionList;
+          return response.body as InstructionSummary[];
         } else {
-          return [] as InstructionList;
+          return [] as InstructionSummary[];
         }
       }),
       first(),
@@ -51,7 +49,7 @@ export class InstructionService {
     );
   }
 
-  getInstruction(url: string): Observable<Instruction> {
+  getInstruction(id: number): Observable<Instruction> {
     const headers = {
         Accept: 'application/json',
         'Accept-Language': 'de',
@@ -64,10 +62,10 @@ export class InstructionService {
     }
 
     return this.http.get<Instruction>(
-      url,
+      `/api/frontend/instructions/${id}/`,
       {headers: new HttpHeaders(headers), observe: 'response'}
     ).pipe(
-      catchError((error: HttpErrorResponse): Observable<InstructionList> => {
+      catchError((error: HttpErrorResponse): Observable<Instruction> => {
         console.log(error.statusText, error.status);
         return of(null);
       }),

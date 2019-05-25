@@ -2,9 +2,9 @@ import {Action} from '@ngrx/store';
 import {Values as RawValues} from '../../model/value';
 
 export enum ValuesActionTypes {
-  ValuesRequested = '[values] ValueState requested',
-  ValuesLoaded = '[values] ValueState loaded',
-  ValuesNotModified = '[values] ValueState not mdofied'
+  ValuesRequested = '[Values] ValueState requested',
+  ValuesLoaded = '[Values] ValueState loaded',
+  ValuesNotModified = '[Values] ValueState not mdofied'
 }
 
 export class ValuesRequested implements Action {
