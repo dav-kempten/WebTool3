@@ -19,21 +19,6 @@ class MoneyField(serializers.DecimalField):
         )
 
 
-class GuideSerializer(serializers.Serializer):
-
-    id = serializers.IntegerField(source='pk')
-
-
-class QualificationSerializer(serializers.Serializer):
-
-    id = serializers.IntegerField(source='pk')
-
-
-class EquipmentSerializer(serializers.Serializer):
-
-    id = serializers.IntegerField(source='pk')
-
-
 class EventSerializer(serializers.Serializer):
 
     id = serializers.IntegerField(source='pk')

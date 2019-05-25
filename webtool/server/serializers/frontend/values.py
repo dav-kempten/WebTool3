@@ -1,5 +1,7 @@
 from rest_framework import serializers
-from .core import MoneyField, QualificationSerializer, EquipmentSerializer
+
+from server.models import Topic, Equipment
+from .core import MoneyField
 
 
 class StateListField(serializers.ListField):
@@ -35,9 +37,9 @@ class TopicListField(serializers.ListField):
     title = serializers.CharField()
     name = serializers.CharField()
     description = serializers.CharField()
-    qualificationIds = QualificationSerializer(source='qualifications', many=True)
+    qualificationIds = serializers.PrimaryKeyRelatedField(source='qualifications', many=True, queryset=Topic.objects.all())
     preconditions = serializers.CharField()
-    equipmentIds = EquipmentSerializer(source='equipments', many=True)
+    equipmentIds = serializers.PrimaryKeyRelatedField(source='equipments', many=True, queryset=Equipment.objects.all())
     miscEquipment = serializers.CharField(source='misc_equipment')
 
 

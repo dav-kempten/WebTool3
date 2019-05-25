@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 from rest_framework import serializers
 
-from server.models import Instruction
-from server.serializers.frontend.core import (
-    EventSerializer, GuideSerializer, QualificationSerializer, EquipmentSerializer, MoneyField
-)
+from server.models import Instruction, Equipment, Guide, Topic
+from server.serializers.frontend.core import EventSerializer,  MoneyField
 
 
 class InstructionListSerializer(serializers.HyperlinkedModelSerializer):
@@ -55,7 +53,7 @@ class InstructionSerializer(serializers.ModelSerializer):
     reference = serializers.CharField(read_only=True)
 
     guideId = serializers.IntegerField(source='guide_id', default=None, allow_null=True)
-    teamIds = GuideSerializer(source='team', many=True)
+    teamIds = serializers.PrimaryKeyRelatedField(source='team', many=True, queryset=Guide.objects.all())
 
     topicId = serializers.IntegerField(source='topic_id')
     instruction = EventSerializer()
@@ -65,10 +63,10 @@ class InstructionSerializer(serializers.ModelSerializer):
     isSpecial = serializers.BooleanField(source='is_special', default=False)
     categoryId = serializers.IntegerField(source='category_id', default=None, allow_null=True)
 
-    qualificationIds = QualificationSerializer(source='qualifications', many=True)
+    qualificationIds = serializers.PrimaryKeyRelatedField(source='qualifications', many=True, queryset=Topic.objects.all())
     preconditions = serializers.CharField()
 
-    equipmentIds = EquipmentSerializer(source='equipments', many=True)
+    equipmentIds = serializers.PrimaryKeyRelatedField(source='equipments', many=True, queryset=Equipment.objects.all())
     miscEquipment = serializers.CharField(source='misc_equipment')
     equipmentService = serializers.BooleanField(source='equipment_service', default=False)
 

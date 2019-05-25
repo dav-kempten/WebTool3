@@ -13,5 +13,4 @@ export class InstructionListComponent implements OnInit {
 
   ngOnInit() {
   }
-
 }
