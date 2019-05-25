@@ -11,13 +11,18 @@ class InstructionListSerializer(serializers.HyperlinkedModelSerializer):
 
     id = serializers.IntegerField(source='pk', read_only=True)
     reference = serializers.CharField(source='instruction.reference.__str__', read_only=True)
-    title = serializers.SerializerMethodField(read_only=True)
+    title = serializers.SerializerMethodField()
     startDate = serializers.DateField(source='instruction.start_date', read_only=True)
     guideId = serializers.IntegerField(source='guide_id', read_only=True)
-    ladiesOnly = serializers.BooleanField(source='ladies_only', default=False)
+    ladiesOnly = serializers.BooleanField(source='ladies_only', read_only=True)
     winter = serializers.BooleanField(source='instruction.reference.category.winter', read_only=True)
     summer = serializers.BooleanField(source='instruction.reference.category.summer', read_only=True)
     indoor = serializers.BooleanField(source='instruction.reference.category.climbing', read_only=True)
+    minQuantity = serializers.IntegerField(source='min_quantity', read_only=True)
+    maxQuantity = serializers.IntegerField(source='max_quantity', read_only=True)
+    curQuantity = serializers.IntegerField(source='cur_quantity', read_only=True)
+    stateId = serializers.CharField(source='state_id', read_only=True)
+
 
     class Meta:
         model = Instruction
@@ -31,8 +36,11 @@ class InstructionListSerializer(serializers.HyperlinkedModelSerializer):
             'winter',
             'summer',
             'indoor',
-            'url',
+            'minQuantity', 'maxQuantity', 'curQuantity',
+            'stateId',
+            'url'
         )
+        # read_only_fields = ('url', )
 
     def get_title(self, obj):
         if obj.is_special:
@@ -43,10 +51,10 @@ class InstructionListSerializer(serializers.HyperlinkedModelSerializer):
 
 class InstructionSerializer(serializers.ModelSerializer):
 
-    id = serializers.IntegerField(read_only=True)
+    id = serializers.IntegerField(source='pk', read_only=True)
     reference = serializers.CharField(read_only=True)
 
-    guideId = serializers.IntegerField(source='guide_id')
+    guideId = serializers.IntegerField(source='guide_id', default=None, allow_null=True)
     teamIds = GuideSerializer(source='team', many=True)
 
     topicId = serializers.IntegerField(source='topic_id')
@@ -71,7 +79,9 @@ class InstructionSerializer(serializers.ModelSerializer):
     extraChargesInfo = serializers.CharField(source='extra_charges_info')
     minQuantity = serializers.IntegerField(source='min_quantity')
     maxQuantity = serializers.IntegerField(source='max_quantity')
-    curQuantity = serializers.IntegerField(source='cur_quantity')
+    curQuantity = serializers.IntegerField(source='cur_quantity', read_only=True)
+
+    stateId = serializers.CharField(source='state_id')
 
     # Administrative Felder fehlen noch !
 
@@ -86,5 +96,7 @@ class InstructionSerializer(serializers.ModelSerializer):
             'isSpecial', 'categoryId',
             'qualificationIds', 'preconditions',
             'equipmentIds', 'miscEquipment', 'equipmentService',
-            'admission', 'advances', 'advancesInfo', 'extraCharges', 'extraChargesInfo', 'minQuantity', 'maxQuantity', 'curQuantity',
+            'admission', 'advances', 'advancesInfo', 'extraCharges', 'extraChargesInfo',
+            'minQuantity', 'maxQuantity', 'curQuantity',
+            'stateId',
         )
