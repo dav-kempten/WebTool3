@@ -37,6 +37,9 @@ class EquipmentSerializer(serializers.Serializer):
 class EventSerializer(serializers.Serializer):
 
     id = serializers.IntegerField(source='pk')
+
+    deprecated = serializers.BooleanField(write_only=True, default=False)
+
     title = serializers.CharField(default='', allow_blank=True)
     name = serializers.CharField(default='', allow_blank=True)
     description = serializers.CharField(default='', allow_blank=True)
@@ -46,11 +49,15 @@ class EventSerializer(serializers.Serializer):
     endDate = serializers.DateField(source="end_date", default=None, allow_null=True)
     endTime = serializers.TimeField(source="end_time", default=None, allow_null=True)
     rendezvous = serializers.CharField(default='', allow_blank=True)
+
     location = serializers.CharField(default='', allow_blank=True)
+    reservationService = serializers.BooleanField(source='reservation_service', default=False)
+
     source = serializers.CharField(default='', allow_blank=True)
     link = serializers.CharField(default='', allow_blank=True)
     map = serializers.CharField(default='', allow_blank=True)
+
     distal = serializers.BooleanField(default=False)
     distance = serializers.IntegerField(default=0)
     publicTransport = serializers.BooleanField(source='public_transport', default=False)
-    lowEmissionAdventure = serializers.BooleanField(source='lea', default=False)
+    shuttleService = serializers.BooleanField(source='shuttle_service', default=False)

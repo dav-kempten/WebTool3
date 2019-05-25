@@ -52,6 +52,7 @@ class InstructionSerializer(serializers.ModelSerializer):
     topicId = serializers.IntegerField(source='topic_id')
     instruction = EventSerializer()
     meetings = EventSerializer(source='meeting_list', many=True)
+    lowEmissionAdventure = serializers.BooleanField(source='instruction.lea', default=False)
     ladiesOnly = serializers.BooleanField(source='ladies_only', default=False)
     isSpecial = serializers.BooleanField(source='is_special', default=False)
     categoryId = serializers.IntegerField(source='category_id', default=None, allow_null=True)
@@ -61,6 +62,7 @@ class InstructionSerializer(serializers.ModelSerializer):
 
     equipmentIds = EquipmentSerializer(source='equipments', many=True)
     miscEquipment = serializers.CharField(source='misc_equipment')
+    equipmentService = serializers.BooleanField(source='equipment_service', default=False)
 
     admission = MoneyField()
     advances = MoneyField()
@@ -80,9 +82,9 @@ class InstructionSerializer(serializers.ModelSerializer):
             'guideId', 'teamIds',
             'topicId',
             'instruction', 'meetings',
-            'ladiesOnly',
+            'lowEmissionAdventure', 'ladiesOnly',
             'isSpecial', 'categoryId',
             'qualificationIds', 'preconditions',
-            'equipmentIds', 'miscEquipment',
+            'equipmentIds', 'miscEquipment', 'equipmentService',
             'admission', 'advances', 'advancesInfo', 'extraCharges', 'extraChargesInfo', 'minQuantity', 'maxQuantity', 'curQuantity',
         )
