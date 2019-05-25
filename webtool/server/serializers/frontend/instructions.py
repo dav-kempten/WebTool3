@@ -64,9 +64,13 @@ class InstructionSerializer(serializers.ModelSerializer):
     lowEmissionAdventure = serializers.BooleanField(source='instruction.lea', default=False)
     ladiesOnly = serializers.BooleanField(source='ladies_only', default=False)
     isSpecial = serializers.BooleanField(source='is_special', default=False)
-    categoryId = serializers.PrimaryKeyRelatedField(source='category_id', default=None, allow_null=True, queryset=Category.objects.all())
+    categoryId = serializers.PrimaryKeyRelatedField(
+        source='category_id', default=None, allow_null=True, queryset=Category.objects.all()
+    )
 
-    qualificationIds = serializers.PrimaryKeyRelatedField(source='qualifications', many=True, queryset=Topic.objects.all())
+    qualificationIds = serializers.PrimaryKeyRelatedField(
+        source='qualifications', many=True, default=None, allow_null=True, queryset=Topic.objects.all()
+    )
     preconditions = serializers.CharField()
 
     equipmentIds = serializers.PrimaryKeyRelatedField(
