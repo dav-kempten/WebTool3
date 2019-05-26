@@ -25,11 +25,24 @@ import {SplitButtonModule} from 'primeng/splitbutton';
 import {BreadcrumbComponent} from './breadcrumb/breadcrumb.component';
 import {RequiredDirective as DateRequiredDirective} from './date/required.directive';
 import {RequiredDirective as GuideRequiredDirective} from './guide/required.directive';
-import { MembernumberComponent } from './membernumber/membernumber.component';
+import {MembernumberComponent} from './membernumber/membernumber.component';
 import {DropdownModule, SpinnerModule} from 'primeng/primeng';
 import {MultiSelectModule} from 'primeng/multiselect';
-import { MultiselectComponent } from './multiselect/multiselect.component';
-import { DropdownComponent } from './dropdown/dropdown.component';
+import {MultiselectComponent} from './multiselect/multiselect.component';
+import {DropdownComponent} from './dropdown/dropdown.component';
+import {reducer as eventReducer} from './store/event.reducer';
+import {reducer as instructionReducer} from './store/instruction.reducer';
+import {reducer as instructionSummaryReducer} from './store/instruction-summary.reducer';
+import {InstructionSummaryEffects} from './store/instruction-summary.effects';
+import {InstructionEffects} from './store/instruction.effects';
+import {reducer as stateReducer} from './store/state.reducer';
+import {reducer as categoryReducer} from './store/category.reducer';
+import {reducer as approximateReducer} from './store/approximate.reducer';
+import {reducer as equipmentReducer} from './store/equipment.reducer';
+import {reducer as skillReducer} from './store/skill.reducer';
+import {reducer as fitnessReducer} from './store/fitness.reducer';
+import {reducer as topicReducer} from './store/topic.reducer';
+import {reducer as collectiveReducer} from './store/collective.reducer';
 import {ToggleButtonModule} from 'primeng/togglebutton';
 
 @NgModule({
@@ -41,10 +54,6 @@ import {ToggleButtonModule} from 'primeng/togglebutton';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    StoreModule.forFeature('nameList', NameListReducer),
-    EffectsModule.forFeature([NameListEffects]),
-    StoreModule.forFeature('values', ValueReducer),
-    EffectsModule.forFeature([ValueEffects]),
     CalendarModule,
     AutoCompleteModule,
     ButtonModule,
@@ -57,7 +66,24 @@ import {ToggleButtonModule} from 'primeng/togglebutton';
     DropdownModule,
     MultiSelectModule,
     ButtonModule,
-    ToggleButtonModule
+    ToggleButtonModule,
+    StoreModule.forFeature('nameList', NameListReducer),
+    EffectsModule.forFeature([NameListEffects]),
+    StoreModule.forFeature('values', ValueReducer),
+    EffectsModule.forFeature([ValueEffects]),
+    StoreModule.forFeature('events', eventReducer),
+    StoreModule.forFeature('instructions', instructionReducer),
+    EffectsModule.forFeature([InstructionEffects]),
+    StoreModule.forFeature('instructionSummaries', instructionSummaryReducer),
+    EffectsModule.forFeature([InstructionSummaryEffects]),
+    StoreModule.forFeature('states', stateReducer),
+    StoreModule.forFeature('categories', categoryReducer),
+    StoreModule.forFeature('approximates', approximateReducer),
+    StoreModule.forFeature('equipments', equipmentReducer),
+    StoreModule.forFeature('skills', skillReducer),
+    StoreModule.forFeature('fitness', fitnessReducer),
+    StoreModule.forFeature('topics', topicReducer),
+    StoreModule.forFeature('collectives', collectiveReducer)
   ],
   exports: [
     GuideComponent, TeamComponent, DateComponent, TimeComponent, NamePipe, NamesPipe, MenuComponent,

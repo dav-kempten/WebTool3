@@ -40,6 +40,11 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
     )
 
     location = fields.LocationField()
+    reservation_service = models.BooleanField(
+        'Reservierungswunsch für Schulungsraum',
+        db_index=True,
+        blank=True, default=False
+    )
 
     start_date = models.DateField(
         'Abreisetag',
@@ -126,6 +131,12 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
 
     new = models.BooleanField(
         'Markierung für Neue Veranstaltungen',
+        db_index=True,
+        blank=True, default=False
+    )
+
+    shuttle_service = models.BooleanField(
+        'Reservierungswunsch für AlpinShuttle',
         db_index=True,
         blank=True, default=False
     )
