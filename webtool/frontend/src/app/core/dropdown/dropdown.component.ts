@@ -20,6 +20,11 @@ import {
 import {Dropdown} from "primeng/primeng";
 import {ReplaySubject, Subscription} from "rxjs";
 import {delay} from "rxjs/operators";
+import {Store} from "@ngrx/store";
+import {AppState} from "../../app.state";
+import {getStates} from "../store/value.selectors";
+import {States} from "../store/value.model";
+import {State} from "../../model/value";
 
 @Component({
   selector: 'avk-dropdown',
@@ -78,12 +83,9 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.delegatedMethodCalls.next(accessor => accessor.writeValue(state));
   }
 
-  constructor() {
+  constructor(private store: Store<AppState>) {
     this.status = [
       {label: 'Bearbeitungsstatus', value: null},
-      {label: 'In Arbeit', value: 1},
-      {label: 'Fertig', value: 2},
-      {label: 'Geprüft', value: 3}
     ];
   }
 
@@ -106,6 +108,18 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.formControl = this.formControlNameRef.control;
     this.originalControl.setValue(this.formControl);
     this.choiceControl.setValue(this.formControl.value);
+
+
+    // setTimeout(() => {
+    //   this.store.select(getStates).subscribe(
+    //   (clientStates: States): void => {
+    //     // clientStates.forEach((state: State, key: number) => {
+    //     //   this.status.push({label: state.state, value: key});
+    //     console.log(clientStates.entries);
+    //     }
+    //     // )}
+    // ).unsubscribe();
+    // }, 5000)
   }
 }
 

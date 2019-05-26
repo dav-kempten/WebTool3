@@ -11,6 +11,7 @@ import {DateComponent} from './date/date.component';
 import {TimeComponent} from './time/time.component';
 import {reducer as NameListReducer} from './store/name.reducer';
 import {reducer as ValueReducer} from './store/value.reducer';
+import {reducer as CalendarReducer} from './store/calendar.reducer'
 import {NameListEffects} from './store/name.effects';
 import {ValueEffects} from './store/value.effects';
 import {NamePipe, NamesPipe} from './store/name.pipe';

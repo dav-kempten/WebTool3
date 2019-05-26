@@ -25,7 +25,7 @@ function transform (rawCalendar: Calendar | null): Calendars | null {
       id: rawCalendar.id,
       year: rawCalendar.year,
       anniversaries: rawCalendar.anniversaries.reduce(
-        (anniversaries: Anniversaries, anniversary: Anniversary) => {anniversaries[anniversary.id] = anniversary, return anniversaries;}, {}
+        (anniversaries: Anniversaries, anniversary: Anniversary) => {anniversaries[anniversary.id] = anniversary; return anniversaries;}, {}
       ),
       vacations: rawCalendar.vacations.reduce(
         (vacations: Vacations, vacation: Vacation) => {vacations[vacation.id] = vacation; return vacations}, {}
