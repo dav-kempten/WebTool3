@@ -16,8 +16,28 @@ export const initialState: State = adapter.getInitialState({
 
 export function reducer(state = initialState, action: InstructionActions): State {
   switch (action.type) {
+
+    case InstructionActionTypes.RequestInstruction: {
+      return {
+        ...state,
+        isLoading: true
+      };
+    }
+
     case InstructionActionTypes.AddInstruction: {
-      return adapter.addOne(action.payload.instruction, state);
+      return adapter.addOne(action.payload.instruction, {
+        ...state,
+        isLoading: false,
+        timestamp: new Date().getTime()
+      });
+    }
+
+    case InstructionActionTypes.InstructionNotModified: {
+      return {
+        ...state,
+        isLoading: false,
+        timestamp: new Date().getTime()
+      };
     }
 
     case InstructionActionTypes.UpsertInstruction: {

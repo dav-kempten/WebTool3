@@ -1,5 +1,7 @@
 <h1>Instruction #{{instructionId$ | async}}</h1>
 
+<ng-container *ngIf="!(isLoading$ | async) else loading">
+
 <form [formGroup]="instructionForm">
 
   <!--Single-Multi-Button  -->
@@ -260,3 +262,5 @@
   </div>
 
 </form>
+</ng-container>
+<ng-template #loading>Bitte kurz warten!</ng-template>

@@ -29,7 +29,7 @@ export class ValueEffects {
     switchMap(() => {
       return this.valueService.getValues().pipe(
         map((values: RawValues) => {
-          if (values) {
+          if (values && values.states.length !== 0) {
             this.store.dispatch(new AddStates({states: values.states}));
             this.store.dispatch(new AddCategories({categories: values.categories}));
             this.store.dispatch(new AddApproximates({approximates: values.approximates}));

@@ -6,6 +6,12 @@ import {FormControl, FormGroup} from "@angular/forms";
 import {NameListRequested} from "../../core/store/name.actions";
 import {ValuesRequested} from "../../core/store/value.actions";
 import {CalendarRequested} from "../../core/store/calendar.actions";
+import {RequestInstruction} from "../../core/store/instruction.actions";
+
+import * as fromInstruction from "../../core/store/instruction.reducer"
+import {getInstructionIsLoading, selectInstructionById} from "../../core/store/instruction.selectors";
+import {Instruction} from "../../core/store/instruction.model";
+import {tap} from "rxjs/operators";
 
 interface Equipment {
   name: string;
@@ -43,13 +49,14 @@ interface Costs {
 export class InstructionDetailComponent implements OnInit, OnDestroy {
 
   instructionId$: Observable<number>;
+  isLoading$: Observable<boolean>;
 
-  guide = new FormControl('');
-  team = new FormControl('');
+  guide = new FormControl(undefined);
+  team = new FormControl([]);
   costs = new FormControl('');
   revenue = new FormControl('');
   description = new FormControl('');
-  notes = new FormControl('')
+  notes = new FormControl('');
   bookingnr = new FormControl('');
   status = new FormControl('');
   concept = new FormControl('');
@@ -113,17 +120,28 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     this.store.dispatch(new NameListRequested());
     this.store.dispatch(new ValuesRequested());
     this.store.dispatch(new CalendarRequested());
+    this.store.dispatch(new RequestInstruction({id: 2080}));
   }
 
   ngOnInit(): void {
     this.instructionId$ = this.store.pipe(select(selectRouterDetailId));
 
+    this.isLoading$ = this.store.select(getInstructionIsLoading);
+
+    // setTimeout(() => {this.store.select(selectInstructionById(2080)).subscribe((instruction: Instruction) => {console.log("instruction:",instruction);}).unsubscribe();}, 5000);
+    // const instruction$ = this.store.select(selectInstructionById(2080));
+    //
+    // instruction$.pipe(
+    //     //   tap((instruction:Instruction) => console.log(instruction.guideId)),
+    //     //   tap((instruction:Instruction) => console.log(instruction.teamIds))
+    //     // );
+
     this.instructionForm.setValue({
-      guide: '',
-      team: '',
+      guide: 105,
+      team: [104, 106],
       costs: '',
       revenue: '',
-      description: '',
+      description: 'Description',
       notes: '',
       bookingnr: '',
       status: '',

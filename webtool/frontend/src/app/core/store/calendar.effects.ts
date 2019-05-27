@@ -21,7 +21,7 @@ export class CalendarEffects {
     switchMap(() => {
       return this.calendarService.getCalendar().pipe(
         map((calendars: RawCalendar) => {
-          if (calendars) {
+          if (calendars.id !== 0) {
             return new CalendarLoaded(calendars);
           } else {
             return new CalendarNotModified();

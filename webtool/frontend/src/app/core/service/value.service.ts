@@ -2,7 +2,7 @@ import {Observable, of} from 'rxjs';
 import {catchError, first, map, shareReplay} from 'rxjs/operators';
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse} from '@angular/common/http';
-import {Values as RawValues} from '../../model/value';
+import {Values, Values as RawValues} from '../../model/value';
 
 @Injectable({
   providedIn: 'root'
@@ -31,7 +31,7 @@ export class ValueService {
     ).pipe(
       catchError((error: HttpErrorResponse): Observable<RawValues> => {
         console.log(error.statusText, error.status);
-        return of(null);
+        return of({states: []} as RawValues);
       }),
       map((response: HttpResponse<RawValues>): RawValues => {
         const responseHeaders = response.headers;
@@ -41,7 +41,7 @@ export class ValueService {
           }
           return response.body as RawValues;
         } else {
-          return null;
+          return {states: []} as RawValues;
         }
       }),
       first(),

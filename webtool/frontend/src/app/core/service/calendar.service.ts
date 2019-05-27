@@ -31,7 +31,7 @@ export class CalendarService {
     ).pipe(
       catchError((error: HttpErrorResponse): Observable<RawCalendar> => {
         console.log(error.statusText, error.status);
-        return of(null);
+        return of({id: 0} as RawCalendar);
       }),
       map((response: HttpResponse<RawCalendar>): RawCalendar => {
         const responseHeaders = response.headers;
@@ -41,7 +41,7 @@ export class CalendarService {
           }
           return response.body as RawCalendar;
         } else {
-          return null;
+          return {id: 0} as RawCalendar;
         }
       }),
       first(),
