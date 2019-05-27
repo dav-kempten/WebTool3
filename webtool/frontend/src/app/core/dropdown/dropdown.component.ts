@@ -22,8 +22,8 @@ import {ReplaySubject, Subscription} from "rxjs";
 import {delay} from "rxjs/operators";
 import {Store} from "@ngrx/store";
 import {AppState} from "../../app.state";
-import {getStates} from "../store/value.selectors";
-import {States} from "../store/value.model";
+// import {getStates} from "../store/value.selectors";
+// import {States} from "../store/value.model";
 import {State} from "../../model/value";
 
 @Component({

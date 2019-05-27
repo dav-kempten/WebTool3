@@ -4,7 +4,7 @@ import {NameList} from '../../model/name';
 export enum NameListActionTypes {
   NameListRequested = '[Names] nameList requested',
   NameListLoaded = '[Names] nameList loaded',
-  NameListNotModified = '[Names] nameList not mdofied'
+  NameListNotModified = '[Names] nameList not modified'
 }
 
 export class NameListRequested implements Action {

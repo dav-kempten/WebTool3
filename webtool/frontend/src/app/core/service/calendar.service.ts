@@ -26,7 +26,7 @@ export class CalendarService {
     }
 
     return this.http.get<RawCalendar>(
-      '/api/frontend/calendars/',
+      '/api/frontend/calendars/2/',
       {headers: new HttpHeaders(headers), observe: 'response'}
     ).pipe(
       catchError((error: HttpErrorResponse): Observable<RawCalendar> => {

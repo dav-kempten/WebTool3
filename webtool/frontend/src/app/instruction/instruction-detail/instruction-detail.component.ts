@@ -5,6 +5,7 @@ import {AppState, selectRouterDetailId} from '../../app.state';
 import {FormControl, FormGroup} from "@angular/forms";
 import {NameListRequested} from "../../core/store/name.actions";
 import {ValuesRequested} from "../../core/store/value.actions";
+import {CalendarRequested} from "../../core/store/calendar.actions";
 
 interface Equipment {
   name: string;
@@ -111,6 +112,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   constructor(private store: Store<AppState>) {
     this.store.dispatch(new NameListRequested());
     this.store.dispatch(new ValuesRequested());
+    this.store.dispatch(new CalendarRequested());
   }
 
   ngOnInit(): void {

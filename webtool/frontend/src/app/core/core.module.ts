@@ -44,6 +44,7 @@ import {reducer as fitnessReducer} from './store/fitness.reducer';
 import {reducer as topicReducer} from './store/topic.reducer';
 import {reducer as collectiveReducer} from './store/collective.reducer';
 import {ToggleButtonModule} from 'primeng/togglebutton';
+import {CalendarEffects} from "./store/calendar.effects";
 
 @NgModule({
   declarations: [
@@ -83,7 +84,9 @@ import {ToggleButtonModule} from 'primeng/togglebutton';
     StoreModule.forFeature('skills', skillReducer),
     StoreModule.forFeature('fitness', fitnessReducer),
     StoreModule.forFeature('topics', topicReducer),
-    StoreModule.forFeature('collectives', collectiveReducer)
+    StoreModule.forFeature('collectives', collectiveReducer),
+    StoreModule.forFeature('calendar', CalendarReducer),
+    EffectsModule.forFeature([CalendarEffects])
   ],
   exports: [
     GuideComponent, TeamComponent, DateComponent, TimeComponent, NamePipe, NamesPipe, MenuComponent,
