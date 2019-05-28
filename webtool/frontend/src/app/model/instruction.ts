@@ -19,6 +19,7 @@ export interface InstructionSummary {
 
 export interface Instruction {
   id: number;
+  reference: string;
   guideId: number | null;
   teamIds: number[];
   topicId: number;
