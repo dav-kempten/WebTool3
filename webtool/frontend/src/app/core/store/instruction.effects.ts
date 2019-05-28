@@ -31,7 +31,7 @@ export class InstructionEffects {
     switchMap(payload => {
       return this.instructionService.getInstruction(payload.id).pipe(
         map(instruction => {
-          if (instruction) {
+          if (instruction.id !== 0) {
             return new AddInstruction({instruction: this.transformInstruction(instruction)});
           } else {
             return new InstructionNotModified();

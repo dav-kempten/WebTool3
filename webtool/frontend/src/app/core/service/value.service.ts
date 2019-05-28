@@ -31,7 +31,7 @@ export class ValueService {
     ).pipe(
       catchError((error: HttpErrorResponse): Observable<RawValues> => {
         console.log(error.statusText, error.status);
-        return of(null);
+        return of({states: []} as RawValues);
       }),
       map((response: HttpResponse<RawValues>): RawValues => {
         const responseHeaders = response.headers;
@@ -41,7 +41,7 @@ export class ValueService {
           }
           return response.body as RawValues;
         } else {
-          return null;
+          return {states: []} as RawValues;
         }
       }),
       first(),
