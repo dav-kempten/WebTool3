@@ -8,7 +8,7 @@ from server.models import Event, Approximate
 
 class MoneyField(serializers.DecimalField):
 
-    def __init__(self, source=None, default=None, read_only=None):
+    def __init__(self, source=None, default=None, read_only=False):
 
         if default is None:
             default = Decimal('0.00')
