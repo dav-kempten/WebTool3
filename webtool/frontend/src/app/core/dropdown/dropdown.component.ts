@@ -8,7 +8,6 @@ import {
   OnInit,
   ViewChild
 } from '@angular/core';
-import {SelectItem} from "primeng/api";
 import {
   ControlValueAccessor,
   FormControl,
@@ -18,13 +17,14 @@ import {
   ValidationErrors, ValidatorFn
 } from "@angular/forms";
 import {Dropdown} from "primeng/primeng";
-import {ReplaySubject, Subscription} from "rxjs";
-import {delay} from "rxjs/operators";
+import {Observable, ReplaySubject, Subscription} from "rxjs";
+import {delay, tap} from "rxjs/operators";
 import {Store} from "@ngrx/store";
 import {AppState} from "../../app.state";
-// import {getStates} from "../store/value.selectors";
-// import {States} from "../store/value.model";
-import {State} from "../../model/value";
+import {ValuesRequested} from "../store/value.actions";
+import {selectStatesState} from "../store/value.selectors";
+import {State} from "../store/state.reducer";
+import {State as RawState} from '../../model/value';
 
 @Component({
   selector: 'avk-dropdown',
@@ -49,6 +49,8 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   originalControl = new FormControl(null);
   choiceControl = new FormControl('');
 
+  formState$: Observable<State>;
+
   group = new FormGroup(
     {
       original: this.originalControl,
@@ -57,7 +59,7 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     [stateValidator]
   );
 
-  status: SelectItem[];
+  status: RawState[] = new Array(1).fill({id: 0, state: "Bearbeitungsstand", description: null});
 
   OnChangeWrapper(onChange: (stateOld: string) => void): (stateNew : string) => void {
     return ((stateNew:string): void => {
@@ -84,13 +86,26 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   }
 
   constructor(private store: Store<AppState>) {
-    this.status = [
-      {label: 'Bearbeitungsstatus', value: null},
-    ];
+    this.store.dispatch(new ValuesRequested());
   }
 
   ngOnInit(): void {
+
+    this.formState$ = this.store.select(selectStatesState);
+
+    this.formState$.pipe(
+      tap( (state) => {
+        for (let key in state.entities) {
+          let statePush: RawState = {
+            id: state.entities[key].id,
+            state: state.entities[key].state,
+            description: state.entities[key].description};
+          this.status.push(statePush);
+        }
+      })
+    ).subscribe().unsubscribe();
   }
+
 
   ngAfterViewInit(): void {
     this.delegatedMethodsSubscription = this.delegatedMethodCalls.pipe(

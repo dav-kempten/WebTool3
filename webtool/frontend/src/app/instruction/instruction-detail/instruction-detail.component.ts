@@ -1,5 +1,5 @@
 import {Observable} from 'rxjs';
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnChanges, OnDestroy, OnInit} from '@angular/core';
 import {select, Store} from '@ngrx/store';
 import {AppState, selectRouterDetailId} from '../../app.state';
 import {FormControl, FormGroup} from "@angular/forms";
@@ -7,11 +7,14 @@ import {NameListRequested} from "../../core/store/name.actions";
 import {ValuesRequested} from "../../core/store/value.actions";
 import {CalendarRequested} from "../../core/store/calendar.actions";
 import {RequestInstruction} from "../../core/store/instruction.actions";
-
-import * as fromInstruction from "../../core/store/instruction.reducer"
-import {getInstructionIsLoading, selectInstructionById} from "../../core/store/instruction.selectors";
+import {
+  getInstructionIsLoading,
+  selectInstructionById
+} from "../../core/store/instruction.selectors";
 import {Instruction} from "../../core/store/instruction.model";
-import {tap} from "rxjs/operators";
+import {map, tap} from "rxjs/operators";
+import {State} from "../../core/store/state.reducer";
+import {selectStatesState} from "../../core/store/value.selectors";
 
 interface Equipment {
   name: string;
@@ -50,6 +53,9 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
 
   instructionId$: Observable<number>;
   isLoading$: Observable<boolean>;
+  formInstruction$: Observable<Instruction>;
+
+  formState$: Observable<State>;
 
   guide = new FormControl(undefined);
   team = new FormControl([]);
@@ -128,44 +134,92 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
 
     this.isLoading$ = this.store.select(getInstructionIsLoading);
 
-    // setTimeout(() => {this.store.select(selectInstructionById(2080)).subscribe((instruction: Instruction) => {console.log("instruction:",instruction);}).unsubscribe();}, 5000);
-    // const instruction$ = this.store.select(selectInstructionById(2080));
-    //
-    // instruction$.pipe(
-    //     //   tap((instruction:Instruction) => console.log(instruction.guideId)),
-    //     //   tap((instruction:Instruction) => console.log(instruction.teamIds))
-    //     // );
+    // setTimeout(
+    //   () => {this.store.select(selectInstructionById(2080))
+    //     .subscribe((instruction: Instruction) => {console.log("instruction:",instruction);})
+    //     .unsubscribe();
+    //   }, 5000);
 
-    this.instructionForm.setValue({
-      guide: 105,
-      team: [104, 106],
-      costs: '',
-      revenue: '',
-      description: 'Description',
-      notes: '',
-      bookingnr: '',
-      status: '',
-      concept: '',
-      shorttitle: '',
-      longtitle: '',
-      equipment: '',
-      requirement: '',
-      numbermembermin: '',
-      numbermembermax: '',
-      distance: '',
-      service: '',
-      costsctr: 0,
-      tourcosts: '',
-      costsname: '',
-      extracosts: '',
-      deposit: '',
-      memberfee: '',
-      startdate: '',
-      enddate: '',
-      datetype: '',
-      location: '',
-      multisingle: ''
+    this.formInstruction$ = this.store.select(selectInstructionById(2080));
+    this.formState$ = this.store.select(selectStatesState);
+
+    this.formState$.pipe(
+      tap((state:State) => console.log("formState",state)),
+      // map(instruction => instruction.guideId)
+    ).subscribe();
+
+    this.formInstruction$.pipe(
+      tap((instruction:Instruction) => console.log("formInstruction",instruction)),
+      // map(instruction => instruction.guideId)
+    ).subscribe();
+
+    this.formInstruction$.subscribe((instruction: Instruction) => {
+      if (instruction !== undefined) {
+        this.instructionForm.setValue({
+          guide: instruction.guideId,
+          team: instruction.teamIds,
+          costs: '',
+          revenue: '',
+          description: instruction.advancesInfo,
+          notes: '',
+          bookingnr: '',
+          status: instruction.stateId,
+          concept: instruction.topicId,
+          shorttitle: '',
+          longtitle: '',
+          equipment: '',
+          requirement: '',
+          numbermembermin: instruction.minQuantity,
+          numbermembermax: instruction.maxQuantity,
+          distance: '',
+          service: instruction.equipmentService,
+          costsctr: 0,
+          tourcosts: '',
+          costsname: '',
+          extracosts: '',
+          deposit: '',
+          memberfee: instruction.extraCharges,
+          startdate: '',
+          enddate: '',
+          datetype: '',
+          location: '',
+          multisingle: ''
+        });
+      } else {
+        this.instructionForm.setValue({
+          guide: '',
+          team: '',
+          costs: '',
+          revenue: '',
+          description: '',
+          notes: '',
+          bookingnr: '',
+          status: '',
+          concept: '',
+          shorttitle: '',
+          longtitle: '',
+          equipment: '',
+          requirement: '',
+          numbermembermin: '',
+          numbermembermax: '',
+          distance: '',
+          service: '',
+          costsctr: 0,
+          tourcosts: '',
+          costsname: '',
+          extracosts: '',
+          deposit: '',
+          memberfee: '',
+          startdate: '',
+          enddate: '',
+          datetype: '',
+          location: '',
+          multisingle: ''
+        });
+      }
     });
+
+    /* Default Init-Sets */
 
     this.equipmentChoice = [
       {name: 'Bergtour', details:['Schuhe', 'Regenjacke', 'Brotzeit']},
