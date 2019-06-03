@@ -15,6 +15,7 @@ import {Instruction} from "../../core/store/instruction.model";
 import {map, tap} from "rxjs/operators";
 import {State} from "../../core/store/state.reducer";
 import {selectStatesState} from "../../core/store/value.selectors";
+import {AuthService, User} from "../../core/service/auth.service";
 
 interface Equipment {
   name: string;
@@ -56,6 +57,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   formInstruction$: Observable<Instruction>;
 
   formState$: Observable<State>;
+  authState$: Observable<User>;
 
   guide = new FormControl(undefined);
   team = new FormControl([]);
@@ -124,7 +126,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
 
   userIsValid: boolean = true;
 
-  constructor(private store: Store<AppState>) {
+  constructor(private store: Store<AppState>, private userService: AuthService) {
     this.store.dispatch(new NameListRequested());
     this.store.dispatch(new ValuesRequested());
     this.store.dispatch(new CalendarRequested());
@@ -133,8 +135,10 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.instructionId$ = this.store.pipe(select(selectRouterDetailId));
-
     this.isLoading$ = this.store.select(getInstructionIsLoading);
+
+    this.authState$ = this.userService.user$;
+    this.authState$.subscribe(value => console.log(value));
 
     // setTimeout(
     //   () => {this.store.select(selectInstructionById(2080))
@@ -164,7 +168,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
           revenue: '',
           description: instruction.advancesInfo,
           notes: '',
-          bookingnr: '',
+          bookingnr: 'Doof', //
           status: instruction.stateId,
           concept: instruction.topicId,
           shorttitle: '',
