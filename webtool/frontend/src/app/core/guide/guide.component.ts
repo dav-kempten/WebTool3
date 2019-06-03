@@ -46,6 +46,13 @@ export class GuideComponent implements OnInit, OnDestroy, AfterViewInit, AfterCo
     this.nameIsRequired.setValue(value);
   }
 
+  readonly: boolean = false; /* init of readonly in guide component */
+
+  @Input()
+  set readOnly(value: boolean) {
+    this.readonly = value;
+  }
+
   suggestions: NameList;
 
   originalControl = new FormControl(null);

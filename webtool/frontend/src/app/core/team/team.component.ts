@@ -54,6 +54,13 @@ export class TeamComponent implements OnInit, OnDestroy, AfterViewInit, AfterCon
 
   suggestions: NameList;
 
+  readonly: boolean = false; /* init of readonly in guide component */
+
+  @Input()
+  set readOnly(value: boolean) {
+    this.readonly = value;
+  }
+
   originalControl = new FormControl(null);
   name = new FormControl(null);
   team = new FormControl([]);

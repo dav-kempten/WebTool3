@@ -3,7 +3,7 @@ import {
   AfterViewInit,
   Component,
   ContentChild,
-  forwardRef,
+  forwardRef, Input,
   OnDestroy,
   OnInit,
   ViewChild
@@ -50,6 +50,13 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   choiceControl = new FormControl('');
 
   formState$: Observable<State>;
+
+  readonly: boolean = false; /* init of readonly in guide component */
+
+  @Input()
+  set readOnly(value: boolean) {
+    this.readonly = value;
+  }
 
   group = new FormGroup(
     {

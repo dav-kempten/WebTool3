@@ -21,21 +21,22 @@
   </div>
 
   <!--GuideComponent // TeamComponent // Abrechnung-->
-  <div class="p-grid">
+  <div class="p-grid" *ngIf="userIsValid">
     <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
       <avk-guide
           formControlName="guide"
           id="g1"
           label="Trainer"
           [nameIdList]="team.value"
+          [readOnly]="!userIsValid"
           required
       ></avk-guide>
     </div>
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <input formControlName="costs" id="costs" placeholder="Kosten" type="text" style='width:100%' pInputText>
+      <input formControlName="costs" id="costs" placeholder="Kosten" type="text" style='width:100%' readonly pInputText>
     </div>
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <input formControlName="revenue" id="revenue" placeholder="Einnahmen" type="text" style='width:100%' pInputText>
+      <input formControlName="revenue" id="revenue" placeholder="Einnahmen" type="text" style='width:100%' readonly pInputText>
     </div>
   </div>
 
@@ -46,6 +47,7 @@
           id="g2"
           label="Team"
           [nameId]="guide.value"
+          [readOnly]="!userIsValid"
       ></avk-team>
     </div>
   </div>
@@ -57,7 +59,7 @@
              pInputText>
     </div>
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <avk-dropdown formControlName="status" id="status"></avk-dropdown>
+      <avk-dropdown formControlName="status" id="status" [readOnly]="!userIsValid"></avk-dropdown>
     </div>
     <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
       <input formControlName="concept" id="concept" placeholder="Kurskonzept" type="text" style='width:100%' pInputText>
@@ -97,6 +99,7 @@
           formControlName="equipment"
           choice="equipment"
           label="Ausrüstung"
+          [readOnly]="!userIsValid"
       ></avk-multiselect>
     </div>
     <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
@@ -104,6 +107,7 @@
           formControlName="requirement"
           choice="requirement"
           label="Vorraussetzungen"
+          [readOnly]="!userIsValid"
       ></avk-multiselect>
     </div>
   </div>
@@ -116,6 +120,7 @@
           label="MinMember"
           id="m1"
           [maxMember]="numbermembermax.value"
+          [readOnly]="!userIsValid"
       ></avk-membernumber>
     </div>
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
@@ -124,6 +129,7 @@
           label="MaxMember"
           id="m2"
           [minMember]="numbermembermin.value"
+          [readOnly]="!userIsValid"
       ></avk-membernumber>
     </div>
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
@@ -131,7 +137,10 @@
              pInputText>
     </div>
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <p-checkbox [formControl]="instructionForm.controls['service']" label="Materialservice"></p-checkbox>
+      <p-checkbox
+          [formControl]="instructionForm.controls['service']"
+          label="Materialservice"
+      ></p-checkbox>
     </div>
   </div>
 

@@ -7,6 +7,7 @@
   [forceSelection]="true"
   [multiple]="true"
   [formControl]="team"
-  placeholder="Nachname Vorname">
+  placeholder="Nachname Vorname"
+  [readonly]="readonly">
 </p-autoComplete>
 &nbsp;<i [ngStyle]="{'color':formControl?.valid ? 'green' : 'red'}" class="pi pi-users"></i>

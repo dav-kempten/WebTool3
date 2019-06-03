@@ -43,6 +43,13 @@ export class MembernumberComponent implements OnInit, OnDestroy, AfterViewInit, 
   @Input() id = 'member';
   @Input() label = 'Teilnehmer';
 
+  readonly: boolean = false; /* init of readonly in guide component */
+
+  @Input()
+  set readOnly(value: boolean) {
+    this.readonly = value;
+  }
+
   originalControl = new FormControl(null);
   minMemberControl = new FormControl('');
   maxMemberControl = new FormControl('');

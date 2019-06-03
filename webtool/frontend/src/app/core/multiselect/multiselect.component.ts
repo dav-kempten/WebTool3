@@ -73,6 +73,13 @@ export class MultiselectComponent implements OnInit, AfterViewInit, OnDestroy, A
 
   @Input() label = '';
 
+  readonly: boolean = false; /* init of readonly in guide component */
+
+  @Input()
+  set readOnly(value: boolean) {
+    this.readonly = value;
+  }
+
   originalControl = new FormControl(null);
   choiceControl = new FormControl(null);
   labelControl = new FormControl('');

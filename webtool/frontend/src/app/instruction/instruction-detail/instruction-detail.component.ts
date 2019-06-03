@@ -1,5 +1,5 @@
 import {Observable} from 'rxjs';
-import {Component, OnChanges, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {select, Store} from '@ngrx/store';
 import {AppState, selectRouterDetailId} from '../../app.state';
 import {FormControl, FormGroup} from "@angular/forms";
@@ -121,6 +121,8 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   requirementChoice: Requirements[];
   tours: Tour[];
   totalcostsTable: Costs[];
+
+  userIsValid: boolean = true;
 
   constructor(private store: Store<AppState>) {
     this.store.dispatch(new NameListRequested());
