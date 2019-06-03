@@ -1,0 +1,26 @@
+{
+  "1": {
+    "id": 1,
+    "firstName": "Max",
+    "lastName": "Mustermann",
+    "role": "guide"
+  },
+  "2": {
+    "id": 2,
+    "firstName": "Sabine",
+    "lastName": "Kaufmann",
+    "role": "staff"
+  },
+  "3": {
+    "id": 3,
+    "firstName": "Helene",
+    "lastName": "Fischer",
+    "role": "coordinator"
+  },
+  "4": {
+    "id": 4,
+    "firstName": "Rambo",
+    "lastName": "Selcher",
+    "role": "administrator"
+  }
+}

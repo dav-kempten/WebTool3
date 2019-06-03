@@ -1,1 +1,42 @@
 <h1>Dashboard</h1>
+<p *ngIf="isLoggedIn$ | async">{{(userService.user$ | async) | json}}</p>
+<p *ngIf="isLoggedIn$ | async">Angemeldet</p>
+<p *ngIf="isLoggedOut$ | async">Abgemeldet</p>
+
+<form novalidate [formGroup]="userForm" *ngIf="isLoggedOut$ | async">
+
+    <fieldset>
+        <legend>Anmeldung Benutzer</legend>
+        <div>
+            <label for="userName">Benutzer:</label>
+            <input id="userName" formControlName="userName" autocomplete="username">
+        </div>
+        <div>
+            <label for="password">Password:</label>
+            <input id="password" formControlName="password" type="password" autocomplete="current-password">
+        </div>
+        <div>
+          <button (click)="userLogin()">Benutzer anmelden</button>
+        </div>
+    </fieldset>
+
+</form>
+
+<form autocomplete="off" novalidate [formGroup]="memberForm" *ngIf="isLoggedOut$ | async">
+
+    <fieldset>
+        <legend>Anmeldung Trainer</legend>
+        <div>
+            <label for="memberId">Mitgliednummer:</label>
+            <input id="memberId" formControlName="memberId">
+        </div>
+        <div>
+            <button (click)="memberLogin()">Trainer anmelden</button>
+        </div>
+    </fieldset>
+
+</form>
+
+<div *ngIf="isLoggedIn$ | async">
+    <button (click)="logout()">Abmelden</button>
+</div>

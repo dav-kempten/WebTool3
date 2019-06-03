@@ -14,6 +14,7 @@ import {EffectsModule} from '@ngrx/effects';
 import {CoreModule} from './core/core.module';
 import {CustomSerializer, initialAppState} from './app.state';
 import {routes} from './app.routing';
+import {ReactiveFormsModule} from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import {routes} from './app.routing';
     StoreDevtoolsModule.instrument({maxAge: 25, logOnly: environment.production}),
     !environment.production ? StoreDevtoolsModule.instrument() : [],
     EffectsModule.forRoot([]),
-    CoreModule
+    CoreModule,
+    ReactiveFormsModule
   ],
   bootstrap: [AppComponent]
 })
