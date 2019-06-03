@@ -1,5 +1,6 @@
 export interface Instruction {
   id: number; // InstructionId
+  reference: string;
   guideId: number; // NameId
   teamIds: number[]; // NameId
   topicId: number; // TopicId

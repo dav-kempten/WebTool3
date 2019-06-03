@@ -19,14 +19,14 @@ export function reducer(state = initialState, action: InstructionActions): State
 
     case InstructionActionTypes.RequestInstruction: {
       return {
-        ...state,
+        ... state,
         isLoading: true
       };
     }
 
     case InstructionActionTypes.AddInstruction: {
       return adapter.addOne(action.payload.instruction, {
-        ...state,
+        ... state,
         isLoading: false,
         timestamp: new Date().getTime()
       });
@@ -34,7 +34,7 @@ export function reducer(state = initialState, action: InstructionActions): State
 
     case InstructionActionTypes.InstructionNotModified: {
       return {
-        ...state,
+        ... state,
         isLoading: false,
         timestamp: new Date().getTime()
       };

@@ -49,7 +49,7 @@ class InstructionListSerializer(serializers.HyperlinkedModelSerializer):
 class InstructionSerializer(serializers.ModelSerializer):
 
     id = serializers.PrimaryKeyRelatedField(source='pk', queryset=Instruction.objects.all())
-    reference = serializers.CharField(read_only=True)
+    reference = serializers.CharField(source='instruction.reference.__str__', read_only=True)
 
     guideId = serializers.PrimaryKeyRelatedField(
         source='guide_id', default=None, allow_null=True, queryset=Guide.objects.all()

@@ -6,7 +6,7 @@ from rest_framework import viewsets
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 
-from server.models import Instruction, State, Season
+from server.models import Instruction, State
 from server.serializers.frontend.instructions import InstructionListSerializer, InstructionSerializer
 
 
