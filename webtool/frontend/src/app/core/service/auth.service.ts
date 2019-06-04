@@ -15,7 +15,7 @@ export interface User {
   id: number;
   firstName: string;
   lastName: string;
-  role: Role;
+  role: Role | string;
 }
 
 interface Users { [key: number]: RawUser; }

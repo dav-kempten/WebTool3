@@ -22,22 +22,24 @@
   </div>
 
   <!--GuideComponent // TeamComponent // Abrechnung-->
-  <div class="p-grid" *ngIf="userIsValid">
+  <div class="p-grid">
     <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
       <avk-guide
           formControlName="guide"
           id="g1"
           label="Trainer"
           [nameIdList]="team.value"
-          [readOnly]="!userIsValid"
+          [readOnly]="!(userValState >= 0)"
           required
       ></avk-guide>
     </div>
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <input formControlName="costs" id="costs" placeholder="Kosten" type="text" style='width:100%' readonly pInputText>
+      <input formControlName="costs" id="costs" placeholder="Kosten" type="text" style='width:100%'
+             pInputText>
     </div>
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <input formControlName="revenue" id="revenue" placeholder="Einnahmen" type="text" style='width:100%' readonly pInputText>
+      <input formControlName="revenue" id="revenue" placeholder="Einnahmen" type="text" style='width:100%'
+             [readOnly]="!(userValState >= 0)" pInputText>
     </div>
   </div>
 
@@ -48,7 +50,7 @@
           id="g2"
           label="Team"
           [nameId]="guide.value"
-          [readOnly]="!userIsValid"
+          [readOnly]="!(userValState >= 0)"
       ></avk-team>
     </div>
   </div>
@@ -57,10 +59,10 @@
   <div class="p-grid">
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
       <input formControlName="bookingnr" id="bookingnr" placeholder="Buchungsnummer" type="text" style='width:100%'
-             pInputText>
+             readonly pInputText>
     </div>
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <avk-dropdown formControlName="status" id="status" [readOnly]="!userIsValid"></avk-dropdown>
+      <avk-dropdown formControlName="status" id="status" [readOnly]="!(userValState >= 0)"></avk-dropdown>
     </div>
     <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
       <input formControlName="concept" id="concept" placeholder="Kurskonzept" type="text" style='width:100%' pInputText>
@@ -100,7 +102,7 @@
           formControlName="equipment"
           choice="equipment"
           label="Ausrüstung"
-          [readOnly]="!userIsValid"
+          [readOnly]="!(userValState >= 0)"
       ></avk-multiselect>
     </div>
     <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
@@ -108,7 +110,7 @@
           formControlName="requirement"
           choice="requirement"
           label="Vorraussetzungen"
-          [readOnly]="!userIsValid"
+          [readOnly]="!(userValState >= 0)"
       ></avk-multiselect>
     </div>
   </div>
@@ -121,7 +123,7 @@
           label="MinMember"
           id="m1"
           [maxMember]="numbermembermax.value"
-          [readOnly]="!userIsValid"
+          [readOnly]="!(userValState >= 0)"
       ></avk-membernumber>
     </div>
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
@@ -130,7 +132,7 @@
           label="MaxMember"
           id="m2"
           [minMember]="numbermembermin.value"
-          [readOnly]="!userIsValid"
+          [readOnly]="!(userValState >= 1)"
       ></avk-membernumber>
     </div>
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">

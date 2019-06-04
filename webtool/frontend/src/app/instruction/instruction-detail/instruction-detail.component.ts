@@ -15,7 +15,7 @@ import {Instruction} from "../../core/store/instruction.model";
 import {map, tap} from "rxjs/operators";
 import {State} from "../../core/store/state.reducer";
 import {selectStatesState} from "../../core/store/value.selectors";
-import {AuthService, User} from "../../core/service/auth.service";
+import {AuthService, Role, User} from "../../core/service/auth.service";
 
 interface Equipment {
   name: string;
@@ -124,7 +124,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   tours: Tour[];
   totalcostsTable: Costs[];
 
-  userIsValid: boolean = true;
+  userValState: number = 0;
 
   constructor(private store: Store<AppState>, private userService: AuthService) {
     this.store.dispatch(new NameListRequested());
@@ -138,13 +138,18 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     this.isLoading$ = this.store.select(getInstructionIsLoading);
 
     this.authState$ = this.userService.user$;
-    this.authState$.subscribe(value => console.log(value));
 
-    // setTimeout(
-    //   () => {this.store.select(selectInstructionById(2080))
-    //     .subscribe((instruction: Instruction) => {console.log("instruction:",instruction);})
-    //     .unsubscribe();
-    //   }, 5000);
+    this.authState$.pipe(
+      tap(value => console.log("AuthState", typeof(value.role))),
+      tap(value => {
+        if (value.role === 'administrator') { this.userValState = 4; }
+        else if (value.role === 'staff'){ this.userValState = 3; }
+        else if (value.role === 'coordinator'){ this.userValState = 2; }
+        else if (value.role === 'guide'){ this.userValState = 1; }
+        else {this.userValState = 0;}
+      }),
+      tap(() => console.log("UserValState",this.userValState))
+    ).subscribe();
 
     this.formInstruction$ = this.store.select(selectInstructionById(2080));
     this.formState$ = this.store.select(selectStatesState);
@@ -168,7 +173,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
           revenue: '',
           description: instruction.advancesInfo,
           notes: '',
-          bookingnr: 'Doof', //
+          bookingnr: instruction.reference,
           status: instruction.stateId,
           concept: instruction.topicId,
           shorttitle: '',
