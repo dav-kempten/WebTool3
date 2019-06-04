@@ -69,11 +69,12 @@ export class GuideComponent implements OnInit, OnDestroy, AfterViewInit, AfterCo
   @Output() isRequired: boolean;
 
   @Input()
-  set nameIdList(value: number[])  {
-      this.team.setValue(value);
+  set nameIdList(value: number[]) {
+    this.team.setValue(value);
   }
 
-  constructor(private store: Store<AppState>) {}
+  constructor(private store: Store<AppState>) {
+  }
 
   filterSuggestions(event) {
     const query: string = event.query.toLocaleLowerCase();

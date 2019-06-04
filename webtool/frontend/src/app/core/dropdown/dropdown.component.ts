@@ -68,11 +68,11 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
   status: RawState[] = new Array(1).fill({id: 0, state: "Bearbeitungsstand", description: null});
 
-  OnChangeWrapper(onChange: (stateOld: string) => void): (stateNew : string) => void {
-    return ((stateNew:string): void => {
-      this.formControl.setValue(stateNew);
-      this.choiceControl.setValue(stateNew);
-      onChange(stateNew);
+  OnChangeWrapper(onChange: (stateIn) => void): (stateOut: State) => void {
+    return ((state: State): void => {
+      this.formControl.setValue(state);
+      this.choiceControl.setValue(state);
+      onChange(state);
     })
   }
 
@@ -88,8 +88,12 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.delegatedMethodCalls.next(accessor => accessor.setDisabledState(isDisabled));
   }
 
-  writeValue(state: string): void {
-    this.delegatedMethodCalls.next(accessor => accessor.writeValue(state));
+  writeValue(stateId): void {
+    if (typeof stateId === "number") {
+      stateId = this.status[stateId];
+    }
+
+    this.delegatedMethodCalls.next(accessor => accessor.writeValue(stateId));
   }
 
   constructor(private store: Store<AppState>) {
@@ -130,18 +134,6 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.formControl = this.formControlNameRef.control;
     this.originalControl.setValue(this.formControl);
     this.choiceControl.setValue(this.formControl.value);
-
-
-    // setTimeout(() => {
-    //   this.store.select(getStates).subscribe(
-    //   (clientStates: States): void => {
-    //     // clientStates.forEach((state: State, key: number) => {
-    //     //   this.status.push({label: state.state, value: key});
-    //     console.log(clientStates.entries);
-    //     }
-    //     // )}
-    // ).unsubscribe();
-    // }, 5000)
   }
 }
 

@@ -140,27 +140,25 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     this.authState$ = this.userService.user$;
 
     this.authState$.pipe(
-      tap(value => console.log("AuthState", typeof(value.role))),
       tap(value => {
         if (value.role === 'administrator') { this.userValState = 4; }
         else if (value.role === 'staff'){ this.userValState = 3; }
         else if (value.role === 'coordinator'){ this.userValState = 2; }
         else if (value.role === 'guide'){ this.userValState = 1; }
         else {this.userValState = 0;}
-      }),
-      tap(() => console.log("UserValState",this.userValState))
+      })
     ).subscribe();
 
     this.formInstruction$ = this.store.select(selectInstructionById(2080));
     this.formState$ = this.store.select(selectStatesState);
 
     this.formState$.pipe(
-      tap((state:State) => console.log("formState",state)),
+      // tap((state:State) => console.log("formState",state)),
       // map(instruction => instruction.guideId)
     ).subscribe();
 
     this.formInstruction$.pipe(
-      tap((instruction:Instruction) => console.log("formInstruction",instruction)),
+      // tap((instruction:Instruction) => console.log("formInstruction",instruction)),
       // map(instruction => instruction.guideId)
     ).subscribe();
 
