@@ -3,11 +3,13 @@ import {ValueState} from './value.reducer';
 import {TourCalculation, Values} from './value.model';
 import {OpeningHours} from '../../model/value';
 import {State as StatesState} from "./state.reducer";
+import {State as ApproxState} from "./approximate.reducer";
 import {Dictionary} from "@ngrx/entity";
 import {State as RawState} from "../../model/value"
 
 export const getValueState = createFeatureSelector<ValueState>('values');
 export const selectStatesState = createFeatureSelector<StatesState>('states');
+export const getApproxState = createFeatureSelector<ApproxState>('approximates');
 
 export const getValues = createSelector(
   getValueState,

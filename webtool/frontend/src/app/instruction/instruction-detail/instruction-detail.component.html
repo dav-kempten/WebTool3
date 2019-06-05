@@ -77,9 +77,12 @@
       <input formControlName="shorttitle" id="shorttitle" placeholder="Kurztitel" type="text" style='width:100%'
              pInputText>
     </div>
-    <div class="p-col-12 p-sm-9 p-md-9 p-lg-9">
+    <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
       <input formControlName="longtitle" id="longtitle" placeholder="Langtitel" type="text" style='width:100%'
              pInputText>
+    </div>
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <avk-approxdropdown formControlName="approximate" id="approx" [readOnly]="!(userValState >= 0)"></avk-approxdropdown>
     </div>
   </div>
 

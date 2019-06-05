@@ -90,6 +90,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   datetype = new FormControl('');
   location = new FormControl('');
   multisingle = new FormControl('');
+  approximate = new FormControl('');
 
   instructionForm = new FormGroup({
     guide: this.guide,
@@ -119,7 +120,8 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     enddate: this.enddate,
     datetype: this.datetype,
     location: this.location,
-    multisingle: this.multisingle
+    multisingle: this.multisingle,
+    approximate: this.approximate
   });
 
   equipmentChoice: Equipment[];
@@ -179,6 +181,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
         this.shorttitle.setValue(eventIds[0].title);
         this.longtitle.setValue(eventIds[0].name);
         this.location.setValue(eventIds[0].location);
+        this.approximate.setValue(eventIds[0].approximateId);
         }
       )
     );
@@ -223,7 +226,8 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
           enddate: '',
           datetype: '',
           location: '',
-          multisingle: ''
+          multisingle: '',
+          approximate: ''
         });
       } else {
         this.instructionForm.setValue({
@@ -254,7 +258,8 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
           enddate: '',
           datetype: '',
           location: '',
-          multisingle: ''
+          multisingle: '',
+          approximate: ''
         });
       }
     });
