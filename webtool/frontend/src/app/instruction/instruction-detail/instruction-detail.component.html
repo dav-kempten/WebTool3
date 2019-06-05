@@ -1,14 +1,14 @@
-<h1>Instruction #{{instructionId$ | async}}</h1>
-
 <ng-container *ngIf="!(isLoading$ | async) else loading">
-
 <ng-container *ngIf="formInstruction$ | async as instruction">
+<ng-container *ngIf="events$ | async as events">
+<ng-container *ngIf="eventIds$ | async as eventIds">
 
-<!--<ng-container *ngIf="formInstruction$ | async as instruction">-->
+  <h1>Instruction {{instruction.reference}}</h1>
+  <p>{{instruction | json}}</p>
+  <p>EventIds: {{eventIds.join(', ')}}</p>
+  <p *ngFor="let event of events">{{event | json}}</p>
 
 <form [formGroup]="instructionForm">
-
-  <div>{{instruction.id}}</div>
 
   <!--Single-Multi-Button  -->
   <div class="p-grid">
@@ -282,13 +282,10 @@
 </form>
 </ng-container>
 </ng-container>
-<!--</ng-container>-->
+</ng-container>
+</ng-container>
 <ng-template #loading>Bitte kurz warten!</ng-template>
 
 <!--Wodo Beispiel-Code-->
 <!--<ng-container *ngIf="(instruction$ | async) as instruction">-->
-<!--  <h1>Instruction {{instruction.reference}}</h1>-->
-<!--  <p>{{instruction | json}}</p>-->
-<!--  <p>EventIds: {{(eventIds$ | async).join(', ')}}</p>-->
-<!--  <p *ngFor="let event of (events$ | async)">{{event | json}}</p>-->
 <!--</ng-container>-->

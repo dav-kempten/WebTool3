@@ -7,16 +7,15 @@ import {NameListRequested} from "../../core/store/name.actions";
 import {ValuesRequested} from "../../core/store/value.actions";
 import {CalendarRequested} from "../../core/store/calendar.actions";
 import {RequestInstruction} from "../../core/store/instruction.actions";
-import {
-  getInstructionIsLoading,
-  selectInstructionById
-} from "../../core/store/instruction.selectors";
+import {getInstructionIsLoading, getInstructionById} from "../../core/store/instruction.selectors";
 import {Instruction} from "../../core/store/instruction.model";
-import {map, tap} from "rxjs/operators";
+import {flatMap, map, tap} from "rxjs/operators";
 import {State} from "../../core/store/state.reducer";
 import {selectStatesState} from "../../core/store/value.selectors";
 import {AuthService, Role, User} from "../../core/service/auth.service";
 import {State as EventState} from "../../core/store/event.reducer";
+import {getEventsByIds} from "../../core/store/event.selectors";
+import {Event} from '../../model/event';
 
 interface Equipment {
   name: string;
@@ -43,12 +42,6 @@ interface Costs {
   beschreibung;
   betrag;
 }
-// import {Instruction} from '../../core/store/instruction.model';
-// import {flatMap, map, tap} from 'rxjs/operators';
-// import {getInstructionById} from '../../core/store/instruction.selectors';
-// import {RequestInstruction} from '../../core/store/instruction.actions';
-// import {getEventsByIds} from '../../core/store/event.selectors';
-// import {Event} from '../../model/event';
 
 @Component({
   selector: 'avk-instruction-detail',
@@ -62,10 +55,15 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   instructionId$: Observable<number>;
   isLoading$: Observable<boolean>;
   formInstruction$: Observable<Instruction>;
-  formEvent$: Observable<EventState>;
+
+  eventIds$: Observable<number[]>;
+  events$: Observable<Event[]>;
 
   formState$: Observable<State>;
   authState$: Observable<User>;
+
+  // startDate: string = '';
+  // endDate: string = '';
 
   guide = new FormControl(undefined);
   team = new FormControl([]);
@@ -127,10 +125,6 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     multisingle: this.multisingle
   });
 
-  // instruction$: Observable<Instruction>;
-  // eventIds$: Observable<number[]>;
-  // events$: Observable<Event[]>;
-
   equipmentChoice: Equipment[];
   requirementChoice: Requirements[];
   tours: Tour[];
@@ -142,7 +136,6 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     this.store.dispatch(new NameListRequested());
     this.store.dispatch(new ValuesRequested());
     this.store.dispatch(new CalendarRequested());
-    this.store.dispatch(new RequestInstruction({id: 2080}));
   }
 
   ngOnInit(): void {
@@ -161,18 +154,47 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
       })
     ).subscribe();
 
-    this.formInstruction$ = this.store.select(selectInstructionById(2080));
+    this.formInstruction$ = this.instructionId$.pipe(
+      flatMap(id => this.store.pipe(
+          select(getInstructionById(id)),
+          tap(instruction => {
+            if (!instruction) {
+              this.store.dispatch(new RequestInstruction({id}));
+            }
+          })
+        )
+      )
+    );
+
     this.formState$ = this.store.select(selectStatesState);
 
-    this.formState$.pipe(
+    this.eventIds$ = this.formInstruction$.pipe(
+      map(instruction => [instruction.instructionId, ...instruction.meetingIds]),
+      tap(instruction => console.log("EventInstruction", instruction)),
+    );
+
+    this.events$ = this.eventIds$.pipe(
+      flatMap(eventIds => this.store.select(getEventsByIds(eventIds))),
+      tap(eventIds => console.log("EventIds",eventIds)),
+      tap(eventIds => {
+        if (eventIds[0].startDate !== null) this.startdate.setValue(eventIds[0].startDate);
+        if (eventIds[0].endDate !== null) this.enddate.setValue(eventIds[0].endDate);
+        this.shorttitle.setValue(eventIds[0].title);
+        this.longtitle.setValue(eventIds[0].name);
+        this.location.setValue(eventIds[0].location);
+        }
+      )
+    );
+
+    // this.formState$.pipe(
       // tap((state:State) => console.log("formState",state)),
       // map(instruction => instruction.guideId)
-    ).subscribe();
+    // ).subscribe();
 
-    this.formInstruction$.pipe(
+    // this.formInstruction$.pipe(
       // tap((instruction:Instruction) => console.log("formInstruction",instruction)),
       // map(instruction => instruction.guideId)
-    ).subscribe();
+    // ).subscribe();
 
     this.formInstruction$.subscribe((instruction: Instruction) => {
       if (instruction !== undefined) {
@@ -256,25 +278,6 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     this.tours = [];
 
     this.totalcostsTable = [];
-    /* Wodo Beispiel-Code */
-    // this.instructionId$ = this.store.select(selectRouterDetailId);
-    // this.instruction$ = this.instructionId$.pipe(
-    //   flatMap(id => this.store.pipe(
-    //       select(getInstructionById(id)),
-    //       tap(instruction => {
-    //         if (!instruction) {
-    //           this.store.dispatch(new RequestInstruction({id}));
-    //         }
-    //       })
-    //     )
-    //   )
-    // );
-    // this.eventIds$ = this.instruction$.pipe(
-    //   map(instruction => [instruction.instructionId, ...instruction.meetingIds])
-    // );
-    // this.events$ = this.eventIds$.pipe(
-    //   flatMap(eventIds => this.store.select(getEventsByIds(eventIds)))
-    // );
   }
 
   ngOnDestroy(): void {}
