@@ -23,7 +23,7 @@ import {Store} from "@ngrx/store";
 import {AppState} from "../../app.state";
 import {ValuesRequested} from "../store/value.actions";
 import {selectStatesState} from "../store/value.selectors";
-import {State} from "../store/state.reducer";
+import {State as StateState} from "../store/state.reducer";
 import {State as RawState} from '../../model/value';
 
 @Component({
@@ -49,7 +49,7 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   originalControl = new FormControl(null);
   choiceControl = new FormControl('');
 
-  formState$: Observable<State>;
+  formState$: Observable<StateState>;
 
   readonly: boolean = false; /* init of readonly in guide component */
 
@@ -68,8 +68,9 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
   status: RawState[] = new Array(1).fill({id: 0, state: "Bearbeitungsstand", description: null});
 
-  OnChangeWrapper(onChange: (stateIn) => void): (stateOut: State) => void {
-    return ((state: State): void => {
+
+  OnChangeWrapper(onChange: (stateIn) => void): (stateOut: StateState) => void {
+    return ((state: StateState): void => {
       this.formControl.setValue(state);
       this.choiceControl.setValue(state);
       onChange(state);
@@ -92,7 +93,6 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     if ((typeof stateId === "number") && (stateId <= this.status.length)) {
       stateId = this.status[stateId];
     }
-
     this.delegatedMethodCalls.next(accessor => accessor.writeValue(stateId));
   }
 

@@ -62,9 +62,6 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   formState$: Observable<State>;
   authState$: Observable<User>;
 
-  // startDate: string = '';
-  // endDate: string = '';
-
   guide = new FormControl(undefined);
   team = new FormControl([]);
   costs = new FormControl('');
@@ -187,13 +184,13 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     );
 
     // this.formState$.pipe(
-      // tap((state:State) => console.log("formState",state)),
-      // map(instruction => instruction.guideId)
+    //   tap((state:State) => console.log("formState",state)),
+    //   map(instruction => instruction.guideId)
     // ).subscribe();
 
     // this.formInstruction$.pipe(
-      // tap((instruction:Instruction) => console.log("formInstruction",instruction)),
-      // map(instruction => instruction.guideId)
+    //   tap((instruction:Instruction) => console.log("formInstruction",instruction)),
+    //   map(instruction => instruction.guideId)
     // ).subscribe();
 
     this.formInstruction$.subscribe((instruction: Instruction) => {
