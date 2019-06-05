@@ -4,6 +4,8 @@
 
 <ng-container *ngIf="formInstruction$ | async as instruction">
 
+<!--<ng-container *ngIf="formInstruction$ | async as instruction">-->
+
 <form [formGroup]="instructionForm">
 
   <div>{{instruction.id}}</div>
@@ -280,4 +282,5 @@
 </form>
 </ng-container>
 </ng-container>
+<!--</ng-container>-->
 <ng-template #loading>Bitte kurz warten!</ng-template>

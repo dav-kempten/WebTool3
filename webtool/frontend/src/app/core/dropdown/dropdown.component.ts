@@ -89,7 +89,7 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   }
 
   writeValue(stateId): void {
-    if (typeof stateId === "number") {
+    if ((typeof stateId === "number") && (stateId <= this.status.length)) {
       stateId = this.status[stateId];
     }
 

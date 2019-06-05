@@ -16,6 +16,7 @@ import {map, tap} from "rxjs/operators";
 import {State} from "../../core/store/state.reducer";
 import {selectStatesState} from "../../core/store/value.selectors";
 import {AuthService, Role, User} from "../../core/service/auth.service";
+import {State as EventState} from "../../core/store/event.reducer";
 
 interface Equipment {
   name: string;
@@ -55,6 +56,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   instructionId$: Observable<number>;
   isLoading$: Observable<boolean>;
   formInstruction$: Observable<Instruction>;
+  formEvent$: Observable<EventState>;
 
   formState$: Observable<State>;
   authState$: Observable<User>;
