@@ -6,7 +6,7 @@ from rest_framework import viewsets
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 
-from server.models import Instruction, State
+from server.models import Instruction # , State
 from server.serializers.frontend.instructions import InstructionListSerializer, InstructionSerializer
 
 
@@ -15,7 +15,7 @@ class InstructionViewSet(viewsets.ModelViewSet):
     queryset = (
         Instruction.objects
         .filter(deprecated=False, instruction__season__current=True)
-        .exclude(state_id=State.objects.get(seasons__current=True, done=True).pk)
+        # .exclude(state_id=State.objects.get(seasons__current=True, done=True).pk)
     )
 
     def get_serializer_class(self):
