@@ -43,6 +43,13 @@ export class ApproxdropdownComponent implements OnInit {
     this.readonly = value;
   }
 
+  disabledState: boolean = false;
+
+  @Input()
+  set disable (value: boolean) {
+    this.disabledState = value;
+  }
+
   group = new FormGroup(
     {
       original: this.originalControl,

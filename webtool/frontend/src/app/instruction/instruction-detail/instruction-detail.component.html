@@ -73,16 +73,13 @@
 
   <!--Kurztitel, Langtitel-->
   <div class="p-grid">
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
       <input formControlName="shorttitle" id="shorttitle" placeholder="Kurztitel" type="text" style='width:100%'
              pInputText>
     </div>
-    <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+    <div class="p-col-12 p-sm-8 p-md-8 p-lg-8">
       <input formControlName="longtitle" id="longtitle" placeholder="Langtitel" type="text" style='width:100%'
              pInputText>
-    </div>
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <avk-approxdropdown formControlName="approximate" id="approx" [readOnly]="!(userValState >= 0)"></avk-approxdropdown>
     </div>
   </div>
 
@@ -97,6 +94,16 @@
           autoResize="autoResize"
           style='width:100%'
       ></textarea>
+    </div>
+  </div>
+
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <avk-approxdropdown formControlName="approximate" id="approx" [readOnly]="!(userValState >= 0)"
+                          [disable]="!timeState" ></avk-approxdropdown>
+    </div>
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <avk-time formControlName="time" id="time" [disable]="timeState" ></avk-time>
     </div>
   </div>
 

@@ -91,6 +91,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   location = new FormControl('');
   multisingle = new FormControl('');
   approximate = new FormControl('');
+  time = new FormControl('');
 
   instructionForm = new FormGroup({
     guide: this.guide,
@@ -121,7 +122,8 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     datetype: this.datetype,
     location: this.location,
     multisingle: this.multisingle,
-    approximate: this.approximate
+    approximate: this.approximate,
+    time: this.time
   });
 
   equipmentChoice: Equipment[];
@@ -130,6 +132,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   totalcostsTable: Costs[];
 
   userValState: number = 0;
+  timeState: boolean = false;
 
   constructor(private store: Store<AppState>, private userService: AuthService) {
     this.store.dispatch(new NameListRequested());
@@ -182,8 +185,12 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
         this.longtitle.setValue(eventIds[0].name);
         this.location.setValue(eventIds[0].location);
         this.approximate.setValue(eventIds[0].approximateId);
+        this.time.setValue(eventIds[0].startTime);
         }
-      )
+      ),
+      tap(eventIds => {
+        if (eventIds[0].startTime === null) this.timeState = true;
+      })
     );
 
     // this.formState$.pipe(
@@ -227,7 +234,8 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
           datetype: '',
           location: '',
           multisingle: '',
-          approximate: ''
+          approximate: '',
+          time:''
         });
       } else {
         this.instructionForm.setValue({
@@ -259,7 +267,8 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
           datetype: '',
           location: '',
           multisingle: '',
-          approximate: ''
+          approximate: '',
+          time:''
         });
       }
     });
