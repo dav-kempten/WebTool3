@@ -75,5 +75,6 @@ export class CustomSerializer implements RouterStateSerializer<CustomRouterState
 export const selectRouterState = createFeatureSelector<RouterReducerState<CustomRouterState>>('router');
 export const selectCustomRouterState = createSelector(selectRouterState, (state: RouterReducerState<CustomRouterState>) => state.state);
 export const selectRouterDetailId = createSelector(selectCustomRouterState, (state: CustomRouterState) => state.params.id);
+export const selectRouterFragment = createSelector(selectCustomRouterState, (state: CustomRouterState) => state.fragment);
 export const selectRouterUrl = createSelector(selectCustomRouterState, (state: CustomRouterState) => state.url);
 export const selectRouterBreadcrumbs = createSelector(selectCustomRouterState, (state: CustomRouterState) => state.breadcrumbs);

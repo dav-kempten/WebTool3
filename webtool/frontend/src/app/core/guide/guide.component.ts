@@ -116,7 +116,7 @@ export class GuideComponent implements OnInit, OnDestroy, AfterViewInit, AfterCo
     let nameList: NameList = [];
     of(nameId).pipe(
       filter(id => typeof id === 'number'),
-      switchMap(Id => this.store.select(getNameById, {nameId: Id})),
+      switchMap(id => this.store.select(getNameById(id))),
       filter((apiName: APIName): boolean => !!apiName && !!Object.keys(apiName).length),
       map((apiName: APIName): NameList => [
         {
