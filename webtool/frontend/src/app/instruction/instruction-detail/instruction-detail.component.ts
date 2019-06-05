@@ -1,12 +1,12 @@
-import {Observable, of} from 'rxjs';
+import {Observable} from 'rxjs';
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {select, Store} from '@ngrx/store';
 import {AppState, selectRouterDetailId} from '../../app.state';
 import {Instruction} from '../../core/store/instruction.model';
-import {concatAll, filter, flatMap, map, switchMap, tap} from 'rxjs/operators';
+import {flatMap, map, tap} from 'rxjs/operators';
 import {getInstructionById} from '../../core/store/instruction.selectors';
 import {RequestInstruction} from '../../core/store/instruction.actions';
-import {getEventById, getEventsByIds} from "../../core/store/event.selectors";
+import {getEventsByIds} from '../../core/store/event.selectors';
 import {Event} from '../../model/event';
 
 @Component({

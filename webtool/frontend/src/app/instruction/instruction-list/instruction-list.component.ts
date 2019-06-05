@@ -1,11 +1,11 @@
 import {Component, OnInit} from '@angular/core';
 import {select, Store} from '@ngrx/store';
 import {AppState, selectRouterFragment} from '../../app.state';
-import {Observable, pipe} from 'rxjs';
+import {Observable} from 'rxjs';
 import {InstructionSummary} from '../../model/instruction';
 import {getInstructionSummaries} from '../../core/store/instruction-summary.selectors';
 import {RequestInstructionSummaries} from '../../core/store/instruction-summary.actions';
-import {filter, flatMap, map, publishLast, refCount, switchMap, tap} from "rxjs/operators";
+import {flatMap, map, tap} from 'rxjs/operators';
 
 @Component({
   selector: 'avk-instruction-list',
