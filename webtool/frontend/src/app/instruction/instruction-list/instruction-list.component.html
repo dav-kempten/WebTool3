@@ -1,1 +1,3 @@
 <h1>Kurse</h1>
+<p *ngIf="(category$ | async) as category">{{category}}</p>
+<p *ngFor="let instruction of (instructions$ | async)"><a routerLink="/instructions/{{instruction.id}}">{{instruction.reference}}</a> {{instruction.title}}</p>

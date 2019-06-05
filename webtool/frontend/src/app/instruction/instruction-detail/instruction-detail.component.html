@@ -1,1 +1,6 @@
-<h1>Instruction #{{instructionId$ | async}}</h1>
+<ng-container *ngIf="(instruction$ | async) as instruction">
+  <h1>Instruction {{instruction.reference}}</h1>
+  <p>{{instruction | json}}</p>
+  <p>EventIds: {{(eventIds$ | async).join(', ')}}</p>
+  <p *ngFor="let event of (events$ | async)">{{event | json}}</p>
+</ng-container>
