@@ -141,3 +141,8 @@ export const {
     selectAll,
     selectTotal,
   } = adapter.getSelectors(selectInstructionsState);
+
+// export const getInstructionState = createFeatureSelector<State>('instructions');
+// export const getInstructionById = (instructionId: number) => createSelector(
+//   getInstructionState, instructionState => instructionState.entities[instructionId]
+// );

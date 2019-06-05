@@ -8,6 +8,7 @@ export const getNameListIndex = createSelector(getNameListState, (state: NameLis
 export const getNameListTimestamp = createSelector(getNameListState, (state: NameListState) => state.timestamp);
 export const getNameListIsLoading = createSelector(getNameListState, (state: NameListState) => state.isLoading);
 
-export const getNameById = createSelector(
-  getNameListState, (state: NameListState, props) => state.names[state.index[props.nameId]]
+export const getNameById = (nameId: number) => createSelector(
+  getNameListState,
+  nameListState => nameListState.names[nameListState.index[nameId]]
 );

@@ -1,8 +1,5 @@
 <h1>Kurse</h1>
-<ul>
-  <li><a routerLink="/instructions/1">Instruction #1</a></li>
-  <li><a routerLink="/instructions/2">Instruction #2</a></li>
-  <li><a routerLink="/instructions/3">Instruction #3</a></li>
-  <li><a routerLink="/instructions/4">Instruction #4</a></li>
-  <li><a routerLink="/instructions/5">Instruction #5</a></li>
-</ul>
+<p *ngIf="(category$ | async) as category">{{category}}</p>
+<p *ngFor="let instruction of (instructions$ | async)">
+  <a routerLink="/instructions/{{instruction.id}}">{{instruction.reference}}</a> {{instruction.title}}
+</p>

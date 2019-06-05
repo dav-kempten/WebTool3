@@ -43,6 +43,12 @@ interface Costs {
   beschreibung;
   betrag;
 }
+// import {Instruction} from '../../core/store/instruction.model';
+// import {flatMap, map, tap} from 'rxjs/operators';
+// import {getInstructionById} from '../../core/store/instruction.selectors';
+// import {RequestInstruction} from '../../core/store/instruction.actions';
+// import {getEventsByIds} from '../../core/store/event.selectors';
+// import {Event} from '../../model/event';
 
 @Component({
   selector: 'avk-instruction-detail',
@@ -120,6 +126,10 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     location: this.location,
     multisingle: this.multisingle
   });
+
+  // instruction$: Observable<Instruction>;
+  // eventIds$: Observable<number[]>;
+  // events$: Observable<Event[]>;
 
   equipmentChoice: Equipment[];
   requirementChoice: Requirements[];
@@ -246,6 +256,25 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     this.tours = [];
 
     this.totalcostsTable = [];
+    /* Wodo Beispiel-Code */
+    // this.instructionId$ = this.store.select(selectRouterDetailId);
+    // this.instruction$ = this.instructionId$.pipe(
+    //   flatMap(id => this.store.pipe(
+    //       select(getInstructionById(id)),
+    //       tap(instruction => {
+    //         if (!instruction) {
+    //           this.store.dispatch(new RequestInstruction({id}));
+    //         }
+    //       })
+    //     )
+    //   )
+    // );
+    // this.eventIds$ = this.instruction$.pipe(
+    //   map(instruction => [instruction.instructionId, ...instruction.meetingIds])
+    // );
+    // this.events$ = this.eventIds$.pipe(
+    //   flatMap(eventIds => this.store.select(getEventsByIds(eventIds)))
+    // );
   }
 
   ngOnDestroy(): void {}
