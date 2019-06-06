@@ -22,7 +22,7 @@ class TopicListSerializer(serializers.ModelSerializer):
 
     def get_detail(self, obj):
         request = self.context['request']
-        return reverse('topic-detail', kwargs={'code': obj.category.code}, request=request)
+        return reverse('topics-detail', kwargs={'code': obj.category.code}, request=request)
 
 
 class TopicSerializer(TopicListSerializer):
@@ -45,6 +45,6 @@ class TopicSerializer(TopicListSerializer):
         }
 
         if obj.instructions.exists():
-            result["instructions"] = "{}?category={}".format(reverse('event-list', request=request), obj.category.code)
+            result["instructions"] = "{}?category={}".format(reverse('activities-list', request=request), obj.category.code)
 
         return result
