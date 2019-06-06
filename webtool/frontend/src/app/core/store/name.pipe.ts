@@ -21,7 +21,7 @@ export class NamePipe implements PipeTransform {
 
     of(nameId).pipe(
       filter(id => typeof id === 'number'),
-      switchMap(id => this.store.select(getNameById, {nameId: id})),
+      switchMap(id => this.store.select(getNameById(id))),
       filter((apiName: APIName): boolean => !!apiName && !!Object.keys(apiName).length),
       map((apiName: APIName) => `${apiName.firstName} ${apiName.lastName}`)
     ).subscribe(value => {
@@ -45,7 +45,7 @@ export class NamesPipe implements PipeTransform {
 
     from(nameIds).pipe(
       filter(id => typeof id === 'number'),
-      switchMap(nameId => this.store.select(getNameById, {nameId})),
+      switchMap(nameId => this.store.select(getNameById(nameId))),
       filter((apiName: APIName): boolean => !!apiName && !!Object.keys(apiName).length),
       map((apiName: APIName): string => `${apiName.firstName} ${apiName.lastName}`)
     ).subscribe((value: string): void => {

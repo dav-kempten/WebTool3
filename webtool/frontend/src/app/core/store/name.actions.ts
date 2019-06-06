@@ -2,9 +2,9 @@ import {Action} from '@ngrx/store';
 import {NameList} from '../../model/name';
 
 export enum NameListActionTypes {
-  NameListRequested = '[nameList] nameList requested',
-  NameListLoaded = '[nameList] nameList loaded',
-  NameListNotModified = '[nameList] nameList not mdofied'
+  NameListRequested = '[Names] nameList requested',
+  NameListLoaded = '[Names] nameList loaded',
+  NameListNotModified = '[Names] nameList not mdofied'
 }
 
 export class NameListRequested implements Action {

@@ -110,7 +110,7 @@ export class TeamComponent implements OnInit, OnDestroy, AfterViewInit, AfterCon
     const newObj: NameList = [];
     from(nameIds || []).pipe(
       filter(id => typeof id === 'number'),
-      switchMap(nameId => this.store.select(getNameById, {nameId})),
+      switchMap(nameId => this.store.select(getNameById(nameId))),
       filter((apiName: APIName): boolean => !!apiName && !!Object.keys(apiName).length),
       map((apiName: APIName): Name => ({
           name: `${apiName.lastName} ${apiName.firstName}`,

@@ -191,6 +191,12 @@ class EquipmentMixin(models.Model):
         help_text="Zusätzliche Ausrüstung, wenn unter Ausrüstung „Sonstiges“ gewählt wurde",
     )
 
+    equipment_service = models.BooleanField(
+        'Reservierungswunsch für Ausrüstungsservice',
+        db_index=True,
+        blank=True, default=False
+    )
+
     class Meta:
         abstract = True
 

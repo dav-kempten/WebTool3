@@ -58,9 +58,10 @@ class BookletSerializer(BookletRetrieveSerializer):
         fields = ("id", "references", "format", "header", "subHeader", "mainHeader", "status", "booklet")
 
     def create(self, validated_data):
-        from server.actors import create_booklet_pdf
+        from server.actors import create_booklet_pdf, update_booklet_list
 
         booklet = Booklet.objects.create(**validated_data)
+        update_booklet_list.send(str(booklet.pk))
         create_booklet_pdf.send(str(booklet.pk))
         return booklet
 
