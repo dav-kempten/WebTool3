@@ -17,12 +17,10 @@ from django.conf.urls import include, url
 
 from rest_framework.authtoken.views import obtain_auth_token
 from server.views.client import router as client
-from server.views.admin import router as instruction
 from server.views.frontend import router as frontend
 
 urlpatterns = [
     url(r'^api/token/', obtain_auth_token),
     url(r'^api/client/', include(client.urls)),
-    url(r'^api/admin/', include(instruction.urls)),
     url(r'^api/frontend/', include(frontend.urls)),
 ]
