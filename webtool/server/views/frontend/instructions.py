@@ -2,7 +2,7 @@
 from django.http import Http404
 from django.template.defaultfilters import date
 
-from rest_framework import viewsets
+from rest_framework import viewsets, permissions
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 
@@ -11,6 +11,8 @@ from server.serializers.frontend.instructions import InstructionListSerializer, 
 
 
 class InstructionViewSet(viewsets.ModelViewSet):
+
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
     queryset = (
         Instruction.objects
