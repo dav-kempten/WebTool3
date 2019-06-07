@@ -177,12 +177,12 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
 
     this.eventIds$ = this.formInstruction$.pipe(
       map(instruction => [instruction.instructionId, ...instruction.meetingIds]),
-      tap(instruction => console.log("EventInstruction", instruction)),
+      // tap(instruction => console.log("EventInstruction", instruction)),
     );
 
     this.events$ = this.eventIds$.pipe(
       flatMap(eventIds => this.store.select(getEventsByIds(eventIds))),
-      tap(eventIds => console.log("EventIds", eventIds)),
+      // tap(eventIds => console.log("EventIds", eventIds)),
       tap(eventIds => {
           if (eventIds[0].startDate !== null) this.startdate.setValue(eventIds[0].startDate);
           if (eventIds[0].endDate !== null) this.enddate.setValue(eventIds[0].endDate);
@@ -195,12 +195,12 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
       ),
     );
 
-    this.instructionForm.controls['approximate'].valueChanges.subscribe(
-      (selectedValue) => {
-        console.log("Approximate",selectedValue);
-        console.log("Time",this.instructionForm.get('time').value);
-      }
-    );
+    // this.instructionForm.controls['approximate'].valueChanges.subscribe(
+    //   (selectedValue) => {
+    //     console.log("Approximate",selectedValue);
+    //     console.log("Time",this.instructionForm.get('time').value);
+    //   }
+    // );
 
     // this.formState$.pipe(
     //   tap((state:State) => console.log("formState",state)),
@@ -299,7 +299,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
 
     this.totalcostsTable = [];
 
-    console.log("ApproximateValue", this.approximate.value);
+    // console.log("ApproximateValue", this.approximate.value);
   }
 
   ngOnDestroy(): void {

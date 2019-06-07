@@ -185,8 +185,6 @@ export const multiselectValidator: ValidatorFn = (group: FormGroup): ValidationE
   const choiceValue: any[] = group.get('choicevalue').value;
   const originalControl: FormControl = group.get('original').value;
 
-  // console.log(choice, choiceValue);
-
   const error: ValidationErrors = {invalidSelect: {value: choiceValue}};
 
   const valid = (!!choice && !!choiceValue.length);
