@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
+from rest_framework.reverse import reverse
+
 from rest_framework import serializers
 
 from server.models import Instruction, Equipment, Guide, Topic, Category, State
 from server.serializers.frontend.core import EventSerializer,  MoneyField
 
 
-class InstructionListSerializer(serializers.HyperlinkedModelSerializer):
+class InstructionListSerializer(serializers.ModelSerializer):
 
     id = serializers.PrimaryKeyRelatedField(source='pk', read_only=True)
     reference = serializers.CharField(source='instruction.reference.__str__', read_only=True)
@@ -20,6 +22,7 @@ class InstructionListSerializer(serializers.HyperlinkedModelSerializer):
     maxQuantity = serializers.IntegerField(source='max_quantity', read_only=True)
     curQuantity = serializers.IntegerField(source='cur_quantity', read_only=True)
     stateId = serializers.PrimaryKeyRelatedField(source='state_id', read_only=True)
+    url = serializers.SerializerMethodField()
 
     class Meta:
         model = Instruction
@@ -37,7 +40,10 @@ class InstructionListSerializer(serializers.HyperlinkedModelSerializer):
             'stateId',
             'url'
         )
-        # read_only_fields = ('url', )
+
+    def get_url(self, obj):
+        request = self.context['request']
+        return reverse('instructions-detail', args=[obj.pk], request=request)
 
     def get_title(self, obj):
         if obj.is_special:

@@ -1,18 +1,25 @@
 from rest_framework import serializers
+from rest_framework.reverse import reverse
 
 from server.models import Calendar
 
 
-class CalendarListSerializer(serializers.HyperlinkedModelSerializer):
+class CalendarListSerializer(serializers.ModelSerializer):
 
     id = serializers.PrimaryKeyRelatedField(source='pk', read_only=True)
     year = serializers.SerializerMethodField()
+    url = serializers.SerializerMethodField()
 
     class Meta:
         model = Calendar
         fields = (
             'id', 'year', 'url'
         )
+
+    def get_url(self, obj):
+        request = self.context['request']
+        return reverse('calendars-detail', args=[obj.pk], request=request)
+
 
     def get_year(self, obj):
         return int(obj.season.name)
