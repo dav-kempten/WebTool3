@@ -4,13 +4,13 @@ certifi==2019.3.9
 chardet==3.0.4
 django-filter==1.0.4
 Django==1.11.20
-djangorestframework==3.7.0
+djangorestframework==3.9.4
 django-cors-headers==2.5.2
 docutils==0.14
 dramatiq==1.4.0
 idna==2.8
 imagesize==0.7.1
-Jinja2==2.9.6
+Jinja2==2.10.1
 MarkupSafe==1.0
 psycopg2==2.7.3.1
 Pygments==2.2.0
@@ -21,4 +21,4 @@ snowballstemmer==1.2.1
 sphinx-rtd-theme==0.2.4
 Sphinx==1.6.4
 sphinxcontrib-websupport==1.0.1
-urllib3==1.24.1
+urllib3==1.24.3

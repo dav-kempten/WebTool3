@@ -44,7 +44,7 @@ class GuideListSerializer(serializers.ModelSerializer):
 
     def get_detail(self, obj):
         request = self.context['request']
-        return reverse('guide-detail', kwargs={'username': obj.user.username}, request=request)
+        return reverse('guides-detail', kwargs={'username': obj.user.username}, request=request)
 
     def get_portrait(self, obj):
         request = self.context['request']
@@ -59,6 +59,7 @@ class GuideSerializer(GuideListSerializer):
     links = serializers.SerializerMethodField()
 
     class Meta(GuideListSerializer.Meta):
+        model = Guide
         fields = (
             'id',
             'firstName', 'lastName',
@@ -89,30 +90,30 @@ class GuideSerializer(GuideListSerializer):
 
         if obj.tour_guides.exists():
             username = obj.user.get_username()
-            result["guidedTours"] = "{}?activity=tour&guide={}".format(reverse('event-list', request=request), username)
+            result["guidedTours"] = "{}?activity=tour&guide={}".format(reverse('activities-list', request=request), username)
 
         if obj.tour_teamers.exists():
             username = obj.user.get_username()
-            result["supportedTours"] = "{}?activity=tour&team={}".format(reverse('event-list', request=request), username)
+            result["supportedTours"] = "{}?activity=tour&team={}".format(reverse('activities-list', request=request), username)
 
         if obj.session_guides.exists():
             username = obj.user.get_username()
-            result["guidedSessions"] = "{}?activity=collective&guide={}".format(reverse('event-list', request=request), username)
+            result["guidedSessions"] = "{}?activity=collective&guide={}".format(reverse('activities-list', request=request), username)
 
         if obj.session_teamers.exists():
             username = obj.user.get_username()
-            result["supportedSessions"] = "{}?activity=collective&team={}".format(reverse('event-list', request=request), username)
+            result["supportedSessions"] = "{}?activity=collective&team={}".format(reverse('activities-list', request=request), username)
 
         if obj.instruction_guides.exists():
             username = obj.user.get_username()
-            result["guidedInstructions"] = "{}?activity=topic&guide={}".format(reverse('event-list', request=request), username)
+            result["guidedInstructions"] = "{}?activity=topic&guide={}".format(reverse('activities-list', request=request), username)
 
         if obj.instruction_teamers.exists():
             username = obj.user.get_username()
-            result["supportedInstructions"] = "{}?activity=topic&team={}".format(reverse('event-list', request=request), username)
+            result["supportedInstructions"] = "{}?activity=topic&team={}".format(reverse('activities-list', request=request), username)
 
         if obj.collectives.filter(internal=False).exists():
             username = obj.user.get_username()
-            result["managedCollectives"] = "{}?manager={}".format(reverse('collective-list', request=request), username)
+            result["managedCollectives"] = "{}?manager={}".format(reverse('collectives-list', request=request), username)
 
         return result

@@ -15,14 +15,10 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 
-from rest_framework.authtoken.views import obtain_auth_token
-from server.views.client import router as client
-from server.views.admin import router as instruction
-from server.views.frontend import router as frontend
+from server.views.client import client_router
+from server.views.frontend import frontend_router
 
 urlpatterns = [
-    url(r'^api/token/', obtain_auth_token),
-    url(r'^api/client/', include(client.urls)),
-    url(r'^api/admin/', include(instruction.urls)),
-    url(r'^api/frontend/', include(frontend.urls)),
+    url(r'^api/client/', include(client_router.urls)),
+    url(r'^api/frontend/', include(frontend_router.urls)),
 ]

@@ -22,7 +22,7 @@ class CollectiveListSerializer(serializers.ModelSerializer):
 
     def get_detail(self, obj):
         request = self.context['request']
-        return reverse('collective-detail', kwargs={'code': obj.category.code}, request=request)
+        return reverse('collectives-detail', kwargs={'code': obj.category.code}, request=request)
 
 
 class CollectiveSerializer(CollectiveListSerializer):
@@ -50,6 +50,6 @@ class CollectiveSerializer(CollectiveListSerializer):
         }
 
         if obj.session_list.exists():
-            result["sessions"] = "{}?category={}".format(reverse('event-list', request=request), obj.category.code)
+            result["sessions"] = "{}?category={}".format(reverse('activities-list', request=request), obj.category.code)
 
         return result

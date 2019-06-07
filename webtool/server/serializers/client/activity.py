@@ -64,7 +64,7 @@ class ActivityListSerializer(serializers.ModelSerializer):
             guide = obj.guide
             return {
                 'id': guide.user.get_username(),
-                'detail': reverse('guide-detail', kwargs={'username': guide.user.username}, request=request),
+                'detail': reverse('guides-detail', kwargs={'username': guide.user.username}, request=request),
                 'firstName': guide.user.first_name,
                 'lastName': guide.user.last_name
             } if guide else None
@@ -73,7 +73,7 @@ class ActivityListSerializer(serializers.ModelSerializer):
         request = self.context['request']
         if obj.reference.category.code == "SKA":
             return None
-        return reverse('event-detail', kwargs={'reference': str(obj.reference)}, request=request)
+        return reverse('activities-detail', kwargs={'reference': str(obj.reference)}, request=request)
 
     class Meta:
         model = Event
