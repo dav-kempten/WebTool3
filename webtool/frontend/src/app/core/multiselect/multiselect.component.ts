@@ -118,7 +118,14 @@ export class MultiselectComponent implements OnInit, AfterViewInit, OnDestroy, A
     this.delegatedMethodCalls.next(accessor => accessor.setDisabledState(isDisabled));
   }
 
-  writeValue(choice: string): void {
+  writeValue(choice): void {
+    if (choice.length > 0) {
+      let pushArray = new Array(0);
+      for (let el in choice) {
+        pushArray.push(this.choiceArray[choice[el]]);
+      }
+      choice = pushArray;
+    }
     this.delegatedMethodCalls.next(accessor => accessor.writeValue(choice));
   }
 

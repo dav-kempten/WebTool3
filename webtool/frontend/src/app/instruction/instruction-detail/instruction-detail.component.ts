@@ -191,6 +191,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
           this.location.setValue(eventIds[0].location);
           this.approximate.setValue(eventIds[0].approximateId);
           this.time.setValue(eventIds[0].startTime);
+          this.description.setValue(eventIds[0].description);
         }
       ),
     );
@@ -226,8 +227,8 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
           concept: instruction.topicId,
           shorttitle: '',
           longtitle: '',
-          equipment: '',
-          requirement: '',
+          equipment: [2,4], //instruction.equipmentIds,
+          requirement: [3,5], //instruction.qualificationIds,
           numbermembermin: instruction.minQuantity,
           numbermembermax: instruction.maxQuantity,
           distance: '',
@@ -246,6 +247,8 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
           approximate: '',
           time: ''
         });
+      // console.log("EquipmentIds", instruction.equipmentIds);
+      // console.log("QualificationIds", instruction.qualificationIds);
       } else {
         this.instructionForm.setValue({
           guide: '',
@@ -283,17 +286,6 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     });
 
     /* Default Init-Sets */
-
-    this.equipmentChoice = [
-      {name: 'Bergtour', details: ['Schuhe', 'Regenjacke', 'Brotzeit']},
-      {name: 'Gletscher', details: ['Schuhe', 'Regenjacke', 'Steigeisen']},
-      {name: 'Klettern', details: ['Schuhe', 'Seil', 'Helm']},
-      {name: 'Mountainbiken', details: ['Schuhe', 'Fahrrad', 'Helm']}
-    ];
-
-    this.requirementChoice = [
-      {name: "Grundkurs Alpin"}, {name: "Grundkurs Klettern"}, {name: "Vorstiegsschein"}, {name: "Grundkurs Hochtouren"}
-    ];
 
     this.tours = [];
 
