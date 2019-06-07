@@ -18,20 +18,16 @@ import {
   NG_VALUE_ACCESSOR, ValidationErrors,
   ValidatorFn
 } from "@angular/forms";
-import {ReplaySubject, Subscription} from "rxjs";
-import {delay} from "rxjs/operators";
-
-
-const equipment = [
-  {label: 'Gletscher', value: ['Schuhe', 'Regenjacke', 'Steigeisen']},
-  {label: 'Klettern', value: ['Schuhe', 'Seil', 'Helm']},
-  {label: 'Mountainbiken', value: ['Schuhe', 'Fahrrad', 'Helm']}
-];
-
-const requirement = [
-  {label: "Grundkurs Alpin", value: ""}, {label: "Grundkurs Klettern", value: ""},
-  {label: "Vorstiegsschein", value: ""}, {label: "Grundkurs Hochtouren", value: ""}
-];
+import {Observable, ReplaySubject, Subscription} from "rxjs";
+import {delay, tap} from "rxjs/operators";
+import {ValuesRequested} from "../store/value.actions";
+import {Store} from "@ngrx/store";
+import {AppState} from "../../app.state";
+import {Equipment as RawEquipment} from "../../model/value";
+import {Skill as RawSkill} from "../../model/value";
+import {State as SkillState} from "../store/skill.reducer";
+import {State as EquipState} from "../store/equipment.reducer";
+import {getEquipState, getSkillState} from "../store/value.selectors";
 
 
 @Component({
@@ -54,20 +50,26 @@ export class MultiselectComponent implements OnInit, AfterViewInit, OnDestroy, A
   delegatedMethodCalls = new ReplaySubject<(_: ControlValueAccessor) => void>();
   delegatedMethodsSubscription: Subscription;
 
-  choiceArray: SelectItem[];
+  choiceArray: any[];
+
+  formEquipState$: Observable<EquipState>;
+  formSkillState$: Observable<SkillState>;
+
+  statusEquipment: RawEquipment[] = new Array(0);
+  statusSkills: RawSkill[] = new Array(0);
 
   @Input()
   set choice(value: string) {
     this.choiceControl.setValue(value);
     if (value === "requirement") {
-      this.choiceArray = [...requirement];
+      this.choiceArray = [...this.statusSkills];
     }
     else if (value === "equipment") {
-      this.choiceArray = [...equipment];
+      this.choiceArray = [...this.statusEquipment];
     }
     else {
       this.choiceControl.setValue("requirement");
-      this.choiceArray = [...requirement];
+      this.choiceArray = [...this.statusSkills];
     }
   }
 
@@ -120,7 +122,41 @@ export class MultiselectComponent implements OnInit, AfterViewInit, OnDestroy, A
     this.delegatedMethodCalls.next(accessor => accessor.writeValue(choice));
   }
 
-  constructor() {}
+  constructor(private store: Store<AppState>) {
+    this.store.dispatch(new ValuesRequested());
+    this.formEquipState$ = this.store.select(getEquipState);
+
+    this.formEquipState$.pipe(
+      tap((state) => {
+        for (let key in state.entities) {
+          let stateEquip: RawEquipment = {
+            id: state.entities[key].id,
+            code: state.entities[key].code,
+            name: state.entities[key].name,
+            description: state.entities[key].description,
+          };
+          this.statusEquipment.push(stateEquip);
+        }
+      })
+    ).subscribe().unsubscribe()
+
+    this.formSkillState$ = this.store.select(getSkillState);
+
+    this.formSkillState$.pipe(
+      tap((state) => {
+        for (let key in state.entities) {
+          let stateSkill: RawSkill = {
+            id: state.entities[key].id,
+            level: state.entities[key].level,
+            categoryId: state.entities[key].categoryId,
+            code: state.entities[key].code,
+            description: state.entities[key].description,
+          };
+          this.statusSkills.push(stateSkill);
+        }
+      })
+    ).subscribe().unsubscribe();
+  }
 
   ngOnInit(): void {}
 
