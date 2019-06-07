@@ -60,8 +60,11 @@ export class ApproxdropdownComponent implements OnInit {
 
   status: RawApprox[] = new Array(1).fill({id: 0, name: "Startzeit", description: null, startTime: null});
 
-   OnChangeWrapper(onChange: (stateIn) => void): (stateOut: ApproxState) => void {
-    return ((state: ApproxState): void => {
+   OnChangeWrapper(onChange: (stateIn) => void): (stateOut: RawApprox) => void {
+    return ((state: RawApprox): void => {
+      if ((state.id == 0)) {
+        state = null;
+      }
       this.formControl.setValue(state);
       this.choiceControl.setValue(state);
       onChange(state);
@@ -84,6 +87,7 @@ export class ApproxdropdownComponent implements OnInit {
     if ((typeof stateId === "number") && (stateId <= this.status.length)) {
       stateId = this.status[stateId];
     }
+
     this.delegatedMethodCalls.next(accessor => accessor.writeValue(stateId));
   }
 

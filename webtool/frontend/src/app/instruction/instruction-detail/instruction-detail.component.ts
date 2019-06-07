@@ -73,7 +73,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   concept = new FormControl('');
   shorttitle = new FormControl('');
   longtitle = new FormControl('');
-  equipment = new FormControl( '');
+  equipment = new FormControl('');
   requirement = new FormControl('');
   numbermembermin = new FormControl('');
   numbermembermax = new FormControl('');
@@ -132,7 +132,6 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   totalcostsTable: Costs[];
 
   userValState: number = 0;
-  timeState: boolean = false;
 
   constructor(private store: Store<AppState>, private userService: AuthService) {
     this.store.dispatch(new NameListRequested());
@@ -148,22 +147,28 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
 
     this.authState$.pipe(
       tap(value => {
-        if (value.role === 'administrator') { this.userValState = 4; }
-        else if (value.role === 'staff'){ this.userValState = 3; }
-        else if (value.role === 'coordinator'){ this.userValState = 2; }
-        else if (value.role === 'guide'){ this.userValState = 1; }
-        else {this.userValState = 0;}
+        if (value.role === 'administrator') {
+          this.userValState = 4;
+        } else if (value.role === 'staff') {
+          this.userValState = 3;
+        } else if (value.role === 'coordinator') {
+          this.userValState = 2;
+        } else if (value.role === 'guide') {
+          this.userValState = 1;
+        } else {
+          this.userValState = 0;
+        }
       })
     ).subscribe();
 
     this.formInstruction$ = this.instructionId$.pipe(
       flatMap(id => this.store.pipe(
-          select(getInstructionById(id)),
-          tap(instruction => {
-            if (!instruction) {
-              this.store.dispatch(new RequestInstruction({id}));
-            }
-          })
+        select(getInstructionById(id)),
+        tap(instruction => {
+          if (!instruction) {
+            this.store.dispatch(new RequestInstruction({id}));
+          }
+        })
         )
       )
     );
@@ -177,20 +182,24 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
 
     this.events$ = this.eventIds$.pipe(
       flatMap(eventIds => this.store.select(getEventsByIds(eventIds))),
-      tap(eventIds => console.log("EventIds",eventIds)),
+      tap(eventIds => console.log("EventIds", eventIds)),
       tap(eventIds => {
-        if (eventIds[0].startDate !== null) this.startdate.setValue(eventIds[0].startDate);
-        if (eventIds[0].endDate !== null) this.enddate.setValue(eventIds[0].endDate);
-        this.shorttitle.setValue(eventIds[0].title);
-        this.longtitle.setValue(eventIds[0].name);
-        this.location.setValue(eventIds[0].location);
-        this.approximate.setValue(eventIds[0].approximateId);
-        this.time.setValue(eventIds[0].startTime);
+          if (eventIds[0].startDate !== null) this.startdate.setValue(eventIds[0].startDate);
+          if (eventIds[0].endDate !== null) this.enddate.setValue(eventIds[0].endDate);
+          this.shorttitle.setValue(eventIds[0].title);
+          this.longtitle.setValue(eventIds[0].name);
+          this.location.setValue(eventIds[0].location);
+          this.approximate.setValue(eventIds[0].approximateId);
+          this.time.setValue(eventIds[0].startTime);
         }
       ),
-      tap(eventIds => {
-        if (eventIds[0].startTime === null) this.timeState = true;
-      })
+    );
+
+    this.instructionForm.controls['approximate'].valueChanges.subscribe(
+      (selectedValue) => {
+        console.log("Approximate",selectedValue);
+        console.log("Time",this.instructionForm.get('time').value);
+      }
     );
 
     // this.formState$.pipe(
@@ -235,7 +244,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
           location: '',
           multisingle: '',
           approximate: '',
-          time:''
+          time: ''
         });
       } else {
         this.instructionForm.setValue({
@@ -268,7 +277,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
           location: '',
           multisingle: '',
           approximate: '',
-          time:''
+          time: ''
         });
       }
     });
@@ -276,22 +285,25 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     /* Default Init-Sets */
 
     this.equipmentChoice = [
-      {name: 'Bergtour', details:['Schuhe', 'Regenjacke', 'Brotzeit']},
-      {name: 'Gletscher', details:['Schuhe', 'Regenjacke', 'Steigeisen']},
-      {name: 'Klettern', details:['Schuhe', 'Seil', 'Helm']},
-      {name: 'Mountainbiken', details:['Schuhe', 'Fahrrad', 'Helm']}
+      {name: 'Bergtour', details: ['Schuhe', 'Regenjacke', 'Brotzeit']},
+      {name: 'Gletscher', details: ['Schuhe', 'Regenjacke', 'Steigeisen']},
+      {name: 'Klettern', details: ['Schuhe', 'Seil', 'Helm']},
+      {name: 'Mountainbiken', details: ['Schuhe', 'Fahrrad', 'Helm']}
     ];
 
     this.requirementChoice = [
-      {name:"Grundkurs Alpin"}, {name:"Grundkurs Klettern"}, {name:"Vorstiegsschein"}, {name:"Grundkurs Hochtouren"}
+      {name: "Grundkurs Alpin"}, {name: "Grundkurs Klettern"}, {name: "Vorstiegsschein"}, {name: "Grundkurs Hochtouren"}
     ];
 
     this.tours = [];
 
     this.totalcostsTable = [];
+
+    console.log("ApproximateValue", this.approximate.value);
   }
 
-  ngOnDestroy(): void {}
+  ngOnDestroy(): void {
+  }
 
   getTourCosts(): void {
     if (this.costsname.value !== '' && this.tourcosts.value !== '') {
@@ -307,8 +319,10 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
 
   getDateData(): void {
     if (this.datetype.value !== '' && this.startdate.value !== '' && this.enddate.value !== '' && this.location.value !== '') {
-      let dateData: Tour = {type: this.datetype.value, sdate: this.startdate.value, stime:"",
-        edate: this.enddate.value, etime:"", shorttitle:"", longtitle:"", location: this.location.value};
+      let dateData: Tour = {
+        type: this.datetype.value, sdate: this.startdate.value, stime: "",
+        edate: this.enddate.value, etime: "", shorttitle: "", longtitle: "", location: this.location.value
+      };
 
       this.tours.push(dateData);
     }

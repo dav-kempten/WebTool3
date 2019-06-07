@@ -100,10 +100,10 @@
   <div class="p-grid">
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
       <avk-approxdropdown formControlName="approximate" id="approx" [readOnly]="!(userValState >= 0)"
-                          [disable]="!timeState" ></avk-approxdropdown>
+                          [disable]="!!time.value" ></avk-approxdropdown>
     </div>
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <avk-time formControlName="time" id="time" [disable]="timeState" ></avk-time>
+      <avk-time formControlName="time" id="time" [disable]="!!approximate.value" ></avk-time>
     </div>
   </div>
 
