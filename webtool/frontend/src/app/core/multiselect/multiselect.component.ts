@@ -8,7 +8,6 @@ import {
   OnInit,
   ViewChild
 } from '@angular/core';
-import {SelectItem} from "primeng/api";
 import {MultiSelect} from "primeng/primeng";
 import {
   ControlValueAccessor,
@@ -51,6 +50,7 @@ export class MultiselectComponent implements OnInit, AfterViewInit, OnDestroy, A
   delegatedMethodsSubscription: Subscription;
 
   choiceArray: any[];
+  optionlabel: string;
 
   formEquipState$: Observable<EquipState>;
   formSkillState$: Observable<SkillState>;
@@ -63,13 +63,16 @@ export class MultiselectComponent implements OnInit, AfterViewInit, OnDestroy, A
     this.choiceControl.setValue(value);
     if (value === "requirement") {
       this.choiceArray = [...this.statusSkills];
+      this.optionlabel = "code";
     }
     else if (value === "equipment") {
       this.choiceArray = [...this.statusEquipment];
+      this.optionlabel = "name";
     }
     else {
       this.choiceControl.setValue("requirement");
       this.choiceArray = [...this.statusSkills];
+      this.optionlabel = "code";
     }
   }
 
@@ -97,7 +100,7 @@ export class MultiselectComponent implements OnInit, AfterViewInit, OnDestroy, A
     }, [multiselectValidator]
   );
 
-  OnChangeWrapper(onChange: (choiceNew: string) => void): (choiceOld: string) => void {
+  OnChangeWrapper(onChange: (choiceNew) => void): (choiceOld) => void {
     return ((choiceOld): void => {
       const choiceNew = choiceOld;
       this.formControl.setValue(choiceNew);
@@ -121,8 +124,14 @@ export class MultiselectComponent implements OnInit, AfterViewInit, OnDestroy, A
   writeValue(choice): void {
     if (choice.length > 0) {
       let pushArray = new Array(0);
-      for (let el in choice) {
-        pushArray.push(this.choiceArray[choice[el]]);
+      if (typeof(choice[0]) === "number") {
+        for (let el in choice) {
+          pushArray.push(this.choiceArray[choice[el]]);
+        }
+      } else {
+        for (let el in choice) {
+          pushArray.push(choice[el]);
+        }
       }
       choice = pushArray;
     }
@@ -145,7 +154,7 @@ export class MultiselectComponent implements OnInit, AfterViewInit, OnDestroy, A
           this.statusEquipment.push(stateEquip);
         }
       })
-    ).subscribe().unsubscribe()
+    ).subscribe().unsubscribe();
 
     this.formSkillState$ = this.store.select(getSkillState);
 
