@@ -17,8 +17,6 @@
           formControlName="multisingle"
           onLabel="Multitermin"
           offLabel="Einzeltermin"
-          data-toggle="collapse"
-          data-target="#demo, #demo2"
       ></p-toggleButton>
     </div>
   </div>
@@ -185,7 +183,7 @@
              type="text" style="width:100%"
              pInputText>
     </div>
-    <div id="demo" class="collapse">
+    <div id="demo" *ngIf="!!multisingle.value">
       <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
         <button pButton type="button" label="Add" (click)="getDateData()"></button>
       </div>
@@ -194,7 +192,7 @@
 
 
   <!--Liste mit Parametern (Tabelle)-->
-  <div id="demo2" class="collapse">
+  <div id="demo2" *ngIf="!!multisingle.value">
     <div class="p-grid">
       <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
         <p-table [value]="tours">

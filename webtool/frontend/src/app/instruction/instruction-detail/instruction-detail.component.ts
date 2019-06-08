@@ -12,19 +12,9 @@ import {Instruction} from "../../core/store/instruction.model";
 import {flatMap, map, tap} from "rxjs/operators";
 import {State} from "../../core/store/state.reducer";
 import {selectStatesState} from "../../core/store/value.selectors";
-import {AuthService, Role, User} from "../../core/service/auth.service";
-import {State as EventState} from "../../core/store/event.reducer";
+import {AuthService, User} from "../../core/service/auth.service";
 import {getEventsByIds} from "../../core/store/event.selectors";
 import {Event} from '../../model/event';
-
-interface Equipment {
-  name: string;
-  details: string[];
-}
-
-interface Requirements {
-  name: string;
-}
 
 interface Tour {
   type;
@@ -92,6 +82,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   multisingle = new FormControl('');
   approximate = new FormControl('');
   time = new FormControl('');
+  meetingIds = new FormControl('');
 
   instructionForm = new FormGroup({
     guide: this.guide,
@@ -123,11 +114,12 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     location: this.location,
     multisingle: this.multisingle,
     approximate: this.approximate,
-    time: this.time
+    time: this.time,
+    meetingIds: this.meetingIds
   });
 
-  tours: Tour[];
-  totalcostsTable: Costs[];
+  tours: Tour[] = [];
+  totalcostsTable: Costs[] = [];
 
   userValState: number = 0;
 
@@ -175,12 +167,12 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
 
     this.eventIds$ = this.formInstruction$.pipe(
       map(instruction => [instruction.instructionId, ...instruction.meetingIds]),
-      // tap(instruction => console.log("EventInstruction", instruction)),
+      tap(instruction => console.log("EventInstruction", instruction)),
     );
 
     this.events$ = this.eventIds$.pipe(
       flatMap(eventIds => this.store.select(getEventsByIds(eventIds))),
-      // tap(eventIds => console.log("EventIds", eventIds)),
+      tap(eventIds => console.log("EventIds", eventIds)),
       tap(eventIds => {
           if (eventIds[0].startDate !== null) this.startdate.setValue(eventIds[0].startDate);
           if (eventIds[0].endDate !== null) this.enddate.setValue(eventIds[0].endDate);
@@ -190,14 +182,23 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
           this.approximate.setValue(eventIds[0].approximateId);
           this.time.setValue(eventIds[0].startTime);
           this.description.setValue(eventIds[0].description);
+      }),
+      tap(eventIds => {
+        for (let el = 1; el < eventIds.length; el++) {
+          let dateData: Tour = {
+              type: eventIds[el].id, sdate: eventIds[el].startDate, stime: eventIds[el].startTime,
+              edate: eventIds[el].endDate, etime: eventIds[el].endTime,
+              shorttitle: eventIds[el].title, longtitle: eventIds[el].name, location: eventIds[el].location
+          };
+          this.tours.push(dateData);
         }
-      ),
+      }),
     );
 
     // this.instructionForm.controls['service'].valueChanges.subscribe(
     //   (selectedValue) => {
     //     console.log("Service",selectedValue);
-        // console.log("Time",this.instructionForm.get('time').value);
+    //     console.log("Time",this.instructionForm.get('time').value);
     //   }
     // );
 
@@ -241,12 +242,12 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
           enddate: '',
           datetype: '',
           location: '',
-          multisingle: '',
+          multisingle: (instruction.meetingIds.length > 0),
           approximate: '',
-          time: ''
+          time: '',
+          meetingIds: instruction.meetingIds
         });
-      // console.log("EquipmentIds", instruction.equipmentIds);
-      // console.log("QualificationIds", instruction.qualificationIds);
+        console.log("MeetingsIdsLength", !(instruction.meetingIds.length > 0));
       } else {
         this.instructionForm.setValue({
           guide: '',
@@ -278,22 +279,20 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
           location: '',
           multisingle: '',
           approximate: '',
-          time: ''
+          time: '',
+          meetingIds: ''
         });
       }
     });
 
-    /* Default Init-Sets */
-
-    this.tours = [];
-
-    this.totalcostsTable = [];
-
-    // console.log("ApproximateValue", this.approximate.value);
+    // this.instructionForm.controls['multisingle'].valueChanges.subscribe(
+    //   (selectedValue) => {
+    //     console.log("MulitSingle",selectedValue);
+    //   }
+    // )
   }
 
-  ngOnDestroy(): void {
-  }
+  ngOnDestroy(): void {}
 
   getTourCosts(): void {
     if (this.costsname.value !== '' && this.tourcosts.value !== '') {
