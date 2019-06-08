@@ -126,8 +126,6 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     time: this.time
   });
 
-  equipmentChoice: Equipment[];
-  requirementChoice: Requirements[];
   tours: Tour[];
   totalcostsTable: Costs[];
 
@@ -196,10 +194,10 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
       ),
     );
 
-    // this.instructionForm.controls['approximate'].valueChanges.subscribe(
+    // this.instructionForm.controls['service'].valueChanges.subscribe(
     //   (selectedValue) => {
-    //     console.log("Approximate",selectedValue);
-    //     console.log("Time",this.instructionForm.get('time').value);
+    //     console.log("Service",selectedValue);
+        // console.log("Time",this.instructionForm.get('time').value);
     //   }
     // );
 
