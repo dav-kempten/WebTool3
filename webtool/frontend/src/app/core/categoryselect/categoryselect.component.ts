@@ -76,8 +76,12 @@ export class CategoryselectComponent implements OnInit {
   }
 
   writeValue(stateId): void {
-    if ((typeof stateId === "number") && (stateId <= this.status.length)) {
-      stateId = this.status[stateId];
+    if (typeof stateId === "number") {
+      for (let el in this.status) {
+        if (stateId === this.status[el].id) {
+          stateId = this.status[el];
+        }
+      }
     }
     this.delegatedMethodCalls.next(accessor => accessor.writeValue(stateId));
   }
@@ -108,6 +112,7 @@ export class CategoryselectComponent implements OnInit {
         }
       })
     ).subscribe().unsubscribe();
+
   }
 
   ngAfterViewInit(): void {
