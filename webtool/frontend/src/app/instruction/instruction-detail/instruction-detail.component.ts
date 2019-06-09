@@ -22,8 +22,8 @@ interface Tour {
   stime;
   edate;
   etime;
-  shorttitle;
-  longtitle;
+  title;
+  name;
   location;
 }
 
@@ -52,68 +52,68 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   formState$: Observable<State>;
   authState$: Observable<User>;
 
-  guide = new FormControl(undefined);
-  team = new FormControl([]);
+  guideId = new FormControl(undefined);
+  teamIds = new FormControl([]);
   costs = new FormControl('');
   revenue = new FormControl('');
   description = new FormControl('');
   notes = new FormControl('');
-  bookingnr = new FormControl('');
-  status = new FormControl('');
-  concept = new FormControl('');
-  shorttitle = new FormControl('');
-  longtitle = new FormControl('');
-  equipment = new FormControl('');
-  requirement = new FormControl('');
-  numbermembermin = new FormControl('');
-  numbermembermax = new FormControl('');
+  reference = new FormControl('');
+  stateId = new FormControl('');
+  topicId = new FormControl('');
+  title = new FormControl('');
+  name = new FormControl('');
+  equipmentIds = new FormControl('');
+  qualificationIds = new FormControl('');
+  minQuantity = new FormControl('');
+  maxQuantity = new FormControl('');
   distance = new FormControl('');
-  service = new FormControl('');
+  equipmentService = new FormControl('');
   tourcosts = new FormControl('');
   costsctr = new FormControl('');
   costsname = new FormControl('');
   extracosts = new FormControl('');
   deposit = new FormControl('');
-  memberfee = new FormControl('');
+  extraCharges = new FormControl('');
   startdate = new FormControl('');
   enddate = new FormControl('');
   datetype = new FormControl('');
   location = new FormControl('');
   multisingle = new FormControl('');
-  approximate = new FormControl('');
+  approximateId = new FormControl('');
   time = new FormControl('');
   meetingIds = new FormControl('');
 
   instructionForm = new FormGroup({
-    guide: this.guide,
-    team: this.team,
+    guideId: this.guideId,
+    teamIds: this.teamIds,
     costs: this.costs,
     revenue: this.revenue,
     description: this.description,
     notes: this.notes,
-    bookingnr: this.bookingnr,
-    status: this.status,
-    concept: this.concept,
-    shorttitle: this.shorttitle,
-    longtitle: this.longtitle,
-    equipment: this.equipment,
-    requirement: this.requirement,
-    numbermembermin: this.numbermembermin,
-    numbermembermax: this.numbermembermax,
+    reference: this.reference,
+    stateId: this.stateId,
+    topicId: this.topicId,
+    title: this.title,
+    name: this.name,
+    equipmentIds: this.equipmentIds,
+    qualificationIds: this.qualificationIds,
+    minQuantity: this.minQuantity,
+    maxQuantity: this.maxQuantity,
     distance: this.distance,
-    service: this.service,
+    equipmentService: this.equipmentService,
     costsctr: this.costsctr,
     tourcosts: this.tourcosts,
     costsname: this.costsname,
     extracosts: this.extracosts,
     deposit: this.deposit,
-    memberfee: this.memberfee,
+    extraCharges: this.extraCharges,
     startdate: this.startdate,
     enddate: this.enddate,
     datetype: this.datetype,
     location: this.location,
     multisingle: this.multisingle,
-    approximate: this.approximate,
+    approximateId: this.approximateId,
     time: this.time,
     meetingIds: this.meetingIds
   });
@@ -176,10 +176,10 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
       tap(eventIds => {
           if (eventIds[0].startDate !== null) this.startdate.setValue(eventIds[0].startDate);
           if (eventIds[0].endDate !== null) this.enddate.setValue(eventIds[0].endDate);
-          this.shorttitle.setValue(eventIds[0].title);
-          this.longtitle.setValue(eventIds[0].name);
+          this.title.setValue(eventIds[0].title);
+          this.name.setValue(eventIds[0].name);
           this.location.setValue(eventIds[0].location);
-          this.approximate.setValue(eventIds[0].approximateId);
+          this.approximateId.setValue(eventIds[0].approximateId);
           this.time.setValue(eventIds[0].startTime);
           this.description.setValue(eventIds[0].description);
       }),
@@ -188,7 +188,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
           let dateData: Tour = {
               type: eventIds[el].id, sdate: eventIds[el].startDate, stime: eventIds[el].startTime,
               edate: eventIds[el].endDate, etime: eventIds[el].endTime,
-              shorttitle: eventIds[el].title, longtitle: eventIds[el].name, location: eventIds[el].location
+              title: eventIds[el].title, name: eventIds[el].name, location: eventIds[el].location
           };
           this.tours.push(dateData);
         }
@@ -215,70 +215,70 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     this.formInstruction$.subscribe((instruction: Instruction) => {
       if (instruction !== undefined) {
         this.instructionForm.setValue({
-          guide: instruction.guideId,
-          team: instruction.teamIds,
+          guideId: instruction.guideId,
+          teamIds: instruction.teamIds,
           costs: '',
           revenue: '',
-          description: instruction.advancesInfo,
+          description: '',
           notes: '',
-          bookingnr: instruction.reference,
-          status: instruction.stateId,
-          concept: instruction.topicId,
-          shorttitle: '',
-          longtitle: '',
-          equipment: instruction.equipmentIds,
-          requirement: instruction.qualificationIds,
-          numbermembermin: instruction.minQuantity,
-          numbermembermax: instruction.maxQuantity,
+          reference: instruction.reference,
+          stateId: instruction.stateId,
+          topicId: instruction.topicId,
+          title: '',
+          name: '',
+          equipmentIds: instruction.equipmentIds,
+          qualificationIds: instruction.qualificationIds,
+          minQuantity: instruction.minQuantity,
+          maxQuantity: instruction.maxQuantity,
           distance: '',
-          service: instruction.equipmentService,
+          equipmentService: instruction.equipmentService,
           costsctr: 0,
           tourcosts: '',
           costsname: '',
           extracosts: '',
           deposit: '',
-          memberfee: instruction.extraCharges,
+          extraCharges: instruction.extraCharges,
           startdate: '',
           enddate: '',
           datetype: '',
           location: '',
           multisingle: (instruction.meetingIds.length > 0),
-          approximate: '',
+          approximateId: '',
           time: '',
           meetingIds: instruction.meetingIds
         });
         console.log("MeetingsIdsLength", !(instruction.meetingIds.length > 0));
       } else {
         this.instructionForm.setValue({
-          guide: '',
-          team: '',
+          guideId: '',
+          teamIds: '',
           costs: '',
           revenue: '',
           description: '',
           notes: '',
-          bookingnr: '',
-          status: '',
-          concept: '',
-          shorttitle: '',
-          longtitle: '',
-          equipment: '',
-          requirement: '',
-          numbermembermin: '',
-          numbermembermax: '',
+          reference: '',
+          stateId: '',
+          topicId: '',
+          title: '',
+          name: '',
+          equipmentIds: '',
+          qualificationIds: '',
+          minQuantity: '',
+          maxQuantity: '',
           distance: '',
-          service: '',
+          equipmentService: '',
           costsctr: 0,
           tourcosts: '',
           costsname: '',
           extracosts: '',
           deposit: '',
-          memberfee: '',
+          extraCharges: '',
           startdate: '',
           enddate: '',
           datetype: '',
           location: '',
           multisingle: '',
-          approximate: '',
+          approximateId: '',
           time: '',
           meetingIds: ''
         });
@@ -310,7 +310,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     if (this.datetype.value !== '' && this.startdate.value !== '' && this.enddate.value !== '' && this.location.value !== '') {
       let dateData: Tour = {
         type: this.datetype.value, sdate: this.startdate.value, stime: "",
-        edate: this.enddate.value, etime: "", shorttitle: "", longtitle: "", location: this.location.value
+        edate: this.enddate.value, etime: "", title: "", name: "", location: this.location.value
       };
 
       this.tours.push(dateData);

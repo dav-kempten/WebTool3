@@ -25,10 +25,10 @@
   <div class="p-grid">
     <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
       <avk-guide
-          formControlName="guide"
+          formControlName="guideId"
           id="g1"
           label="Trainer"
-          [nameIdList]="team.value"
+          [nameIdList]="teamIds.value"
           [readOnly]="!(userValState >= 0)"
           required
       ></avk-guide>
@@ -46,10 +46,10 @@
   <div class="p-grid">
     <div class="p-sm-12 p-md-12 p-lg-12">
       <avk-team
-          formControlName="team"
+          formControlName="teamIds"
           id="g2"
           label="Team"
-          [nameId]="guide.value"
+          [nameId]="guideId.value"
           [readOnly]="!(userValState >= 0)"
       ></avk-team>
     </div>
@@ -58,16 +58,16 @@
   <!--Buchungscode, Status, Kurskonzept, InfoBox-->
   <div class="p-grid">
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <input formControlName="bookingnr" id="bookingnr" placeholder="Buchungsnummer" type="text" style='width:100%'
+      <input formControlName="reference" id="reference" placeholder="Buchungsnummer" type="text" style='width:100%'
              readonly pInputText>
     </div>
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <avk-dropdown formControlName="status" id="status" [readOnly]="!(userValState >= 0)"></avk-dropdown>
+      <avk-dropdown formControlName="stateId" id="stateId" [readOnly]="!(userValState >= 0)"></avk-dropdown>
     </div>
     <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
       <avk-categoryselect
-          formControlName="concept"
-          id="concept"
+          formControlName="topicId"
+          id="topicId"
           [readOnly]="!(userValState >= 0)">
       </avk-categoryselect>
     </div>
@@ -76,11 +76,11 @@
   <!--Kurztitel, Langtitel-->
   <div class="p-grid">
     <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-      <input formControlName="shorttitle" id="shorttitle" placeholder="Kurztitel" type="text" style='width:100%'
+      <input formControlName="title" id="shorttitle" placeholder="Kurztitel" type="text" style='width:100%'
              pInputText>
     </div>
     <div class="p-col-12 p-sm-8 p-md-8 p-lg-8">
-      <input formControlName="longtitle" id="longtitle" placeholder="Langtitel" type="text" style='width:100%'
+      <input formControlName="name" id="longtitle" placeholder="Langtitel" type="text" style='width:100%'
              pInputText>
     </div>
   </div>
@@ -101,11 +101,11 @@
 
   <div class="p-grid">
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <avk-approxdropdown formControlName="approximate" id="approx" [readOnly]="!(userValState >= 0)"
+      <avk-approxdropdown formControlName="approximateId" id="approx" [readOnly]="!(userValState >= 0)"
                           [disable]="!!time.value" ></avk-approxdropdown>
     </div>
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <avk-time formControlName="time" id="time" [disable]="!!approximate.value" ></avk-time>
+      <avk-time formControlName="time" id="time" [disable]="!!approximateId.value" ></avk-time>
     </div>
   </div>
 
@@ -113,7 +113,7 @@
   <div class="p-grid">
     <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
       <avk-multiselect
-          formControlName="equipment"
+          formControlName="equipmentIds"
           choice="equipment"
           label="Ausrüstung"
           [readOnly]="!(userValState >= 0)"
@@ -121,7 +121,7 @@
     </div>
     <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
       <avk-multiselect
-          formControlName="requirement"
+          formControlName="qualificationIds"
           choice="requirement"
           label="Vorraussetzungen"
           [readOnly]="!(userValState >= 0)"
@@ -133,19 +133,19 @@
   <div class="p-grid">
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
       <avk-membernumber
-          formControlName="numbermembermin"
+          formControlName="minQuantity"
           label="MinMember"
           id="m1"
-          [maxMember]="numbermembermax.value"
+          [maxMember]="maxQuantity.value"
           [readOnly]="!(userValState >= 0)"
       ></avk-membernumber>
     </div>
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
       <avk-membernumber
-          formControlName="numbermembermax"
+          formControlName="maxQuantity"
           label="MaxMember"
           id="m2"
-          [minMember]="numbermembermin.value"
+          [minMember]="minQuantity.value"
           [readOnly]="!(userValState >= 1)"
       ></avk-membernumber>
     </div>
@@ -155,7 +155,7 @@
     </div>
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
       <p-checkbox
-          [formControl]="instructionForm.controls['service']"
+          [formControl]="instructionForm.controls['equipmentIds']"
           label="Materialservice"
           binary="true"
       ></p-checkbox>
@@ -219,8 +219,8 @@
               <td>{{tour.stime}}</td>
               <td>{{tour.edate}}</td>
               <td>{{tour.etime}}</td>
-              <td>{{tour.shorttitle}}</td>
-              <td>{{tour.longtitle}}</td>
+              <td>{{tour.title}}</td>
+              <td>{{tour.name}}</td>
               <td>{{tour.location}}</td>
             </tr>
           </ng-template>
@@ -273,7 +273,7 @@
   <!--Teilnehmergebühr-->
   <div class="p-grid">
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <input formControlName="memberfee" id="memberfee" placeholder="Teilnehmergebühr" type="text" style='width:100%'
+      <input formControlName="extraCharges" id="extraCharges" placeholder="Teilnehmergebühr" type="text" style='width:100%'
              pInputText>
     </div>
   </div>
