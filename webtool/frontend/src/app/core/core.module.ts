@@ -46,12 +46,13 @@ import {reducer as collectiveReducer} from './store/collective.reducer';
 import {ToggleButtonModule} from 'primeng/togglebutton';
 import {CalendarEffects} from "./store/calendar.effects";
 import { ApproxdropdownComponent } from './approxdropdown/approxdropdown.component';
+import { CategoryselectComponent } from './categoryselect/categoryselect.component';
 
 @NgModule({
   declarations: [
     GuideComponent, TeamComponent, DateComponent, TimeComponent, NamePipe, NamesPipe, MenuComponent,
     BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent, DropdownComponent, 
-	  MultiselectComponent, ApproxdropdownComponent
+	  MultiselectComponent, ApproxdropdownComponent, CategoryselectComponent
   ],
   imports: [
     CommonModule,
@@ -91,8 +92,8 @@ import { ApproxdropdownComponent } from './approxdropdown/approxdropdown.compone
   ],
   exports: [
     GuideComponent, TeamComponent, DateComponent, TimeComponent, NamePipe, NamesPipe, MenuComponent,
-    BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent, DropdownComponent, 
-	  MultiselectComponent, ButtonModule, ToggleButtonModule, ApproxdropdownComponent
+    BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent, DropdownComponent,
+    MultiselectComponent, ButtonModule, ToggleButtonModule, ApproxdropdownComponent, CategoryselectComponent
   ]
 })
 export class CoreModule { }

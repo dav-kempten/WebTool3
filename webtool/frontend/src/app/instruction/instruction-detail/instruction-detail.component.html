@@ -65,7 +65,11 @@
       <avk-dropdown formControlName="status" id="status" [readOnly]="!(userValState >= 0)"></avk-dropdown>
     </div>
     <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
-      <input formControlName="concept" id="concept" placeholder="Kurskonzept" type="text" style='width:100%' pInputText>
+      <avk-categoryselect
+          formControlName="concept"
+          id="concept"
+          [readOnly]="!(userValState >= 0)">
+      </avk-categoryselect>
     </div>
   </div>
 
