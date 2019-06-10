@@ -83,6 +83,10 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   approximateId = new FormControl('');
   time = new FormControl('');
   meetingIds = new FormControl('');
+  lowEmissionAdventure = new FormControl('');
+  ladiesOnly = new FormControl('');
+  isSpecial = new FormControl('');
+
 
   instructionForm = new FormGroup({
     guideId: this.guideId,
@@ -115,7 +119,10 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     multisingle: this.multisingle,
     approximateId: this.approximateId,
     time: this.time,
-    meetingIds: this.meetingIds
+    meetingIds: this.meetingIds,
+    lowEmissionAdventure: this.lowEmissionAdventure,
+    ladiesOnly: this.ladiesOnly,
+    isSpecial: this.isSpecial
   });
 
   tours: Tour[] = [];
@@ -245,9 +252,11 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
           multisingle: (instruction.meetingIds.length > 0),
           approximateId: '',
           time: '',
-          meetingIds: instruction.meetingIds
-        });
-        console.log("MeetingsIdsLength", !(instruction.meetingIds.length > 0));
+          meetingIds: instruction.meetingIds,
+          lowEmissionAdventure: instruction.lowEmissionAdventure,
+          ladiesOnly: instruction.ladiesOnly,
+          isSpecial: instruction.isSpecial
+            });
       } else {
         this.instructionForm.setValue({
           guideId: '',
@@ -280,7 +289,10 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
           multisingle: '',
           approximateId: '',
           time: '',
-          meetingIds: ''
+          meetingIds: '',
+          lowEmissionAdventure: '',
+          ladiesOnly: '',
+          isSpecial: ''
         });
       }
     });

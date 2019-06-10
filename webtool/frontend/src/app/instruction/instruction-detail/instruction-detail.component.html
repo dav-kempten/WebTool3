@@ -44,7 +44,7 @@
   </div>
 
   <div class="p-grid">
-    <div class="p-sm-12 p-md-12 p-lg-12">
+    <div class="p-sm-6 p-md-6 p-lg-6">
       <avk-team
           formControlName="teamIds"
           id="g2"
@@ -52,6 +52,20 @@
           [nameId]="guideId.value"
           [readOnly]="!(userValState >= 0)"
       ></avk-team>
+    </div>
+    <div class="p-sm-3 p-md-3 p-lg-3">
+      <p-checkbox
+          [formControl]="instructionForm.controls['lowEmissionAdventure']"
+          label="LEA"
+          binary="true"
+      ></p-checkbox>
+    </div>
+    <div class="p-sm-3 p-md-3 p-lg-3">
+      <p-checkbox
+          [formControl]="instructionForm.controls['ladiesOnly']"
+          label="LadiesOnly"
+          binary="true"
+      ></p-checkbox>
     </div>
   </div>
 
@@ -64,12 +78,20 @@
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
       <avk-dropdown formControlName="stateId" id="stateId" [readOnly]="!(userValState >= 0)"></avk-dropdown>
     </div>
-    <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
       <avk-categoryselect
           formControlName="topicId"
           id="topicId"
-          [readOnly]="!(userValState >= 0)">
+          [readOnly]="!(userValState >= 0)"
+          [editAble]="isSpecial.value">
       </avk-categoryselect>
+    </div>
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <p-checkbox
+          [formControl]="instructionForm.controls['isSpecial']"
+          label="Spezialkategorie"
+          binary="true"
+      ></p-checkbox>
     </div>
   </div>
 
