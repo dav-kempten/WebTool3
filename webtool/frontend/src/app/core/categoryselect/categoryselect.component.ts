@@ -37,10 +37,16 @@ export class CategoryselectComponent implements OnInit {
   formState$: Observable<CategoryState>;
 
   readonly: boolean = false; /* init of readonly in guide component */
+  editable: boolean = false;
 
   @Input()
   set readOnly(value: boolean) {
     this.readonly = value;
+  }
+
+  @Input()
+  set editAble(value: boolean) {
+    this.editable = value;
   }
 
   group = new FormGroup(
