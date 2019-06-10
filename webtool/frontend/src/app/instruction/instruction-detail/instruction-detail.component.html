@@ -10,17 +10,6 @@
 
 <form [formGroup]="instructionForm">
 
-  <!--Single-Multi-Button  -->
-  <div class="p-grid">
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <p-toggleButton
-          formControlName="multisingle"
-          onLabel="Multitermin"
-          offLabel="Einzeltermin"
-      ></p-toggleButton>
-    </div>
-  </div>
-
   <!--GuideComponent // TeamComponent // Abrechnung-->
   <div class="p-grid">
     <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
@@ -96,7 +85,7 @@
   </div>
 
   <!--Kurztitel, Langtitel-->
-  <div class="p-grid">
+  <div class="p-grid" *ngIf="false">
     <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
       <input formControlName="title" id="shorttitle" placeholder="Kurztitel" type="text" style='width:100%'
              pInputText>
@@ -121,7 +110,7 @@
     </div>
   </div>
 
-  <div class="p-grid">
+  <div class="p-grid" *ngIf="false">
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
       <avk-approxdropdown formControlName="approximateId" id="approx" [readOnly]="!(userValState >= 0)"
                           [disable]="!!time.value" ></avk-approxdropdown>
@@ -171,7 +160,7 @@
           [readOnly]="!(userValState >= 1)"
       ></avk-membernumber>
     </div>
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3" *ngIf="false">
       <input formControlName="distance" id="distance" placeholder="PKW Strecke" type="text" style='width:100%'
              pInputText>
     </div>
@@ -185,7 +174,7 @@
   </div>
 
   <!--Zusatz: Datumseingabe (Anfang + Ende + Art)-->
-  <div class="p-grid">
+  <div class="p-grid" *ngIf="false">
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
       <avk-date formControlName="startdate"
                 id="dbeginn" label="Start"
@@ -209,7 +198,7 @@
              type="text" style="width:100%"
              pInputText>
     </div>
-    <div id="demo" *ngIf="!!multisingle.value">
+    <div id="demo">
       <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
         <button pButton type="button" label="Add" (click)="getDateData()"></button>
       </div>
@@ -218,7 +207,7 @@
 
 
   <!--Liste mit Parametern (Tabelle)-->
-  <div id="demo2" *ngIf="!!multisingle.value">
+  <div id="demo2">
     <div class="p-grid">
       <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
         <p-table [value]="tours">
@@ -252,7 +241,7 @@
   </div>
 
   <!--Fahrtkosten, Zusatzkosten, Anzahlung-->
-  <div class="p-grid">
+  <div class="p-grid" *ngIf="false">
     <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
       <div class="ui-inputgroup" style='width:100%'>
         <button pButton type="button" label="Add" (click)="getTourCosts()"></button>
@@ -271,7 +260,7 @@
   </div>
 
   <!--Kostenrahmen mit Tabelle-->
-  <div class="p-grid">
+  <div class="p-grid" *ngIf="false">
     <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
       <p-table [value]="totalcostsTable" [resizableColumns]="true">
         <ng-template pTemplate="header">
@@ -295,7 +284,7 @@
   <!--Teilnehmergebühr-->
   <div class="p-grid">
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <input formControlName="extraCharges" id="extraCharges" placeholder="Teilnehmergebühr" type="text" style='width:100%'
+      <input formControlName="admission" id="admission" placeholder="Teilnehmergebühr" type="text" style='width:100%'
              pInputText>
     </div>
   </div>

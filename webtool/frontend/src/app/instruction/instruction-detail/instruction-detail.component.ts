@@ -73,6 +73,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   costsctr = new FormControl('');
   costsname = new FormControl('');
   extracosts = new FormControl('');
+  admission = new FormControl('');
   deposit = new FormControl('');
   extraCharges = new FormControl('');
   startdate = new FormControl('');
@@ -112,6 +113,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     extracosts: this.extracosts,
     deposit: this.deposit,
     extraCharges: this.extraCharges,
+    admission: this.admission,
     startdate: this.startdate,
     enddate: this.enddate,
     datetype: this.datetype,
@@ -191,7 +193,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
           this.description.setValue(eventIds[0].description);
       }),
       tap(eventIds => {
-        for (let el = 1; el < eventIds.length; el++) {
+        for (let el = 0; el < eventIds.length; el++) {
           let dateData: Tour = {
               type: eventIds[el].id, sdate: eventIds[el].startDate, stime: eventIds[el].startTime,
               edate: eventIds[el].endDate, etime: eventIds[el].endTime,
@@ -245,6 +247,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
           extracosts: '',
           deposit: '',
           extraCharges: instruction.extraCharges,
+          admission: instruction.admission,
           startdate: '',
           enddate: '',
           datetype: '',
@@ -282,6 +285,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
           extracosts: '',
           deposit: '',
           extraCharges: '',
+          admission: '',
           startdate: '',
           enddate: '',
           datetype: '',
