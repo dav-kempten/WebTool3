@@ -2,7 +2,7 @@ import {Observable, of} from 'rxjs';
 import {catchError, first, map, shareReplay} from 'rxjs/operators';
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse} from '@angular/common/http';
-import {Values as RawValues} from '../../model/value';
+import {Values, Values as RawValues} from '../../model/value';
 
 @Injectable({
   providedIn: 'root'

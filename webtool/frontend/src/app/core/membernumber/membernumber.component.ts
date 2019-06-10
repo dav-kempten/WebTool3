@@ -40,6 +40,16 @@ export class MembernumberComponent implements OnInit, OnDestroy, AfterViewInit, 
   delegatedMethodCalls = new ReplaySubject<(_: ControlValueAccessor) => void>();
   delegatedMethodsSubscription: Subscription;
 
+  @Input() id = 'member';
+  @Input() label = 'Teilnehmer';
+
+  readonly: boolean = false; /* init of readonly in guide component */
+
+  @Input()
+  set readOnly(value: boolean) {
+    this.readonly = value;
+  }
+
   originalControl = new FormControl(null);
   minMemberControl = new FormControl('');
   maxMemberControl = new FormControl('');
@@ -120,8 +130,8 @@ export const memberValidator: ValidatorFn = (group: FormGroup): ValidationErrors
   const originalControl: FormControl = group.get('original').value;
 
   const checkMembersNull: boolean = !(member == 0);
-  const checkMinMembers: boolean = min <= member;
-  const checkMaxMembers: boolean = member <= max;
+  const checkMinMembers: boolean = !!(min) ? min <= member : false;
+  const checkMaxMembers: boolean = !!(max) ? member <= max : false;
 
   const error: ValidationErrors = {invalidMember: {value: member}};
 

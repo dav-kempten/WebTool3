@@ -1,2 +1,12 @@
-<label for="{{id}}">{{label}}: </label>
-<input type="time" id="{{id}}" [value]="value">
+<p-calendar
+  dateFormat="dd.mm.yy"
+  timeOnly="true"
+  showIcon="true"
+  showOnFocus="true"
+  dataType="string"
+  showButtonBar="false"
+  placeholder="hh:mm"
+  [locale]="de"
+  [disabled]="disabledState"
+>
+</p-calendar>
