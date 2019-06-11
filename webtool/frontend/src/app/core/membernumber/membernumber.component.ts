@@ -1,5 +1,6 @@
 import {
-  AfterContentInit, AfterViewInit,
+  AfterContentInit,
+  AfterViewInit,
   Component,
   ContentChild,
   forwardRef,
@@ -13,12 +14,13 @@ import {
   FormControl,
   FormControlName,
   FormGroup,
-  NG_VALUE_ACCESSOR, ValidationErrors,
+  NG_VALUE_ACCESSOR,
+  ValidationErrors,
   ValidatorFn
-} from "@angular/forms";
-import {ReplaySubject, Subscription} from "rxjs";
-import {Spinner} from "primeng/primeng";
-import {delay} from "rxjs/operators";
+} from '@angular/forms';
+import {ReplaySubject, Subscription} from 'rxjs';
+import {Spinner} from 'primeng/primeng';
+import {delay} from 'rxjs/operators';
 
 @Component({
   selector: 'avk-membernumber',
@@ -39,6 +41,16 @@ export class MembernumberComponent implements OnInit, OnDestroy, AfterViewInit, 
   formControl = new FormControl('');
   delegatedMethodCalls = new ReplaySubject<(_: ControlValueAccessor) => void>();
   delegatedMethodsSubscription: Subscription;
+
+  @Input() id = 'member';
+  @Input() label = 'Teilnehmer';
+
+  readonly = false; /* init of readonly in guide component */
+
+  @Input()
+  set readOnly(value: boolean) {
+    this.readonly = value;
+  }
 
   originalControl = new FormControl(null);
   minMemberControl = new FormControl('');
@@ -64,12 +76,12 @@ export class MembernumberComponent implements OnInit, OnDestroy, AfterViewInit, 
     this.maxMemberControl.setValue(value);
   }
 
-  OnChangeWrapper(onChange: (memberOld: string) => void): (memberNew : string) => void {
-    return ((memberNew:string): void => {
+  OnChangeWrapper(onChange: (memberOld: string) => void): (memberNew: string) => void {
+    return ((memberNew: string): void => {
       this.formControl.setValue(memberNew);
       this.memberValueControl.setValue(memberNew);
       onChange(memberNew);
-    })
+    });
   }
 
   registerOnChange(fn: any): void {
@@ -120,8 +132,8 @@ export const memberValidator: ValidatorFn = (group: FormGroup): ValidationErrors
   const originalControl: FormControl = group.get('original').value;
 
   const checkMembersNull: boolean = !(member == 0);
-  const checkMinMembers: boolean = min <= member;
-  const checkMaxMembers: boolean = member <= max;
+  const checkMinMembers: boolean = !!(min) ? min <= member : false;
+  const checkMaxMembers: boolean = !!(max) ? member <= max : false;
 
   const error: ValidationErrors = {invalidMember: {value: member}};
 

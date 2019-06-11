@@ -1,6 +1,8 @@
 <p-multiSelect
   [options]="choiceArray"
   defaultLabel="{{label}}"
-  optionLabel="label"
+  optionLabel="{{optionlabel}}"
   multiple="true"
+  [readonly]="readonly"
+  maxSelectedLabels="5"
 ></p-multiSelect>

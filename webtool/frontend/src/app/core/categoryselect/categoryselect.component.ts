@@ -1,46 +1,29 @@
-import {
-  AfterContentInit,
-  AfterViewInit,
-  Component,
-  ContentChild,
-  forwardRef,
-  Input,
-  OnDestroy,
-  OnInit,
-  ViewChild
-} from '@angular/core';
-import {
-  ControlValueAccessor,
-  FormControl,
-  FormControlName,
-  FormGroup,
-  NG_VALUE_ACCESSOR,
-  ValidationErrors,
-  ValidatorFn
-} from '@angular/forms';
+import {Component, ContentChild, forwardRef, Input, OnInit, ViewChild} from '@angular/core';
+import {ControlValueAccessor, FormControl, FormControlName, FormGroup, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {Dropdown} from 'primeng/primeng';
 import {Observable, ReplaySubject, Subscription} from 'rxjs';
-import {delay, tap} from 'rxjs/operators';
+import {stateValidator} from '../dropdown/dropdown.component';
+import {State as CategoryState} from '../store/category.reducer';
+import {Category as RawCategory} from '../../model/value';
 import {Store} from '@ngrx/store';
 import {AppState} from '../../app.state';
 import {ValuesRequested} from '../store/value.actions';
-import {selectStatesState} from '../store/value.selectors';
-import {State as StateState} from '../store/state.reducer';
-import {State as RawState} from '../../model/value';
+import {getCategoryState} from '../store/value.selectors';
+import {delay, tap} from 'rxjs/operators';
 
 @Component({
-  selector: 'avk-dropdown',
+  selector: 'avk-categoryselect',
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => DropdownComponent),
+      useExisting: forwardRef(() => CategoryselectComponent),
       multi: true
     }
   ],
-  templateUrl: './dropdown.component.html',
-  styleUrls: ['./dropdown.component.css']
+  templateUrl: './categoryselect.component.html',
+  styleUrls: ['./categoryselect.component.css']
 })
-export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, AfterContentInit, ControlValueAccessor  {
+export class CategoryselectComponent implements OnInit {
 
   @ViewChild(Dropdown) dropdown: Dropdown;
   @ContentChild(FormControlName) formControlNameRef: FormControlName;
@@ -51,13 +34,19 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   originalControl = new FormControl(null);
   choiceControl = new FormControl('');
 
-  formState$: Observable<StateState>;
+  formState$: Observable<CategoryState>;
 
   readonly = false; /* init of readonly in guide component */
+  editable = false;
 
   @Input()
   set readOnly(value: boolean) {
     this.readonly = value;
+  }
+
+  @Input()
+  set editAble(value: boolean) {
+    this.editable = value;
   }
 
   group = new FormGroup(
@@ -68,11 +57,12 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     [stateValidator]
   );
 
-  status: RawState[] = new Array(1).fill({id: 0, state: 'Bearbeitungsstand', description: null});
+  status: RawCategory[] = new Array(1).fill({id: 0, code: null, name: 'Kategorie', tour: false,
+    talk: false, instruction: false, collective: false, winter: false, summer: false, indoor: false});
 
 
-  OnChangeWrapper(onChange: (stateIn) => void): (stateOut: StateState) => void {
-    return ((state: StateState): void => {
+  OnChangeWrapper(onChange: (stateIn) => void): (stateOut: CategoryState) => void {
+    return ((state: CategoryState): void => {
       this.formControl.setValue(state);
       this.choiceControl.setValue(state);
       onChange(state);
@@ -92,8 +82,12 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   }
 
   writeValue(stateId): void {
-    if ((typeof stateId === 'number') && (stateId <= this.status.length)) {
-      stateId = this.status[stateId];
+    if (typeof stateId === 'number') {
+      for (const el in this.status) {
+        if (stateId === this.status[el].id) {
+          stateId = this.status[el];
+        }
+      }
     }
     this.delegatedMethodCalls.next(accessor => accessor.writeValue(stateId));
   }
@@ -104,21 +98,28 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
   ngOnInit(): void {
 
-    this.formState$ = this.store.select(selectStatesState);
+    this.formState$ = this.store.select(getCategoryState);
 
     this.formState$.pipe(
       tap( (state) => {
         for (const key in state.entities) {
-          const statePush: RawState = {
+          const statePush: RawCategory = {
             id: state.entities[key].id,
-            state: state.entities[key].state,
-            description: state.entities[key].description};
+            code: state.entities[key].code,
+            name: state.entities[key].name,
+            tour: state.entities[key].tour,
+            talk: state.entities[key].talk,
+            instruction: state.entities[key].instruction,
+            collective: state.entities[key].collective,
+            winter: state.entities[key].winter,
+            summer: state.entities[key].summer,
+            indoor: state.entities[key].indoor};
           this.status.push(statePush);
         }
       })
     ).subscribe().unsubscribe();
-  }
 
+  }
 
   ngAfterViewInit(): void {
     this.delegatedMethodsSubscription = this.delegatedMethodCalls.pipe(
@@ -138,26 +139,3 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.choiceControl.setValue(this.formControl.value);
   }
 }
-
-export const stateValidator: ValidatorFn = (group: FormGroup): ValidationErrors | null => {
-  const choice: string = group.get('choice').value;
-  const originalControl: FormControl = group.get('original').value;
-
-  const checkChoice: boolean = !!choice;
-
-  const error: ValidationErrors = {invalidChoice: {value: choice}};
-
-  /* Logik lässt sich je nach Bedarf verbessern. Momentan gilt alles als valid,
-   * was nicht der Grundzustand ist. */
-  const valid = (
-    checkChoice
-  );
-
-  if (originalControl) {
-    setTimeout(() => {
-      originalControl.setErrors(valid ? null : error);
-    });
-  }
-
-  return null;
-};

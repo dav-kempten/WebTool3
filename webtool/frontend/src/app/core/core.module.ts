@@ -11,6 +11,7 @@ import {DateComponent} from './date/date.component';
 import {TimeComponent} from './time/time.component';
 import {reducer as NameListReducer} from './store/name.reducer';
 import {reducer as ValueReducer} from './store/value.reducer';
+import {reducer as CalendarReducer} from './store/calendar.reducer'
 import {NameListEffects} from './store/name.effects';
 import {ValueEffects} from './store/value.effects';
 import {NamePipe, NamesPipe} from './store/name.pipe';
@@ -42,12 +43,16 @@ import {reducer as skillReducer} from './store/skill.reducer';
 import {reducer as fitnessReducer} from './store/fitness.reducer';
 import {reducer as topicReducer} from './store/topic.reducer';
 import {reducer as collectiveReducer} from './store/collective.reducer';
+import {ToggleButtonModule} from 'primeng/togglebutton';
+import {CalendarEffects} from "./store/calendar.effects";
+import { ApproxdropdownComponent } from './approxdropdown/approxdropdown.component';
+import { CategoryselectComponent } from './categoryselect/categoryselect.component';
 
 @NgModule({
   declarations: [
     GuideComponent, TeamComponent, DateComponent, TimeComponent, NamePipe, NamesPipe, MenuComponent,
-    BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent, DropdownComponent,
-    MultiselectComponent
+    BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent, DropdownComponent, 
+	  MultiselectComponent, ApproxdropdownComponent, CategoryselectComponent
   ],
   imports: [
     CommonModule,
@@ -63,6 +68,8 @@ import {reducer as collectiveReducer} from './store/collective.reducer';
     SpinnerModule,
     DropdownModule,
     MultiSelectModule,
+    ButtonModule,
+    ToggleButtonModule,
     StoreModule.forFeature('nameList', NameListReducer),
     EffectsModule.forFeature([NameListEffects]),
     StoreModule.forFeature('values', ValueReducer),
@@ -80,11 +87,13 @@ import {reducer as collectiveReducer} from './store/collective.reducer';
     StoreModule.forFeature('fitness', fitnessReducer),
     StoreModule.forFeature('topics', topicReducer),
     StoreModule.forFeature('collectives', collectiveReducer),
+    StoreModule.forFeature('calendar', CalendarReducer),
+    EffectsModule.forFeature([CalendarEffects])
   ],
   exports: [
     GuideComponent, TeamComponent, DateComponent, TimeComponent, NamePipe, NamesPipe, MenuComponent,
     BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent, DropdownComponent,
-    MultiselectComponent
+    MultiselectComponent, ButtonModule, ToggleButtonModule, ApproxdropdownComponent, CategoryselectComponent
   ]
 })
 export class CoreModule { }

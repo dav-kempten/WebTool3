@@ -1,6 +1,315 @@
-<ng-container *ngIf="(instruction$ | async) as instruction">
+<ng-container *ngIf="!(isLoading$ | async) else loading">
+<ng-container *ngIf="formInstruction$ | async as instruction">
+<ng-container *ngIf="events$ | async as events">
+<ng-container *ngIf="eventIds$ | async as eventIds">
+
   <h1>Instruction {{instruction.reference}}</h1>
   <p>{{instruction | json}}</p>
-  <p>EventIds: {{(eventIds$ | async).join(', ')}}</p>
-  <p *ngFor="let event of (events$ | async)">{{event | json}}</p>
+  <p>EventIds: {{eventIds.join(', ')}}</p>
+  <p *ngFor="let event of events">{{event | json}}</p>
+
+<form [formGroup]="instructionForm">
+
+  <!--GuideComponent // TeamComponent // Abrechnung-->
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+      <avk-guide
+          formControlName="guideId"
+          id="g1"
+          label="Trainer"
+          [nameIdList]="teamIds.value"
+          [readOnly]="!(userValState >= 0)"
+          required
+      ></avk-guide>
+    </div>
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <input formControlName="costs" id="costs" placeholder="Kosten" type="text" style='width:100%'
+             pInputText>
+    </div>
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <input formControlName="revenue" id="revenue" placeholder="Einnahmen" type="text" style='width:100%'
+             [readOnly]="!(userValState >= 0)" pInputText>
+    </div>
+  </div>
+
+  <div class="p-grid">
+    <div class="p-sm-6 p-md-6 p-lg-6">
+      <avk-team
+          formControlName="teamIds"
+          id="g2"
+          label="Team"
+          [nameId]="guideId.value"
+          [readOnly]="!(userValState >= 0)"
+      ></avk-team>
+    </div>
+    <div class="p-sm-3 p-md-3 p-lg-3">
+      <p-checkbox
+          [formControl]="instructionForm.controls['lowEmissionAdventure']"
+          label="LEA"
+          binary="true"
+      ></p-checkbox>
+    </div>
+    <div class="p-sm-3 p-md-3 p-lg-3">
+      <p-checkbox
+          [formControl]="instructionForm.controls['ladiesOnly']"
+          label="LadiesOnly"
+          binary="true"
+      ></p-checkbox>
+    </div>
+  </div>
+
+  <!--Buchungscode, Status, Kurskonzept, InfoBox-->
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <input formControlName="reference" id="reference" placeholder="Buchungsnummer" type="text" style='width:100%'
+             readonly pInputText>
+    </div>
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <avk-dropdown formControlName="stateId" id="stateId" [readOnly]="!(userValState >= 0)"></avk-dropdown>
+    </div>
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <avk-categoryselect
+          formControlName="topicId"
+          id="topicId"
+          [readOnly]="!(userValState >= 0)"
+          [editAble]="isSpecial.value">
+      </avk-categoryselect>
+    </div>
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <p-checkbox
+          [formControl]="instructionForm.controls['isSpecial']"
+          label="Spezialkategorie"
+          binary="true"
+      ></p-checkbox>
+    </div>
+  </div>
+
+  <!--Kurztitel, Langtitel-->
+  <div class="p-grid" *ngIf="false">
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <input formControlName="title" id="shorttitle" placeholder="Kurztitel" type="text" style='width:100%'
+             pInputText>
+    </div>
+    <div class="p-col-12 p-sm-8 p-md-8 p-lg-8">
+      <input formControlName="name" id="longtitle" placeholder="Langtitel" type="text" style='width:100%'
+             pInputText>
+    </div>
+  </div>
+
+  <!--Beschreibung-->
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+      <textarea
+          formControlName="description"
+          [rows]="5"
+          pInputTextarea
+          placeholder="Beschreibung"
+          autoResize="autoResize"
+          style='width:100%'
+      ></textarea>
+    </div>
+  </div>
+
+  <div class="p-grid" *ngIf="false">
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <avk-approxdropdown formControlName="approximateId" id="approx" [readOnly]="!(userValState >= 0)"
+                          [disable]="!!time.value" ></avk-approxdropdown>
+    </div>
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <avk-time formControlName="time" id="time" [disable]="!!approximateId.value" ></avk-time>
+    </div>
+  </div>
+
+  <!--Zusatzausrüstung, Besondere Vorausssetzungen-->
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+      <avk-multiselect
+          formControlName="equipmentIds"
+          choice="equipment"
+          label="Ausrüstung"
+          [readOnly]="!(userValState >= 0)"
+      ></avk-multiselect>
+    </div>
+    <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+      <avk-multiselect
+          formControlName="qualificationIds"
+          choice="requirement"
+          label="Vorraussetzungen"
+          [readOnly]="!(userValState >= 0)"
+      ></avk-multiselect>
+    </div>
+  </div>
+
+  <!--Teilnehmeranzahl, Strecke, Materialservice-->
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <avk-membernumber
+          formControlName="minQuantity"
+          label="MinMember"
+          id="m1"
+          [maxMember]="maxQuantity.value"
+          [readOnly]="!(userValState >= 0)"
+      ></avk-membernumber>
+    </div>
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <avk-membernumber
+          formControlName="maxQuantity"
+          label="MaxMember"
+          id="m2"
+          [minMember]="minQuantity.value"
+          [readOnly]="!(userValState >= 1)"
+      ></avk-membernumber>
+    </div>
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3" *ngIf="false">
+      <input formControlName="distance" id="distance" placeholder="PKW Strecke" type="text" style='width:100%'
+             pInputText>
+    </div>
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <p-checkbox
+          [formControl]="instructionForm.controls['equipmentService']"
+          label="Materialservice"
+          binary="true"
+      ></p-checkbox>
+    </div>
+  </div>
+
+  <!--Zusatz: Datumseingabe (Anfang + Ende + Art)-->
+  <div class="p-grid" *ngIf="false">
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <avk-date formControlName="startdate"
+                id="dbeginn" label="Start"
+                [max]="enddate.value"
+                [maxInclude]="true"
+      ></avk-date>
+    </div>
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <avk-date formControlName="enddate"
+                id="dend" label="Ende"
+                [min]="startdate.value"
+                [minInclude]="true"
+      ></avk-date>
+    </div>
+    <div class="p-col-12 p-sm-3 p-md-2 p-lg-2">
+      <input formControlName="datetype" id="datetype" placeholder="Art (z.B Besprechung)" type="text" style="width:100%"
+             pInputText>
+    </div>
+    <div class="p-col-12 p-sm-3 p-md-2 p-lg-2">
+      <input formControlName="location" id="location" placeholder="Ort (z.B Swoboda Alpin, Gipfel)"
+             type="text" style="width:100%"
+             pInputText>
+    </div>
+    <div id="demo">
+      <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
+        <button pButton type="button" label="Add" (click)="getDateData()"></button>
+      </div>
+    </div>
+  </div>
+
+
+  <!--Liste mit Parametern (Tabelle)-->
+  <div id="demo2">
+    <div class="p-grid">
+      <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+        <p-table [value]="tours">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Type</th>
+              <th>SDate</th>
+              <th>STime</th>
+              <th>EDate</th>
+              <th>ETime</th>
+              <th>ShortTitle</th>
+              <th>LongTitle</th>
+              <th>Location</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-tour>
+            <tr>
+              <td>{{tour.type}}</td>
+              <td>{{tour.sdate}}</td>
+              <td>{{tour.stime}}</td>
+              <td>{{tour.edate}}</td>
+              <td>{{tour.etime}}</td>
+              <td>{{tour.title}}</td>
+              <td>{{tour.name}}</td>
+              <td>{{tour.location}}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+
+  <!--Fahrtkosten, Zusatzkosten, Anzahlung-->
+  <div class="p-grid" *ngIf="false">
+    <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+      <div class="ui-inputgroup" style='width:100%'>
+        <button pButton type="button" label="Add" (click)="getTourCosts()"></button>
+        <input formControlName="costsname" id="coststname" placeholder="Name Kostenpunkt" type="text" style='width:100%'
+               pInputText>
+        <input formControlName="tourcosts" id="tourcosts" placeholder="Betrag (z.B. 12,79)" type="text" pInputText>
+      </div>
+    </div>
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <input formControlName="extracosts" id="extracosts" placeholder="Zusatzkosten" type="text" style='width:100%'
+             pInputText>
+    </div>
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <input formControlName="deposit" id="deposit" placeholder="Anzahlung" type="text" style='width:100%' pInputText>
+    </div>
+  </div>
+
+  <!--Kostenrahmen mit Tabelle-->
+  <div class="p-grid" *ngIf="false">
+    <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+      <p-table [value]="totalcostsTable" [resizableColumns]="true">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Pos</th>
+            <th>Beschreibung</th>
+            <th>Betrag</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-costs>
+          <tr>
+            <td>{{costs.pos}}</td>
+            <td>{{costs.beschreibung}}</td>
+            <td>{{costs.betrag}}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+
+  <!--Teilnehmergebühr-->
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <input formControlName="admission" id="admission" placeholder="Teilnehmergebühr" type="text" style='width:100%'
+             pInputText>
+    </div>
+  </div>
+
+  <!--Bemerkung-->
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+      <textarea
+          formControlName="notes"
+          [rows]="3"
+          pInputTextarea
+          placeholder="Bemerkungen"
+          autoResize="autoResize"
+          style='width:100%'
+      ></textarea>
+    </div>
+  </div>
+
+</form>
 </ng-container>
+</ng-container>
+</ng-container>
+</ng-container>
+<ng-template #loading>Bitte kurz warten!</ng-template>
+
+<!--Wodo Beispiel-Code-->
+<!--<ng-container *ngIf="(instruction$ | async) as instruction">-->
+<!--</ng-container>-->

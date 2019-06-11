@@ -1,5 +1,6 @@
 import {Observable, of} from 'rxjs';
-import {catchError, filter, first, map, shareReplay} from 'rxjs/operators';
+import {catchError, filter, first, map, shareReplay, tap} from 'rxjs/operators';
+
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse} from '@angular/common/http';
 import {Instruction, InstructionSummary} from '../../model/instruction';
@@ -67,8 +68,10 @@ export class InstructionService {
     ).pipe(
       catchError((error: HttpErrorResponse): Observable<Instruction> => {
         console.log(error.statusText, error.status);
-        return of({id: 0} as Instruction);
+        return of ({id: 0} as Instruction);
       }),
+      // tap((response:HttpResponse<Instruction>) => console.log(response)),
+      // filter((value) => !!value),
       map((response: HttpResponse<Instruction>): Instruction => {
         const responseHeaders = response.headers;
         if (responseHeaders) {
