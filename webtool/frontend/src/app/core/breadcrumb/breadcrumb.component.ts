@@ -1,9 +1,8 @@
 import {Observable} from 'rxjs';
-import {filter, map, tap} from 'rxjs/operators';
 import {Component, OnInit, Output} from '@angular/core';
 import {Store} from '@ngrx/store';
 import {Router} from '@angular/router';
-import {AppState, Breadcrumb, Breadcrumbs, selectRouterBreadcrumbs} from '../../app.state';
+import {AppState, Breadcrumbs, selectRouterBreadcrumbs} from '../../app.state';
 
 @Component({
   selector: 'avk-breadcrumb',

@@ -3,7 +3,8 @@ import {
   AfterViewInit,
   Component,
   ContentChild,
-  forwardRef, Input,
+  forwardRef,
+  Input,
   OnDestroy,
   OnInit,
   ViewChild
@@ -14,16 +15,17 @@ import {
   FormControlName,
   FormGroup,
   NG_VALUE_ACCESSOR,
-  ValidationErrors, ValidatorFn
-} from "@angular/forms";
-import {Dropdown} from "primeng/primeng";
-import {Observable, ReplaySubject, Subscription} from "rxjs";
-import {delay, tap} from "rxjs/operators";
-import {Store} from "@ngrx/store";
-import {AppState} from "../../app.state";
-import {ValuesRequested} from "../store/value.actions";
-import {selectStatesState} from "../store/value.selectors";
-import {State as StateState} from "../store/state.reducer";
+  ValidationErrors,
+  ValidatorFn
+} from '@angular/forms';
+import {Dropdown} from 'primeng/primeng';
+import {Observable, ReplaySubject, Subscription} from 'rxjs';
+import {delay, tap} from 'rxjs/operators';
+import {Store} from '@ngrx/store';
+import {AppState} from '../../app.state';
+import {ValuesRequested} from '../store/value.actions';
+import {selectStatesState} from '../store/value.selectors';
+import {State as StateState} from '../store/state.reducer';
 import {State as RawState} from '../../model/value';
 
 @Component({
@@ -51,7 +53,7 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
   formState$: Observable<StateState>;
 
-  readonly: boolean = false; /* init of readonly in guide component */
+  readonly = false; /* init of readonly in guide component */
 
   @Input()
   set readOnly(value: boolean) {
@@ -66,7 +68,7 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     [stateValidator]
   );
 
-  status: RawState[] = new Array(1).fill({id: 0, state: "Bearbeitungsstand", description: null});
+  status: RawState[] = new Array(1).fill({id: 0, state: 'Bearbeitungsstand', description: null});
 
 
   OnChangeWrapper(onChange: (stateIn) => void): (stateOut: StateState) => void {
@@ -74,7 +76,7 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
       this.formControl.setValue(state);
       this.choiceControl.setValue(state);
       onChange(state);
-    })
+    });
   }
 
   registerOnChange(fn: any): void {
@@ -90,7 +92,7 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   }
 
   writeValue(stateId): void {
-    if ((typeof stateId === "number") && (stateId <= this.status.length)) {
+    if ((typeof stateId === 'number') && (stateId <= this.status.length)) {
       stateId = this.status[stateId];
     }
     this.delegatedMethodCalls.next(accessor => accessor.writeValue(stateId));
@@ -106,8 +108,8 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
     this.formState$.pipe(
       tap( (state) => {
-        for (let key in state.entities) {
-          let statePush: RawState = {
+        for (const key in state.entities) {
+          const statePush: RawState = {
             id: state.entities[key].id,
             state: state.entities[key].state,
             description: state.entities[key].description};

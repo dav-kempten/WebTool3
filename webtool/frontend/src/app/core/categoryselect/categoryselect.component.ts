@@ -1,15 +1,15 @@
 import {Component, ContentChild, forwardRef, Input, OnInit, ViewChild} from '@angular/core';
-import {ControlValueAccessor, FormControl, FormControlName, FormGroup, NG_VALUE_ACCESSOR} from "@angular/forms";
-import {Dropdown} from "primeng/primeng";
-import {Observable, ReplaySubject, Subscription} from "rxjs";
-import {stateValidator} from "../dropdown/dropdown.component";
-import {State as CategoryState} from "../store/category.reducer";
+import {ControlValueAccessor, FormControl, FormControlName, FormGroup, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {Dropdown} from 'primeng/primeng';
+import {Observable, ReplaySubject, Subscription} from 'rxjs';
+import {stateValidator} from '../dropdown/dropdown.component';
+import {State as CategoryState} from '../store/category.reducer';
 import {Category as RawCategory} from '../../model/value';
-import {Store} from "@ngrx/store";
-import {AppState} from "../../app.state";
-import {ValuesRequested} from "../store/value.actions";
-import {getCategoryState} from "../store/value.selectors";
-import {delay, tap} from "rxjs/operators";
+import {Store} from '@ngrx/store';
+import {AppState} from '../../app.state';
+import {ValuesRequested} from '../store/value.actions';
+import {getCategoryState} from '../store/value.selectors';
+import {delay, tap} from 'rxjs/operators';
 
 @Component({
   selector: 'avk-categoryselect',
@@ -36,8 +36,8 @@ export class CategoryselectComponent implements OnInit {
 
   formState$: Observable<CategoryState>;
 
-  readonly: boolean = false; /* init of readonly in guide component */
-  editable: boolean = false;
+  readonly = false; /* init of readonly in guide component */
+  editable = false;
 
   @Input()
   set readOnly(value: boolean) {
@@ -57,7 +57,7 @@ export class CategoryselectComponent implements OnInit {
     [stateValidator]
   );
 
-  status: RawCategory[] = new Array(1).fill({id: 0, code: null, name: "Kategorie", tour: false,
+  status: RawCategory[] = new Array(1).fill({id: 0, code: null, name: 'Kategorie', tour: false,
     talk: false, instruction: false, collective: false, winter: false, summer: false, indoor: false});
 
 
@@ -66,7 +66,7 @@ export class CategoryselectComponent implements OnInit {
       this.formControl.setValue(state);
       this.choiceControl.setValue(state);
       onChange(state);
-    })
+    });
   }
 
   registerOnChange(fn: any): void {
@@ -82,8 +82,8 @@ export class CategoryselectComponent implements OnInit {
   }
 
   writeValue(stateId): void {
-    if (typeof stateId === "number") {
-      for (let el in this.status) {
+    if (typeof stateId === 'number') {
+      for (const el in this.status) {
         if (stateId === this.status[el].id) {
           stateId = this.status[el];
         }
@@ -102,8 +102,8 @@ export class CategoryselectComponent implements OnInit {
 
     this.formState$.pipe(
       tap( (state) => {
-        for (let key in state.entities) {
-          let statePush: RawCategory = {
+        for (const key in state.entities) {
+          const statePush: RawCategory = {
             id: state.entities[key].id,
             code: state.entities[key].code,
             name: state.entities[key].name,

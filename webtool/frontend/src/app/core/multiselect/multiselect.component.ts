@@ -2,31 +2,32 @@ import {
   AfterContentInit,
   AfterViewInit,
   Component,
-  ContentChild, forwardRef,
+  ContentChild,
+  forwardRef,
   Input,
   OnDestroy,
   OnInit,
   ViewChild
 } from '@angular/core';
-import {MultiSelect} from "primeng/primeng";
+import {MultiSelect} from 'primeng/primeng';
 import {
   ControlValueAccessor,
   FormControl,
   FormControlName,
   FormGroup,
-  NG_VALUE_ACCESSOR, ValidationErrors,
+  NG_VALUE_ACCESSOR,
+  ValidationErrors,
   ValidatorFn
-} from "@angular/forms";
-import {Observable, ReplaySubject, Subscription} from "rxjs";
-import {delay, tap} from "rxjs/operators";
-import {ValuesRequested} from "../store/value.actions";
-import {Store} from "@ngrx/store";
-import {AppState} from "../../app.state";
-import {Equipment as RawEquipment} from "../../model/value";
-import {Skill as RawSkill} from "../../model/value";
-import {State as SkillState} from "../store/skill.reducer";
-import {State as EquipState} from "../store/equipment.reducer";
-import {getEquipState, getSkillState} from "../store/value.selectors";
+} from '@angular/forms';
+import {Observable, ReplaySubject, Subscription} from 'rxjs';
+import {delay, tap} from 'rxjs/operators';
+import {ValuesRequested} from '../store/value.actions';
+import {Store} from '@ngrx/store';
+import {AppState} from '../../app.state';
+import {Equipment as RawEquipment, Skill as RawSkill} from '../../model/value';
+import {State as SkillState} from '../store/skill.reducer';
+import {State as EquipState} from '../store/equipment.reducer';
+import {getEquipState, getSkillState} from '../store/value.selectors';
 
 
 @Component({
@@ -55,30 +56,28 @@ export class MultiselectComponent implements OnInit, AfterViewInit, OnDestroy, A
   formEquipState$: Observable<EquipState>;
   formSkillState$: Observable<SkillState>;
 
-  statusEquipment: RawEquipment[] = new Array(1).fill({id:0, code:'', name:"Ausrüstung", description: ''});
-  statusSkills: RawSkill[] = new Array(1).fill({id:0, level:'', categoryId:'', code:"Skills", description: ''});
+  statusEquipment: RawEquipment[] = new Array(1).fill({id: 0, code: '', name: 'Ausrüstung', description: ''});
+  statusSkills: RawSkill[] = new Array(1).fill({id: 0, level: '', categoryId: '', code: 'Skills', description: ''});
 
   @Input()
   set choice(value: string) {
     this.choiceControl.setValue(value);
-    if (value === "requirement") {
+    if (value === 'requirement') {
       this.choiceArray = [...this.statusSkills];
-      this.optionlabel = "code";
-    }
-    else if (value === "equipment") {
+      this.optionlabel = 'code';
+    } else if (value === 'equipment') {
       this.choiceArray = [...this.statusEquipment];
-      this.optionlabel = "name";
-    }
-    else {
-      this.choiceControl.setValue("requirement");
+      this.optionlabel = 'name';
+    } else {
+      this.choiceControl.setValue('requirement');
       this.choiceArray = [...this.statusSkills];
-      this.optionlabel = "code";
+      this.optionlabel = 'code';
     }
   }
 
   @Input() label = '';
 
-  readonly: boolean = false; /* init of readonly in guide component */
+  readonly = false; /* init of readonly in guide component */
 
   @Input()
   set readOnly(value: boolean) {
@@ -123,13 +122,13 @@ export class MultiselectComponent implements OnInit, AfterViewInit, OnDestroy, A
 
   writeValue(choice): void {
     if (choice.length > 0) {
-      let pushArray = new Array(0);
-      if (typeof(choice[0]) === "number") {
-        for (let el in choice) {
+      const pushArray = new Array(0);
+      if (typeof(choice[0]) === 'number') {
+        for (const el in choice) {
           pushArray.push(this.choiceArray[choice[el]]);
         }
       } else {
-        for (let el in choice) {
+        for (const el in choice) {
           pushArray.push(choice[el]);
         }
       }
@@ -144,8 +143,8 @@ export class MultiselectComponent implements OnInit, AfterViewInit, OnDestroy, A
 
     this.formEquipState$.pipe(
       tap((state) => {
-        for (let key in state.entities) {
-          let stateEquip: RawEquipment = {
+        for (const key in state.entities) {
+          const stateEquip: RawEquipment = {
             id: state.entities[key].id,
             code: state.entities[key].code,
             name: state.entities[key].name,
@@ -160,8 +159,8 @@ export class MultiselectComponent implements OnInit, AfterViewInit, OnDestroy, A
 
     this.formSkillState$.pipe(
       tap((state) => {
-        for (let key in state.entities) {
-          let stateSkill: RawSkill = {
+        for (const key in state.entities) {
+          const stateSkill: RawSkill = {
             id: state.entities[key].id,
             level: state.entities[key].level,
             categoryId: state.entities[key].categoryId,

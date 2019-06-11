@@ -1,11 +1,11 @@
 import {Component, ContentChild, forwardRef, Input, OnInit, ViewChild} from '@angular/core';
 import {Store} from '@ngrx/store';
 import {AppState} from '../../app.state';
-import {Calendar, LocaleSettings} from "primeng/primeng";
-import {ControlValueAccessor, FormControl, FormControlName, FormGroup, NG_VALUE_ACCESSOR} from "@angular/forms";
-import {ReplaySubject, Subscription} from "rxjs";
-import {dateTransformer, dateValidator} from "../date/date.component";
-import {delay} from "rxjs/operators";
+import {Calendar, LocaleSettings} from 'primeng/primeng';
+import {ControlValueAccessor, FormControl, FormControlName, FormGroup, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {ReplaySubject, Subscription} from 'rxjs';
+import {dateTransformer} from '../date/date.component';
+import {delay} from 'rxjs/operators';
 
 const german: LocaleSettings = {
   firstDayOfWeek: 1,
@@ -47,10 +47,10 @@ export class TimeComponent implements OnInit {
 
   de = german;
 
-  disabledState: boolean = false;
+  disabledState = false;
 
   @Input()
-  set disable (value: boolean) {
+  set disable(value: boolean) {
     this.disabledState = value;
   }
 

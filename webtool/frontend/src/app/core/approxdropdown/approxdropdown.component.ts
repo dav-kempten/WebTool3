@@ -1,15 +1,15 @@
 import {Component, ContentChild, forwardRef, Input, OnInit, ViewChild} from '@angular/core';
-import {ControlValueAccessor, FormControl, FormControlName, FormGroup, NG_VALUE_ACCESSOR} from "@angular/forms";
-import {Dropdown} from "primeng/primeng";
-import {Observable, ReplaySubject, Subscription} from "rxjs";
-import {State as ApproxState} from "../store/approximate.reducer";
-import {Approximate as RawApprox} from "../../model/value";
-import {stateValidator} from "../dropdown/dropdown.component";
-import {Store} from "@ngrx/store";
-import {AppState} from "../../app.state";
-import {ValuesRequested} from "../store/value.actions";
-import {delay, tap} from "rxjs/operators";
-import {getApproxState} from "../store/value.selectors";
+import {ControlValueAccessor, FormControl, FormControlName, FormGroup, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {Dropdown} from 'primeng/primeng';
+import {Observable, ReplaySubject, Subscription} from 'rxjs';
+import {State as ApproxState} from '../store/approximate.reducer';
+import {Approximate as RawApprox} from '../../model/value';
+import {stateValidator} from '../dropdown/dropdown.component';
+import {Store} from '@ngrx/store';
+import {AppState} from '../../app.state';
+import {ValuesRequested} from '../store/value.actions';
+import {delay, tap} from 'rxjs/operators';
+import {getApproxState} from '../store/value.selectors';
 
 @Component({
   selector: 'avk-approxdropdown',
@@ -36,17 +36,17 @@ export class ApproxdropdownComponent implements OnInit {
 
   formState$: Observable<ApproxState>;
 
-  readonly: boolean = false; /* init of readonly in guide component */
+  readonly = false; /* init of readonly in guide component */
 
   @Input()
   set readOnly(value: boolean) {
     this.readonly = value;
   }
 
-  disabledState: boolean = false;
+  disabledState = false;
 
   @Input()
-  set disable (value: boolean) {
+  set disable(value: boolean) {
     this.disabledState = value;
   }
 
@@ -58,7 +58,7 @@ export class ApproxdropdownComponent implements OnInit {
     [stateValidator]
   );
 
-  status: RawApprox[] = new Array(1).fill({id: 0, name: "Startzeit", description: null, startTime: null});
+  status: RawApprox[] = new Array(1).fill({id: 0, name: 'Startzeit', description: null, startTime: null});
 
    OnChangeWrapper(onChange: (stateIn) => void): (stateOut: RawApprox) => void {
     return ((state: RawApprox): void => {
@@ -68,7 +68,7 @@ export class ApproxdropdownComponent implements OnInit {
       this.formControl.setValue(state);
       this.choiceControl.setValue(state);
       onChange(state);
-    })
+    });
   }
 
   registerOnChange(fn: any): void {
@@ -84,7 +84,7 @@ export class ApproxdropdownComponent implements OnInit {
   }
 
   writeValue(stateId): void {
-    if ((typeof stateId === "number") && (stateId <= this.status.length)) {
+    if ((typeof stateId === 'number') && (stateId <= this.status.length)) {
       stateId = this.status[stateId];
     }
 
@@ -100,8 +100,8 @@ export class ApproxdropdownComponent implements OnInit {
 
     this.formState$.pipe(
       tap((state) => {
-        for (let key in state.entities) {
-          let statePush: RawApprox = {
+        for (const key in state.entities) {
+          const statePush: RawApprox = {
             id: state.entities[key].id,
             name: state.entities[key].name,
             description: state.entities[key].description,
