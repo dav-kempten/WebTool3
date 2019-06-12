@@ -26,7 +26,7 @@ import {BreadcrumbComponent} from './breadcrumb/breadcrumb.component';
 import {RequiredDirective as DateRequiredDirective} from './date/required.directive';
 import {RequiredDirective as GuideRequiredDirective} from './guide/required.directive';
 import {MembernumberComponent} from './membernumber/membernumber.component';
-import {DropdownModule, SpinnerModule} from 'primeng/primeng';
+import {DialogModule, DropdownModule, SpinnerModule} from 'primeng/primeng';
 import {MultiSelectModule} from 'primeng/multiselect';
 import {MultiselectComponent} from './multiselect/multiselect.component';
 import {DropdownComponent} from './dropdown/dropdown.component';
@@ -70,6 +70,7 @@ import { CategoryselectComponent } from './categoryselect/categoryselect.compone
     MultiSelectModule,
     ButtonModule,
     ToggleButtonModule,
+    DialogModule,
     StoreModule.forFeature('nameList', NameListReducer),
     EffectsModule.forFeature([NameListEffects]),
     StoreModule.forFeature('values', ValueReducer),
@@ -93,7 +94,8 @@ import { CategoryselectComponent } from './categoryselect/categoryselect.compone
   exports: [
     GuideComponent, TeamComponent, DateComponent, TimeComponent, NamePipe, NamesPipe, MenuComponent,
     BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent, DropdownComponent,
-    MultiselectComponent, ButtonModule, ToggleButtonModule, ApproxdropdownComponent, CategoryselectComponent
+    MultiselectComponent, ButtonModule, ToggleButtonModule, ApproxdropdownComponent, CategoryselectComponent,
+    DialogModule
   ]
 })
 export class CoreModule { }
