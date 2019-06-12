@@ -1,19 +1,11 @@
-<ng-container *ngIf="!(isLoading$ | async) else loading">
-<ng-container *ngIf="instruction$ | async as instruction">
-<ng-container *ngIf="topic$ | async as topic">
-<ng-container *ngIf="events$ | async as events">
-<ng-container *ngIf="eventIds$ | async as eventIds">
+<ng-container *ngIf="instructionGroup$ | async as instructionGroup else loading">
 
-  <h1>Instruction {{instruction.reference}}</h1>
-  <p>Instruction:<br />{{instruction | json}}</p>
-  <p>Topic:<br />{{topic | json}}</p>
-  <p>EventIds: {{eventIds.join(', ')}}<br />
-  <ng-container *ngFor="let event of events">{{event | json}}<br /></ng-container>
-  </p>
+  <h1>Instruction {{instructionGroup.get('reference').value}}</h1>
 
-</ng-container>
-</ng-container>
-</ng-container>
-</ng-container>
+  <p>InstructionGroup:<br />{{instructionGroup.value | json}}</p>
+  <p>TopicGroup:<br />{{(topicGroup$ | async)?.value | json}}</p>
+  <p>EventIds: {{instructionGroup.get('instructionId').value}}, {{instructionGroup.get('meetingIds').value.join(', ')}}</p>
+  <p>EventArray:<br />{{(eventArray$ | async)?.value | json}}</p>
+
 </ng-container>
 <ng-template #loading>Bitte kurz warten!</ng-template>
