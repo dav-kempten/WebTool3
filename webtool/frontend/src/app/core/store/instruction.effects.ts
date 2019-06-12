@@ -4,9 +4,7 @@ import {Action, Store} from '@ngrx/store';
 import {Actions, Effect, ofType} from '@ngrx/effects';
 import {Injectable} from '@angular/core';
 import {InstructionService} from '../service/instruction.service';
-import {
-  AddInstruction, InstructionActionTypes, InstructionNotModified, RequestInstruction
-} from './instruction.actions';
+import {AddInstruction, InstructionActionTypes, InstructionNotModified, RequestInstruction} from './instruction.actions';
 import {Event} from '../../model/event';
 import {AppState} from '../../app.state';
 import {AddEvent} from './event.actions';
