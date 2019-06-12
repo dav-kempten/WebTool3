@@ -13,7 +13,7 @@ import {flatMap, map, tap} from "rxjs/operators";
 import {State} from "../../core/store/state.reducer";
 import {selectStatesState} from "../../core/store/value.selectors";
 import {AuthService, User} from "../../core/service/auth.service";
-import {getEventsByIds} from "../../core/store/event.selectors";
+import {getEventById, getEventsByIds} from "../../core/store/event.selectors";
 import {Event} from '../../model/event';
 
 interface Tour {
@@ -48,13 +48,14 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
 
   eventIds$: Observable<number[]>;
   events$: Observable<Event[]>;
+  event$: Observable<Event>;
 
   formState$: Observable<State>;
   authState$: Observable<User>;
 
   display: boolean = false;
 
-  eventArray: FormArray;
+  eventArray = new FormArray([]);
 
   tours: Tour[] = [];
   userValState: number = 0;
@@ -203,22 +204,35 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
 
     this.eventIds$ = this.formInstruction$.pipe(
       map(instruction => [instruction.instructionId, ...instruction.meetingIds]),
-      tap(instruction => console.log("EventInstruction", instruction)),
+      tap(instruction => console.log("EventIds", instruction))
     );
 
     this.events$ = this.eventIds$.pipe(
       flatMap(eventIds => this.store.select(getEventsByIds(eventIds))),
-      // tap(eventIds => console.log("EventIds", eventIds)),
+      tap(eventIds => console.log("EventData", eventIds)),
+      // tap(instruction => {
+      //       //   for (let el in instruction) {
+      //       //     this.eventArray.push(this.eventForm);
+      //       //   }
+      //       // }),
       tap(eventIds => {
-          if (eventIds[0].startDate !== null) this.startDate.setValue(eventIds[0].startDate);
-          if (eventIds[0].endDate !== null) this.endDate.setValue(eventIds[0].endDate);
-          this.title.setValue(eventIds[0].title);
-          this.name.setValue(eventIds[0].name);
-          this.location.setValue(eventIds[0].location);
-          this.approximateId.setValue(eventIds[0].approximateId);
-          this.startTime.setValue(eventIds[0].startTime);
-          this.description.setValue(eventIds[0].description);
+        for (let el in eventIds) {
+          console.log("ForEventIds", eventIds[el].id);
+          this.title.setValue(eventIds[el].title);
+          this.name.setValue(eventIds[el].name);
+          this.description.setValue(eventIds[el].description);
+          if (eventIds[el].startDate !== null) this.startDate.setValue(eventIds[el].startDate);
+          this.startTime.setValue(eventIds[el].startTime);
+          this.approximateId.setValue(eventIds[el].approximateId);
+          if (eventIds[el].endDate !== null) this.endDate.setValue(eventIds[el].endDate);
+          this.endTime.setValue(eventIds[el].endTime);
+          this.rendevous.setValue(eventIds[el].rendezvous);
+          this.location.setValue(eventIds[el].location);
+
+          this.eventArray.push(this.eventForm)
+        }
       }),
+      tap(eventIds => {console.log("EventArray", this.eventArray.value)}),
       tap(eventIds => {
         for (let el = 0; el < eventIds.length; el++) {
           let dateData: Tour = {
@@ -228,7 +242,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
           };
           this.tours.push(dateData);
         }
-      }),
+      })
     );
 
     // this.instructionForm.controls['service'].valueChanges.subscribe(
@@ -318,7 +332,11 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {}
 
   onRowSelect(event) {
+    console.log("Event - Type",event.data.type);
     this.display = true;
+
+    this.event$ = this.store.select(getEventById(event.data.type));
+    console.log("EventObservable", this.event$);
   }
 
 }
