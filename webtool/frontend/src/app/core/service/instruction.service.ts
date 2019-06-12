@@ -1,5 +1,5 @@
 import {Observable, of} from 'rxjs';
-import {catchError, filter, first, map, shareReplay, tap} from 'rxjs/operators';
+import {catchError, first, map, publishLast, publishReplay, refCount, shareReplay} from 'rxjs/operators';
 
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse} from '@angular/common/http';
@@ -46,7 +46,8 @@ export class InstructionService {
         }
       }),
       first(),
-      shareReplay()
+      publishReplay(1),
+      refCount()
     );
   }
 
@@ -57,6 +58,10 @@ export class InstructionService {
         'Content-Encoding': 'gzip',
         // 'Cache-Control': 'no-cache'
     };
+
+    if (!id) {
+      return of ({id: 0} as Instruction);
+    }
 
     if (this.etag) {
       headers['If-None-Match'] = this.etag;
@@ -70,8 +75,6 @@ export class InstructionService {
         console.log(error.statusText, error.status);
         return of ({id: 0} as Instruction);
       }),
-      // tap((response:HttpResponse<Instruction>) => console.log(response)),
-      // filter((value) => !!value),
       map((response: HttpResponse<Instruction>): Instruction => {
         const responseHeaders = response.headers;
         if (responseHeaders) {
@@ -84,7 +87,8 @@ export class InstructionService {
         }
       }),
       first(),
-      shareReplay()
+      publishReplay(1),
+      refCount()
     );
   }
 }

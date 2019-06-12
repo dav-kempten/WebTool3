@@ -1,14 +1,11 @@
-<ng-container *ngIf="!(isLoading$ | async) else loading">
-<ng-container *ngIf="formInstruction$ | async as instruction">
-<ng-container *ngIf="events$ | async as events">
-<ng-container *ngIf="eventIds$ | async as eventIds">
+<ng-container *ngIf="instructionGroup$ | async as instructionGroup else loading">
 
-  <h1>Instruction {{instruction.reference}}</h1>
-  <p>{{instruction | json}}</p>
-  <p>EventIds: {{eventIds.join(', ')}}</p>
-  <p *ngFor="let event of events">{{event | json}}</p>
+  <h1>Instruction {{instructionGroup.get('reference').value}}</h1>
 
-<form [formGroup]="instructionForm">
+  <p>InstructionGroup:<br />{{instructionGroup.value | json}}</p>
+  <p>TopicGroup:<br />{{(topicGroup$ | async)?.value | json}}</p>
+  <p>EventIds: {{instructionGroup.get('instructionId').value}}, {{instructionGroup.get('meetingIds').value.join(', ')}}</p>
+  <p>EventArray:<br />{{(eventArray$ | async)?.value | json}}</p>
 
   <!--GuideComponent // TeamComponent // Abrechnung-->
   <div class="p-grid">
@@ -265,11 +262,4 @@
 
 </form>
 </ng-container>
-</ng-container>
-</ng-container>
-</ng-container>
 <ng-template #loading>Bitte kurz warten!</ng-template>
-
-<!--Wodo Beispiel-Code-->
-<!--<ng-container *ngIf="(instruction$ | async) as instruction">-->
-<!--</ng-container>-->

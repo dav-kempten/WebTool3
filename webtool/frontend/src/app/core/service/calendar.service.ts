@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse} from "@angular/common/http";
 import {Observable, of} from "rxjs";
 import {Calendar as RawCalendar} from "../../model/calendar";
-import {catchError, first, map, shareReplay} from "rxjs/operators";
+import {catchError, first, map, publishReplay, refCount} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
@@ -45,7 +45,8 @@ export class CalendarService {
         }
       }),
       first(),
-      shareReplay()
+      publishReplay(1),
+      refCount()
     );
   }
 }

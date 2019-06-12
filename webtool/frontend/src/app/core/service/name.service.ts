@@ -1,5 +1,5 @@
 import {Observable, of} from 'rxjs';
-import {catchError, first, map, shareReplay} from 'rxjs/operators';
+import {catchError, first, map, publishReplay, refCount} from 'rxjs/operators';
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse} from '@angular/common/http';
 import {NameList} from '../../model/name';
@@ -45,7 +45,8 @@ export class NameService {
         }
       }),
       first(),
-      shareReplay()
+      publishReplay(1),
+      refCount()
     );
   }
 }
