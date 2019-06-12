@@ -5,12 +5,11 @@ import {AppState, selectRouterDetailId} from '../../app.state';
 import {NameListRequested} from '../../core/store/name.actions';
 import {ValuesRequested} from '../../core/store/value.actions';
 import {CalendarRequested} from '../../core/store/calendar.actions';
-import {RequestInstruction} from '../../core/store/instruction.actions';
+import {RequestInstruction, UpdateInstruction} from '../../core/store/instruction.actions';
 import {getInstructionById} from '../../core/store/instruction.selectors';
 import {Instruction} from '../../core/store/instruction.model';
 import {filter, flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {getTopicById} from '../../core/store/value.selectors';
-import {AuthService} from '../../core/service/auth.service';
 import {getEventsByIds} from '../../core/store/event.selectors';
 import {Event} from '../../model/event';
 import {Topic} from '../../model/value';
@@ -39,7 +38,9 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   eventIds$: Observable<number[]>;
   events$: Observable<Event[]>;
 
-  constructor(private store: Store<AppState>, private userService: AuthService) {
+  currentEventGroup: FormGroup = undefined;
+
+  constructor(private store: Store<AppState>) {
     this.store.dispatch(new NameListRequested());
     this.store.dispatch(new CalendarRequested());
   }
@@ -105,6 +106,14 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     this.topic$.subscribe();
     this.eventIds$.subscribe();
     this.events$.subscribe();
+
+    setTimeout(() => this.store.dispatch(
+      new UpdateInstruction({
+        instruction: {
+          id: 2102,
+          changes: {curQuantity: 99, teamIds: [133, 104]}
+        }
+    })), 10000);
   }
 
   ngOnDestroy(): void {
@@ -114,36 +123,46 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     this.topicSubject.complete();
     this.eventsSubject.complete();
   }
+
+  selectEvent(index) {
+    this.eventArray$.subscribe(
+      eventArray => this.currentEventGroup = (eventArray.at(index)) as FormGroup
+    );
+  }
+
+  closeDialog(event) {
+    this.currentEventGroup = undefined;
+  }
 }
 
 function instructionGroupFactory(instruction: Instruction): FormGroup {
-  return new FormGroup({
-    id: new FormControl(instruction.id),
-    reference: new FormControl(instruction.reference),
-    guideId: new FormControl(instruction.guideId),
-    teamIds: new FormControl(instruction.teamIds),
-    topicId: new FormControl(instruction.topicId),
-    instructionId: new FormControl(instruction.instructionId),
-    meetingIds: new FormControl(instruction.meetingIds),
-    lowEmissionAdventure: new FormControl(instruction.lowEmissionAdventure),
-    ladiesOnly: new FormControl(instruction.ladiesOnly),
-    isSpecial: new FormControl(instruction.isSpecial),
-    categoryId: new FormControl(instruction.categoryId),
-    qualificationIds: new FormControl(instruction.qualificationIds),
-    preconditions: new FormControl(instruction.preconditions),
-    equipmentIds: new FormControl(instruction.equipmentIds),
-    miscEquipment: new FormControl(instruction.miscEquipment),
-    equipmentService: new FormControl(instruction.equipmentService),
-    admission: new FormControl(instruction.admission),
-    advances: new FormControl(instruction.advances),
-    advancesInfo: new FormControl(instruction.advancesInfo),
-    extraCharges: new FormControl(instruction.extraCharges),
-    extraChargesInfo: new FormControl(instruction.extraChargesInfo),
-    minQuantity: new FormControl(instruction.minQuantity),
-    maxQuantity: new FormControl(instruction.maxQuantity),
-    curQuantity: new FormControl(instruction.curQuantity),
-    stateId: new FormControl(instruction.stateId)
-  });
+    return new FormGroup({
+      id: new FormControl(instruction.id),
+      reference: new FormControl(instruction.reference),
+      guideId: new FormControl(instruction.guideId),
+      teamIds: new FormControl(instruction.teamIds),
+      topicId: new FormControl(instruction.topicId),
+      instructionId: new FormControl(instruction.instructionId),
+      meetingIds: new FormControl(instruction.meetingIds),
+      lowEmissionAdventure: new FormControl(instruction.lowEmissionAdventure),
+      ladiesOnly: new FormControl(instruction.ladiesOnly),
+      isSpecial: new FormControl(instruction.isSpecial),
+      categoryId: new FormControl(instruction.categoryId),
+      qualificationIds: new FormControl(instruction.qualificationIds),
+      preconditions: new FormControl(instruction.preconditions),
+      equipmentIds: new FormControl(instruction.equipmentIds),
+      miscEquipment: new FormControl(instruction.miscEquipment),
+      equipmentService: new FormControl(instruction.equipmentService),
+      admission: new FormControl(instruction.admission),
+      advances: new FormControl(instruction.advances),
+      advancesInfo: new FormControl(instruction.advancesInfo),
+      extraCharges: new FormControl(instruction.extraCharges),
+      extraChargesInfo: new FormControl(instruction.extraChargesInfo),
+      minQuantity: new FormControl(instruction.minQuantity),
+      maxQuantity: new FormControl(instruction.maxQuantity),
+      curQuantity: new FormControl(instruction.curQuantity),
+      stateId: new FormControl(instruction.stateId)
+    });
 }
 
 function topicGroupFactory(topic: Topic): FormGroup {

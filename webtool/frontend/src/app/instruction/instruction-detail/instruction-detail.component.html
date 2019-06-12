@@ -7,5 +7,51 @@
   <p>EventIds: {{instructionGroup.get('instructionId').value}}, {{instructionGroup.get('meetingIds').value.join(', ')}}</p>
   <p>EventArray:<br />{{(eventArray$ | async)?.value | json}}</p>
 
+  <form [formGroup]="instructionGroup">
+    <p>
+      <avk-guide
+          formControlName="guideId"
+          [nameIdList]="instructionGroup.get('teamIds').value"
+          required>
+      </avk-guide>
+    </p>
+    <p>
+      <avk-team
+          formControlName="teamIds"
+          [nameId]="instructionGroup.get('guideId').value">
+      </avk-team>
+    </p>
+  </form>
+
+  <p-table *ngIf="!currentEventGroup" [value]="(eventArray$ | async).value" selectionMode="single" (selectionChange)="selectEvent($event)">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Datum</th>
+        <th>Uhrzeit</th>
+        <th>Beschreibung</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-event let-i="rowIndex">
+      <tr [pSelectableRow]="i">
+        <td>{{event.startDate}}</td>
+        <td>{{event.startTime}}</td>
+        <td>{{event.name}}</td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <ng-container *ngIf="currentEventGroup">
+    <p>Edit this Event:<br/>{{currentEventGroup.value | json}}</p>
+    <form [formGroup]="currentEventGroup">
+      <label for="title">Kurztitel:</label>
+      <input id="title" formControlName="title"><br />
+      <label for="name">Langtitel:</label>
+      <input id="name" formControlName="name"><br />
+      <label for="description">Beschreibung:</label>
+      <input id="description" formControlName="description">
+    </form>
+    <p-button label="Zurück" (onClick)="closeDialog($event)"></p-button>
+  </ng-container>
+
 </ng-container>
 <ng-template #loading>Bitte kurz warten!</ng-template>
