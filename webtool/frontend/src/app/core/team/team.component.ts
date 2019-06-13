@@ -1,33 +1,21 @@
-import {combineLatest, Observable, ReplaySubject, Subscription} from 'rxjs';
-import {delay, filter, map, mergeMap, switchMap, tap} from 'rxjs/operators';
+import {Observable, ReplaySubject, Subscription} from 'rxjs';
+import {delay, filter, first, map, mergeMap, switchMap} from 'rxjs/operators';
 import {
-  AfterContentInit,
-  AfterViewInit,
-  Component,
-  ContentChild,
-  forwardRef,
-  Input,
-  OnDestroy,
-  OnInit,
-  Output,
-  ViewChild
+  AfterContentInit, AfterViewInit, Component, ContentChild, forwardRef,
+  Input, OnDestroy, OnInit, ViewChild
 } from '@angular/core';
 import {Store} from '@ngrx/store';
 import {
-  ControlValueAccessor,
-  FormControl,
-  FormControlName,
-  FormGroup,
+  ControlValueAccessor, FormControl, FormControlName, FormGroup,
   NG_VALUE_ACCESSOR,
-  ValidationErrors,
-  ValidatorFn
+  ValidationErrors, ValidatorFn
 } from '@angular/forms';
 import {Name as APIName, NameList as APINameList} from '../../model/name';
-import {getNameById, getNameList, getNameListState} from '../store/name.selectors';
+import {getNameById, getNameList} from '../store/name.selectors';
 import {AppState} from '../../app.state';
 import {Name, NameList} from '../store/name.model';
 import {AutoComplete} from 'primeng/autocomplete';
-import {from} from "rxjs/internal/observable/from";
+import {from} from 'rxjs/internal/observable/from';
 
 @Component({
   selector: 'avk-team',
@@ -54,7 +42,7 @@ export class TeamComponent implements OnInit, OnDestroy, AfterViewInit, AfterCon
 
   suggestions: NameList;
 
-  readonly: boolean = false; /* init of readonly in guide component */
+  readonly = false; /* init of readonly in guide component */
 
   @Input()
   set readOnly(value: boolean) {
@@ -82,6 +70,7 @@ export class TeamComponent implements OnInit, OnDestroy, AfterViewInit, AfterCon
 
     this.suggestions = [];
     this.store.select(getNameList).pipe(
+      first(),
       mergeMap((nameList: APINameList): Observable<APIName> => from(nameList)),
       map((name: APIName): Name => ({name: `${name.lastName} ${name.firstName}`, id: name.id})),
       filter((name: Name): boolean =>
@@ -89,7 +78,7 @@ export class TeamComponent implements OnInit, OnDestroy, AfterViewInit, AfterCon
           (name.id !== nameId) &&
           (!nameIds.has(name.id))
       )
-    ).subscribe((name: Name): void => void this.suggestions.push(name)).unsubscribe();
+    ).subscribe((name: Name): void => void this.suggestions.push(name));
   }
 
   OnChangeWrapper(onChange: (nameIds: number[]) => void): (nameList: NameList) => void {
@@ -123,7 +112,7 @@ export class TeamComponent implements OnInit, OnDestroy, AfterViewInit, AfterCon
           name: `${apiName.lastName} ${apiName.firstName}`,
           id: apiName.id
       }))
-    ).subscribe(name => newObj.push(name)).unsubscribe();
+    ).subscribe(name => newObj.push(name));
     this.delegatedMethodCalls.next(accessor => accessor.writeValue(newObj));
   }
 

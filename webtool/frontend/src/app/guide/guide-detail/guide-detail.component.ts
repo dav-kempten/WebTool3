@@ -25,11 +25,12 @@ export class GuideDetailComponent implements OnInit {
 
   constructor(private store: Store<AppState>, private el: ElementRef) {
     this.store.dispatch(new NameListRequested());
-    this.guideForm.setValue({guideId: 105, teamIds: [105, 326, 105]});
   }
 
   ngOnInit(): void {
     this.guideId$ = this.store.select(selectRouterDetailId);
     this.isLoading$ = this.store.select(getNameListIsLoading);
+    setTimeout(() => this.guideForm.setValue(
+      {guideId: 105, teamIds: [105, 326, 105]}), 5000);
   }
 }
