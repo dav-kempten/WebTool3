@@ -4,6 +4,7 @@
 
   <p>InstructionGroup:<br />{{instructionGroup.value | json}}</p>
   <p>TopicGroup:<br />{{(topicGroup$ | async)?.value | json}}</p>
+  <p>CategoryGroup:<br />{{(categoryGroup$ | async)?.value | json}}</p>
   <p>EventIds: {{instructionGroup.get('instructionId').value}}, {{instructionGroup.get('meetingIds').value.join(', ')}}</p>
   <p>EventArray:<br />{{(eventArray$ | async)?.value | json}}</p>
 

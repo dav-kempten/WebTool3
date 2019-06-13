@@ -9,10 +9,10 @@ import {RequestInstruction, UpdateInstruction} from '../../core/store/instructio
 import {getInstructionById} from '../../core/store/instruction.selectors';
 import {Instruction} from '../../core/store/instruction.model';
 import {filter, flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
-import {getTopicById} from '../../core/store/value.selectors';
+import {getCategoryById, getTopicById} from '../../core/store/value.selectors';
 import {getEventsByIds} from '../../core/store/event.selectors';
 import {Event} from '../../model/event';
-import {Topic} from '../../model/value';
+import {Category, Topic} from '../../model/value';
 import {FormArray, FormControl, FormGroup} from '@angular/forms';
 import {UpdateEvent} from '../../core/store/event.actions';
 
@@ -27,12 +27,14 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   private destroySubject = new Subject<void>();
   private instructionSubject = new BehaviorSubject<FormGroup>(undefined);
   private topicSubject = new BehaviorSubject<FormGroup>(undefined);
+  private categorySubject = new BehaviorSubject<FormGroup>(undefined);
   private eventsSubject = new BehaviorSubject<FormArray>(undefined);
   private instructionChangeSubject = new BehaviorSubject<Instruction>(undefined);
   private eventChangeSubject = new BehaviorSubject<Event>(undefined);
 
   instructionGroup$: Observable<FormGroup> = this.instructionSubject.asObservable();
   topicGroup$: Observable<FormGroup> = this.topicSubject.asObservable();
+  categoryGroup$: Observable<FormGroup> = this.categorySubject.asObservable();
   eventArray$: Observable<FormArray> = this.eventsSubject.asObservable();
   instructionChange$: Observable<Instruction> = this.instructionChangeSubject.asObservable();
   eventChange$: Observable<Event> = this.eventChangeSubject.asObservable();
@@ -42,6 +44,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   topic$: Observable<Topic>;
   eventIds$: Observable<number[]>;
   events$: Observable<Event[]>;
+  category$: Observable<Category>;
 
   currentEventGroup: FormGroup = undefined;
 
@@ -88,6 +91,23 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
             this.topicSubject.next(topicGroupFactory(topic));
           }
         })
+      )),
+      publishReplay(1),
+      refCount()
+    );
+
+    this.category$ = this.topic$.pipe(
+      takeUntil(this.destroySubject),
+      filter(topic => !!topic),
+      flatMap(topic => this.store.pipe(
+        select(getCategoryById(topic.id)),
+        tap(category => {
+          if (!category) {
+            this.store.dispatch((new ValuesRequested()));
+          } else {
+            this.categorySubject.next(categoryGroupFactory(category));
+          }
+        })
       ))
     );
 
@@ -121,6 +141,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     this.instructionId$.subscribe();
     this.instruction$.subscribe();
     this.topic$.subscribe();
+    this.category$.subscribe();
     this.eventIds$.subscribe();
     this.events$.subscribe();
 
@@ -157,6 +178,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     this.destroySubject.complete();
     this.instructionSubject.complete();
     this.topicSubject.complete();
+    this.categorySubject.complete();
     this.eventsSubject.complete();
   }
 
@@ -212,6 +234,21 @@ function topicGroupFactory(topic: Topic): FormGroup {
     qualificationIds: new FormControl(topic.qualificationIds),
     equipmentIds: new FormControl(topic.equipmentIds),
     miscEquipment: new FormControl(topic.miscEquipment)
+  });
+}
+
+function categoryGroupFactory(category: Category): FormGroup {
+  return new FormGroup({
+    id: new FormControl(category.id),
+    code: new FormControl(category.code),
+    name: new FormControl(category.name),
+    tour: new FormControl(category.tour),
+    talk: new FormControl(category.talk),
+    instruction: new FormControl(category.instruction),
+    collective: new FormControl(category.collective),
+    winter: new FormControl(category.winter),
+    summer: new FormControl(category.summer),
+    indoor: new FormControl(category.indoor),
   });
 }
 
