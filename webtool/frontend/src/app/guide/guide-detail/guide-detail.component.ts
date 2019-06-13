@@ -3,8 +3,8 @@ import {Component, ElementRef, OnInit} from '@angular/core';
 import {Store} from '@ngrx/store';
 import {FormControl, FormGroup} from '@angular/forms';
 import {AppState, selectRouterDetailId} from '../../app.state';
-import {getNameListIsLoading} from '../../core/store/name.selectors';
-import {NameListRequested} from '../../core/store/name.actions';
+import {getNamesIsLoading} from '../../core/store/name.selectors';
+import {RequestNames} from '../../core/store/name.actions';
 
 @Component({
   selector: 'avk-guide-detail',
@@ -24,13 +24,12 @@ export class GuideDetailComponent implements OnInit {
   });
 
   constructor(private store: Store<AppState>, private el: ElementRef) {
-    this.store.dispatch(new NameListRequested());
+    this.store.dispatch(new RequestNames());
+    this.guideForm.setValue({guideId: 105, teamIds: [105, 326, 105]});
   }
 
   ngOnInit(): void {
     this.guideId$ = this.store.select(selectRouterDetailId);
-    this.isLoading$ = this.store.select(getNameListIsLoading);
-    setTimeout(() => this.guideForm.setValue(
-      {guideId: 105, teamIds: [105, 326, 105]}), 5000);
+    this.isLoading$ = this.store.select(getNamesIsLoading);
   }
 }

@@ -1,21 +1,36 @@
 import {Observable, ReplaySubject, Subscription} from 'rxjs';
-import {delay, filter, first, map, mergeMap, switchMap} from 'rxjs/operators';
+import {delay, filter, map, mergeMap, switchMap} from 'rxjs/operators';
 import {
-  AfterContentInit, AfterViewInit, Component, ContentChild, forwardRef,
-  Input, OnDestroy, OnInit, ViewChild
+  AfterContentInit,
+  AfterViewInit,
+  Component,
+  ContentChild,
+  forwardRef,
+  Input,
+  OnDestroy,
+  OnInit,
+  ViewChild
 } from '@angular/core';
 import {Store} from '@ngrx/store';
 import {
-  ControlValueAccessor, FormControl, FormControlName, FormGroup,
+  ControlValueAccessor,
+  FormControl,
+  FormControlName,
+  FormGroup,
   NG_VALUE_ACCESSOR,
-  ValidationErrors, ValidatorFn
+  ValidationErrors,
+  ValidatorFn
 } from '@angular/forms';
-import {Name as APIName, NameList as APINameList} from '../../model/name';
-import {getNameById, getNameList} from '../store/name.selectors';
+import {Name} from '../../model/name';
+import {getNameById, getNames} from '../store/name.selectors';
 import {AppState} from '../../app.state';
-import {Name, NameList} from '../store/name.model';
 import {AutoComplete} from 'primeng/autocomplete';
 import {from} from 'rxjs/internal/observable/from';
+
+interface NameString {
+  name: string;
+  id: number;
+}
 
 @Component({
   selector: 'avk-team',
@@ -40,7 +55,7 @@ export class TeamComponent implements OnInit, OnDestroy, AfterViewInit, AfterCon
   @Input() id = 'team';
   @Input() label = 'Team';
 
-  suggestions: NameList;
+  suggestions: NameString[];
 
   readonly = false; /* init of readonly in guide component */
 
@@ -69,21 +84,20 @@ export class TeamComponent implements OnInit, OnDestroy, AfterViewInit, AfterCon
     const nameIds = new Set(this.formControl.value || []);
 
     this.suggestions = [];
-    this.store.select(getNameList).pipe(
-      first(),
-      mergeMap((nameList: APINameList): Observable<APIName> => from(nameList)),
-      map((name: APIName): Name => ({name: `${name.lastName} ${name.firstName}`, id: name.id})),
-      filter((name: Name): boolean =>
-          (name.name.toLocaleLowerCase().indexOf(query) === 0) &&
-          (name.id !== nameId) &&
-          (!nameIds.has(name.id))
+    this.store.select(getNames).pipe(
+      mergeMap((names: Name[]): Observable<Name> => from(names)),
+      map((name: Name): NameString => ({name: `${name.lastName} ${name.firstName}`, id: name.id})),
+      filter((nameString: NameString): boolean =>
+          (nameString.name.toLocaleLowerCase().indexOf(query) === 0) &&
+          (nameString.id !== nameId) &&
+          (!nameIds.has(nameString.id))
       )
-    ).subscribe((name: Name): void => void this.suggestions.push(name));
+    ).subscribe((nameString: NameString): void => void this.suggestions.push(nameString)).unsubscribe();
   }
 
-  OnChangeWrapper(onChange: (nameIds: number[]) => void): (nameList: NameList) => void {
-    return ((nameList: NameList): void => {
-      const nameIds = nameList ? nameList.map((name: Name) => name.id) : [];
+  OnChangeWrapper(onChange: (nameIds: number[]) => void): (names: Name[]) => void {
+    return ((names: Name[]): void => {
+      const nameIds = names ? names.map((name: Name) => name.id) : [];
       this.formControl.setValue(nameIds);
       this.team.setValue(nameIds);
       onChange(nameIds);
@@ -103,12 +117,12 @@ export class TeamComponent implements OnInit, OnDestroy, AfterViewInit, AfterCon
   }
 
   writeValue(nameIds: number[]): void {
-    const newObj: NameList = [];
+    const newObj: NameString[] = [];
     from(nameIds || []).pipe(
       filter(id => typeof id === 'number'),
       switchMap(nameId => this.store.select(getNameById(nameId))),
-      filter((apiName: APIName): boolean => !!apiName && !!Object.keys(apiName).length),
-      map((apiName: APIName): Name => ({
+      filter((apiName: Name): boolean => !!apiName && !!Object.keys(apiName).length),
+      map((apiName: Name): NameString => ({
           name: `${apiName.lastName} ${apiName.firstName}`,
           id: apiName.id
       }))

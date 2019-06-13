@@ -4,25 +4,25 @@ import {Action} from '@ngrx/store';
 import {Actions, Effect, ofType} from '@ngrx/effects';
 import {Injectable} from '@angular/core';
 import {NameService} from '../service/name.service';
-import {NameListActionTypes, NameListLoaded, NameListNotModified} from './name.actions';
+import {AddNames, NameActionTypes, NamesNotModified} from './name.actions';
 
 @Injectable({
   providedIn: 'root'
 })
-export class NameListEffects {
+export class NameEffects {
 
   constructor(private actions$: Actions, private nameService: NameService) {}
 
   @Effect()
-  loadNameList$: Observable<Action> = this.actions$.pipe(
-    ofType(NameListActionTypes.NameListRequested),
+  loadNames$: Observable<Action> = this.actions$.pipe(
+    ofType(NameActionTypes.RequestNames),
     switchMap(() => {
-      return this.nameService.getNameList().pipe(
-        map(nameList => {
-          if (nameList && nameList.length) {
-            return new NameListLoaded(nameList);
+      return this.nameService.getNames().pipe(
+        map(names => {
+          if (names && names.length) {
+            return new AddNames({names});
           } else {
-            return new NameListNotModified();
+            return new NamesNotModified();
           }
         })
       );

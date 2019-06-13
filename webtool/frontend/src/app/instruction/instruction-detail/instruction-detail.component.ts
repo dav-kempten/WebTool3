@@ -2,7 +2,7 @@ import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {select, Store} from '@ngrx/store';
 import {AppState, selectRouterDetailId} from '../../app.state';
-import {NameListRequested} from '../../core/store/name.actions';
+import {RequestNames} from '../../core/store/name.actions';
 import {ValuesRequested} from '../../core/store/value.actions';
 import {CalendarRequested} from '../../core/store/calendar.actions';
 import {RequestInstruction, UpdateInstruction} from '../../core/store/instruction.actions';
@@ -46,7 +46,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   currentEventGroup: FormGroup = undefined;
 
   constructor(private store: Store<AppState>) {
-    this.store.dispatch(new NameListRequested());
+    this.store.dispatch(new RequestNames());
     this.store.dispatch(new CalendarRequested());
   }
 

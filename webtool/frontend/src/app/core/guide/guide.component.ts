@@ -12,10 +12,14 @@ import {
   ValidationErrors, ValidatorFn
 } from '@angular/forms';
 import {AppState} from '../../app.state';
-import {Name as APIName, NameList as APINameList} from '../../model/name';
-import {getNameById, getNameList} from '../store/name.selectors';
-import {Name, NameList} from '../store/name.model';
+import {Name} from '../../model/name';
+import {getNameById, getNames} from '../store/name.selectors';
 import {AutoComplete} from 'primeng/autocomplete';
+
+interface NameString {
+  name: string;
+  id: number;
+}
 
 @Component({
   selector: 'avk-guide',
@@ -46,14 +50,14 @@ export class GuideComponent implements OnInit, OnDestroy, AfterViewInit, AfterCo
     this.nameIsRequired.setValue(value);
   }
 
-  readonly: boolean = false; /* init of readonly in guide component */
+  readonly = false;
 
   @Input()
   set readOnly(value: boolean) {
     this.readonly = value;
   }
 
-  suggestions: NameList;
+  suggestions: NameString[];
 
   originalControl = new FormControl(null);
   name = new FormControl('');
@@ -80,15 +84,15 @@ export class GuideComponent implements OnInit, OnDestroy, AfterViewInit, AfterCo
     const query: string = event.query.toLocaleLowerCase();
     const teamIds = new Set(this.team.value as number[]);
 
-    this.store.select(getNameList).subscribe(
-      (nameList: APINameList): void => {
+    this.store.select(getNames).subscribe(
+      (names: Name[]): void => {
         if (!this.formControl.value) {
-          this.suggestions = nameList.map(
-            (name: APIName): Name => ({
+          this.suggestions = names.map(
+            (name: Name): NameString => ({
               name: `${name.lastName} ${name.firstName}`,
               id: name.id
             })
-          ).filter((name: Name): boolean =>
+          ).filter((name: NameString): boolean =>
             (name.name.toLocaleLowerCase().indexOf(query) === 0) &&
             (!teamIds.has(name.id))
           );
@@ -99,9 +103,9 @@ export class GuideComponent implements OnInit, OnDestroy, AfterViewInit, AfterCo
     ).unsubscribe();
   }
 
-  OnChangeWrapper(onChange: (nameId: number) => void): (nameList: NameList) => void {
-    return ((nameList: NameList): void => {
-      const nameId = (!!nameList && !!nameList.length) ? nameList[0].id : undefined;
+  OnChangeWrapper(onChange: (nameId: number) => void): (names: Name[]) => void {
+    return ((names: Name[]): void => {
+      const nameId = (!!names && !!names.length) ? names[0].id : undefined;
       this.formControl.setValue(nameId);
       this.name.setValue(nameId);
       onChange(nameId);
@@ -121,18 +125,18 @@ export class GuideComponent implements OnInit, OnDestroy, AfterViewInit, AfterCo
   }
 
   writeValue(nameId: number): void {
-    let nameList: NameList = [];
+    let nameList: NameString[] = [];
     of(nameId).pipe(
       filter(id => typeof id === 'number'),
       switchMap(id => this.store.select(getNameById(id))),
-      filter((apiName: APIName): boolean => !!apiName && !!Object.keys(apiName).length),
-      map((apiName: APIName): NameList => [
+      filter((name: Name): boolean => !!name && !!Object.keys(name).length),
+      map((name: Name): NameString[] => [
         {
-          name: `${apiName.lastName} ${apiName.firstName}`,
-          id: apiName.id
+          name: `${name.lastName} ${name.firstName}`,
+          id: name.id
         }
       ])
-    ).subscribe(nameIds => nameList = nameIds).unsubscribe();
+    ).subscribe(names => nameList = names);
     this.delegatedMethodCalls.next(accessor => accessor.writeValue(nameList));
   }
 
