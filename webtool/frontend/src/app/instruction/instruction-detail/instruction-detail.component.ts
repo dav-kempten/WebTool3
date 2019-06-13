@@ -3,7 +3,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {select, Store} from '@ngrx/store';
 import {AppState, selectRouterDetailId} from '../../app.state';
 import {FormControl, FormGroup} from "@angular/forms";
-import {NameListRequested} from "../../core/store/name.actions";
+import {RequestNames} from "../../core/store/name.actions";
 import {ValuesRequested} from "../../core/store/value.actions";
 import {CalendarRequested} from "../../core/store/calendar.actions";
 import {RequestInstruction} from "../../core/store/instruction.actions";
@@ -133,7 +133,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   userValState: number = 0;
 
   constructor(private store: Store<AppState>, private userService: AuthService) {
-    this.store.dispatch(new NameListRequested());
+    this.store.dispatch(new RequestNames());
     this.store.dispatch(new ValuesRequested());
     this.store.dispatch(new CalendarRequested());
   }
