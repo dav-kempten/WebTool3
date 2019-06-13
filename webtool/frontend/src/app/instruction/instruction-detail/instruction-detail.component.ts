@@ -31,9 +31,12 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   private topicSubject = new BehaviorSubject<FormGroup>(undefined);
   private eventsSubject = new BehaviorSubject<FormArray>(undefined);
 
+  private currentEventGroup: FormGroup;
+
   instructionGroup$: Observable<FormGroup> = this.instructionSubject.asObservable();
   topicGroup$: Observable<FormGroup> = this.topicSubject.asObservable();
   eventArray$: Observable<FormArray> = this.eventsSubject.asObservable();
+  // eventGroup$: Observable<FormGroup> = this.currentEventGroup.asObservable();
 
   instructionId$: Observable<number>;
   instruction$: Observable<Instruction>;
@@ -41,6 +44,9 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   eventIds$: Observable<number[]>;
   events$: Observable<Event[]>;
   event$: Observable<Event>;
+
+  userValState: number = 0;
+  display: boolean = false;
 
 
   constructor(private store: Store<AppState>, private userService: AuthService) {
@@ -100,7 +106,8 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
             eventArray.push(eventGroupFactory(event));
           });
           this.eventsSubject.next(eventArray);
-        })
+        }),
+        tap((events) => console.log("Events", events))
       )),
     );
 
@@ -118,6 +125,17 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     this.topicSubject.complete();
     this.eventsSubject.complete();
   }
+
+  selectEvent(index) {
+    this.eventArray$.subscribe(
+      eventArray => this.currentEventGroup = (eventArray.at(index)) as FormGroup
+    );
+  }
+
+  closeDialog(event) {
+    this.currentEventGroup = undefined;
+  }
+
 }
 
 function instructionGroupFactory(instruction: Instruction): FormGroup {
