@@ -54,3 +54,7 @@ export const getStates = createSelector(selectStatesState, (state: Dictionary<an
 export const getTopicById = (topicId: number) => createSelector(
   getTopicState, topicState => topicState.entities[topicId]
 );
+
+export const getCategoryById = (categoryId: number) => createSelector(
+  getCategoryState, categoryState => categoryState.entities[categoryId]
+);
