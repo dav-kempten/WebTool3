@@ -1,7 +1,5 @@
 <ng-container *ngIf="instructionGroup$ | async as instructionGroup else loading">
 
-  <h1>Instruction {{instructionGroup.get('reference').value}}</h1>
-
   <p>InstructionGroup:<br />{{instructionGroup.value | json}}</p>
   <p>TopicGroup:<br />{{(topicGroup$ | async)?.value | json}}</p>
   <p>CategoryGroup:<br />{{(categoryGroup$ | async)?.value | json}}</p>
