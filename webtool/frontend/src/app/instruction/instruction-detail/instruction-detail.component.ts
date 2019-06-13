@@ -14,6 +14,7 @@ import {getEventsByIds} from '../../core/store/event.selectors';
 import {Event} from '../../model/event';
 import {Topic} from '../../model/value';
 import {FormArray, FormControl, FormGroup} from '@angular/forms';
+import {UpdateEvent} from '../../core/store/event.actions';
 
 @Component({
   selector: 'avk-instruction-detail',
@@ -27,10 +28,14 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   private instructionSubject = new BehaviorSubject<FormGroup>(undefined);
   private topicSubject = new BehaviorSubject<FormGroup>(undefined);
   private eventsSubject = new BehaviorSubject<FormArray>(undefined);
+  private instructionChangeSubject = new BehaviorSubject<Instruction>(undefined);
+  private eventChangeSubject = new BehaviorSubject<Event>(undefined);
 
   instructionGroup$: Observable<FormGroup> = this.instructionSubject.asObservable();
   topicGroup$: Observable<FormGroup> = this.topicSubject.asObservable();
   eventArray$: Observable<FormArray> = this.eventsSubject.asObservable();
+  instructionChange$: Observable<Instruction> = this.instructionChangeSubject.asObservable();
+  eventChange$: Observable<Event> = this.eventChangeSubject.asObservable();
 
   instructionId$: Observable<number>;
   instruction$: Observable<Instruction>;
@@ -57,7 +62,13 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
           if (!instruction) {
             this.store.dispatch(new RequestInstruction({id}));
           } else {
-            this.instructionSubject.next(instructionGroupFactory(instruction));
+            const instructionGroup = instructionGroupFactory(instruction);
+            instructionGroup.valueChanges.pipe(
+              takeUntil(this.destroySubject)
+            ).subscribe(
+              value => this.instructionChangeSubject.next(value)
+            );
+            this.instructionSubject.next(instructionGroup);
           }
         })
       )),
@@ -68,7 +79,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     this.topic$ = this.instruction$.pipe(
       takeUntil(this.destroySubject),
       filter(instruction => !!instruction),
-      flatMap( instruction => this.store.pipe(
+      flatMap(instruction => this.store.pipe(
         select(getTopicById(instruction.topicId)),
         tap(topic => {
           if (!topic) {
@@ -94,7 +105,13 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
         tap(events => {
           const eventArray = new FormArray([]);
           events.forEach((event: Event) => {
-            eventArray.push(eventGroupFactory(event));
+            const eventGroup = eventGroupFactory(event);
+            eventGroup.valueChanges.pipe(
+              takeUntil(this.destroySubject)
+            ).subscribe(
+              value => this.eventChangeSubject.next(value)
+            );
+            eventArray.push(eventGroup);
           });
           this.eventsSubject.next(eventArray);
         })
@@ -107,13 +124,32 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     this.eventIds$.subscribe();
     this.events$.subscribe();
 
+    this.eventChange$.pipe(
+      takeUntil(this.destroySubject),
+      filter(event => !!event)
+    ).subscribe(
+      event => this.store.dispatch(
+        new UpdateEvent({event: {id: event.id, changes: {...event}}})
+      )
+    );
+
+    this.instructionChange$.pipe(
+      takeUntil(this.destroySubject),
+      filter(instruction => !!instruction)
+    ).subscribe(
+      instruction => this.store.dispatch(
+        new UpdateInstruction({instruction: {id: instruction.id, changes: {...instruction}}})
+      )
+    );
+
     setTimeout(() => this.store.dispatch(
       new UpdateInstruction({
         instruction: {
           id: 2102,
           changes: {curQuantity: 99, teamIds: [133, 104]}
         }
-    })), 10000);
+      }
+    )), 10000);
   }
 
   ngOnDestroy(): void {
