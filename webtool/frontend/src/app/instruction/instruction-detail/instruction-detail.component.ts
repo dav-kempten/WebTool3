@@ -190,14 +190,11 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   }
 
   selectEvent(index) {
-    this.display = true;
     this.eventArray$.subscribe(
       eventArray => this.currentEventGroup = (eventArray.at(index)) as FormGroup
     );
-  }
-
-  closeDialog(event) {
-    this.currentEventGroup = undefined;
+    console.log("CurrentEventGroup", this.currentEventGroup);
+    this.display = true;
   }
 }
 
