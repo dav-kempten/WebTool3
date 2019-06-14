@@ -167,7 +167,7 @@ export class DateComponent implements OnInit, OnDestroy, AfterViewInit, AfterCon
   }
 
   writeValue(isoDate: string): void {
-    const stdDate = isoDate.split('-').reverse().join('.');
+    const stdDate = (isoDate !== null) ?  isoDate.split('-').reverse().join('.') : isoDate;
     this.delegatedMethodCalls.next(accessor => accessor.writeValue(stdDate));
   }
 
@@ -230,13 +230,13 @@ export const dateValidator: ValidatorFn = (group: FormGroup): ValidationErrors |
 
   const error: ValidationErrors = {invalidDate: {value: date}};
 
-  const valid = (
+  const valid = curMin && curMax ? (
     curMin.length && curMax.length && curMinCompare && curMaxCompare ||
     !curMin.length && curMax.length && curMaxCompare ||
     curMin.length && !curMax.length && curMinCompare ||
     !curMin.length && !curMax.length && date.length ||
     !date.length && !dateIsRequired
-  );
+  ) : true;
 
   if (originalControl) {
     setTimeout(() => {
