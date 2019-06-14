@@ -2,7 +2,8 @@ import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {select, Store} from '@ngrx/store';
 import {AppState, selectRouterDetailId} from '../../app.state';
-import {NameListRequested} from "../../core/store/name.actions";
+import {getCategoryById, getTopicById} from '../../core/store/value.selectors';
+import {RequestNames} from "../../core/store/name.actions";
 import {ValuesRequested} from "../../core/store/value.actions";
 import {CalendarRequested} from "../../core/store/calendar.actions";
 import {RequestInstruction, UpdateInstruction} from "../../core/store/instruction.actions";
@@ -10,13 +11,13 @@ import {getInstructionById} from "../../core/store/instruction.selectors";
 import {Instruction} from "../../core/store/instruction.model";
 import {filter, flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {getEventById, getEventsByIds} from "../../core/store/event.selectors";
-import {getTopicById} from '../../core/store/value.selectors';
 import {State} from "../../core/store/state.reducer";
 import {selectStatesState} from "../../core/store/value.selectors";
 import {AuthService, User} from "../../core/service/auth.service";
 import {Event} from '../../model/event';
-import {Topic} from '../../model/value';
+import {Category, Topic} from '../../model/value';
 import {FormArray, FormControl, FormGroup} from '@angular/forms';
+import {UpdateEvent} from '../../core/store/event.actions';
 
 @Component({
   selector: 'avk-instruction-detail',
@@ -29,28 +30,32 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   private destroySubject = new Subject<void>();
   private instructionSubject = new BehaviorSubject<FormGroup>(undefined);
   private topicSubject = new BehaviorSubject<FormGroup>(undefined);
+  private categorySubject = new BehaviorSubject<FormGroup>(undefined);
   private eventsSubject = new BehaviorSubject<FormArray>(undefined);
+  private instructionChangeSubject = new BehaviorSubject<Instruction>(undefined);
+  private eventChangeSubject = new BehaviorSubject<Event>(undefined);
 
   instructionGroup$: Observable<FormGroup> = this.instructionSubject.asObservable();
   topicGroup$: Observable<FormGroup> = this.topicSubject.asObservable();
+  categoryGroup$: Observable<FormGroup> = this.categorySubject.asObservable();
   eventArray$: Observable<FormArray> = this.eventsSubject.asObservable();
-  // eventGroup$: Observable<FormGroup> = this.currentEventGroup.asObservable();
+  instructionChange$: Observable<Instruction> = this.instructionChangeSubject.asObservable();
+  eventChange$: Observable<Event> = this.eventChangeSubject.asObservable();
 
   instructionId$: Observable<number>;
   instruction$: Observable<Instruction>;
   topic$: Observable<Topic>;
   eventIds$: Observable<number[]>;
   events$: Observable<Event[]>;
-  event$: Observable<Event>;
+  category$: Observable<Category>;
 
   userValState: number = 0;
   display: boolean = false;
-
-
   currentEventGroup: FormGroup = undefined;
 
-  constructor(private store: Store<AppState>) {
-    this.store.dispatch(new NameListRequested());
+  constructor(private store: Store<AppState>, private userService: AuthService) {
+    this.store.dispatch(new RequestNames());
+    this.store.dispatch(new ValuesRequested());
     this.store.dispatch(new CalendarRequested());
   }
 
@@ -66,7 +71,13 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
           if (!instruction) {
             this.store.dispatch(new RequestInstruction({id}));
           } else {
-            this.instructionSubject.next(instructionGroupFactory(instruction));
+            const instructionGroup = instructionGroupFactory(instruction);
+            instructionGroup.valueChanges.pipe(
+              takeUntil(this.destroySubject)
+            ).subscribe(
+              value => this.instructionChangeSubject.next(value)
+            );
+            this.instructionSubject.next(instructionGroup);
           }
         })
       )),
@@ -77,13 +88,30 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     this.topic$ = this.instruction$.pipe(
       takeUntil(this.destroySubject),
       filter(instruction => !!instruction),
-      flatMap( instruction => this.store.pipe(
+      flatMap(instruction => this.store.pipe(
         select(getTopicById(instruction.topicId)),
         tap(topic => {
           if (!topic) {
             this.store.dispatch((new ValuesRequested()));
           } else {
             this.topicSubject.next(topicGroupFactory(topic));
+          }
+        })
+      )),
+      publishReplay(1),
+      refCount()
+    );
+
+    this.category$ = this.topic$.pipe(
+      takeUntil(this.destroySubject),
+      filter(topic => !!topic),
+      flatMap(topic => this.store.pipe(
+        select(getCategoryById(topic.id)),
+        tap(category => {
+          if (!category) {
+            this.store.dispatch((new ValuesRequested()));
+          } else {
+            this.categorySubject.next(categoryGroupFactory(category));
           }
         })
       ))
@@ -103,7 +131,13 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
         tap(events => {
           const eventArray = new FormArray([]);
           events.forEach((event: Event) => {
-            eventArray.push(eventGroupFactory(event));
+            const eventGroup = eventGroupFactory(event);
+            eventGroup.valueChanges.pipe(
+              takeUntil(this.destroySubject)
+            ).subscribe(
+              value => this.eventChangeSubject.next(value)
+            );
+            eventArray.push(eventGroup);
           });
           this.eventsSubject.next(eventArray);
         }),
@@ -114,16 +148,36 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     this.instructionId$.subscribe();
     this.instruction$.subscribe();
     this.topic$.subscribe();
+    this.category$.subscribe();
     this.eventIds$.subscribe();
     this.events$.subscribe();
 
-    setTimeout(() => this.store.dispatch(
-      new UpdateInstruction({
-        instruction: {
-          id: 2102,
-          changes: {curQuantity: 99, teamIds: [133, 104]}
-        }
-    })), 10000);
+    this.eventChange$.pipe(
+      takeUntil(this.destroySubject),
+      filter(event => !!event)
+    ).subscribe(
+      event => this.store.dispatch(
+        new UpdateEvent({event: {id: event.id, changes: {...event}}})
+      )
+    );
+
+    this.instructionChange$.pipe(
+      takeUntil(this.destroySubject),
+      filter(instruction => !!instruction)
+    ).subscribe(
+      instruction => this.store.dispatch(
+        new UpdateInstruction({instruction: {id: instruction.id, changes: {...instruction}}})
+      )
+    );
+
+    // setTimeout(() => this.store.dispatch(
+    //   new UpdateInstruction({
+    //     instruction: {
+    //       id: 2102,
+    //       changes: {curQuantity: 99, teamIds: [133, 104]}
+    //     }
+    //   }
+    // )), 10000);
   }
 
   ngOnDestroy(): void {
@@ -131,6 +185,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     this.destroySubject.complete();
     this.instructionSubject.complete();
     this.topicSubject.complete();
+    this.categorySubject.complete();
     this.eventsSubject.complete();
   }
 
@@ -187,6 +242,21 @@ function topicGroupFactory(topic: Topic): FormGroup {
     qualificationIds: new FormControl(topic.qualificationIds),
     equipmentIds: new FormControl(topic.equipmentIds),
     miscEquipment: new FormControl(topic.miscEquipment)
+  });
+}
+
+function categoryGroupFactory(category: Category): FormGroup {
+  return new FormGroup({
+    id: new FormControl(category.id),
+    code: new FormControl(category.code),
+    name: new FormControl(category.name),
+    tour: new FormControl(category.tour),
+    talk: new FormControl(category.talk),
+    instruction: new FormControl(category.instruction),
+    collective: new FormControl(category.collective),
+    winter: new FormControl(category.winter),
+    summer: new FormControl(category.summer),
+    indoor: new FormControl(category.indoor),
   });
 }
 

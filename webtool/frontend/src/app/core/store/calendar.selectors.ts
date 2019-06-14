@@ -1,6 +1,6 @@
-import {createFeatureSelector, createSelector} from "@ngrx/store";
-import {CalendarState} from "./calendar.reducer";
-import {Anniversaries, Calendars, Vacations} from "./calendar.model";
+import {createFeatureSelector, createSelector} from '@ngrx/store';
+import {CalendarState} from './calendar.reducer';
+import {Anniversaries, Calendars, Vacations} from './calendar.model';
 
 export const getCalendarState = createFeatureSelector<CalendarState>('calendar');
 

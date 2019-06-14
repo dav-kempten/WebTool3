@@ -5,6 +5,7 @@ import {RouterReducerState, RouterStateSerializer} from '@ngrx/router-store';
 export interface Breadcrumb {
   label: string;
   url: string;
+  fragment?: string;
 }
 
 export type Breadcrumbs = Breadcrumb[];
@@ -48,7 +49,7 @@ export class CustomSerializer implements RouterStateSerializer<CustomRouterState
         breadcrumbs.push(
           {
             url: `${path}${urlSegment}`,
-            label: ('breadcrumb' in route.data) ? route.data.breadcrumb : null
+            label: ('breadcrumb' in route.data) ? route.data.breadcrumb : null,
           }
         );
         path = `${path}${urlSegment}/`;
@@ -64,6 +65,10 @@ export class CustomSerializer implements RouterStateSerializer<CustomRouterState
 
     if ('id' in params) {
       breadcrumbs[breadcrumbs.length - 1].label = `#${params.id}`;
+    }
+
+    if (fragment) {
+      breadcrumbs[breadcrumbs.length - 1].fragment = fragment;
     }
 
     // Only return an object including the URL, params, fragment and query params

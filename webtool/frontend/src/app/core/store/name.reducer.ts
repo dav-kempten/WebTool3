@@ -1,49 +1,58 @@
-import {NameListActions, NameListActionTypes} from './name.actions';
-import {Name, NameList} from '../../model/name';
+import {createEntityAdapter, EntityAdapter, EntityState} from '@ngrx/entity';
+import {NameActions, NameActionTypes} from './name.actions';
+import {Name} from '../../model/name';
 
-interface Index {[key: number]: number; }
-
-export interface NameListState {
+export interface State extends EntityState<Name> {
   isLoading: boolean;
   timestamp: number;
-  names: NameList;
-  index: Index;
 }
 
-export const initialState: NameListState = {
-  isLoading: false,
-  timestamp: 0,
-  names: [],
-  index: {}
-};
+export const adapter: EntityAdapter<Name> = createEntityAdapter<Name>();
 
-export function reducer(state: NameListState = initialState, action: NameListActions): NameListState {
+export const initialState: State = adapter.getInitialState({
+  isLoading: false,
+  timestamp: 0
+});
+
+export function reducer(state = initialState, action: NameActions): State {
   switch (action.type) {
-    case NameListActionTypes.NameListRequested:
+
+    case NameActionTypes.RequestNames: {
       return {
-        ... state,
+        ...state,
         isLoading: true
       };
-    case NameListActionTypes.NameListLoaded:
-      const nameList: NameList = action.payload;
-      const nameIndex: Index = {};
+    }
+
+    case NameActionTypes.NamesNotModified: {
       return {
-        ... state,
+        ...state,
         isLoading: false,
-        timestamp: new Date().getTime(),
-        names: nameList,
-        index: nameList.reduce((map: Index, name: Name, idx: number) => {
-          map[name.id] = idx;
-          return map;
-        }, nameIndex)
+        timestamp: new Date().getTime()
       };
-    case NameListActionTypes.NameListNotModified:
-      return {
-        ... state,
+    }
+
+    case NameActionTypes.AddNames: {
+      return adapter.addMany(action.payload.names, {
+        ...state,
         isLoading: false,
-        timestamp: new Date().getTime(),
-      };
-    default:
+        timestamp: new Date().getTime()
+      });
+    }
+
+    case NameActionTypes.ClearNames: {
+      return adapter.removeAll(state);
+    }
+
+    default: {
       return state;
+    }
   }
 }
+
+export const {
+  selectIds,
+  selectEntities,
+  selectAll,
+  selectTotal,
+} = adapter.getSelectors();
