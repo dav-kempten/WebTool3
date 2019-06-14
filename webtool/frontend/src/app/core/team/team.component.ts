@@ -22,10 +22,15 @@ import {
   ValidatorFn
 } from '@angular/forms';
 import {Name} from '../../model/name';
-import {getNameById, getNames} from '../store/name.selectors';
+import {getNameById, getNames, getNamesState} from '../store/name.selectors';
 import {AppState} from '../../app.state';
 import {AutoComplete} from 'primeng/autocomplete';
 import {from} from 'rxjs/internal/observable/from';
+
+interface NameString {
+  name: string;
+  id: number;
+}
 
 interface NameString {
   name: string;

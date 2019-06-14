@@ -2,15 +2,16 @@ import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {select, Store} from '@ngrx/store';
 import {AppState, selectRouterDetailId} from '../../app.state';
-import {RequestNames} from '../../core/store/name.actions';
-import {ValuesRequested} from '../../core/store/value.actions';
-import {CalendarRequested} from '../../core/store/calendar.actions';
+import {getCategoryById, getTopicById} from '../../core/store/value.selectors';
+import {RequestNames} from "../../core/store/name.actions";
+import {ValuesRequested} from "../../core/store/value.actions";
+import {CalendarRequested} from "../../core/store/calendar.actions";
 import {RequestInstruction, UpdateInstruction} from '../../core/store/instruction.actions';
 import {getInstructionById} from '../../core/store/instruction.selectors';
-import {Instruction} from '../../core/store/instruction.model';
+import {Instruction} from "../../core/store/instruction.model";
 import {filter, flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
-import {getCategoryById, getTopicById} from '../../core/store/value.selectors';
-import {getEventsByIds} from '../../core/store/event.selectors';
+import {AuthService, User} from "../../core/service/auth.service";
+import {getEventsByIds} from "../../core/store/event.selectors";
 import {Event} from '../../model/event';
 import {Category, Topic} from '../../model/value';
 import {FormArray, FormControl, FormGroup} from '@angular/forms';
@@ -48,8 +49,9 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
 
   currentEventGroup: FormGroup = undefined;
 
-  constructor(private store: Store<AppState>) {
+  constructor(private store: Store<AppState>, private userService: AuthService) {
     this.store.dispatch(new RequestNames());
+    this.store.dispatch(new ValuesRequested());
     this.store.dispatch(new CalendarRequested());
   }
 
