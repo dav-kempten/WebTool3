@@ -163,14 +163,14 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
       )
     );
 
-    setTimeout(() => this.store.dispatch(
-      new UpdateInstruction({
-        instruction: {
-          id: 2102,
-          changes: {curQuantity: 99, teamIds: [133, 104]}
-        }
-      }
-    )), 10000);
+    // setTimeout(() => this.store.dispatch(
+    //   new UpdateInstruction({
+    //     instruction: {
+    //       id: 2102,
+    //       changes: {curQuantity: 99, teamIds: [133, 104]}
+    //     }
+    //   }
+    // )), 10000);
   }
 
   ngOnDestroy(): void {
