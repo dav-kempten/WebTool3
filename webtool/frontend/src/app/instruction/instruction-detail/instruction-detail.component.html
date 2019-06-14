@@ -10,6 +10,7 @@
   <p>EventArray:<br/>{{(eventArray$ | async)?.value | json}}</p>
 
 
+
   <div [formGroup]="instructionGroup">
     <!--GuideComponent // TeamComponent // Abrechnung-->
     <div class="p-grid">
@@ -18,10 +19,10 @@
             formControlName="guideId"
             id="g1"
             label="Trainer"
+            [nameIdList]="instructionGroup.get('teamIds').value"
             [readOnly]="!(userValState >= 0)"
             required
         ></avk-guide>
-        <!--[nameIdList]="instructionGroup.get('teamIds').value"-->
       </div>
       <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
         <input id="costs" placeholder="Kosten" type="text" style='width:100%'
@@ -37,11 +38,11 @@
       <div class="p-sm-6 p-md-6 p-lg-6">
         <avk-team
             formControlName="teamIds"
+            [nameId]="instructionGroup.get('guideId').value"
             id="g2"
             label="Team"
             [readOnly]="!(userValState >= 0)"
         ></avk-team>
-        <!--[nameId]="instructionGroup.get('guideId').value"-->
       </div>
       <div class="p-sm-3 p-md-3 p-lg-3">
         <p-checkbox
@@ -155,7 +156,7 @@
     <!--Liste mit Parametern (Tabelle)-->
     <div class="p-grid">
       <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
-        <p-table *ngIf="!currentEventGroup" [value]="(eventArray$|async).value" selectionMode="single"
+        <p-table [value]="(eventArray$|async).value" selectionMode="single"
                  (selectionChange)="selectEvent($event)">
           <ng-template pTemplate="header">
             <tr>
@@ -166,7 +167,7 @@
           </ng-template>
           <ng-template pTemplate="body" let-event let-i="rowIndex">
             <tr [pSelectableRow]="i">
-              <td>{{event.startDate}}</td>
+              <td>{{event.startDate.split('-').reverse().join('.')}}</td>
               <td>{{event.startTime}}</td>
               <td>{{event.name}}</td>
             </tr>
@@ -219,26 +220,37 @@
 
         <!--Zusatz: Datumseingabe (Anfang + Ende + Art)-->
         <div class="p-grid">
-          <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
             <avk-date formControlName="startDate"
                       id="dbeginn" label="Start"
                       [maxInclude]="true"
+                      [max]="currentEventGroup.get('endDate').value"
             ></avk-date>
-<!--                      [max]="instructionGroup.get('endDate').value"-->
           </div>
-          <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
             <avk-date formControlName="endDate"
                       id="dend" label="Ende"
                       [minInclude]="true"
+                      [min]="currentEventGroup.get('startDate').value"
             ></avk-date>
-<!--                      [min]="instructionGroup.get('startDate').value"-->
           </div>
-          <div class="p-col-12 p-sm-3 p-md-2 p-lg-2">
-            <input formControlName="description" id="description" placeholder="Art (z.B Besprechung)" type="text"
-                   style="width:100%"
-                   pInputText>
+        </div>
+        <div class="p-grid">
+          <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+            <textarea
+                [rows]="3"
+                pInputTextarea
+                formControlName="description"
+                id="description"
+                placeholder="Beschreibung"
+                autoResize="autoResize"
+                style='width:100%'
+            ></textarea>
           </div>
-          <div class="p-col-12 p-sm-3 p-md-2 p-lg-2">
+        </div>
+
+        <div class="p-grid">
+          <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
             <input formControlName="location" id="location" placeholder="Ort (z.B Swoboda Alpin, Gipfel)"
                    type="text" style="width:100%"
                    pInputText>
