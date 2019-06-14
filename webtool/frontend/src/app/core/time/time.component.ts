@@ -50,8 +50,8 @@ export class TimeComponent implements OnInit {
   disabledState = false;
 
   @Input()
-  set disable(value: boolean) {
-    this.disabledState = value;
+  set disable(value) {
+    this.disabledState = !!value;
   }
 
   originalControl = new FormControl(null);

@@ -204,15 +204,16 @@
           </div>
         </div>
 
+        <!--Zeitpunkt Event-->
         <div class="p-grid">
-          <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
             <avk-approxdropdown formControlName="approximateId" id="approx" [readOnly]="!(userValState >= 0)"
-                                ></avk-approxdropdown>
-<!--            [disable]="!!(instructionGroup.get('startTime').value)"-->
+                                [disable]="currentEventGroup.get('startTime').value"></avk-approxdropdown>
+
           </div>
-          <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-            <avk-time formControlName="startTime" id="time" ></avk-time>
-<!--            [disable]="!!(instructionGroup.get('approximateId').value)"-->
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+            <avk-time formControlName="startTime" id="time" [disable]="currentEventGroup.get('approximateId').value"
+            ></avk-time>
           </div>
         </div>
 

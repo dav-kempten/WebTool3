@@ -39,14 +39,15 @@ export class ApproxdropdownComponent implements OnInit {
   readonly = false; /* init of readonly in guide component */
 
   @Input()
-  set readOnly(value: boolean) {
-    this.readonly = value;
+  set readOnly(value) {
+    this.readonly = !!value;
   }
 
   disabledState = false;
 
   @Input()
   set disable(value: boolean) {
+    console.log("ValueApprox", value);
     this.disabledState = value;
   }
 
