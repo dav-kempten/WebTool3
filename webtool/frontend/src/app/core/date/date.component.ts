@@ -216,8 +216,8 @@ export const dateValidator: ValidatorFn = (group: FormGroup): ValidationErrors |
   const max: string = group.get('max').value;
   const originalControl: FormControl = group.get('original').value;
 
-  const curMaxDate = (!date.length && dateIsRequired) ? '9999-12-31' : date;
-  const curMinDate = (!date.length && dateIsRequired) ? '0000-01-01' : date;
+  const curMaxDate = (date !== null ? ((!date.length && dateIsRequired) ? '9999-12-31' : date) : "9999-12-31");
+  const curMinDate = (date !== null ? ((!date.length && dateIsRequired) ? '0000-01-01' : date) : "0000-01-01");
   const minIsSmallerDate = minInclude ? (min <= curMinDate) : (min < curMinDate);
   const optMinIsSmallerDate = optMinInclude ? (optMin <= curMinDate) : (optMin < curMinDate);
   const DateIsSmallerOptMax = optMaxInclude ? (curMaxDate <= optMax) : (curMaxDate < optMax);
