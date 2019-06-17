@@ -85,27 +85,74 @@
       </div>
     </div>
 
-    <!--Beschreibung-->
-    <!--  <div class="p-grid">-->
-    <!--    <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">-->
-    <!--      <textarea-->
-    <!--          formControlName="description"-->
-    <!--          [rows]="5"-->
-    <!--          pInputTextarea-->
-    <!--          placeholder="Beschreibung"-->
-    <!--          autoResize="autoResize"-->
-    <!--          style='width:100%'-->
-    <!--      ></textarea>-->
-    <!--    </div>-->
-    <!--  </div>-->
+    <!--Ausrüstung, Besondere Vorausssetzungen-->
+    <div class="p-grid" [formGroup]="topicGroup$| async" style="background-color:#D8D8D8">
+      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+        <avk-multiselect
+            formControlName="equipmentIds"
+            choice="equipment"
+            label="Ausrüstung"
+            [readOnly]="true"
+        ></avk-multiselect>
+      </div>
+      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+        <avk-multiselect
+            formControlName="qualificationIds"
+            choice="requirement"
+            label="Voraussetzungen"
+            [readOnly]="true"
+        ></avk-multiselect>
+      </div>
+      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+        <textarea
+          [rows]="2"
+          pInputTextarea
+          formControlName="preconditions"
+          id="preconditionsTopic"
+          readonly
+          placeholder="Spezielle Anforderungen"
+          autoResize="autoResize"
+          style='width:100%'
+        ></textarea>
+      </div>
+      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+        <textarea
+          [rows]="2"
+          pInputTextarea
+          formControlName="miscEquipment"
+          id="miscEquipmentTopic"
+          readonly
+          placeholder="Spezielle Ausrüstung"
+          autoResize="autoResize"
+          style='width:100%'
+        ></textarea>
+      </div>
+    </div>
 
-    <!--Zusatzausrüstung, Besondere Vorausssetzungen-->
+    <!--Topic-->
+    <div class="p-grid" [formGroup]="topicGroup$| async" *ngIf="!(instructionGroup.get('isSpecial').value)"
+      style="background-color:#D8D8D8">
+      <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+      <textarea
+          [rows]="5"
+          pInputTextarea
+          formControlName="description"
+          id="topicDescription"
+          readonly
+          placeholder="Beschreibung"
+          autoResize="autoResize"
+          style='width:100%'
+      ></textarea>
+      </div>
+    </div>
+
+    <!--Zusatzausrüstung & -anforderungen-->
     <div class="p-grid">
       <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
         <avk-multiselect
             formControlName="equipmentIds"
             choice="equipment"
-            label="Ausrüstung"
+            label="Zusatzausrüstung"
             [readOnly]="!(userValState >= 0)"
         ></avk-multiselect>
       </div>
@@ -113,12 +160,37 @@
         <avk-multiselect
             formControlName="qualificationIds"
             choice="requirement"
-            label="Vorraussetzungen"
+            label="Zusatzvorraussetzungen"
             [readOnly]="!(userValState >= 0)"
         ></avk-multiselect>
       </div>
     </div>
 
+    <!--Zusätzliche Anforderungen-->
+    <div class="p-grid">
+      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+        <textarea
+          [rows]="3"
+          pInputTextarea
+          formControlName="miscEquipment"
+          id="miscEquipment"
+          placeholder="Spezielle Ausrüstung"
+          autoResize="autoResize"
+          style='width:100%'
+        ></textarea>
+      </div>
+      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+        <textarea
+          [rows]="3"
+          pInputTextarea
+          formControlName="preconditions"
+          id="preconditions"
+          placeholder="Spezielle Voraussetzungen (z.B. Trittsicherheit)"
+          autoResize="autoResize"
+          style='width:100%'
+        ></textarea>
+      </div>
+    </div>
     <!--Teilnehmeranzahl, Strecke, Materialservice-->
     <div class="p-grid">
       <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
@@ -142,6 +214,14 @@
       <div class="p-col-12 p-sm-3 p-md-3 p-lg-3" *ngIf="false">
         <input formControlName="distance" id="distance" placeholder="PKW Strecke" type="text" style='width:100%'
                pInputText>
+      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+        <avk-membernumber
+            formControlName="curQuantity"
+            label="CurMember"
+            id="m3"
+            [maxMember]="instructionGroup.get('maxQuantity').value"
+            [readOnly]="!(userValState >= 0)"
+        ></avk-membernumber>
       </div>
       <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
         <p-checkbox
@@ -176,22 +256,8 @@
       </div>
     </div>
 
-
-<!--    <ng-container *ngIf="currentEventGroup">-->
-<!--      <p>Edit this Event:<br/>{{currentEventGroup.value | json}}</p>-->
-<!--      <form [formGroup]="currentEventGroup">-->
-<!--        <label for="title">Kurztitel:</label>-->
-<!--        <input id="title" formControlName="title"><br/>-->
-<!--        <label for="name">Langtitel:</label>-->
-<!--        <input id="name" formControlName="name"><br/>-->
-<!--        <label for="description">Beschreibung:</label>-->
-<!--        <input id="description" formControlName="description">-->
-<!--      </form>-->
-<!--      <p-button label="Zurück" (onClick)="closeDialog($event)"></p-button>-->
-<!--    </ng-container>-->
-
     <ng-container *ngIf="currentEventGroup">
-    <p-dialog header="EventDetail" [(visible)]="display">
+    <p-dialog header="EventDetail" [(visible)]="display" [style]="{width: '60%', height: '60%'}">
       <form [formGroup]="currentEventGroup">
         <!--Kurztitel, Langtitel-->
         <div class="p-grid">
@@ -249,9 +315,80 @@
           </div>
         </div>
 
+        <!--Ziel und Treffpunkt-->
         <div class="p-grid">
-          <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
-            <input formControlName="location" id="location" placeholder="Ort (z.B Swoboda Alpin, Gipfel)"
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+            <input formControlName="location" id="location" placeholder="Ziel/Unterkunft (Hütte, Gipfel etc.)"
+                   type="text" style="width:100%"
+                   pInputText>
+          </div>
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+            <input formControlName="rendezvous" id="rendezvous" placeholder="Treffpunkt"
+                   type="text" style="width:100%"
+                   pInputText>
+          </div>
+        </div>
+
+        <!--ReservierungsService-->
+        <div class="p-grid">
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+            <p-checkbox
+                [formControl]="currentEventGroup.controls['reservationService']"
+                label="Reservierungsservice"
+                binary="true"
+            ></p-checkbox>
+          </div>
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+          </div>
+        </div>
+
+        <!--Distal & Distance-->
+        <div class="p-grid">
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+            <p-checkbox
+                [formControl]="currentEventGroup.controls['distal']"
+                label="Auswärtig"
+                binary="true"
+            ></p-checkbox>
+          </div>
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+            <input formControlName="distance" id="distance" placeholder="Entfernung"
+                   type="text" style="width:100%" [disabled]="!(currentEventGroup.get('distal').value)"
+                   pInputText>
+          </div>
+        </div>
+        <!--ShuttleService & PublicTransport-->
+        <div class="p-grid">
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+            <p-checkbox
+                [formControl]="currentEventGroup.controls['publicTransport']"
+                label="Öffentliche Anreise"
+                binary="true"
+            ></p-checkbox>
+          </div>
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+            <p-checkbox
+                [formControl]="currentEventGroup.controls['shuttleService']"
+                label="ShuttleSerivce"
+                binary="true"
+            ></p-checkbox>
+          </div>
+        </div>
+
+        <!--Source, Link & Map-->
+        <div class="p-grid">
+          <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+            <input formControlName="source" id="source" placeholder="Source"
+                   type="text" style="width:100%"
+                   pInputText>
+          </div>
+          <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+            <input formControlName="link" id="link" placeholder="Link"
+                   type="text" style="width:100%"
+                   pInputText>
+          </div>
+          <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+            <input formControlName="map" id="map" placeholder="Map"
                    type="text" style="width:100%"
                    pInputText>
           </div>
@@ -261,11 +398,57 @@
     </p-dialog>
     </ng-container>
 
-    <!--Teilnehmergebühr-->
+    <!--Teilnehmergebühr, Vorauszahlung & Zusatzkosten-->
     <div class="p-grid">
-      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-        <input formControlName="admission" id="admission" placeholder="Teilnehmergebühr" type="text" style='width:100%'
+      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+        <div class="ui-inputgroup">
+          <span class="ui-inputgroup-addon">TN-Gebühr</span>
+          <input formControlName="admission" id="admission" placeholder="Teilnehmergebühr" type="text"
                pInputText>
+          <span class="ui-inputgroup-addon">€</span>
+        </div>
+      </div>
+      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+        <div class="ui-inputgroup">
+          <span class="ui-inputgroup-addon">Vorauszahlung</span>
+          <input formControlName="advances" id="advances" placeholder="Vorauszahlung" type="text"
+               pInputText>
+          <span class="ui-inputgroup-addon">€</span>
+        </div>
+      </div>
+      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+        <div class="ui-inputgroup">
+          <span class="ui-inputgroup-addon">Zusatzkosten</span>
+          <input formControlName="extraCharges" id="extraCharges" placeholder="Zusatzkosten" type="text"
+               pInputText>
+          <span class="ui-inputgroup-addon">€</span>
+        </div>
+      </div>
+    </div>
+
+    <!--Zusatzkosten & Advances Details-->
+    <div class="p-grid">
+      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      </div>
+      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <textarea
+          [rows]="2"
+          formControlName="advancesInfo"
+          pInputTextarea
+          placeholder="Vorauszahlung Details"
+          autoResize="autoResize"
+          style='width:100%'
+      ></textarea>
+      </div>
+      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <textarea
+          [rows]="2"
+          formControlName="extraChargesInfo"
+          pInputTextarea
+          placeholder="Zusatzkosten Details"
+          autoResize="autoResize"
+          style='width:100%'
+      ></textarea>
       </div>
     </div>
 
