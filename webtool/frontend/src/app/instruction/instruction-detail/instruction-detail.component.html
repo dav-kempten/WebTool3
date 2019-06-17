@@ -211,9 +211,6 @@
             [readOnly]="!(userValState >= 0)"
         ></avk-membernumber>
       </div>
-      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3" *ngIf="false">
-        <input formControlName="distance" id="distance" placeholder="PKW Strecke" type="text" style='width:100%'
-               pInputText>
       <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
         <avk-membernumber
             formControlName="curQuantity"
@@ -349,11 +346,12 @@
                 [formControl]="currentEventGroup.controls['distal']"
                 label="Auswärtig"
                 binary="true"
+                (onChange)="switchDistal($event, distal)"
             ></p-checkbox>
           </div>
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
-            <input formControlName="distance" id="distance" placeholder="Entfernung"
-                   type="text" style="width:100%" [disabled]="!(currentEventGroup.get('distal').value)"
+            <input #distal formControlName="distance" id="distance" placeholder="Entfernung"
+                   type="text" style="width:100%"
                    pInputText>
           </div>
         </div>

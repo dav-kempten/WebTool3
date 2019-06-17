@@ -16,7 +16,7 @@ import {selectStatesState} from "../../core/store/value.selectors";
 import {AuthService, User} from "../../core/service/auth.service";
 import {Event} from '../../model/event';
 import {Category, Topic} from '../../model/value';
-import {FormArray, FormControl, FormGroup} from '@angular/forms';
+import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
 import {UpdateEvent} from '../../core/store/event.actions';
 
 @Component({
@@ -140,8 +140,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
             eventArray.push(eventGroup);
           });
           this.eventsSubject.next(eventArray);
-        }),
-        tap((events) => console.log("Events", events))
+        })
       )),
     );
 
@@ -166,7 +165,8 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
       filter(instruction => !!instruction)
     ).subscribe(
       instruction => this.store.dispatch(
-        new UpdateInstruction({instruction: {id: instruction.id, changes: {...instruction}}})
+        new UpdateInstruction({instruction: {id: instruction.id, changes: {...instruction,
+              admission: (instruction.admission*100)}}})
       )
     );
 
@@ -196,6 +196,10 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     console.log("CurrentEventGroup", this.currentEventGroup);
     this.display = true;
   }
+
+  switchDistal(isDistal, distal) {
+    distal.disabled = !isDistal;
+  }
 }
 
 function instructionGroupFactory(instruction: Instruction): FormGroup {
@@ -216,7 +220,7 @@ function instructionGroupFactory(instruction: Instruction): FormGroup {
       equipmentIds: new FormControl(instruction.equipmentIds),
       miscEquipment: new FormControl(instruction.miscEquipment),
       equipmentService: new FormControl(instruction.equipmentService),
-      admission: new FormControl(instruction.admission),
+      admission: new FormControl((instruction.admission/100).toFixed(2)),
       advances: new FormControl(instruction.advances),
       advancesInfo: new FormControl(instruction.advancesInfo),
       extraCharges: new FormControl(instruction.extraCharges),
@@ -274,7 +278,7 @@ function eventGroupFactory(event: Event): FormGroup {
       link: new FormControl(event.link),
       map: new FormControl(event.map),
       distal: new FormControl(event.distal),
-      distance: new FormControl(event.distance),
+      distance: new FormControl({value: event.distance, disabled: !event.distal}),
       publicTransport: new FormControl(event.publicTransport),
       shuttleService: new FormControl(event.shuttleService)
     });

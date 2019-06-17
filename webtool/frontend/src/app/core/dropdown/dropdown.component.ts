@@ -19,8 +19,8 @@ import {
   ValidatorFn
 } from '@angular/forms';
 import {Dropdown} from 'primeng/primeng';
-import {Observable, ReplaySubject, Subscription} from 'rxjs';
-import {delay, tap} from 'rxjs/operators';
+import {Observable, ReplaySubject, Subject, Subscription} from 'rxjs';
+import {delay, takeUntil, tap} from 'rxjs/operators';
 import {Store} from '@ngrx/store';
 import {AppState} from '../../app.state';
 import {ValuesRequested} from '../store/value.actions';
@@ -47,6 +47,8 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   formControl: FormControl;
   delegatedMethodCalls = new ReplaySubject<(_: ControlValueAccessor) => void>();
   delegatedMethodsSubscription: Subscription;
+
+  private destroySubject = new Subject<void>();
 
   originalControl = new FormControl(null);
   choiceControl = new FormControl('');
@@ -107,6 +109,7 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.formState$ = this.store.select(selectStatesState);
 
     this.formState$.pipe(
+      takeUntil(this.destroySubject),
       tap( (state) => {
         for (const key in state.entities) {
           const statePush: RawState = {
@@ -116,7 +119,7 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           this.status.push(statePush);
         }
       })
-    ).subscribe().unsubscribe();
+    ).subscribe()
   }
 
 
@@ -130,6 +133,8 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     if (this.delegatedMethodsSubscription) {
       this.delegatedMethodsSubscription.unsubscribe();
     }
+    this.destroySubject.next();
+    this.destroySubject.complete();
   }
 
   ngAfterContentInit(): void {
