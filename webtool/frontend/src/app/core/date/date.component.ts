@@ -230,7 +230,7 @@ export const dateValidator: ValidatorFn = (group: FormGroup): ValidationErrors |
 
   const error: ValidationErrors = {invalidDate: {value: date}};
 
-  const valid = curMin && curMax ? (
+  const valid = !!curMin || !!curMax ? (
     curMin.length && curMax.length && curMinCompare && curMaxCompare ||
     !curMin.length && curMax.length && curMaxCompare ||
     curMin.length && !curMax.length && curMinCompare ||
