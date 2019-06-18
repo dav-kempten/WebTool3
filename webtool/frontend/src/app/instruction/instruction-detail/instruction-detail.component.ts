@@ -1,136 +1,57 @@
-import {Observable} from 'rxjs';
+import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {select, Store} from '@ngrx/store';
 import {AppState, selectRouterDetailId} from '../../app.state';
-import {FormControl, FormGroup} from "@angular/forms";
+import {getCategoryById, getTopicById} from '../../core/store/value.selectors';
 import {RequestNames} from "../../core/store/name.actions";
 import {ValuesRequested} from "../../core/store/value.actions";
 import {CalendarRequested} from "../../core/store/calendar.actions";
-import {RequestInstruction} from "../../core/store/instruction.actions";
-import {getInstructionIsLoading, getInstructionById} from "../../core/store/instruction.selectors";
+import {RequestInstruction, UpdateInstruction} from "../../core/store/instruction.actions";
+import {getInstructionById} from "../../core/store/instruction.selectors";
 import {Instruction} from "../../core/store/instruction.model";
-import {flatMap, map, tap} from "rxjs/operators";
+import {filter, flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
+import {getEventById, getEventsByIds} from "../../core/store/event.selectors";
 import {State} from "../../core/store/state.reducer";
 import {selectStatesState} from "../../core/store/value.selectors";
 import {AuthService, User} from "../../core/service/auth.service";
-import {getEventsByIds} from "../../core/store/event.selectors";
 import {Event} from '../../model/event';
-
-interface Tour {
-  type;
-  sdate;
-  stime;
-  edate;
-  etime;
-  title;
-  name;
-  location;
-}
-
-interface Costs {
-  pos;
-  beschreibung;
-  betrag;
-}
+import {Category, Topic} from '../../model/value';
+import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
+import {UpdateEvent} from '../../core/store/event.actions';
 
 @Component({
   selector: 'avk-instruction-detail',
-  "styles": ["node_modules/primeflex/primeflex.css"],
   templateUrl: './instruction-detail.component.html',
   styleUrls: ['./instruction-detail.component.css']
 })
 
 export class InstructionDetailComponent implements OnInit, OnDestroy {
 
-  instructionId$: Observable<number>;
-  isLoading$: Observable<boolean>;
-  formInstruction$: Observable<Instruction>;
+  private destroySubject = new Subject<void>();
+  private instructionSubject = new BehaviorSubject<FormGroup>(undefined);
+  private topicSubject = new BehaviorSubject<FormGroup>(undefined);
+  private categorySubject = new BehaviorSubject<FormGroup>(undefined);
+  private eventsSubject = new BehaviorSubject<FormArray>(undefined);
+  private instructionChangeSubject = new BehaviorSubject<Instruction>(undefined);
+  private eventChangeSubject = new BehaviorSubject<Event>(undefined);
 
+  instructionGroup$: Observable<FormGroup> = this.instructionSubject.asObservable();
+  topicGroup$: Observable<FormGroup> = this.topicSubject.asObservable();
+  categoryGroup$: Observable<FormGroup> = this.categorySubject.asObservable();
+  eventArray$: Observable<FormArray> = this.eventsSubject.asObservable();
+  instructionChange$: Observable<Instruction> = this.instructionChangeSubject.asObservable();
+  eventChange$: Observable<Event> = this.eventChangeSubject.asObservable();
+
+  instructionId$: Observable<number>;
+  instruction$: Observable<Instruction>;
+  topic$: Observable<Topic>;
   eventIds$: Observable<number[]>;
   events$: Observable<Event[]>;
-
-  formState$: Observable<State>;
-  authState$: Observable<User>;
-
-  guideId = new FormControl(undefined);
-  teamIds = new FormControl([]);
-  costs = new FormControl('');
-  revenue = new FormControl('');
-  description = new FormControl('');
-  notes = new FormControl('');
-  reference = new FormControl('');
-  stateId = new FormControl('');
-  topicId = new FormControl('');
-  title = new FormControl('');
-  name = new FormControl('');
-  equipmentIds = new FormControl('');
-  qualificationIds = new FormControl('');
-  minQuantity = new FormControl('');
-  maxQuantity = new FormControl('');
-  distance = new FormControl('');
-  equipmentService = new FormControl('');
-  tourcosts = new FormControl('');
-  costsctr = new FormControl('');
-  costsname = new FormControl('');
-  extracosts = new FormControl('');
-  admission = new FormControl('');
-  deposit = new FormControl('');
-  extraCharges = new FormControl('');
-  startdate = new FormControl('');
-  enddate = new FormControl('');
-  datetype = new FormControl('');
-  location = new FormControl('');
-  multisingle = new FormControl('');
-  approximateId = new FormControl('');
-  time = new FormControl('');
-  meetingIds = new FormControl('');
-  lowEmissionAdventure = new FormControl('');
-  ladiesOnly = new FormControl('');
-  isSpecial = new FormControl('');
-
-
-  instructionForm = new FormGroup({
-    guideId: this.guideId,
-    teamIds: this.teamIds,
-    costs: this.costs,
-    revenue: this.revenue,
-    description: this.description,
-    notes: this.notes,
-    reference: this.reference,
-    stateId: this.stateId,
-    topicId: this.topicId,
-    title: this.title,
-    name: this.name,
-    equipmentIds: this.equipmentIds,
-    qualificationIds: this.qualificationIds,
-    minQuantity: this.minQuantity,
-    maxQuantity: this.maxQuantity,
-    distance: this.distance,
-    equipmentService: this.equipmentService,
-    costsctr: this.costsctr,
-    tourcosts: this.tourcosts,
-    costsname: this.costsname,
-    extracosts: this.extracosts,
-    deposit: this.deposit,
-    extraCharges: this.extraCharges,
-    admission: this.admission,
-    startdate: this.startdate,
-    enddate: this.enddate,
-    datetype: this.datetype,
-    location: this.location,
-    multisingle: this.multisingle,
-    approximateId: this.approximateId,
-    time: this.time,
-    meetingIds: this.meetingIds,
-    lowEmissionAdventure: this.lowEmissionAdventure,
-    ladiesOnly: this.ladiesOnly,
-    isSpecial: this.isSpecial
-  });
-
-  tours: Tour[] = [];
-  totalcostsTable: Costs[] = [];
+  category$: Observable<Category>;
 
   userValState: number = 0;
+  display: boolean = false;
+  currentEventGroup: FormGroup = undefined;
 
   constructor(private store: Store<AppState>, private userService: AuthService) {
     this.store.dispatch(new RequestNames());
@@ -139,198 +60,226 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.instructionId$ = this.store.pipe(select(selectRouterDetailId));
-    this.isLoading$ = this.store.select(getInstructionIsLoading);
 
-    this.authState$ = this.userService.user$;
+    this.instructionId$ = this.store.select(selectRouterDetailId);
 
-    this.authState$.pipe(
-      tap(value => {
-        if (value.role === 'administrator') {
-          this.userValState = 4;
-        } else if (value.role === 'staff') {
-          this.userValState = 3;
-        } else if (value.role === 'coordinator') {
-          this.userValState = 2;
-        } else if (value.role === 'guide') {
-          this.userValState = 1;
-        } else {
-          this.userValState = 0;
-        }
-      })
-    ).subscribe();
-
-    this.formInstruction$ = this.instructionId$.pipe(
+    this.instruction$ = this.instructionId$.pipe(
+      takeUntil(this.destroySubject),
       flatMap(id => this.store.pipe(
         select(getInstructionById(id)),
         tap(instruction => {
           if (!instruction) {
             this.store.dispatch(new RequestInstruction({id}));
+          } else {
+            const instructionGroup = instructionGroupFactory(instruction);
+            instructionGroup.valueChanges.pipe(
+              takeUntil(this.destroySubject)
+            ).subscribe(
+              value => this.instructionChangeSubject.next(value)
+            );
+            this.instructionSubject.next(instructionGroup);
           }
         })
-        )
-      )
+      )),
+      publishReplay(1),
+      refCount()
     );
 
-    this.formState$ = this.store.select(selectStatesState);
+    this.topic$ = this.instruction$.pipe(
+      takeUntil(this.destroySubject),
+      filter(instruction => !!instruction),
+      flatMap(instruction => this.store.pipe(
+        select(getTopicById(instruction.topicId)),
+        tap(topic => {
+          if (!topic) {
+            this.store.dispatch((new ValuesRequested()));
+          } else {
+            this.topicSubject.next(topicGroupFactory(topic));
+          }
+        })
+      )),
+      publishReplay(1),
+      refCount()
+    );
 
-    this.eventIds$ = this.formInstruction$.pipe(
-      map(instruction => [instruction.instructionId, ...instruction.meetingIds]),
-      tap(instruction => console.log("EventInstruction", instruction)),
+    this.category$ = this.topic$.pipe(
+      takeUntil(this.destroySubject),
+      filter(topic => !!topic),
+      flatMap(topic => this.store.pipe(
+        select(getCategoryById(topic.id)),
+        tap(category => {
+          if (!category) {
+            this.store.dispatch((new ValuesRequested()));
+          } else {
+            this.categorySubject.next(categoryGroupFactory(category));
+          }
+        })
+      ))
+    );
+
+    this.eventIds$ = this.instruction$.pipe(
+      takeUntil(this.destroySubject),
+      filter(instruction => !!instruction),
+      map(instruction => [instruction.instructionId, ...instruction.meetingIds])
     );
 
     this.events$ = this.eventIds$.pipe(
-      flatMap(eventIds => this.store.select(getEventsByIds(eventIds))),
-      tap(eventIds => console.log("EventIds", eventIds)),
-      tap(eventIds => {
-          if (eventIds[0].startDate !== null) this.startdate.setValue(eventIds[0].startDate);
-          if (eventIds[0].endDate !== null) this.enddate.setValue(eventIds[0].endDate);
-          this.title.setValue(eventIds[0].title);
-          this.name.setValue(eventIds[0].name);
-          this.location.setValue(eventIds[0].location);
-          this.approximateId.setValue(eventIds[0].approximateId);
-          this.time.setValue(eventIds[0].startTime);
-          this.description.setValue(eventIds[0].description);
-      }),
-      tap(eventIds => {
-        for (let el = 0; el < eventIds.length; el++) {
-          let dateData: Tour = {
-              type: eventIds[el].id, sdate: eventIds[el].startDate, stime: eventIds[el].startTime,
-              edate: eventIds[el].endDate, etime: eventIds[el].endTime,
-              title: eventIds[el].title, name: eventIds[el].name, location: eventIds[el].location
-          };
-          this.tours.push(dateData);
-        }
-      }),
+      takeUntil(this.destroySubject),
+      filter(eventIds => !!eventIds),
+      flatMap(eventIds => this.store.select(getEventsByIds(eventIds)).pipe(
+        filter(() => !!eventIds && eventIds.length > 0),
+        tap(events => {
+          const eventArray = new FormArray([]);
+          events.forEach((event: Event) => {
+            const eventGroup = eventGroupFactory(event);
+            eventGroup.valueChanges.pipe(
+              takeUntil(this.destroySubject)
+            ).subscribe(
+              value => this.eventChangeSubject.next(value)
+            );
+            eventArray.push(eventGroup);
+          });
+          this.eventsSubject.next(eventArray);
+        })
+      )),
     );
 
-    // this.instructionForm.controls['service'].valueChanges.subscribe(
-    //   (selectedValue) => {
-    //     console.log("Service",selectedValue);
-    //     console.log("Time",this.instructionForm.get('time').value);
+    this.instructionId$.subscribe();
+    this.instruction$.subscribe();
+    this.topic$.subscribe();
+    this.category$.subscribe();
+    this.eventIds$.subscribe();
+    this.events$.subscribe();
+
+    this.eventChange$.pipe(
+      takeUntil(this.destroySubject),
+      filter(event => !!event)
+    ).subscribe(
+      event => this.store.dispatch(
+        new UpdateEvent({event: {id: event.id, changes: {...event}}})
+      )
+    );
+
+    this.instructionChange$.pipe(
+      takeUntil(this.destroySubject),
+      filter(instruction => !!instruction)
+    ).subscribe(
+      instruction => this.store.dispatch(
+        new UpdateInstruction({instruction: {id: instruction.id, changes: {...instruction,
+              admission: (instruction.admission*100)}}})
+      )
+    );
+
+    // setTimeout(() => this.store.dispatch(
+    //   new UpdateInstruction({
+    //     instruction: {
+    //       id: 2102,
+    //       changes: {curQuantity: 99, teamIds: [133, 104]}
+    //     }
     //   }
-    // );
-
-    // this.formState$.pipe(
-    //   tap((state:State) => console.log("formState",state)),
-    //   map(instruction => instruction.guideId)
-    // ).subscribe();
-
-    // this.formInstruction$.pipe(
-    //   tap((instruction:Instruction) => console.log("formInstruction",instruction)),
-    //   map(instruction => instruction.guideId)
-    // ).subscribe();
-
-    this.formInstruction$.subscribe((instruction: Instruction) => {
-      if (instruction !== undefined) {
-        this.instructionForm.setValue({
-          guideId: instruction.guideId,
-          teamIds: instruction.teamIds,
-          costs: '',
-          revenue: '',
-          description: '',
-          notes: '',
-          reference: instruction.reference,
-          stateId: instruction.stateId,
-          topicId: instruction.topicId,
-          title: '',
-          name: '',
-          equipmentIds: instruction.equipmentIds,
-          qualificationIds: instruction.qualificationIds,
-          minQuantity: instruction.minQuantity,
-          maxQuantity: instruction.maxQuantity,
-          distance: '',
-          equipmentService: instruction.equipmentService,
-          costsctr: 0,
-          tourcosts: '',
-          costsname: '',
-          extracosts: '',
-          deposit: '',
-          extraCharges: instruction.extraCharges,
-          admission: instruction.admission,
-          startdate: '',
-          enddate: '',
-          datetype: '',
-          location: '',
-          multisingle: (instruction.meetingIds.length > 0),
-          approximateId: '',
-          time: '',
-          meetingIds: instruction.meetingIds,
-          lowEmissionAdventure: instruction.lowEmissionAdventure,
-          ladiesOnly: instruction.ladiesOnly,
-          isSpecial: instruction.isSpecial
-            });
-      } else {
-        this.instructionForm.setValue({
-          guideId: '',
-          teamIds: '',
-          costs: '',
-          revenue: '',
-          description: '',
-          notes: '',
-          reference: '',
-          stateId: '',
-          topicId: '',
-          title: '',
-          name: '',
-          equipmentIds: '',
-          qualificationIds: '',
-          minQuantity: '',
-          maxQuantity: '',
-          distance: '',
-          equipmentService: '',
-          costsctr: 0,
-          tourcosts: '',
-          costsname: '',
-          extracosts: '',
-          deposit: '',
-          extraCharges: '',
-          admission: '',
-          startdate: '',
-          enddate: '',
-          datetype: '',
-          location: '',
-          multisingle: '',
-          approximateId: '',
-          time: '',
-          meetingIds: '',
-          lowEmissionAdventure: '',
-          ladiesOnly: '',
-          isSpecial: ''
-        });
-      }
-    });
-
-    // this.instructionForm.controls['multisingle'].valueChanges.subscribe(
-    //   (selectedValue) => {
-    //     console.log("MulitSingle",selectedValue);
-    //   }
-    // )
+    // )), 10000);
   }
 
-  ngOnDestroy(): void {}
-
-  getTourCosts(): void {
-    if (this.costsname.value !== '' && this.tourcosts.value !== '') {
-      /* increasing counter for each cost instance */
-      let ctr = this.costsctr.value;
-      this.costsctr.setValue(++ctr);
-
-      /* list input-data directly on website */
-      let varCost: Costs = {pos: this.costsctr.value, betrag: this.tourcosts.value, beschreibung: this.costsname.value};
-      this.totalcostsTable.push(varCost);
-    }
+  ngOnDestroy(): void {
+    this.destroySubject.next();
+    this.destroySubject.complete();
+    this.instructionSubject.complete();
+    this.topicSubject.complete();
+    this.categorySubject.complete();
+    this.eventsSubject.complete();
   }
 
-  getDateData(): void {
-    if (this.datetype.value !== '' && this.startdate.value !== '' && this.enddate.value !== '' && this.location.value !== '') {
-      let dateData: Tour = {
-        type: this.datetype.value, sdate: this.startdate.value, stime: "",
-        edate: this.enddate.value, etime: "", title: "", name: "", location: this.location.value
-      };
-
-      this.tours.push(dateData);
-    }
+  selectEvent(index) {
+    this.eventArray$.subscribe(
+      eventArray => this.currentEventGroup = (eventArray.at(index)) as FormGroup
+    );
+    console.log("CurrentEventGroup", this.currentEventGroup);
+    this.display = true;
   }
 
+  switchDistal(isDistal, distal) {
+    distal.disabled = !isDistal;
+  }
 }
+
+function instructionGroupFactory(instruction: Instruction): FormGroup {
+    return new FormGroup({
+      id: new FormControl(instruction.id),
+      reference: new FormControl(instruction.reference),
+      guideId: new FormControl(instruction.guideId),
+      teamIds: new FormControl(instruction.teamIds),
+      topicId: new FormControl(instruction.topicId),
+      instructionId: new FormControl(instruction.instructionId),
+      meetingIds: new FormControl(instruction.meetingIds),
+      lowEmissionAdventure: new FormControl(instruction.lowEmissionAdventure),
+      ladiesOnly: new FormControl(instruction.ladiesOnly),
+      isSpecial: new FormControl(instruction.isSpecial),
+      categoryId: new FormControl(instruction.categoryId),
+      qualificationIds: new FormControl(instruction.qualificationIds),
+      preconditions: new FormControl(instruction.preconditions),
+      equipmentIds: new FormControl(instruction.equipmentIds),
+      miscEquipment: new FormControl(instruction.miscEquipment),
+      equipmentService: new FormControl(instruction.equipmentService),
+      admission: new FormControl((instruction.admission/100).toFixed(2)),
+      advances: new FormControl(instruction.advances),
+      advancesInfo: new FormControl(instruction.advancesInfo),
+      extraCharges: new FormControl(instruction.extraCharges),
+      extraChargesInfo: new FormControl(instruction.extraChargesInfo),
+      minQuantity: new FormControl(instruction.minQuantity),
+      maxQuantity: new FormControl(instruction.maxQuantity),
+      curQuantity: new FormControl(instruction.curQuantity),
+      stateId: new FormControl(instruction.stateId)
+    });
+}
+
+function topicGroupFactory(topic: Topic): FormGroup {
+  return new FormGroup({
+    id: new FormControl(topic.id),
+    code: new FormControl(topic.code),
+    title: new FormControl(topic.title),
+    name: new FormControl(topic.name),
+    description: new FormControl(topic.description),
+    preconditions: new FormControl(topic.preconditions),
+    qualificationIds: new FormControl(topic.qualificationIds),
+    equipmentIds: new FormControl(topic.equipmentIds),
+    miscEquipment: new FormControl(topic.miscEquipment)
+  });
+}
+
+function categoryGroupFactory(category: Category): FormGroup {
+  return new FormGroup({
+    id: new FormControl(category.id),
+    code: new FormControl(category.code),
+    name: new FormControl(category.name),
+    tour: new FormControl(category.tour),
+    talk: new FormControl(category.talk),
+    instruction: new FormControl(category.instruction),
+    collective: new FormControl(category.collective),
+    winter: new FormControl(category.winter),
+    summer: new FormControl(category.summer),
+    indoor: new FormControl(category.indoor),
+  });
+}
+
+function eventGroupFactory(event: Event): FormGroup {
+    return new FormGroup({
+      id: new FormControl(event.id),
+      title: new FormControl(event.title),
+      name: new FormControl(event.name),
+      description: new FormControl(event.description),
+      startDate: new FormControl(event.startDate),
+      startTime: new FormControl(event.startTime),
+      approximateId: new FormControl(event.approximateId),
+      endDate: new FormControl(event.endDate),
+      rendezvous: new FormControl(event.rendezvous),
+      location: new FormControl(event.location),
+      reservationService: new FormControl(event.reservationService),
+      source: new FormControl(event.source),
+      link: new FormControl(event.link),
+      map: new FormControl(event.map),
+      distal: new FormControl(event.distal),
+      distance: new FormControl({value: event.distance, disabled: !event.distal}),
+      publicTransport: new FormControl(event.publicTransport),
+      shuttleService: new FormControl(event.shuttleService)
+    });
+  }

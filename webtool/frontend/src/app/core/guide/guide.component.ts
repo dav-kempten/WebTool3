@@ -50,7 +50,7 @@ export class GuideComponent implements OnInit, OnDestroy, AfterViewInit, AfterCo
     this.nameIsRequired.setValue(value);
   }
 
-  readonly: boolean = false; /* init of readonly in guide component */
+  readonly = false;
 
   @Input()
   set readOnly(value: boolean) {

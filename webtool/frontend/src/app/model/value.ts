@@ -56,6 +56,7 @@ export interface Topic {
   preconditions: string;
   qualificationIds: number[];
   equipmentIds: number[];
+  miscEquipment: string;
 }
 
 export interface Collective {

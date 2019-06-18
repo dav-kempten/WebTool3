@@ -1,315 +1,468 @@
-<ng-container *ngIf="!(isLoading$ | async) else loading">
-<ng-container *ngIf="formInstruction$ | async as instruction">
-<ng-container *ngIf="events$ | async as events">
-<ng-container *ngIf="eventIds$ | async as eventIds">
+<ng-container *ngIf="instructionGroup$ | async as instructionGroup else loading">
 
-  <h1>Instruction {{instruction.reference}}</h1>
-  <p>{{instruction | json}}</p>
-  <p>EventIds: {{eventIds.join(', ')}}</p>
-  <p *ngFor="let event of events">{{event | json}}</p>
+  <h1>Instruction {{instructionGroup.get('reference').value}}</h1>
 
-<form [formGroup]="instructionForm">
+  <p>InstructionGroup:<br/>{{instructionGroup.value | json}}</p>
+  <p>TopicGroup:<br/>{{(topicGroup$ | async)?.value | json}}</p>
+  <p>CategoryGroup:<br />{{(categoryGroup$ | async)?.value | json}}</p>
+  <p>EventIds: {{instructionGroup.get('instructionId').value}},
+    {{instructionGroup.get('meetingIds').value.join(', ')}}</p>
+  <p>EventArray:<br/>{{(eventArray$ | async)?.value | json}}</p>
 
-  <!--GuideComponent // TeamComponent // Abrechnung-->
-  <div class="p-grid">
-    <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
-      <avk-guide
-          formControlName="guideId"
-          id="g1"
-          label="Trainer"
-          [nameIdList]="teamIds.value"
-          [readOnly]="!(userValState >= 0)"
-          required
-      ></avk-guide>
-    </div>
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <input formControlName="costs" id="costs" placeholder="Kosten" type="text" style='width:100%'
-             pInputText>
-    </div>
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <input formControlName="revenue" id="revenue" placeholder="Einnahmen" type="text" style='width:100%'
-             [readOnly]="!(userValState >= 0)" pInputText>
-    </div>
-  </div>
 
-  <div class="p-grid">
-    <div class="p-sm-6 p-md-6 p-lg-6">
-      <avk-team
-          formControlName="teamIds"
-          id="g2"
-          label="Team"
-          [nameId]="guideId.value"
-          [readOnly]="!(userValState >= 0)"
-      ></avk-team>
-    </div>
-    <div class="p-sm-3 p-md-3 p-lg-3">
-      <p-checkbox
-          [formControl]="instructionForm.controls['lowEmissionAdventure']"
-          label="LEA"
-          binary="true"
-      ></p-checkbox>
-    </div>
-    <div class="p-sm-3 p-md-3 p-lg-3">
-      <p-checkbox
-          [formControl]="instructionForm.controls['ladiesOnly']"
-          label="LadiesOnly"
-          binary="true"
-      ></p-checkbox>
-    </div>
-  </div>
 
-  <!--Buchungscode, Status, Kurskonzept, InfoBox-->
-  <div class="p-grid">
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <input formControlName="reference" id="reference" placeholder="Buchungsnummer" type="text" style='width:100%'
-             readonly pInputText>
+  <div [formGroup]="instructionGroup">
+    <!--GuideComponent // TeamComponent // Abrechnung-->
+    <div class="p-grid">
+      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+        <avk-guide
+            formControlName="guideId"
+            id="g1"
+            label="Trainer"
+            [nameIdList]="instructionGroup.get('teamIds').value"
+            [readOnly]="!(userValState >= 0)"
+            required
+        ></avk-guide>
+      </div>
+      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+        <input id="costs" placeholder="Kosten" type="text" style='width:100%'
+               pInputText>
+      </div>
+      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+        <input id="revenue" placeholder="Einnahmen" type="text" style='width:100%'
+               [readOnly]="!(userValState >= 0)" pInputText>
+      </div>
     </div>
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <avk-dropdown formControlName="stateId" id="stateId" [readOnly]="!(userValState >= 0)"></avk-dropdown>
-    </div>
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <avk-categoryselect
-          formControlName="topicId"
-          id="topicId"
-          [readOnly]="!(userValState >= 0)"
-          [editAble]="isSpecial.value">
-      </avk-categoryselect>
-    </div>
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <p-checkbox
-          [formControl]="instructionForm.controls['isSpecial']"
-          label="Spezialkategorie"
-          binary="true"
-      ></p-checkbox>
-    </div>
-  </div>
 
-  <!--Kurztitel, Langtitel-->
-  <div class="p-grid" *ngIf="false">
-    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-      <input formControlName="title" id="shorttitle" placeholder="Kurztitel" type="text" style='width:100%'
-             pInputText>
+    <div class="p-grid">
+      <div class="p-sm-6 p-md-6 p-lg-6">
+        <avk-team
+            formControlName="teamIds"
+            [nameId]="instructionGroup.get('guideId').value"
+            id="g2"
+            label="Team"
+            [readOnly]="!(userValState >= 0)"
+        ></avk-team>
+      </div>
+      <div class="p-sm-3 p-md-3 p-lg-3">
+        <p-checkbox
+            [formControl]="instructionGroup.controls['lowEmissionAdventure']"
+            label="LEA"
+            binary="true"
+        ></p-checkbox>
+      </div>
+      <div class="p-sm-3 p-md-3 p-lg-3">
+        <p-checkbox
+            [formControl]="instructionGroup.controls['ladiesOnly']"
+            label="LadiesOnly"
+            binary="true"
+        ></p-checkbox>
+      </div>
     </div>
-    <div class="p-col-12 p-sm-8 p-md-8 p-lg-8">
-      <input formControlName="name" id="longtitle" placeholder="Langtitel" type="text" style='width:100%'
-             pInputText>
-    </div>
-  </div>
 
-  <!--Beschreibung-->
-  <div class="p-grid">
-    <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+    <!--Buchungscode, Status, Kurskonzept, InfoBox-->
+    <div class="p-grid">
+      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+        <input formControlName="reference" id="reference" placeholder="Buchungsnummer" type="text" style='width:100%'
+               readonly pInputText>
+      </div>
+      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+        <avk-dropdown formControlName="stateId" id="stateId" [readOnly]="!(userValState >= 0)"></avk-dropdown>
+      </div>
+      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+        <avk-categoryselect
+            formControlName="topicId"
+            id="topicId"
+            [readOnly]="!(userValState >= 0)">
+        </avk-categoryselect>
+      </div>
+      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+        <p-checkbox
+            [formControl]="instructionGroup.controls['isSpecial']"
+            label="isSpecial"
+            binary="true"
+        ></p-checkbox>
+      </div>
+    </div>
+
+    <!--Ausrüstung, Besondere Vorausssetzungen-->
+    <div class="p-grid" [formGroup]="topicGroup$| async" style="background-color:#D8D8D8">
+      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+        <avk-multiselect
+            formControlName="equipmentIds"
+            choice="equipment"
+            label="Ausrüstung"
+            [readOnly]="true"
+        ></avk-multiselect>
+      </div>
+      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+        <avk-multiselect
+            formControlName="qualificationIds"
+            choice="requirement"
+            label="Voraussetzungen"
+            [readOnly]="true"
+        ></avk-multiselect>
+      </div>
+      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+        <textarea
+          [rows]="2"
+          pInputTextarea
+          formControlName="preconditions"
+          id="preconditionsTopic"
+          readonly
+          placeholder="Spezielle Anforderungen"
+          autoResize="autoResize"
+          style='width:100%'
+        ></textarea>
+      </div>
+      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+        <textarea
+          [rows]="2"
+          pInputTextarea
+          formControlName="miscEquipment"
+          id="miscEquipmentTopic"
+          readonly
+          placeholder="Spezielle Ausrüstung"
+          autoResize="autoResize"
+          style='width:100%'
+        ></textarea>
+      </div>
+    </div>
+
+    <!--Topic-->
+    <div class="p-grid" [formGroup]="topicGroup$| async" *ngIf="!(instructionGroup.get('isSpecial').value)"
+      style="background-color:#D8D8D8">
+      <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
       <textarea
-          formControlName="description"
           [rows]="5"
           pInputTextarea
+          formControlName="description"
+          id="topicDescription"
+          readonly
           placeholder="Beschreibung"
           autoResize="autoResize"
           style='width:100%'
       ></textarea>
-    </div>
-  </div>
-
-  <div class="p-grid" *ngIf="false">
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <avk-approxdropdown formControlName="approximateId" id="approx" [readOnly]="!(userValState >= 0)"
-                          [disable]="!!time.value" ></avk-approxdropdown>
-    </div>
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <avk-time formControlName="time" id="time" [disable]="!!approximateId.value" ></avk-time>
-    </div>
-  </div>
-
-  <!--Zusatzausrüstung, Besondere Vorausssetzungen-->
-  <div class="p-grid">
-    <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
-      <avk-multiselect
-          formControlName="equipmentIds"
-          choice="equipment"
-          label="Ausrüstung"
-          [readOnly]="!(userValState >= 0)"
-      ></avk-multiselect>
-    </div>
-    <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
-      <avk-multiselect
-          formControlName="qualificationIds"
-          choice="requirement"
-          label="Vorraussetzungen"
-          [readOnly]="!(userValState >= 0)"
-      ></avk-multiselect>
-    </div>
-  </div>
-
-  <!--Teilnehmeranzahl, Strecke, Materialservice-->
-  <div class="p-grid">
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <avk-membernumber
-          formControlName="minQuantity"
-          label="MinMember"
-          id="m1"
-          [maxMember]="maxQuantity.value"
-          [readOnly]="!(userValState >= 0)"
-      ></avk-membernumber>
-    </div>
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <avk-membernumber
-          formControlName="maxQuantity"
-          label="MaxMember"
-          id="m2"
-          [minMember]="minQuantity.value"
-          [readOnly]="!(userValState >= 1)"
-      ></avk-membernumber>
-    </div>
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3" *ngIf="false">
-      <input formControlName="distance" id="distance" placeholder="PKW Strecke" type="text" style='width:100%'
-             pInputText>
-    </div>
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <p-checkbox
-          [formControl]="instructionForm.controls['equipmentService']"
-          label="Materialservice"
-          binary="true"
-      ></p-checkbox>
-    </div>
-  </div>
-
-  <!--Zusatz: Datumseingabe (Anfang + Ende + Art)-->
-  <div class="p-grid" *ngIf="false">
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <avk-date formControlName="startdate"
-                id="dbeginn" label="Start"
-                [max]="enddate.value"
-                [maxInclude]="true"
-      ></avk-date>
-    </div>
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <avk-date formControlName="enddate"
-                id="dend" label="Ende"
-                [min]="startdate.value"
-                [minInclude]="true"
-      ></avk-date>
-    </div>
-    <div class="p-col-12 p-sm-3 p-md-2 p-lg-2">
-      <input formControlName="datetype" id="datetype" placeholder="Art (z.B Besprechung)" type="text" style="width:100%"
-             pInputText>
-    </div>
-    <div class="p-col-12 p-sm-3 p-md-2 p-lg-2">
-      <input formControlName="location" id="location" placeholder="Ort (z.B Swoboda Alpin, Gipfel)"
-             type="text" style="width:100%"
-             pInputText>
-    </div>
-    <div id="demo">
-      <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
-        <button pButton type="button" label="Add" (click)="getDateData()"></button>
       </div>
     </div>
-  </div>
+
+    <!--Zusatzausrüstung & -anforderungen-->
+    <div class="p-grid">
+      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+        <avk-multiselect
+            formControlName="equipmentIds"
+            choice="equipment"
+            label="Zusatzausrüstung"
+            [readOnly]="!(userValState >= 0)"
+        ></avk-multiselect>
+      </div>
+      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+        <avk-multiselect
+            formControlName="qualificationIds"
+            choice="requirement"
+            label="Zusatzvorraussetzungen"
+            [readOnly]="!(userValState >= 0)"
+        ></avk-multiselect>
+      </div>
+    </div>
+
+    <!--Zusätzliche Anforderungen-->
+    <div class="p-grid">
+      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+        <textarea
+          [rows]="3"
+          pInputTextarea
+          formControlName="miscEquipment"
+          id="miscEquipment"
+          placeholder="Spezielle Ausrüstung"
+          autoResize="autoResize"
+          style='width:100%'
+        ></textarea>
+      </div>
+      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+        <textarea
+          [rows]="3"
+          pInputTextarea
+          formControlName="preconditions"
+          id="preconditions"
+          placeholder="Spezielle Voraussetzungen (z.B. Trittsicherheit)"
+          autoResize="autoResize"
+          style='width:100%'
+        ></textarea>
+      </div>
+    </div>
+    <!--Teilnehmeranzahl, Strecke, Materialservice-->
+    <div class="p-grid">
+      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+        <avk-membernumber
+            formControlName="minQuantity"
+            label="MinMember"
+            id="m1"
+            [maxMember]="instructionGroup.get('maxQuantity').value"
+            [readOnly]="!(userValState >= 0)"
+        ></avk-membernumber>
+      </div>
+      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+        <avk-membernumber
+            formControlName="maxQuantity"
+            label="MaxMember"
+            id="m2"
+            [minMember]="instructionGroup.get('minQuantity').value"
+            [readOnly]="!(userValState >= 0)"
+        ></avk-membernumber>
+      </div>
+      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+        <avk-membernumber
+            formControlName="curQuantity"
+            label="CurMember"
+            id="m3"
+            [maxMember]="instructionGroup.get('maxQuantity').value"
+            [readOnly]="!(userValState >= 0)"
+        ></avk-membernumber>
+      </div>
+      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+        <p-checkbox
+            [formControl]="instructionGroup.controls['equipmentService']"
+            label="Materialservice"
+            binary="true"
+        ></p-checkbox>
+      </div>
+    </div>
 
 
-  <!--Liste mit Parametern (Tabelle)-->
-  <div id="demo2">
+    <!--Liste mit Parametern (Tabelle)-->
     <div class="p-grid">
       <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
-        <p-table [value]="tours">
+        <p-table [value]="(eventArray$|async).value" selectionMode="single"
+                 (selectionChange)="selectEvent($event)">
           <ng-template pTemplate="header">
             <tr>
-              <th>Type</th>
-              <th>SDate</th>
-              <th>STime</th>
-              <th>EDate</th>
-              <th>ETime</th>
-              <th>ShortTitle</th>
-              <th>LongTitle</th>
-              <th>Location</th>
+              <th>Datum</th>
+              <th>Uhrzeit</th>
+              <th>Beschreibung</th>
             </tr>
           </ng-template>
-          <ng-template pTemplate="body" let-tour>
-            <tr>
-              <td>{{tour.type}}</td>
-              <td>{{tour.sdate}}</td>
-              <td>{{tour.stime}}</td>
-              <td>{{tour.edate}}</td>
-              <td>{{tour.etime}}</td>
-              <td>{{tour.title}}</td>
-              <td>{{tour.name}}</td>
-              <td>{{tour.location}}</td>
+          <ng-template pTemplate="body" let-event let-i="rowIndex">
+            <tr [pSelectableRow]="i">
+              <td>{{event.startDate.split('-').reverse().join('.')}}</td>
+              <td>{{event.startTime}}</td>
+              <td>{{event.name}}</td>
             </tr>
           </ng-template>
         </p-table>
       </div>
     </div>
-  </div>
 
-  <!--Fahrtkosten, Zusatzkosten, Anzahlung-->
-  <div class="p-grid" *ngIf="false">
-    <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
-      <div class="ui-inputgroup" style='width:100%'>
-        <button pButton type="button" label="Add" (click)="getTourCosts()"></button>
-        <input formControlName="costsname" id="coststname" placeholder="Name Kostenpunkt" type="text" style='width:100%'
+    <ng-container *ngIf="currentEventGroup">
+    <p-dialog header="EventDetail" [(visible)]="display" [style]="{width: '60%', height: '60%'}">
+      <form [formGroup]="currentEventGroup">
+        <!--Kurztitel, Langtitel-->
+        <div class="p-grid">
+          <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+            <input formControlName="title" id="title" placeholder="Kurztitel" type="text" style='width:100%'
+                   pInputText>
+          </div>
+          <div class="p-col-12 p-sm-8 p-md-8 p-lg-8">
+            <input formControlName="name" id="name" placeholder="Langtitel" type="text" style='width:100%'
+                   pInputText>
+          </div>
+        </div>
+
+        <!--Zeitpunkt Event-->
+        <div class="p-grid">
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+            <avk-approxdropdown formControlName="approximateId" id="approx" [readOnly]="!(userValState >= 0)"
+                                [disable]="currentEventGroup.get('startTime').value"></avk-approxdropdown>
+
+          </div>
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+            <avk-time formControlName="startTime" id="time" [disable]="currentEventGroup.get('approximateId').value"
+            ></avk-time>
+          </div>
+        </div>
+
+        <!--Zusatz: Datumseingabe (Anfang + Ende + Art)-->
+        <div class="p-grid">
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+            <avk-date formControlName="startDate"
+                      id="dbeginn" label="Start"
+                      [maxInclude]="true"
+                      [max]="currentEventGroup.get('endDate').value"
+            ></avk-date>
+          </div>
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+            <avk-date formControlName="endDate"
+                      id="dend" label="Ende"
+                      [minInclude]="true"
+                      [min]="currentEventGroup.get('startDate').value"
+            ></avk-date>
+          </div>
+        </div>
+        <div class="p-grid">
+          <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+            <textarea
+                [rows]="3"
+                pInputTextarea
+                formControlName="description"
+                id="description"
+                placeholder="Beschreibung"
+                autoResize="autoResize"
+                style='width:100%'
+            ></textarea>
+          </div>
+        </div>
+
+        <!--Ziel und Treffpunkt-->
+        <div class="p-grid">
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+            <input formControlName="location" id="location" placeholder="Ziel/Unterkunft (Hütte, Gipfel etc.)"
+                   type="text" style="width:100%"
+                   pInputText>
+          </div>
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+            <input formControlName="rendezvous" id="rendezvous" placeholder="Treffpunkt"
+                   type="text" style="width:100%"
+                   pInputText>
+          </div>
+        </div>
+
+        <!--ReservierungsService-->
+        <div class="p-grid">
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+            <p-checkbox
+                [formControl]="currentEventGroup.controls['reservationService']"
+                label="Reservierungsservice"
+                binary="true"
+            ></p-checkbox>
+          </div>
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+          </div>
+        </div>
+
+        <!--Distal & Distance-->
+        <div class="p-grid">
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+            <p-checkbox
+                [formControl]="currentEventGroup.controls['distal']"
+                label="Auswärtig"
+                binary="true"
+                (onChange)="switchDistal($event, distal)"
+            ></p-checkbox>
+          </div>
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+            <input #distal formControlName="distance" id="distance" placeholder="Entfernung"
+                   type="text" style="width:100%"
+                   pInputText>
+          </div>
+        </div>
+        <!--ShuttleService & PublicTransport-->
+        <div class="p-grid">
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+            <p-checkbox
+                [formControl]="currentEventGroup.controls['publicTransport']"
+                label="Öffentliche Anreise"
+                binary="true"
+            ></p-checkbox>
+          </div>
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+            <p-checkbox
+                [formControl]="currentEventGroup.controls['shuttleService']"
+                label="ShuttleSerivce"
+                binary="true"
+            ></p-checkbox>
+          </div>
+        </div>
+
+        <!--Source, Link & Map-->
+        <div class="p-grid">
+          <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+            <input formControlName="source" id="source" placeholder="Source"
+                   type="text" style="width:100%"
+                   pInputText>
+          </div>
+          <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+            <input formControlName="link" id="link" placeholder="Link"
+                   type="text" style="width:100%"
+                   pInputText>
+          </div>
+          <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+            <input formControlName="map" id="map" placeholder="Map"
+                   type="text" style="width:100%"
+                   pInputText>
+          </div>
+        </div>
+      </form>
+<!--</div>-->
+    </p-dialog>
+    </ng-container>
+
+    <!--Teilnehmergebühr, Vorauszahlung & Zusatzkosten-->
+    <div class="p-grid">
+      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+        <div class="ui-inputgroup">
+          <span class="ui-inputgroup-addon">TN-Gebühr</span>
+          <input formControlName="admission" id="admission" placeholder="Teilnehmergebühr" type="text"
                pInputText>
-        <input formControlName="tourcosts" id="tourcosts" placeholder="Betrag (z.B. 12,79)" type="text" pInputText>
+          <span class="ui-inputgroup-addon">€</span>
+        </div>
+      </div>
+      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+        <div class="ui-inputgroup">
+          <span class="ui-inputgroup-addon">Vorauszahlung</span>
+          <input formControlName="advances" id="advances" placeholder="Vorauszahlung" type="text"
+               pInputText>
+          <span class="ui-inputgroup-addon">€</span>
+        </div>
+      </div>
+      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+        <div class="ui-inputgroup">
+          <span class="ui-inputgroup-addon">Zusatzkosten</span>
+          <input formControlName="extraCharges" id="extraCharges" placeholder="Zusatzkosten" type="text"
+               pInputText>
+          <span class="ui-inputgroup-addon">€</span>
+        </div>
       </div>
     </div>
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <input formControlName="extracosts" id="extracosts" placeholder="Zusatzkosten" type="text" style='width:100%'
-             pInputText>
-    </div>
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <input formControlName="deposit" id="deposit" placeholder="Anzahlung" type="text" style='width:100%' pInputText>
-    </div>
-  </div>
 
-  <!--Kostenrahmen mit Tabelle-->
-  <div class="p-grid" *ngIf="false">
-    <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
-      <p-table [value]="totalcostsTable" [resizableColumns]="true">
-        <ng-template pTemplate="header">
-          <tr>
-            <th>Pos</th>
-            <th>Beschreibung</th>
-            <th>Betrag</th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-costs>
-          <tr>
-            <td>{{costs.pos}}</td>
-            <td>{{costs.beschreibung}}</td>
-            <td>{{costs.betrag}}</td>
-          </tr>
-        </ng-template>
-      </p-table>
-    </div>
-  </div>
-
-  <!--Teilnehmergebühr-->
-  <div class="p-grid">
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <input formControlName="admission" id="admission" placeholder="Teilnehmergebühr" type="text" style='width:100%'
-             pInputText>
-    </div>
-  </div>
-
-  <!--Bemerkung-->
-  <div class="p-grid">
-    <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+    <!--Zusatzkosten & Advances Details-->
+    <div class="p-grid">
+      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      </div>
+      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
       <textarea
-          formControlName="notes"
+          [rows]="2"
+          formControlName="advancesInfo"
+          pInputTextarea
+          placeholder="Vorauszahlung Details"
+          autoResize="autoResize"
+          style='width:100%'
+      ></textarea>
+      </div>
+      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <textarea
+          [rows]="2"
+          formControlName="extraChargesInfo"
+          pInputTextarea
+          placeholder="Zusatzkosten Details"
+          autoResize="autoResize"
+          style='width:100%'
+      ></textarea>
+      </div>
+    </div>
+
+    <!--Bemerkung-->
+    <div class="p-grid">
+      <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+      <textarea
           [rows]="3"
           pInputTextarea
           placeholder="Bemerkungen"
           autoResize="autoResize"
           style='width:100%'
       ></textarea>
+      </div>
     </div>
   </div>
 
-</form>
-</ng-container>
-</ng-container>
-</ng-container>
 </ng-container>
 <ng-template #loading>Bitte kurz warten!</ng-template>
-
-<!--Wodo Beispiel-Code-->
-<!--<ng-container *ngIf="(instruction$ | async) as instruction">-->
-<!--</ng-container>-->

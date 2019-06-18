@@ -1,5 +1,5 @@
-import {combineLatest, Observable, ReplaySubject, Subscription} from 'rxjs';
-import {delay, filter, map, mergeMap, switchMap, tap} from 'rxjs/operators';
+import {Observable, ReplaySubject, Subscription} from 'rxjs';
+import {delay, filter, map, mergeMap, switchMap} from 'rxjs/operators';
 import {
   AfterContentInit,
   AfterViewInit,
@@ -9,7 +9,6 @@ import {
   Input,
   OnDestroy,
   OnInit,
-  Output,
   ViewChild
 } from '@angular/core';
 import {Store} from '@ngrx/store';
@@ -26,7 +25,12 @@ import {Name} from '../../model/name';
 import {getNameById, getNames, getNamesState} from '../store/name.selectors';
 import {AppState} from '../../app.state';
 import {AutoComplete} from 'primeng/autocomplete';
-import {from} from "rxjs/internal/observable/from";
+import {from} from 'rxjs/internal/observable/from';
+
+interface NameString {
+  name: string;
+  id: number;
+}
 
 interface NameString {
   name: string;

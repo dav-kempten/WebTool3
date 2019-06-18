@@ -19,8 +19,8 @@ import {
   ValidationErrors,
   ValidatorFn
 } from '@angular/forms';
-import {Observable, ReplaySubject, Subscription} from 'rxjs';
-import {delay, tap} from 'rxjs/operators';
+import {Observable, ReplaySubject, Subject, Subscription} from 'rxjs';
+import {delay, takeUntil, tap} from 'rxjs/operators';
 import {ValuesRequested} from '../store/value.actions';
 import {Store} from '@ngrx/store';
 import {AppState} from '../../app.state';
@@ -52,6 +52,8 @@ export class MultiselectComponent implements OnInit, AfterViewInit, OnDestroy, A
 
   choiceArray: any[];
   optionlabel: string;
+
+  private destroySubject = new Subject<void>();
 
   formEquipState$: Observable<EquipState>;
   formSkillState$: Observable<SkillState>;
@@ -142,6 +144,7 @@ export class MultiselectComponent implements OnInit, AfterViewInit, OnDestroy, A
     this.formEquipState$ = this.store.select(getEquipState);
 
     this.formEquipState$.pipe(
+      takeUntil(this.destroySubject),
       tap((state) => {
         for (const key in state.entities) {
           const stateEquip: RawEquipment = {
@@ -153,11 +156,12 @@ export class MultiselectComponent implements OnInit, AfterViewInit, OnDestroy, A
           this.statusEquipment.push(stateEquip);
         }
       })
-    ).subscribe().unsubscribe();
+    ).subscribe();
 
     this.formSkillState$ = this.store.select(getSkillState);
 
     this.formSkillState$.pipe(
+      takeUntil(this.destroySubject),
       tap((state) => {
         for (const key in state.entities) {
           const stateSkill: RawSkill = {
@@ -170,7 +174,7 @@ export class MultiselectComponent implements OnInit, AfterViewInit, OnDestroy, A
           this.statusSkills.push(stateSkill);
         }
       })
-    ).subscribe().unsubscribe();
+    ).subscribe();
   }
 
   ngOnInit(): void {}
@@ -185,6 +189,8 @@ export class MultiselectComponent implements OnInit, AfterViewInit, OnDestroy, A
     if (this.delegatedMethodsSubscription) {
       this.delegatedMethodsSubscription.unsubscribe();
     }
+    this.destroySubject.next();
+    this.destroySubject.complete();
   }
 
   ngAfterContentInit(): void {
