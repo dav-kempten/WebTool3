@@ -1,7 +1,5 @@
 <ng-container *ngIf="instructionGroup$ | async as instructionGroup else loading">
 
-  <h1>Instruction {{instructionGroup.get('reference').value}}</h1>
-
   <p>InstructionGroup:<br/>{{instructionGroup.value | json}}</p>
   <p>TopicGroup:<br/>{{(topicGroup$ | async)?.value | json}}</p>
   <p>CategoryGroup:<br />{{(categoryGroup$ | async)?.value | json}}</p>
@@ -9,9 +7,7 @@
     {{instructionGroup.get('meetingIds').value.join(', ')}}</p>
   <p>EventArray:<br/>{{(eventArray$ | async)?.value | json}}</p>
 
-
-
-  <div [formGroup]="instructionGroup">
+  <form [formGroup]="instructionGroup">
     <!--GuideComponent // TeamComponent // Abrechnung-->
     <div class="p-grid">
       <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
@@ -84,9 +80,11 @@
         ></p-checkbox>
       </div>
     </div>
+  </form>
 
-    <!--Ausrüstung, Besondere Vorausssetzungen-->
-    <div class="p-grid" [formGroup]="topicGroup$| async" style="background-color:#D8D8D8">
+  <!--Ausrüstung, Besondere Vorausssetzungen-->
+  <ng-container *ngIf="(topicGroup$ | async) as topicGroup">
+    <form class="p-grid" [formGroup]="topicGroup" style="background-color:#D8D8D8">
       <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
         <avk-multiselect
             formControlName="equipmentIds"
@@ -127,113 +125,115 @@
           style='width:100%'
         ></textarea>
       </div>
-    </div>
 
-    <!--Topic-->
-    <div class="p-grid" [formGroup]="topicGroup$| async" *ngIf="!(instructionGroup.get('isSpecial').value)"
-      style="background-color:#D8D8D8">
-      <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
-      <textarea
-          [rows]="5"
-          pInputTextarea
-          formControlName="description"
-          id="topicDescription"
-          readonly
-          placeholder="Beschreibung"
-          autoResize="autoResize"
-          style='width:100%'
-      ></textarea>
-      </div>
-    </div>
-
-    <!--Zusatzausrüstung & -anforderungen-->
-    <div class="p-grid">
-      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
-        <avk-multiselect
-            formControlName="equipmentIds"
-            choice="equipment"
-            label="Zusatzausrüstung"
-            [readOnly]="!(userValState >= 0)"
-        ></avk-multiselect>
-      </div>
-      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
-        <avk-multiselect
-            formControlName="qualificationIds"
-            choice="requirement"
-            label="Zusatzvorraussetzungen"
-            [readOnly]="!(userValState >= 0)"
-        ></avk-multiselect>
-      </div>
-    </div>
-
-    <!--Zusätzliche Anforderungen-->
-    <div class="p-grid">
-      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+      <!--Topic-->
+      <div class="p-grid" *ngIf="!(instructionGroup.get('isSpecial').value)"
+        style="background-color:#D8D8D8">
+        <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
         <textarea
-          [rows]="3"
-          pInputTextarea
-          formControlName="miscEquipment"
-          id="miscEquipment"
-          placeholder="Spezielle Ausrüstung"
-          autoResize="autoResize"
-          style='width:100%'
+            [rows]="5"
+            pInputTextarea
+            formControlName="description"
+            id="topicDescription"
+            readonly
+            placeholder="Beschreibung"
+            autoResize="autoResize"
+            style='width:100%'
         ></textarea>
+        </div>
+
+        <!--Zusatzausrüstung & -anforderungen-->
+        <div class="p-grid">
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+            <avk-multiselect
+                formControlName="equipmentIds"
+                choice="equipment"
+                label="Zusatzausrüstung"
+                [readOnly]="!(userValState >= 0)"
+            ></avk-multiselect>
+          </div>
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+            <avk-multiselect
+                formControlName="qualificationIds"
+                choice="requirement"
+                label="Zusatzvorraussetzungen"
+                [readOnly]="!(userValState >= 0)"
+            ></avk-multiselect>
+          </div>
+        </div>
+
+        <!--Zusätzliche Anforderungen-->
+        <div class="p-grid">
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+            <textarea
+              [rows]="3"
+              pInputTextarea
+              formControlName="miscEquipment"
+              id="miscEquipment"
+              placeholder="Spezielle Ausrüstung"
+              autoResize="autoResize"
+              style='width:100%'
+            ></textarea>
+          </div>
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+            <textarea
+              [rows]="3"
+              pInputTextarea
+              formControlName="preconditions"
+              id="preconditions"
+              placeholder="Spezielle Voraussetzungen (z.B. Trittsicherheit)"
+              autoResize="autoResize"
+              style='width:100%'
+            ></textarea>
+          </div>
+        </div>
       </div>
-      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
-        <textarea
-          [rows]="3"
-          pInputTextarea
-          formControlName="preconditions"
-          id="preconditions"
-          placeholder="Spezielle Voraussetzungen (z.B. Trittsicherheit)"
-          autoResize="autoResize"
-          style='width:100%'
-        ></textarea>
-      </div>
-    </div>
+    </form>
+  </ng-container>
+
     <!--Teilnehmeranzahl, Strecke, Materialservice-->
-    <div class="p-grid">
-      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-        <avk-membernumber
-            formControlName="minQuantity"
-            label="MinMember"
-            id="m1"
-            [maxMember]="instructionGroup.get('maxQuantity').value"
-            [readOnly]="!(userValState >= 0)"
-        ></avk-membernumber>
-      </div>
-      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-        <avk-membernumber
-            formControlName="maxQuantity"
-            label="MaxMember"
-            id="m2"
-            [minMember]="instructionGroup.get('minQuantity').value"
-            [readOnly]="!(userValState >= 0)"
-        ></avk-membernumber>
-      </div>
-      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-        <avk-membernumber
-            formControlName="curQuantity"
-            label="CurMember"
-            id="m3"
-            [maxMember]="instructionGroup.get('maxQuantity').value"
-            [readOnly]="!(userValState >= 0)"
-        ></avk-membernumber>
-      </div>
-      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-        <p-checkbox
-            [formControl]="instructionGroup.controls['equipmentService']"
-            label="Materialservice"
-            binary="true"
-        ></p-checkbox>
-      </div>
+  <form class="p-grid" [formGroup]="instructionGroup">
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <avk-membernumber
+          formControlName="minQuantity"
+          label="MinMember"
+          id="m1"
+          [maxMember]="instructionGroup.get('maxQuantity').value"
+          [readOnly]="!(userValState >= 0)"
+      ></avk-membernumber>
     </div>
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <avk-membernumber
+          formControlName="maxQuantity"
+          label="MaxMember"
+          id="m2"
+          [minMember]="instructionGroup.get('minQuantity').value"
+          [readOnly]="!(userValState >= 0)"
+      ></avk-membernumber>
+    </div>
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <avk-membernumber
+          formControlName="curQuantity"
+          label="CurMember"
+          id="m3"
+          [maxMember]="instructionGroup.get('maxQuantity').value"
+          [readOnly]="true"
+      ></avk-membernumber>
+    </div>
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <p-checkbox
+          [formControl]="instructionGroup.controls['equipmentService']"
+          label="Materialservice"
+          binary="true"
+      ></p-checkbox>
+    </div>
+  </form>
 
-
-    <!--Liste mit Parametern (Tabelle)-->
+  <!--Liste mit Parametern (Tabelle)-->
+  <ng-container *ngIf="(eventArray$ | async) as eventArray">
     <div class="p-grid">
       <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
-        <p-table [value]="(eventArray$|async).value" selectionMode="single"
+        <p-table [value]="eventArray.value" selectionMode="single"
                  (selectionChange)="selectEvent($event)">
           <ng-template pTemplate="header">
             <tr>
@@ -252,8 +252,9 @@
         </p-table>
       </div>
     </div>
+  </ng-container>
 
-    <ng-container *ngIf="currentEventGroup">
+  <ng-container *ngIf="currentEventGroup">
     <p-dialog header="EventDetail" [(visible)]="display" [style]="{width: '60%', height: '60%'}">
       <form [formGroup]="currentEventGroup">
         <!--Kurztitel, Langtitel-->
@@ -392,35 +393,33 @@
           </div>
         </div>
       </form>
-<!--</div>-->
     </p-dialog>
-    </ng-container>
+  </ng-container>
 
-    <!--Teilnehmergebühr, Vorauszahlung & Zusatzkosten-->
-    <div class="p-grid">
-      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-        <div class="ui-inputgroup">
-          <span class="ui-inputgroup-addon">TN-Gebühr</span>
-          <input formControlName="admission" id="admission" placeholder="Teilnehmergebühr" type="text"
-               pInputText>
-          <span class="ui-inputgroup-addon">€</span>
-        </div>
+  <!--Teilnehmergebühr, Vorauszahlung & Zusatzkosten-->
+  <form class="p-grid" [formGroup]="instructionGroup">
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <div class="ui-inputgroup">
+        <span class="ui-inputgroup-addon">TN-Gebühr</span>
+        <input formControlName="admission" id="admission" placeholder="Teilnehmergebühr" type="text"
+             pInputText>
+        <span class="ui-inputgroup-addon">€</span>
       </div>
-      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-        <div class="ui-inputgroup">
-          <span class="ui-inputgroup-addon">Vorauszahlung</span>
-          <input formControlName="advances" id="advances" placeholder="Vorauszahlung" type="text"
-               pInputText>
-          <span class="ui-inputgroup-addon">€</span>
-        </div>
+    </div>
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <div class="ui-inputgroup">
+        <span class="ui-inputgroup-addon">Vorauszahlung</span>
+        <input formControlName="advances" id="advances" placeholder="Vorauszahlung" type="text"
+             pInputText>
+        <span class="ui-inputgroup-addon">€</span>
       </div>
-      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-        <div class="ui-inputgroup">
-          <span class="ui-inputgroup-addon">Zusatzkosten</span>
-          <input formControlName="extraCharges" id="extraCharges" placeholder="Zusatzkosten" type="text"
-               pInputText>
-          <span class="ui-inputgroup-addon">€</span>
-        </div>
+    </div>
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <div class="ui-inputgroup">
+        <span class="ui-inputgroup-addon">Zusatzkosten</span>
+        <input formControlName="extraCharges" id="extraCharges" placeholder="Zusatzkosten" type="text"
+             pInputText>
+        <span class="ui-inputgroup-addon">€</span>
       </div>
     </div>
 
@@ -462,7 +461,7 @@
       ></textarea>
       </div>
     </div>
-  </div>
+  </form>
 
 </ng-container>
 <ng-template #loading>Bitte kurz warten!</ng-template>
