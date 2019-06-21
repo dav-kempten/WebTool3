@@ -3,20 +3,18 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {select, Store} from '@ngrx/store';
 import {AppState, selectRouterDetailId} from '../../app.state';
 import {getCategoryById, getTopicById} from '../../core/store/value.selectors';
-import {RequestNames} from "../../core/store/name.actions";
-import {ValuesRequested} from "../../core/store/value.actions";
-import {CalendarRequested} from "../../core/store/calendar.actions";
-import {RequestInstruction, UpdateInstruction} from "../../core/store/instruction.actions";
-import {getInstructionById} from "../../core/store/instruction.selectors";
-import {Instruction} from "../../core/store/instruction.model";
+import {RequestNames} from '../../core/store/name.actions';
+import {ValuesRequested} from '../../core/store/value.actions';
+import {CalendarRequested} from '../../core/store/calendar.actions';
+import {RequestInstruction, UpdateInstruction} from '../../core/store/instruction.actions';
+import {getInstructionById} from '../../core/store/instruction.selectors';
+import {Instruction} from '../../core/store/instruction.model';
 import {filter, flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
-import {getEventById, getEventsByIds} from "../../core/store/event.selectors";
-import {State} from "../../core/store/state.reducer";
-import {selectStatesState} from "../../core/store/value.selectors";
-import {AuthService, User} from "../../core/service/auth.service";
+import {getEventsByIds} from '../../core/store/event.selectors';
+import {AuthService} from '../../core/service/auth.service';
 import {Event} from '../../model/event';
 import {Category, Topic} from '../../model/value';
-import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
+import {FormArray, FormControl, FormGroup} from '@angular/forms';
 import {UpdateEvent} from '../../core/store/event.actions';
 
 @Component({
@@ -49,8 +47,8 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   events$: Observable<Event[]>;
   category$: Observable<Category>;
 
-  userValState: number = 0;
-  display: boolean = false;
+  userValState = 0;
+  display = false;
   currentEventGroup: FormGroup = undefined;
 
   constructor(private store: Store<AppState>, private userService: AuthService) {
@@ -194,7 +192,6 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     this.eventArray$.subscribe(
       eventArray => this.currentEventGroup = (eventArray.at(index)) as FormGroup
     );
-    console.log("CurrentEventGroup", this.currentEventGroup);
     this.display = true;
   }
 
