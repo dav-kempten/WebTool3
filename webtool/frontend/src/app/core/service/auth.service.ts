@@ -1,7 +1,7 @@
 import {BehaviorSubject, Observable} from 'rxjs';
 import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {filter, map, shareReplay, tap} from 'rxjs/operators';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {filter, first, map, shareReplay, tap} from 'rxjs/operators';
 import {User as RawUser} from '../../model/user';
 
 export const enum Role {
@@ -15,10 +15,8 @@ export interface User {
   id: number;
   firstName: string;
   lastName: string;
-  role: Role | string;
+  role: Role;
 }
-
-interface Users { [key: number]: RawUser; }
 
 export const ANONYMOUS_USER: User = {
   id: undefined,
@@ -47,34 +45,42 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  memberLogin(memberId: string): Observable<User> {
-    const users = this.http.get<Users>('../../../assets/user-db.json').pipe(shareReplay());
-    switch (memberId) {
-      case '008-00-123456':
-        return users.pipe(
-          map<Users, User>(userDb => convertUser(userDb['1'])),
-          tap(user => this.subject.next(user))
-        );
-      case '008-00-901234':
-        return users.pipe(
-          map<Users, User>(userDb => convertUser(userDb['3'])),
-          tap(user => this.subject.next(user))
-        );
-    }
-  }
+  login(userName: string = '', password: string = '', memberId: string = ''): Observable<User> {
 
-  userLogin(userName: string, password: string): Observable<User> {
-    const users = this.http.get<Users>('../../../assets/user-db.json').pipe(shareReplay());
-    return users.pipe(
-      map<Users, User>(userDb => {
-        return Object.values(userDb).find(user => `${user.firstName}-${user.lastName}` === userName);
-      }),
-      tap(user => this.subject.next(user))
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+
+    const user = this.http.post<User>(
+      '/api/login/',
+      {member_id: memberId, username: userName, password},
+      httpOptions
+    );
+
+    return user.pipe(
+      tap(rawUser => this.subject.next(convertUser(rawUser))),
+      shareReplay()
     );
   }
 
   logout(): void {
-    this.subject.next(ANONYMOUS_USER);
+
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+
+    this.http.post<void>(
+      '/api/logout/',
+      {},
+      httpOptions
+    ).pipe(
+      first()
+    ).subscribe(() => this.subject.next(ANONYMOUS_USER));
+
   }
 }
 

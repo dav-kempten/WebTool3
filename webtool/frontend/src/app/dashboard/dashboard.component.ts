@@ -38,7 +38,7 @@ export class DashboardComponent implements OnInit {
   userLogin() {
     const value = this.userForm.value;
     if (value.userName && value.password) {
-      this.userService.userLogin(value.userName, value.password)
+      this.userService.login(value.userName, value.password)
         .subscribe( user => { if (!!user) {console.log(`User ${user.firstName} ${user.lastName} is logged in`); }});
     }
   }
@@ -46,7 +46,7 @@ export class DashboardComponent implements OnInit {
   memberLogin() {
     const value = this.memberForm.value;
     if (value.memberId) {
-      this.userService.memberLogin(value.memberId)
+      this.userService.login('', '', value.memberId)
         .subscribe( user => console.log(`Member ${user.firstName} ${user.lastName} is logged in`));
     }
   }
