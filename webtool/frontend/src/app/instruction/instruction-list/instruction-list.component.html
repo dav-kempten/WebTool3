@@ -1,6 +1,4 @@
-<ng-container *ngIf="(instructions$ | async) as instructions">
-  <p-tabMenu [model]="menuItems" [activeItem]="activeItem$ | async"></p-tabMenu>
-  <p *ngFor="let instruction of instructions">
-    <a routerLink="/instructions/{{instruction.id}}">{{instruction.reference}}</a> {{instruction.title}}
-  </p>
-</ng-container>
+<p-tabMenu [model]="menuItems" [activeItem]="activeItem$ | async"></p-tabMenu>
+<p *ngFor="let instruction of (instructions$ | async)">
+  <a routerLink="/instructions/{{instruction.id}}">{{instruction.reference}}</a> {{instruction.title}}
+</p>
