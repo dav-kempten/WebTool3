@@ -1,11 +1,11 @@
 <ng-container *ngIf="instructionGroup$ | async as instructionGroup else loading">
 
-  <p>InstructionGroup:<br/>{{instructionGroup.value | json}}</p>
+  <!--p>InstructionGroup:<br/>{{instructionGroup.value | json}}</p>
   <p>TopicGroup:<br/>{{(topicGroup$ | async)?.value | json}}</p>
   <p>CategoryGroup:<br />{{(categoryGroup$ | async)?.value | json}}</p>
   <p>EventIds: {{instructionGroup.get('instructionId').value}},
     {{instructionGroup.get('meetingIds').value.join(', ')}}</p>
-  <p>EventArray:<br/>{{(eventArray$ | async)?.value | json}}</p>
+  <p>EventArray:<br/>{{(eventArray$ | async)?.value | json}}</p-->
 
   <form [formGroup]="instructionGroup">
     <!--GuideComponent // TeamComponent // Abrechnung-->
@@ -259,7 +259,7 @@
   </ng-container>
 
   <ng-container *ngIf="currentEventGroup">
-    <p-dialog header="EventDetail" [(visible)]="display" [style]="{width: '60%', height: '60%'}">
+    <p-dialog header="EventDetail" [modal]="true" [(visible)]="display" [style]="{width: '60%', height: '60%'}">
       <form [formGroup]="currentEventGroup">
         <!--Kurztitel, Langtitel-->
         <div class="p-grid">
