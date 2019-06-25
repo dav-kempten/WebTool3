@@ -166,24 +166,19 @@ export class MenuComponent implements OnInit, OnDestroy {
         this.buttonItems[0].visible = true;
         this.buttonItems[0].disabled = false;
         this.buttonItems[1].visible = false;
+        this.label = 'Abmelden';
+        this.isLoggedIn = true;
+        this.isLoggedOut = false;
       } else {
         this.buttonItems[0].label = '';
         this.buttonItems[0].visible = false;
         this.buttonItems[0].disabled = true;
         this.buttonItems[1].visible = true;
+        this.label = 'Anmelden';
+        this.isLoggedIn = false;
+        this.isLoggedOut = true;
       }
     });
-
-    this.userService.isLoggedIn$.pipe(
-      takeUntil(this.destroySubject),
-    ).subscribe( loggedIn => {
-      this.isLoggedIn = loggedIn;
-      this.label = loggedIn ? 'Abmelden' : 'Anmelden';
-    });
-
-    this.userService.isLoggedOut$.pipe(
-      takeUntil(this.destroySubject),
-    ).subscribe(loggedOut => this.isLoggedOut = loggedOut);
 
   }
 
