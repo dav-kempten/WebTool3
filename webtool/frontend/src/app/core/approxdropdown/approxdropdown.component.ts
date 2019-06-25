@@ -77,7 +77,7 @@ export class ApproxdropdownComponent implements OnInit, OnDestroy, AfterViewInit
       }
       this.formControl.setValue(state);
       this.choiceControl.setValue(state);
-      onChange(state);
+      onChange(state.id);
     });
   }
 

@@ -31,7 +31,7 @@
     </div>
 
     <div class="p-grid">
-      <div class="p-sm-6 p-md-6 p-lg-6">
+      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
         <avk-team
             formControlName="teamIds"
             [nameId]="instructionGroup.get('guideId').value"
@@ -40,14 +40,14 @@
             [readOnly]="!(userValState >= 0)"
         ></avk-team>
       </div>
-      <div class="p-sm-3 p-md-3 p-lg-3">
+      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
         <p-checkbox
             [formControl]="instructionGroup.controls['lowEmissionAdventure']"
             label="LEA"
             binary="true"
         ></p-checkbox>
       </div>
-      <div class="p-sm-3 p-md-3 p-lg-3">
+      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
         <p-checkbox
             [formControl]="instructionGroup.controls['ladiesOnly']"
             label="LadiesOnly"
@@ -84,66 +84,70 @@
 
   <!--Ausrüstung, Besondere Vorausssetzungen-->
   <ng-container *ngIf="(topicGroup$ | async) as topicGroup">
-    <form class="p-grid" [formGroup]="topicGroup" style="background-color:#D8D8D8">
-      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-        <avk-multiselect
-            formControlName="equipmentIds"
-            choice="equipment"
-            label="Ausrüstung"
-            [readOnly]="true"
-        ></avk-multiselect>
-      </div>
-      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-        <avk-multiselect
-            formControlName="qualificationIds"
-            choice="requirement"
-            label="Voraussetzungen"
-            [readOnly]="true"
-        ></avk-multiselect>
-      </div>
-      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+    <form [formGroup]="topicGroup">
+      <div class="p-grid" style="background-color:#D8D8D8">
+        <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+          <avk-multiselect
+              formControlName="equipmentIds"
+              choice="equipment"
+              label="Ausrüstung"
+              [readOnly]="true"
+          ></avk-multiselect>
+        </div>
+        <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+          <avk-multiselect
+              formControlName="qualificationIds"
+              choice="requirement"
+              label="Voraussetzungen"
+              [readOnly]="true"
+          ></avk-multiselect>
+        </div>
+        <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
         <textarea
-          [rows]="2"
-          pInputTextarea
-          formControlName="preconditions"
-          id="preconditionsTopic"
-          readonly
-          placeholder="Spezielle Anforderungen"
-          autoResize="autoResize"
-          style='width:100%'
-        ></textarea>
-      </div>
-      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-        <textarea
-          [rows]="2"
-          pInputTextarea
-          formControlName="miscEquipment"
-          id="miscEquipmentTopic"
-          readonly
-          placeholder="Spezielle Ausrüstung"
-          autoResize="autoResize"
-          style='width:100%'
-        ></textarea>
-      </div>
-
-      <!--Topic-->
-      <div class="p-grid" *ngIf="!(instructionGroup.get('isSpecial').value)"
-        style="background-color:#D8D8D8">
-        <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
-        <textarea
-            [rows]="5"
+            [rows]="2"
             pInputTextarea
-            formControlName="description"
-            id="topicDescription"
+            formControlName="preconditions"
+            id="preconditionsTopic"
             readonly
-            placeholder="Beschreibung"
+            placeholder="Spezielle Anforderungen"
             autoResize="autoResize"
             style='width:100%'
         ></textarea>
         </div>
+        <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+        <textarea
+            [rows]="2"
+            pInputTextarea
+            formControlName="miscEquipment"
+            id="miscEquipmentTopic"
+            readonly
+            placeholder="Spezielle Ausrüstung"
+            autoResize="autoResize"
+            style='width:100%'
+        ></textarea>
+        </div>
+      </div>
+
+
+      <div *ngIf="!(instructionGroup.get('isSpecial').value)">
+        <!--Topic-->
+        <div class="p-grid" style="background-color:#D8D8D8">
+          <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+            <textarea
+                [rows]="5"
+                pInputTextarea
+                formControlName="description"
+                id="topicDescription"
+                readonly
+                placeholder="Beschreibung"
+                autoResize="autoResize"
+                style='width:100%'
+            ></textarea>
+          </div>
+        </div>
 
         <!--Zusatzausrüstung & -anforderungen-->
-        <div class="p-grid">
+        <div class="p-grid"  style="background-color:#D8D8D8">
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
             <avk-multiselect
                 formControlName="equipmentIds"
@@ -166,24 +170,24 @@
         <div class="p-grid">
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
             <textarea
-              [rows]="3"
-              pInputTextarea
-              formControlName="miscEquipment"
-              id="miscEquipment"
-              placeholder="Spezielle Ausrüstung"
-              autoResize="autoResize"
-              style='width:100%'
+                [rows]="3"
+                pInputTextarea
+                formControlName="miscEquipment"
+                id="miscEquipment"
+                placeholder="Spezielle Ausrüstung"
+                autoResize="autoResize"
+                style='width:100%'
             ></textarea>
           </div>
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
             <textarea
-              [rows]="3"
-              pInputTextarea
-              formControlName="preconditions"
-              id="preconditions"
-              placeholder="Spezielle Voraussetzungen (z.B. Trittsicherheit)"
-              autoResize="autoResize"
-              style='width:100%'
+                [rows]="3"
+                pInputTextarea
+                formControlName="preconditions"
+                id="preconditions"
+                placeholder="Spezielle Voraussetzungen (z.B. Trittsicherheit)"
+                autoResize="autoResize"
+                style='width:100%'
             ></textarea>
           </div>
         </div>
@@ -273,11 +277,10 @@
         <div class="p-grid">
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
             <avk-approxdropdown formControlName="approximateId" id="approx" [readOnly]="!(userValState >= 0)"
-                                [disable]="currentEventGroup.get('startTime').value"></avk-approxdropdown>
-
+                                [disable]="!!currentEventGroup.get('startTime').value"></avk-approxdropdown>
           </div>
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
-            <avk-time formControlName="startTime" id="time" [disable]="currentEventGroup.get('approximateId').value"
+            <avk-time formControlName="startTime" id="time" [disable]="!!currentEventGroup.get('approximateId').value"
             ></avk-time>
           </div>
         </div>
@@ -345,7 +348,7 @@
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
             <p-checkbox
                 [formControl]="currentEventGroup.controls['distal']"
-                label="Auswärtig"
+                label="Gemeinschaftsanreise"
                 binary="true"
                 (onChange)="switchDistal($event, distal)"
             ></p-checkbox>
@@ -397,11 +400,12 @@
   </ng-container>
 
   <!--Teilnehmergebühr, Vorauszahlung & Zusatzkosten-->
-  <form class="p-grid" [formGroup]="instructionGroup">
+  <form [formGroup]="instructionGroup">
+    <div class="p-grid">
     <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
       <div class="ui-inputgroup">
         <span class="ui-inputgroup-addon">TN-Gebühr</span>
-        <input formControlName="admission" id="admission" placeholder="Teilnehmergebühr" type="text"
+        <input formControlName="admission" id="admission" placeholder="Teilnehmergebühr" type="number" min="0"
              pInputText>
         <span class="ui-inputgroup-addon">€</span>
       </div>
@@ -409,7 +413,7 @@
     <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
       <div class="ui-inputgroup">
         <span class="ui-inputgroup-addon">Vorauszahlung</span>
-        <input formControlName="advances" id="advances" placeholder="Vorauszahlung" type="text"
+        <input formControlName="advances" id="advances" placeholder="Vorauszahlung" type="number" min="0"
              pInputText>
         <span class="ui-inputgroup-addon">€</span>
       </div>
@@ -417,10 +421,11 @@
     <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
       <div class="ui-inputgroup">
         <span class="ui-inputgroup-addon">Zusatzkosten</span>
-        <input formControlName="extraCharges" id="extraCharges" placeholder="Zusatzkosten" type="text"
+        <input formControlName="extraCharges" id="extraCharges" placeholder="Zusatzkosten" type="number" min="0"
              pInputText>
         <span class="ui-inputgroup-addon">€</span>
       </div>
+    </div>
     </div>
 
     <!--Zusatzkosten & Advances Details-->
@@ -431,10 +436,10 @@
       <textarea
           [rows]="2"
           formControlName="advancesInfo"
-          pInputTextarea
           placeholder="Vorauszahlung Details"
           autoResize="autoResize"
           style='width:100%'
+          pInputTextarea
       ></textarea>
       </div>
       <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">

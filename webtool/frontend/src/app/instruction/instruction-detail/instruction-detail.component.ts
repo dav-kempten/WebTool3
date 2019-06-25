@@ -164,18 +164,10 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     ).subscribe(
       instruction => this.store.dispatch(
         new UpdateInstruction({instruction: {id: instruction.id, changes: {...instruction,
-              admission: (instruction.admission * 100)}}})
+              admission: (instruction.admission*100), advances: (instruction.advances*100),
+              extraCharges: (instruction.extraCharges*100)}}})
       )
     );
-
-    // setTimeout(() => this.store.dispatch(
-    //   new UpdateInstruction({
-    //     instruction: {
-    //       id: 2102,
-    //       changes: {curQuantity: 99, teamIds: [133, 104]}
-    //     }
-    //   }
-    // )), 10000);
   }
 
   ngOnDestroy(): void {
@@ -217,10 +209,10 @@ function instructionGroupFactory(instruction: Instruction): FormGroup {
       equipmentIds: new FormControl(instruction.equipmentIds),
       miscEquipment: new FormControl(instruction.miscEquipment),
       equipmentService: new FormControl(instruction.equipmentService),
-      admission: new FormControl((instruction.admission / 100).toFixed(2)),
-      advances: new FormControl(instruction.advances),
+      admission: new FormControl((instruction.admission/100).toFixed(2)),
+      advances: new FormControl((instruction.advances/100).toFixed(2)),
       advancesInfo: new FormControl(instruction.advancesInfo),
-      extraCharges: new FormControl(instruction.extraCharges),
+      extraCharges: new FormControl((instruction.extraCharges/100).toFixed(2)),
       extraChargesInfo: new FormControl(instruction.extraChargesInfo),
       minQuantity: new FormControl(instruction.minQuantity),
       maxQuantity: new FormControl(instruction.maxQuantity),
