@@ -180,7 +180,6 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   }
 
   selectEvent(index) {
-    console.log('selectEvent', index);
     this.eventArray$.subscribe(
       eventArray => this.currentEventGroup = (eventArray.at(index)) as FormGroup
     );
