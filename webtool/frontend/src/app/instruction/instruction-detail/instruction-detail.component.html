@@ -1,11 +1,11 @@
 <ng-container *ngIf="instructionGroup$ | async as instructionGroup else loading">
 
-  <!--p>InstructionGroup:<br/>{{instructionGroup.value | json}}</p>
+  <p>InstructionGroup:<br/>{{instructionGroup.value | json}}</p>
   <p>TopicGroup:<br/>{{(topicGroup$ | async)?.value | json}}</p>
   <p>CategoryGroup:<br />{{(categoryGroup$ | async)?.value | json}}</p>
   <p>EventIds: {{instructionGroup.get('instructionId').value}},
     {{instructionGroup.get('meetingIds').value.join(', ')}}</p>
-  <p>EventArray:<br/>{{(eventArray$ | async)?.value | json}}</p-->
+  <p>EventArray:<br/>{{(eventArray$ | async)?.value | json}}</p>
 
   <form [formGroup]="instructionGroup">
     <!--GuideComponent // TeamComponent // Abrechnung-->
@@ -42,15 +42,15 @@
       </div>
       <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
         <p-checkbox
-            [formControl]="instructionGroup.controls['lowEmissionAdventure']"
+            [formControl]="instructionGroup.get('lowEmissionAdventure')"
             label="LEA"
             binary="true"
         ></p-checkbox>
       </div>
       <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
         <p-checkbox
-            [formControl]="instructionGroup.controls['ladiesOnly']"
-            label="LadiesOnly"
+            [formControl]="instructionGroup.get('ladiesOnly')"
+            label="Frauen"
             binary="true"
         ></p-checkbox>
       </div>
@@ -74,8 +74,8 @@
       </div>
       <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
         <p-checkbox
-            [formControl]="instructionGroup.controls['isSpecial']"
-            label="isSpecial"
+            [formControl]="instructionGroup.get('isSpecial')"
+            label="Spezial"
             binary="true"
         ></p-checkbox>
       </div>
@@ -85,53 +85,49 @@
   <!--Ausrüstung, Besondere Vorausssetzungen-->
   <ng-container *ngIf="(topicGroup$ | async) as topicGroup">
     <form [formGroup]="topicGroup">
-      <div class="p-grid" style="background-color:#D8D8D8">
-        <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-          <avk-multiselect
-              formControlName="equipmentIds"
-              choice="equipment"
-              label="Ausrüstung"
-              [readOnly]="true"
-          ></avk-multiselect>
-        </div>
-        <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-          <avk-multiselect
-              formControlName="qualificationIds"
-              choice="requirement"
-              label="Voraussetzungen"
-              [readOnly]="true"
-          ></avk-multiselect>
-        </div>
-        <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-        <textarea
-            [rows]="2"
-            pInputTextarea
-            formControlName="preconditions"
-            id="preconditionsTopic"
-            readonly
-            placeholder="Spezielle Anforderungen"
-            autoResize="autoResize"
-            style='width:100%'
-        ></textarea>
-        </div>
-        <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-        <textarea
-            [rows]="2"
-            pInputTextarea
-            formControlName="miscEquipment"
-            id="miscEquipmentTopic"
-            readonly
-            placeholder="Spezielle Ausrüstung"
-            autoResize="autoResize"
-            style='width:100%'
-        ></textarea>
-        </div>
-      </div>
-
-
-      <div *ngIf="!(instructionGroup.get('isSpecial').value)">
-        <!--Topic-->
+      <ng-container *ngIf="!instructionGroup.get('isSpecial').value">
         <div class="p-grid" style="background-color:#D8D8D8">
+          <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+            <avk-multiselect
+                formControlName="equipmentIds"
+                choice="equipment"
+                label="Ausrüstung"
+                readOnly="'true'"
+            ></avk-multiselect>
+          </div>
+          <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+            <avk-multiselect
+                formControlName="qualificationIds"
+                choice="requirement"
+                label="Voraussetzungen"
+                readOnly="'true'"
+            ></avk-multiselect>
+          </div>
+          <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+          <textarea
+              [rows]="2"
+              pInputTextarea
+              formControlName="preconditions"
+              id="preconditionsTopic"
+              readonly
+              placeholder="Weitere Anforderungen"
+              autoResize="autoResize"
+              style='width:100%'
+          ></textarea>
+          </div>
+          <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+          <textarea
+              [rows]="2"
+              pInputTextarea
+              formControlName="miscEquipment"
+              id="miscEquipmentTopic"
+              readonly
+              placeholder="Weitere Ausrüstung"
+              autoResize="autoResize"
+              style='width:100%'
+          ></textarea>
+          </div>
+          <!--Topic-->
           <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
             <textarea
                 [rows]="5"
@@ -145,62 +141,64 @@
             ></textarea>
           </div>
         </div>
-
-        <!--Zusatzausrüstung & -anforderungen-->
-        <div class="p-grid"  style="background-color:#D8D8D8">
-          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
-            <avk-multiselect
-                formControlName="equipmentIds"
-                choice="equipment"
-                label="Zusatzausrüstung"
-                [readOnly]="!(userValState >= 0)"
-            ></avk-multiselect>
-          </div>
-          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
-            <avk-multiselect
-                formControlName="qualificationIds"
-                choice="requirement"
-                label="Zusatzvorraussetzungen"
-                [readOnly]="!(userValState >= 0)"
-            ></avk-multiselect>
-          </div>
-        </div>
-
-        <!--Zusätzliche Anforderungen-->
-        <div class="p-grid">
-          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
-            <textarea
-                [rows]="3"
-                pInputTextarea
-                formControlName="miscEquipment"
-                id="miscEquipment"
-                placeholder="Spezielle Ausrüstung"
-                autoResize="autoResize"
-                style='width:100%'
-            ></textarea>
-          </div>
-          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
-            <textarea
-                [rows]="3"
-                pInputTextarea
-                formControlName="preconditions"
-                id="preconditions"
-                placeholder="Spezielle Voraussetzungen (z.B. Trittsicherheit)"
-                autoResize="autoResize"
-                style='width:100%'
-            ></textarea>
-          </div>
-        </div>
-      </div>
+      </ng-container>
     </form>
   </ng-container>
 
-    <!--Teilnehmeranzahl, Strecke, Materialservice-->
+  <form [formGroup]="instructionGroup">
+    <!--Zusatzausrüstung & -anforderungen-->
+    <div class="p-grid"  style="background-color:#D8D8D8">
+      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+        <avk-multiselect
+            formControlName="equipmentIds"
+            choice="equipment"
+            label="Zusatzausrüstung"
+            [readOnly]="!(userValState >= 0)"
+        ></avk-multiselect>
+      </div>
+      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+        <avk-multiselect
+            formControlName="qualificationIds"
+            choice="requirement"
+            label="Voraussetzungen"
+            [readOnly]="!(userValState >= 0)"
+        ></avk-multiselect>
+      </div>
+    </div>
+
+    <!--Zusätzliche Anforderungen-->
+    <div class="p-grid">
+      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+        <textarea
+            [rows]="3"
+            pInputTextarea
+            formControlName="miscEquipment"
+            id="miscEquipment"
+            placeholder="Spezielle Ausrüstung"
+            autoResize="autoResize"
+            style='width:100%'
+        ></textarea>
+      </div>
+      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+        <textarea
+            [rows]="3"
+            pInputTextarea
+            formControlName="preconditions"
+            id="preconditions"
+            placeholder="Spezielle Voraussetzungen (z.B. Trittsicherheit)"
+            autoResize="autoResize"
+            style='width:100%'
+        ></textarea>
+      </div>
+    </div>
+  </form>
+
+  <!--Teilnehmeranzahl, Strecke, Materialservice-->
   <form class="p-grid" [formGroup]="instructionGroup">
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
       <avk-membernumber
           formControlName="minQuantity"
-          label="MinMember"
+          label="Mindestens"
           id="m1"
           [maxMember]="instructionGroup.get('maxQuantity').value"
           [readOnly]="!(userValState >= 0)"
@@ -209,24 +207,16 @@
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
       <avk-membernumber
           formControlName="maxQuantity"
-          label="MaxMember"
+          label="Maximal"
           id="m2"
           [minMember]="instructionGroup.get('minQuantity').value"
           [readOnly]="!(userValState >= 0)"
       ></avk-membernumber>
-    </div>
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <avk-membernumber
-          formControlName="curQuantity"
-          label="CurMember"
-          id="m3"
-          [maxMember]="instructionGroup.get('maxQuantity').value"
-          [readOnly]="true"
-      ></avk-membernumber>
+      <label>Teilnehmer</label>
     </div>
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
       <p-checkbox
-          [formControl]="instructionGroup.controls['equipmentService']"
+          [formControl]="instructionGroup.get('equipmentService')"
           label="Materialservice"
           binary="true"
       ></p-checkbox>
@@ -248,7 +238,7 @@
           </ng-template>
           <ng-template pTemplate="body" let-event let-i="rowIndex">
             <tr [pSelectableRow]="i">
-              <td>{{event.startDate.split('-').reverse().join('.')}}</td>
+              <td>{{event.startDate | date}}</td>
               <td>{{event.startTime}}</td>
               <td>{{event.name}}</td>
             </tr>
@@ -334,7 +324,7 @@
         <div class="p-grid">
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
             <p-checkbox
-                [formControl]="currentEventGroup.controls['reservationService']"
+                [formControl]="currentEventGroup.get('reservationService')"
                 label="Reservierungsservice"
                 binary="true"
             ></p-checkbox>
@@ -347,7 +337,7 @@
         <div class="p-grid">
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
             <p-checkbox
-                [formControl]="currentEventGroup.controls['distal']"
+                [formControl]="currentEventGroup.get('distal')"
                 label="Gemeinschaftsanreise"
                 binary="true"
                 (onChange)="switchDistal($event, distal)"
@@ -363,14 +353,14 @@
         <div class="p-grid">
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
             <p-checkbox
-                [formControl]="currentEventGroup.controls['publicTransport']"
+                [formControl]="currentEventGroup.get('publicTransport')"
                 label="Öffentliche Anreise"
                 binary="true"
             ></p-checkbox>
           </div>
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
             <p-checkbox
-                [formControl]="currentEventGroup.controls['shuttleService']"
+                [formControl]="currentEventGroup.get('shuttleService')"
                 label="ShuttleSerivce"
                 binary="true"
             ></p-checkbox>
