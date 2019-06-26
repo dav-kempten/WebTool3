@@ -54,12 +54,13 @@ import {ToggleButtonModule} from 'primeng/togglebutton';
 import {CalendarEffects} from './store/calendar.effects';
 import {ApproxdropdownComponent} from './approxdropdown/approxdropdown.component';
 import {CategoryselectComponent} from './categoryselect/categoryselect.component';
+import {DatePipe} from "./date/date.pipe";
 
 @NgModule({
   declarations: [
     GuideComponent, TeamComponent, DateComponent, TimeComponent, NamePipe, NamesPipe, MenuComponent,
     BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent, DropdownComponent,
-    MultiselectComponent, ApproxdropdownComponent, CategoryselectComponent
+    MultiselectComponent, ApproxdropdownComponent, CategoryselectComponent, DatePipe
   ],
   imports: [
     CommonModule,
@@ -105,7 +106,7 @@ import {CategoryselectComponent} from './categoryselect/categoryselect.component
     GuideComponent, TeamComponent, DateComponent, TimeComponent, NamePipe, NamesPipe, MenuComponent,
     BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent, DropdownComponent,
     MultiselectComponent, ButtonModule, ToggleButtonModule, ApproxdropdownComponent, CategoryselectComponent,
-    DialogModule, CheckboxModule, InputTextModule, InputTextareaModule
+    DialogModule, CheckboxModule, InputTextModule, InputTextareaModule, DatePipe
   ]
 })
 export class CoreModule { }
