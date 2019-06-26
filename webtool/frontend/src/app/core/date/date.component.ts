@@ -95,6 +95,7 @@ export class DateComponent implements OnInit, OnDestroy, AfterViewInit, AfterCon
 
   @Input()
   set min(value: string) {
+    value = !!value ? value : '';
     this.minValueControl.setValue(value);
     if (!!value) {
       this.defaultDate = new Date(value);
@@ -108,6 +109,7 @@ export class DateComponent implements OnInit, OnDestroy, AfterViewInit, AfterCon
 
   @Input()
   set optMin(value: string) {
+    value = !!value ? value : '';
     this.optMinValueControl.setValue(value);
     if (!!value) {
       this.defaultDate = new Date(value);
@@ -126,6 +128,7 @@ export class DateComponent implements OnInit, OnDestroy, AfterViewInit, AfterCon
 
   @Input()
   set max(value: string) {
+    value = !!value ? value : '';
     this.maxValueControl.setValue(value);
     if (!!value) {
       this.defaultDate = new Date(value);
@@ -139,6 +142,7 @@ export class DateComponent implements OnInit, OnDestroy, AfterViewInit, AfterCon
 
   @Input()
   set optMax(value: string) {
+    value = !!value ? value : '';
     this.optMaxValueControl.setValue(value);
     if (!!value) {
       this.defaultDate = new Date(value);
@@ -167,7 +171,7 @@ export class DateComponent implements OnInit, OnDestroy, AfterViewInit, AfterCon
   }
 
   writeValue(isoDate: string): void {
-    const stdDate = (isoDate !== null) ?  isoDate.split('-').reverse().join('.') : isoDate;
+    const stdDate = !!isoDate ?  isoDate.split('-').reverse().join('.') : '';
     this.delegatedMethodCalls.next(accessor => accessor.writeValue(stdDate));
   }
 
@@ -199,7 +203,7 @@ export class DateComponent implements OnInit, OnDestroy, AfterViewInit, AfterCon
 }
 
 export const dateTransformer = (date: string | null): string => {
-  return date ? date.split('.').reverse().join('-') : '';
+  return !!date ? date.split('.').reverse().join('-') : null;
 };
 
 export const dateValidator: ValidatorFn = (group: FormGroup): ValidationErrors | null => {
@@ -208,7 +212,7 @@ export const dateValidator: ValidatorFn = (group: FormGroup): ValidationErrors |
   const optMinInclude: boolean = group.get('optMinInclude').value;
   const optMin: string = group.get('optMin').value;
   const dateField = group.get('date');
-  const date = dateField.value;
+  const date = !!dateField.value ? dateField.value : '';
   const dateIsRequired = group.get('dateIsRequired').value;
   const optMaxInclude: boolean = group.get('optMaxInclude').value;
   const optMax: string = group.get('optMax').value;
@@ -216,8 +220,8 @@ export const dateValidator: ValidatorFn = (group: FormGroup): ValidationErrors |
   const max: string = group.get('max').value;
   const originalControl: FormControl = group.get('original').value;
 
-  const curMaxDate = (date !== null ? ((!date.length && dateIsRequired) ? '9999-12-31' : date) : '9999-12-31');
-  const curMinDate = (date !== null ? ((!date.length && dateIsRequired) ? '0000-01-01' : date) : '0000-01-01');
+  const curMaxDate = (!date.length && dateIsRequired) ? '9999-12-31' : date;
+  const curMinDate = (!date.length && dateIsRequired) ? '0000-01-01' : date;
   const minIsSmallerDate = minInclude ? (min <= curMinDate) : (min < curMinDate);
   const optMinIsSmallerDate = optMinInclude ? (optMin <= curMinDate) : (optMin < curMinDate);
   const DateIsSmallerOptMax = optMaxInclude ? (curMaxDate <= optMax) : (curMaxDate < optMax);
@@ -230,14 +234,13 @@ export const dateValidator: ValidatorFn = (group: FormGroup): ValidationErrors |
 
   const error: ValidationErrors = {invalidDate: {value: date}};
 
-
-  const valid = (!((!curMin && !curMax) && date) || !date) ? (
+  const valid = (
     curMin.length && curMax.length && curMinCompare && curMaxCompare ||
     !curMin.length && curMax.length && curMaxCompare ||
     curMin.length && !curMax.length && curMinCompare ||
     !curMin.length && !curMax.length && date.length ||
     !date.length && !dateIsRequired
-  ) : true;
+  );
 
   if (originalControl) {
     setTimeout(() => {
