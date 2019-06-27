@@ -1,23 +1,25 @@
-<p-tabMenu [model]="menuItems" [activeItem]="activeItem$ | async"></p-tabMenu>
-<ng-container *ngIf="(instructions$ | async) as instructions">
-  <p-table [value]="instructions" selectionMode="single" (selectionChange)="selectInstruction($event)">
-    <ng-template pTemplate="header">
-      <tr>
-        <th>Buchungscode</th>
-        <th>Datum</th>
-        <th>Bezeichnung</th>
-        <th>Trainer</th>
-        <th>Belegung (Min|Aktuell|Max)</th>
-      </tr>
-    </ng-template>
-    <ng-template pTemplate="body" let-instruction>
-      <tr [pSelectableRow]="instruction">
-        <td>{{instruction.reference}}</td>
-        <td>{{instruction.startDate | date}}</td>
-        <td>{{instruction.title}}</td>
-        <td>{{instruction.guideId | name}}</td>
-        <td>{{instruction.minQuantity}} | {{instruction.curQuantity}} | {{instruction.maxQuantity}}</td>
-      </tr>
-    </ng-template>
-  </p-table>
+<ng-container *ngIf="(activeItem$ | async) as activeItem">
+  <p-tabMenu [model]="menuItems" [activeItem]="{}"></p-tabMenu>
+  <ng-container *ngIf="(instructions$ | async) as instructions">
+    <p-table [value]="instructions" selectionMode="single" (selectionChange)="selectInstruction($event)">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Buchungscode</th>
+          <th>Datum</th>
+          <th>Bezeichnung</th>
+          <th>Trainer</th>
+          <th>Belegung (Min|Aktuell|Max)</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-instruction>
+        <tr [pSelectableRow]="instruction">
+          <td>{{instruction.reference}}</td>
+          <td>{{instruction.startDate | date}}</td>
+          <td>{{instruction.title}}</td>
+          <td>{{instruction.guideId | name}}</td>
+          <td>{{instruction.minQuantity}} | {{instruction.curQuantity}} | {{instruction.maxQuantity}}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </ng-container>
 </ng-container>
