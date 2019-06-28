@@ -2,14 +2,14 @@ import {Action} from '@ngrx/store';
 import {Name} from '../../model/name';
 
 export enum NameActionTypes {
-  RequestNames = '[Name] Request NameState',
+  NamesRequested = '[Name] Request NameState',
   AddNames = '[Name] Add Names',
   ClearNames = '[Name] Clear Names',
   NamesNotModified = '[Name] NameState not modified'
 }
 
-export class RequestNames implements Action {
-  readonly type = NameActionTypes.RequestNames;
+export class NamesRequested implements Action {
+  readonly type = NameActionTypes.NamesRequested;
 }
 
 export class AddNames implements Action {
@@ -27,7 +27,7 @@ export class NamesNotModified implements Action {
 }
 
 export type NameActions =
- RequestNames
+ NamesRequested
  | AddNames
  | ClearNames
  | NamesNotModified;

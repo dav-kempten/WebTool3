@@ -4,7 +4,7 @@ import {Store} from '@ngrx/store';
 import {FormControl, FormGroup} from '@angular/forms';
 import {AppState, selectRouterDetailId} from '../../app.state';
 import {getNamesIsLoading} from '../../core/store/name.selectors';
-import {RequestNames} from '../../core/store/name.actions';
+import {NamesRequested} from '../../core/store/name.actions';
 
 @Component({
   selector: 'avk-guide-detail',
@@ -24,7 +24,7 @@ export class GuideDetailComponent implements OnInit {
   });
 
   constructor(private store: Store<AppState>, private el: ElementRef) {
-    this.store.dispatch(new RequestNames());
+    this.store.dispatch(new NamesRequested());
     this.guideForm.setValue({guideId: 105, teamIds: [105, 326, 105]});
   }
 

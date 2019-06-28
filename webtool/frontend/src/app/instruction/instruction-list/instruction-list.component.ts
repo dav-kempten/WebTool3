@@ -8,7 +8,7 @@ import {RequestInstructionSummaries} from '../../core/store/instruction-summary.
 import {flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {Router} from '@angular/router';
 import {MenuItem} from 'primeng/api';
-import {RequestNames} from '../../core/store/name.actions';
+import {NamesRequested} from '../../core/store/name.actions';
 
 @Component({
   selector: 'avk-instruction-list',
@@ -30,7 +30,7 @@ export class InstructionListComponent implements OnInit, OnDestroy {
   ];
 
   constructor(private store: Store<AppState>, private router: Router) {
-    this.store.dispatch(new RequestNames());
+    this.store.dispatch(new NamesRequested());
   }
 
   ngOnInit() {

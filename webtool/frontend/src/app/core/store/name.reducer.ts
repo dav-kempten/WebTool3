@@ -17,7 +17,7 @@ export const initialState: State = adapter.getInitialState({
 export function reducer(state = initialState, action: NameActions): State {
   switch (action.type) {
 
-    case NameActionTypes.RequestNames: {
+    case NameActionTypes.NamesRequested: {
       return {
         ...state,
         isLoading: true

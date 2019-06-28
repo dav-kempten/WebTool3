@@ -4,7 +4,7 @@ import {select, Store} from '@ngrx/store';
 import {Injectable} from '@angular/core';
 import {ActivatedRouteSnapshot, Resolve, RouterStateSnapshot} from '@angular/router';
 import {AppState} from '../../app.state';
-import {RequestNames} from './name.actions';
+import {NamesRequested} from './name.actions';
 import {getNamesState} from './name.selectors';
 import {Name} from '../../model/name';
 
@@ -24,7 +24,7 @@ export class NameListResolver implements Resolve<Name[]> {
           const lastUpdate = namesState.timestamp;
           const ageOfData = (new Date().getTime()) - lastUpdate;
           if (ageOfData > (15 * 60 * 1000)) {
-            this.store.dispatch(new RequestNames());
+            this.store.dispatch(new NamesRequested());
           }
         }
         return [];

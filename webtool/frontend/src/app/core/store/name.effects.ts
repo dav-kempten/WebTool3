@@ -15,7 +15,7 @@ export class NameEffects {
 
   @Effect()
   loadNames$: Observable<Action> = this.actions$.pipe(
-    ofType(NameActionTypes.RequestNames),
+    ofType(NameActionTypes.NamesRequested),
     switchMap(() => {
       return this.nameService.getNames().pipe(
         map(names => {
