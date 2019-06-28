@@ -18,7 +18,6 @@ export const getSkillState = createFeatureSelector<SkillState>('skills');
 export const getCategoryState = createFeatureSelector<CategoryState>('categories');
 export const getTopicState = createFeatureSelector<TopicState>('topics');
 
-
 export const getValues = createSelector(
   getValueState,
   (state: ValueState): Values => state.values
@@ -57,4 +56,8 @@ export const getTopicById = (topicId: number) => createSelector(
 
 export const getCategoryById = (categoryId: number) => createSelector(
   getCategoryState, categoryState => categoryState.entities[categoryId]
+);
+
+export const getApproximateById = (approximateId: number) => createSelector(
+  getApproxState, approximateState => approximateState.entities[approximateId]
 );
