@@ -32,12 +32,12 @@ class EventSerializer(serializers.Serializer):
     name = serializers.CharField(default='', allow_blank=True)
     description = serializers.CharField(default='', allow_blank=True)
     startDate = serializers.DateField(source="start_date")
-    startTime = serializers.TimeField(source="start_time", default=None, allow_null=True)
+    startTime = serializers.TimeField(format="%H:%M", source="start_time", default=None, allow_null=True)
     approximateId = serializers.PrimaryKeyRelatedField(
         source='approximate', default=None, allow_null=True, queryset=Approximate.objects.all()
     )
     endDate = serializers.DateField(source="end_date", default=None, allow_null=True)
-    endTime = serializers.TimeField(source="end_time", default=None, allow_null=True)
+    endTime = serializers.TimeField(format="%H:%M", source="end_time", default=None, allow_null=True)
     rendezvous = serializers.CharField(default='', allow_blank=True)
 
     location = serializers.CharField(default='', allow_blank=True)
