@@ -239,7 +239,7 @@
           <ng-template pTemplate="body" let-event let-i="rowIndex">
             <tr [pSelectableRow]="i">
               <td>{{event.startDate | date}}</td>
-              <td>{{event.startTime}}</td>
+              <td>{{event.startTime | time: event.approximateId}}</td>
               <td>{{event.name}}</td>
             </tr>
           </ng-template>
