@@ -1,6 +1,6 @@
 import {Pipe, PipeTransform} from '@angular/core';
 import {Store} from '@ngrx/store';
-import {filter, map, switchMap} from 'rxjs/operators';
+import {filter, map, switchMap, take} from 'rxjs/operators';
 import {getNameById} from './name.selectors';
 import {Name} from '../../model/name';
 import {AppState} from '../../app.state';
@@ -21,6 +21,7 @@ export class NamePipe implements PipeTransform {
     of(nameId).pipe(
       filter(id => typeof id === 'number'),
       switchMap(id => this.store.select(getNameById(id))),
+      take(1),
       filter((name: Name): boolean => !!name && !!Object.keys(name).length),
       map((name: Name) => `${name.firstName} ${name.lastName}`)
     ).subscribe(value => {
@@ -45,6 +46,7 @@ export class NamesPipe implements PipeTransform {
     from(nameIds).pipe(
       filter(id => typeof id === 'number'),
       switchMap(nameId => this.store.select(getNameById(nameId))),
+      take(nameIds.length),
       filter((name: Name): boolean => !!name && !!Object.keys(name).length),
       map((name: Name): string => `${name.firstName} ${name.lastName}`)
     ).subscribe((value: string): void => {

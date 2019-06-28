@@ -1,6 +1,6 @@
 import {Pipe, PipeTransform} from '@angular/core';
 import {of} from 'rxjs';
-import {filter, map, switchMap, tap} from 'rxjs/operators';
+import {filter, map, switchMap, take} from 'rxjs/operators';
 import {AppState} from '../../app.state';
 import {Store} from '@ngrx/store';
 import {Approximate} from '../../model/value';
@@ -22,6 +22,7 @@ export class TimePipe implements PipeTransform {
       of(approximateId).pipe(
         filter(id => typeof id === 'number'),
         switchMap(id => this.store.select(getApproximateById(id))),
+        take(1),
         filter((value: Approximate): boolean => !!value && !!Object.keys(value).length),
         map((value: Approximate) => value.name)
       ).subscribe(value => {
