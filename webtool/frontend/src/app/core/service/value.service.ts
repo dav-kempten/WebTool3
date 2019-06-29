@@ -39,7 +39,7 @@ export class ValueService {
           if (responseHeaders.keys().indexOf('etag') > -1) {
             this.etag = responseHeaders.get('etag').replace(/(W\/)?(".+")/g, '$2');
           }
-          return response.body as RawValues;
+          return response.body;
         } else {
           return {states: []} as RawValues;
         }

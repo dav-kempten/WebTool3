@@ -79,6 +79,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
           }
         })
       )),
+      // shareReplay(),
       publishReplay(1),
       refCount()
     );
@@ -96,6 +97,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
           }
         })
       )),
+      // shareReplay(),
       publishReplay(1),
       refCount()
     );
@@ -112,7 +114,10 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
             this.categorySubject.next(categoryGroupFactory(category));
           }
         })
-      ))
+      )),
+      // shareReplay(),
+      publishReplay(1),
+      refCount()
     );
 
     this.eventIds$ = this.instruction$.pipe(
@@ -163,9 +168,12 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
       filter(instruction => !!instruction)
     ).subscribe(
       instruction => this.store.dispatch(
-        new UpdateInstruction({instruction: {id: instruction.id, changes: {...instruction,
-              admission: (instruction.admission * 100), advances: (instruction.advances * 100),
-              extraCharges: (instruction.extraCharges * 100)}}})
+        new UpdateInstruction({instruction: {id: instruction.id, changes: {
+          ...instruction,
+              admission: (instruction.admission * 100),
+              advances: (instruction.advances * 100),
+              extraCharges: (instruction.extraCharges * 100)
+        }}})
       )
     );
   }

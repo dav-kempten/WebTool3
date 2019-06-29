@@ -40,7 +40,7 @@ export class InstructionService {
           if (responseHeaders.keys().indexOf('etag') > -1) {
             this.etag = responseHeaders.get('etag').replace(/(W\/)?(".+")/g, '$2');
           }
-          return response.body as InstructionSummary[];
+          return response.body;
         } else {
           return [] as InstructionSummary[];
         }

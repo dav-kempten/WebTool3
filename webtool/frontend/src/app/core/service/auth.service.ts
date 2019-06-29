@@ -1,7 +1,7 @@
 import {BehaviorSubject, Observable} from 'rxjs';
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {filter, first, map, shareReplay, tap} from 'rxjs/operators';
+import {filter, first, map, publishReplay, refCount, tap} from 'rxjs/operators';
 import {User as RawUser} from '../../model/user';
 
 export const enum Role {
@@ -61,7 +61,9 @@ export class AuthService {
 
     return user.pipe(
       tap(rawUser => this.subject.next(convertUser(rawUser))),
-      shareReplay()
+      // shareReplay(),
+      publishReplay(1),
+      refCount()
     );
   }
 

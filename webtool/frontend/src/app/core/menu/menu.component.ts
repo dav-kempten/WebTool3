@@ -49,7 +49,6 @@ export class MenuComponent implements OnInit, OnDestroy {
     if (value.memberId) {
       this.userService.login('', '', value.memberId)
         .subscribe( user => {
-          console.log(`${user.role} ${user.firstName} ${user.lastName} is logged in`);
           this.displayMemberLogin = false;
         });
     }
@@ -60,7 +59,6 @@ export class MenuComponent implements OnInit, OnDestroy {
     if (value.userName && value.password) {
       this.userService.login(value.userName, value.password, '')
         .subscribe( user => {
-          console.log(`${user.role} ${user.firstName} ${user.lastName} is logged in`);
           this.displayUserLogin = false;
         });
     }

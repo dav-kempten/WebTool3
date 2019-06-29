@@ -39,7 +39,7 @@ export class CalendarService {
           if (responseHeaders.keys().indexOf('etag') > -1) {
             this.etag = responseHeaders.get('etag').replace(/(W\/)?(".+")/g, '$2');
           }
-          return response.body as RawCalendar;
+          return response.body;
         } else {
           return {id: 0} as RawCalendar;
         }
