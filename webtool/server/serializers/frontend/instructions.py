@@ -54,7 +54,7 @@ class InstructionListSerializer(serializers.ModelSerializer):
 
 class InstructionSerializer(serializers.ModelSerializer):
 
-    id = serializers.PrimaryKeyRelatedField(source='pk', queryset=Instruction.objects.all())
+    id = serializers.PrimaryKeyRelatedField(source='pk', queryset=Instruction.objects.all(), default=None, allow_null=True)
     reference = serializers.CharField(source='instruction.reference.__str__', read_only=True)
 
     guideId = serializers.PrimaryKeyRelatedField(
@@ -65,8 +65,8 @@ class InstructionSerializer(serializers.ModelSerializer):
     )
 
     topicId = serializers.PrimaryKeyRelatedField(source='topic_id', queryset=Topic.objects.all())
-    instruction = EventSerializer()
-    meetings = EventSerializer(source='meeting_list', many=True)
+    instruction = EventSerializer(default={})
+    meetings = EventSerializer(source='meeting_list', many=True, default=[])
     lowEmissionAdventure = serializers.BooleanField(source='instruction.lea', default=False)
     ladiesOnly = serializers.BooleanField(source='ladies_only', default=False)
     isSpecial = serializers.BooleanField(source='is_special', default=False)
@@ -77,24 +77,24 @@ class InstructionSerializer(serializers.ModelSerializer):
     qualificationIds = serializers.PrimaryKeyRelatedField(
         source='qualifications', many=True, default=None, allow_null=True, queryset=Topic.objects.all()
     )
-    preconditions = serializers.CharField()
+    preconditions = serializers.CharField(default='', allow_blank=True)
 
     equipmentIds = serializers.PrimaryKeyRelatedField(
         source='equipments', many=True, default=None, allow_null=True, queryset=Equipment.objects.all()
     )
-    miscEquipment = serializers.CharField(source='misc_equipment')
+    miscEquipment = serializers.CharField(source='misc_equipment', default='', allow_blank=True)
     equipmentService = serializers.BooleanField(source='equipment_service', default=False)
 
     admission = MoneyField()
     advances = MoneyField()
-    advancesInfo = serializers.CharField(source='advances_info')
+    advancesInfo = serializers.CharField(source='advances_info', default='', allow_blank=True)
     extraCharges = MoneyField(source='extra_charges')
-    extraChargesInfo = serializers.CharField(source='extra_charges_info')
-    minQuantity = serializers.IntegerField(source='min_quantity')
-    maxQuantity = serializers.IntegerField(source='max_quantity')
+    extraChargesInfo = serializers.CharField(source='extra_charges_info', default='', allow_blank=True)
+    minQuantity = serializers.IntegerField(source='min_quantity', default=0)
+    maxQuantity = serializers.IntegerField(source='max_quantity', default=0)
     curQuantity = serializers.IntegerField(source='cur_quantity', read_only=True)
 
-    stateId = serializers.PrimaryKeyRelatedField(source='state_id', queryset=State.objects.all())
+    stateId = serializers.PrimaryKeyRelatedField(source='state_id', default=1, queryset=State.objects.all())
 
     # Administrative Felder fehlen noch !
 
@@ -113,3 +113,14 @@ class InstructionSerializer(serializers.ModelSerializer):
             'minQuantity', 'maxQuantity', 'curQuantity',
             'stateId',
         )
+
+    def create(self, validated_data):
+        print("Create")
+        print(validated_data)
+        return Instruction.objects.get(pk=2102)
+
+    def update(self, instance, validated_data):
+        print("Upadte")
+        print(instance)
+        print(validated_data)
+        return instance
