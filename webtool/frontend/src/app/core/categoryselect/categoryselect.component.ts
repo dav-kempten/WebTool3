@@ -61,11 +61,11 @@ export class CategoryselectComponent implements OnInit {
     talk: false, instruction: false, collective: false, winter: false, summer: false, indoor: false});
 
 
-  OnChangeWrapper(onChange: (stateIn) => void): (stateOut: CategoryState) => void {
-    return ((state: CategoryState): void => {
+  OnChangeWrapper(onChange: (stateIn) => void): (stateOut: RawCategory) => void {
+    return ((state: RawCategory): void => {
       this.formControl.setValue(state);
       this.choiceControl.setValue(state);
-      onChange(state);
+      onChange(state.id);
     });
   }
 

@@ -73,11 +73,11 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   status: RawState[] = new Array(1).fill({id: 0, state: 'Bearbeitungsstand', description: null});
 
 
-  OnChangeWrapper(onChange: (stateIn) => void): (stateOut: StateState) => void {
-    return ((state: StateState): void => {
+  OnChangeWrapper(onChange: (stateIn) => void): (stateOut: RawState) => void {
+    return ((state: RawState): void => {
       this.formControl.setValue(state);
       this.choiceControl.setValue(state);
-      onChange(state);
+      onChange(state.id);
     });
   }
 

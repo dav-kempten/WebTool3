@@ -50,12 +50,14 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   userValState = 0;
   display = false;
   currentEventGroup: FormGroup = undefined;
-  climbingTopicIds: number[] = [18, 26, 31, 46, 45, 44, 35, 41, 97, 92, 32, 56, 57, 100];
+  climbingTopicIds: number[] = [18, 26, 31, 46, 45, 44, 35, 41, 97, 92, 32, 56, 57, 100, 47];
 
   constructor(private store: Store<AppState>, private userService: AuthService) {
     this.store.dispatch(new NamesRequested());
     this.store.dispatch(new ValuesRequested());
     this.store.dispatch(new CalendarRequested());
+
+
   }
 
   ngOnInit(): void {
