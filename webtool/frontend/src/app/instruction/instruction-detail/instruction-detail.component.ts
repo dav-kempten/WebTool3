@@ -11,7 +11,7 @@ import {getInstructionById} from '../../core/store/instruction.selectors';
 import {Instruction} from '../../core/store/instruction.model';
 import {filter, flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {getEventsByIds} from '../../core/store/event.selectors';
-import {AuthService} from '../../core/service/auth.service';
+import {AuthService, Role, User} from '../../core/service/auth.service';
 import {Event} from '../../model/event';
 import {Category, Topic} from '../../model/value';
 import {FormArray, FormControl, FormGroup} from '@angular/forms';
@@ -47,6 +47,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   events$: Observable<Event[]>;
   category$: Observable<Category>;
 
+  authState$: Observable<User>;
   userValState = 0;
   display = false;
   currentEventGroup: FormGroup = undefined;
@@ -56,11 +57,22 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     this.store.dispatch(new NamesRequested());
     this.store.dispatch(new ValuesRequested());
     this.store.dispatch(new CalendarRequested());
-
-
   }
 
   ngOnInit(): void {
+
+    this.authState$ = this.userService.user$;
+    this.authState$.pipe(
+      tap(value => console.log(value)),
+      tap(value => {
+        if (value.role === "Administrator") {this.userValState = 4;}
+        else if(value.role === 'Geschäftsstelle') {this.userValState = 3;}
+        else if(value.role === 'Fachbereichssprecher') {this.userValState = 2;}
+        else if(value.role === 'Trainer') {this.userValState = 1;}
+        else {this.userValState = 0;}
+      }),
+      tap(() => console.log("UserValState", this.userValState)),
+    ).subscribe();
 
     this.instructionId$ = this.store.select(selectRouterDetailId);
 
