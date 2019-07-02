@@ -1,11 +1,13 @@
 <ng-container *ngIf="instructionGroup$ | async as instructionGroup else loading">
 
-  <p>InstructionGroup:<br/>{{instructionGroup.value | json}}</p>
-  <p>TopicGroup:<br/>{{(topicGroup$ | async)?.value | json}}</p>
-  <p>CategoryGroup:<br />{{(categoryGroup$ | async)?.value | json}}</p>
-  <p>EventIds: {{instructionGroup.get('instructionId').value}},
-    {{instructionGroup.get('meetingIds').value.join(', ')}}</p>
-  <p>EventArray:<br/>{{(eventArray$ | async)?.value | json}}</p>
+<!--  <p>InstructionGroup:<br/>{{instructionGroup.value | json}}</p>-->
+<!--  <p>TopicGroup:<br/>{{(topicGroup$ | async)?.value | json}}</p>-->
+<!--  <p>CategoryGroup:<br />{{(categoryGroup$ | async)?.value | json}}</p>-->
+<!--  <p>EventIds: {{instructionGroup.get('instructionId').value}},-->
+<!--    {{instructionGroup.get('meetingIds').value.join(', ')}}</p>-->
+<!--  <p>EventArray:<br/>{{(eventArray$ | async)?.value | json}}</p>-->
+
+  <!--TopicIds for Climbing School: 18, 26, 31, 46, 45, 44, 35, 41, 97, 92, 32, 56, 57, 100-->
 
   <form [formGroup]="instructionGroup">
     <!--GuideComponent // TeamComponent // Abrechnung-->
@@ -40,7 +42,8 @@
             [readOnly]="!(userValState >= 0)"
         ></avk-team>
       </div>
-      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3"
+           *ngIf="!(climbingTopicIds.indexOf(instructionGroup.get('topicId').value) !== -1)">
         <p-checkbox
             [formControl]="instructionGroup.get('lowEmissionAdventure')"
             label="LEA"
@@ -146,6 +149,7 @@
   </ng-container>
 
   <form [formGroup]="instructionGroup">
+    <ng-container *ngIf="!(climbingTopicIds.indexOf(instructionGroup.get('topicId').value) !== -1)">
     <!--Zusatzausrüstung & -anforderungen-->
     <div class="p-grid"  style="background-color:#D8D8D8">
       <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
@@ -191,10 +195,12 @@
         ></textarea>
       </div>
     </div>
+    </ng-container>
   </form>
 
   <!--Teilnehmeranzahl, Strecke, Materialservice-->
   <form class="p-grid" [formGroup]="instructionGroup">
+
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
       <avk-membernumber
           formControlName="minQuantity"
@@ -214,7 +220,8 @@
       ></avk-membernumber>
       <label>Teilnehmer</label>
     </div>
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3"
+         *ngIf="!(climbingTopicIds.indexOf(instructionGroup.get('topicId').value) !== -1)">
       <p-checkbox
           [formControl]="instructionGroup.get('equipmentService')"
           label="Materialservice"
@@ -248,6 +255,7 @@
     </div>
   </ng-container>
 
+  <form [formGroup]="instructionGroup">
   <ng-container *ngIf="currentEventGroup">
     <p-dialog header="EventDetail" [modal]="true" [(visible)]="display" [style]="{width: '60%', height: '60%'}">
       <form [formGroup]="currentEventGroup">
@@ -265,7 +273,8 @@
 
         <!--Zeitpunkt Event-->
         <div class="p-grid">
-          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6"  *
+               ngIf="!(climbingTopicIds.indexOf(instructionGroup.get('topicId').value) !== -1)">
             <avk-approxdropdown formControlName="approximateId" id="approx" [readOnly]="!(userValState >= 0)"
                                 [disable]="!!currentEventGroup.get('startTime').value"></avk-approxdropdown>
           </div>
@@ -321,7 +330,7 @@
         </div>
 
         <!--ReservierungsService-->
-        <div class="p-grid">
+        <div class="p-grid" *ngIf="!(climbingTopicIds.indexOf(instructionGroup.get('topicId').value) !== -1)">
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
             <p-checkbox
                 [formControl]="currentEventGroup.get('reservationService')"
@@ -334,7 +343,7 @@
         </div>
 
         <!--Distal & Distance-->
-        <div class="p-grid">
+        <div class="p-grid" *ngIf="!(climbingTopicIds.indexOf(instructionGroup.get('topicId').value) !== -1)">
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
             <p-checkbox
                 [formControl]="currentEventGroup.get('distal')"
@@ -350,7 +359,7 @@
           </div>
         </div>
         <!--ShuttleService & PublicTransport-->
-        <div class="p-grid">
+        <div class="p-grid" *ngIf="!(climbingTopicIds.indexOf(instructionGroup.get('topicId').value) !== -1)">
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
             <p-checkbox
                 [formControl]="currentEventGroup.get('publicTransport')"
@@ -368,7 +377,7 @@
         </div>
 
         <!--Source, Link & Map-->
-        <div class="p-grid">
+        <div class="p-grid" *ngIf="!(climbingTopicIds.indexOf(instructionGroup.get('topicId').value) !== -1)">
           <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
             <input formControlName="source" id="source" placeholder="Source"
                    type="text" style="width:100%"
@@ -388,10 +397,11 @@
       </form>
     </p-dialog>
   </ng-container>
+  </form>
 
   <!--Teilnehmergebühr, Vorauszahlung & Zusatzkosten-->
   <form [formGroup]="instructionGroup">
-    <div class="p-grid">
+    <div class="p-grid" *ngIf="!(climbingTopicIds.indexOf(instructionGroup.get('topicId').value) !== -1)">
     <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
       <div class="ui-inputgroup">
         <span class="ui-inputgroup-addon">TN-Gebühr</span>
@@ -419,7 +429,7 @@
     </div>
 
     <!--Zusatzkosten & Advances Details-->
-    <div class="p-grid">
+    <div class="p-grid" *ngIf="!(climbingTopicIds.indexOf(instructionGroup.get('topicId').value) !== -1)">
       <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
       </div>
       <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
@@ -460,3 +470,8 @@
 
 </ng-container>
 <ng-template #loading>Bitte kurz warten!</ng-template>
+
+
+  <!--Muster-Container zum Ausblenden der nicht gewünschten Felder, in Abhängigkeit der topicId-->
+  <!--<ng-container *ngIf="!(climbingTopicIds.indexOf(instructionGroup.get('topicId').value) !== -1)">-->
+  <!--</ng-container>-->
