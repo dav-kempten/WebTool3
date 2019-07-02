@@ -7,8 +7,6 @@
 <!--    {{instructionGroup.get('meetingIds').value.join(', ')}}</p>-->
 <!--  <p>EventArray:<br/>{{(eventArray$ | async)?.value | json}}</p>-->
 
-  <!--TopicIds for Climbing School: 18, 26, 31, 46, 45, 44, 35, 41, 97, 92, 32, 56, 57, 100-->
-
   <form [formGroup]="instructionGroup">
     <!--GuideComponent // TeamComponent // Abrechnung-->
     <div class="p-grid">
@@ -39,7 +37,7 @@
             [nameId]="instructionGroup.get('guideId').value"
             id="g2"
             label="Team"
-            [readOnly]="!(userValState >= 0)"
+            [readOnly]="!(userValState >= 1)"
         ></avk-team>
       </div>
       <div class="p-col-12 p-sm-3 p-md-3 p-lg-3"
@@ -66,13 +64,13 @@
                readonly pInputText>
       </div>
       <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-        <avk-dropdown formControlName="stateId" id="stateId" [readOnly]="!(userValState >= 0)"></avk-dropdown>
+        <avk-dropdown formControlName="stateId" id="stateId" [readOnly]="!(userValState >= 1)"></avk-dropdown>
       </div>
       <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
         <avk-categoryselect
             formControlName="topicId"
             id="topicId"
-            [readOnly]="!(userValState >= 0)">
+            [readOnly]="!(userValState >= 1)">
         </avk-categoryselect>
       </div>
       <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
@@ -157,7 +155,7 @@
             formControlName="equipmentIds"
             choice="equipment"
             label="Zusatzausrüstung"
-            [readOnly]="!(userValState >= 0)"
+            [readOnly]="!(userValState >= 1)"
         ></avk-multiselect>
       </div>
       <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
@@ -165,7 +163,7 @@
             formControlName="qualificationIds"
             choice="requirement"
             label="Voraussetzungen"
-            [readOnly]="!(userValState >= 0)"
+            [readOnly]="!(userValState >= 1)"
         ></avk-multiselect>
       </div>
     </div>
@@ -207,7 +205,7 @@
           label="Mindestens"
           id="m1"
           [maxMember]="instructionGroup.get('maxQuantity').value"
-          [readOnly]="!(userValState >= 0)"
+          [readOnly]="!(userValState >= 1)"
       ></avk-membernumber>
     </div>
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
@@ -216,7 +214,7 @@
           label="Maximal"
           id="m2"
           [minMember]="instructionGroup.get('minQuantity').value"
-          [readOnly]="!(userValState >= 0)"
+          [readOnly]="!(userValState >= 1)"
       ></avk-membernumber>
       <label>Teilnehmer</label>
     </div>
@@ -275,7 +273,7 @@
         <div class="p-grid">
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6"  *
                ngIf="!(climbingTopicIds.indexOf(instructionGroup.get('topicId').value) !== -1)">
-            <avk-approxdropdown formControlName="approximateId" id="approx" [readOnly]="!(userValState >= 0)"
+            <avk-approxdropdown formControlName="approximateId" id="approx" [readOnly]="!(userValState >= 1)"
                                 [disable]="!!currentEventGroup.get('startTime').value"></avk-approxdropdown>
           </div>
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
