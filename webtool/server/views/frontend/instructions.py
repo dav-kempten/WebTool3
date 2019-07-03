@@ -10,9 +10,22 @@ from server.models import Instruction
 from server.serializers.frontend.instructions import InstructionListSerializer, InstructionSerializer
 
 
+class IsStaffOrReadOnly(permissions.BasePermission):
+    """
+    The request is authenticated as a staff user, or is a read-only request.
+    """
+
+    def has_permission(self, request, view):
+        return (
+            request.method in permissions.SAFE_METHODS or
+            request.user and
+            request.user.is_staff
+        )
+
+
 class InstructionViewSet(viewsets.ModelViewSet):
 
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    permission_classes = (IsStaffOrReadOnly, )
 
     queryset = (
         Instruction.objects
