@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.http import Http404
 from django.template.defaultfilters import date
-
-from rest_framework import viewsets, permissions
-from rest_framework.generics import get_object_or_404
+from rest_framework import viewsets, permissions, status, mixins
 from rest_framework.response import Response
 
 from server.models import Instruction
@@ -12,7 +10,7 @@ from server.serializers.frontend.instructions import InstructionListSerializer, 
 
 class IsStaffOrReadOnly(permissions.BasePermission):
     """
-    The request is authenticated as a staff user, or is a read-only request.
+    The request is authenticated for a staff user, or is a read-only request.
     """
 
     def has_permission(self, request, view):
@@ -23,7 +21,7 @@ class IsStaffOrReadOnly(permissions.BasePermission):
         )
 
 
-class InstructionViewSet(viewsets.ModelViewSet):
+class InstructionViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
     permission_classes = (IsStaffOrReadOnly, )
 
@@ -41,7 +39,7 @@ class InstructionViewSet(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True, context={'request': request})
+        serializer = self.get_serializer(queryset, many=True, context=dict(request=request))
 
         response = Response(serializer.data)
         response['Cache-Control'] = "public, max-age=86400"
@@ -59,7 +57,7 @@ class InstructionViewSet(viewsets.ModelViewSet):
             raise Http404
 
         queryset = self.get_queryset()
-        instance = get_object_or_404(queryset, pk=pk)
+        instance = self.get_object()
         serializer = self.get_serializer(instance)
         response = Response(serializer.data)
         response['Cache-Control'] = "public, max-age=86400"
@@ -68,14 +66,54 @@ class InstructionViewSet(viewsets.ModelViewSet):
             response['Last-Modified'] = "{} GMT".format(date(instance.updated, "D, d M Y H:i:s"))
         return response
 
-    def create(self, request, *args, **kwargs):
-        raise Http404
+    def update(self, request, pk=None, *args, **kwargs):
 
-    def update(self, request, *args, **kwargs):
-        raise Http404
+        try:
+            pk = int(pk)
+        except ValueError:
+            raise Http404
 
-    def destroy(self, request, *args, **kwargs):
-        raise Http404
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
 
-    def partial_update(self, request, *args, **kwargs):
-        raise Http404
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
+
+    def destroy(self, request, pk=None, *args, **kwargs):
+
+        try:
+            pk = int(pk)
+        except ValueError:
+            raise Http404
+
+        instance = self.get_object()
+
+        instruction = instance.instruction
+        if instruction:
+            reference = instruction.reference
+            if reference:
+                reference.deprecated = True
+                reference.save()
+
+            instruction.deprecated = True
+            instruction.save()
+
+        meetings = instance.meeting_list.all()
+        for meeting in meetings:
+            reference = meeting.reference
+            if reference:
+                reference.deprecated = True
+                reference.save()
+            meeting.deprecated = True
+            meeting.save()
+
+        instance.deprecated = True
+        instance.save()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)

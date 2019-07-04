@@ -2,7 +2,9 @@
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 
-from server.models import Instruction, Equipment, Guide, Topic, Category, State, Event, get_default_season
+from server.models import (
+    Instruction, Equipment, Guide, Topic, Category, State, Event, get_default_season, get_default_state
+)
 from server.serializers.frontend.core import EventSerializer, MoneyField, create_event, update_event
 
 
@@ -93,7 +95,7 @@ class InstructionSerializer(serializers.ModelSerializer):
     maxQuantity = serializers.IntegerField(source='max_quantity', default=0)
     curQuantity = serializers.IntegerField(source='cur_quantity', read_only=True)
 
-    stateId = serializers.PrimaryKeyRelatedField(source='state', default=1, queryset=State.objects.all())
+    stateId = serializers.PrimaryKeyRelatedField(source='state', required=False, queryset=State.objects.all())
 
     # Administrative Felder fehlen noch !
 
@@ -114,9 +116,6 @@ class InstructionSerializer(serializers.ModelSerializer):
         )
 
     def validate(self, data):
-        print("Validate Instruction")
-        print(data)
-
         if self.instance is not None:
             # This is the Update case
 
@@ -141,12 +140,17 @@ class InstructionSerializer(serializers.ModelSerializer):
                 meeting_ids = set(instruction.meeting_list.values_list('pk', flat=True))
                 for meeting_data in meeting_list:
                     meeting_instance = meeting_data.get('pk')
-                    if meeting_instance is None:
-                        raise serializers.ValidationError("meeting Id is missing")
-                    elif meeting_instance.pk not in meeting_ids:
+                    # if meeting_instance is None:
+                    #   meeting will be new created
+                    if meeting_instance and meeting_instance.pk not in meeting_ids:
                         raise serializers.ValidationError(
-                            f"meeting Id {meeting_instance} is not member of instruction with id {instruction.pk}"
+                            f"meeting Id {meeting_instance.pk} is not member of instruction with id {instruction.pk}"
                         )
+                    meeting_ids.remove(meeting_instance.pk)
+                if len(meeting_ids) > 0:
+                    raise serializers.ValidationError(
+                        "meeting_list is not complete"
+                    )
 
         return data
 
@@ -160,11 +164,12 @@ class InstructionSerializer(serializers.ModelSerializer):
             team = validated_data.pop('team')
             qualifications = validated_data.pop('qualifications')
             equipments = validated_data.pop('equipments')
+            state = validated_data.pop('state', get_default_state())
             topic = validated_data.get('topic')
             category = topic.category
             season = get_default_season()
             event = create_event(event_data, dict(category=category, season=season, type=dict(topic=True)))
-            instruction = Instruction.objects.create(instruction=event, **validated_data)
+            instruction = Instruction.objects.create(instruction=event, state=state, **validated_data)
             for meeting_data in meeting_list:
                 meeting = create_event(meeting_data, dict(season=season, type=dict(meeting=True)))
                 meeting.instruction = instruction
@@ -185,9 +190,13 @@ class InstructionSerializer(serializers.ModelSerializer):
             update_event(instruction, instruction_data, self.context)
         meeting_list = validated_data.get('meeting_list')
         if meeting_list is not None:
+            season = instance.topic.seasons.get(current=True)
             for meeting_data in meeting_list:
-                meeting = Event.objects.get(pk=meeting_data.get('pk'))
-                update_event(meeting, meeting_data, self.context)
+                new_meeting = meeting_data.get('pk') is None
+                meeting = create_event(meeting_data, dict(season=season, type=dict(meeting=True)))
+                if new_meeting:
+                    meeting.instruction = instance
+                    meeting.save()
         instance.ladies_only = validated_data.get('ladies_only', instance.ladies_only)
         instance.is_special = validated_data.get('is_special', instance.is_special)
         instance.category = validated_data.get('category', instance.category)
