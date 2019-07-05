@@ -8,7 +8,7 @@
 <!--  <p>EventArray:<br/>{{(eventArray$ | async)?.value | json}}</p>-->
 
   <form [formGroup]="instructionGroup">
-  <fieldset [disabled]="true">
+  <fieldset [disabled]="!(userValState >= 1)">
     <!--GuideComponent // TeamComponent // Abrechnung-->
     <div class="p-grid">
       <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
@@ -17,7 +17,7 @@
             id="g1"
             label="Trainer"
             [nameIdList]="instructionGroup.get('teamIds').value"
-            [readOnly]="!(userValState >= 0)"
+            [readOnly]="!(userValState >= 1)"
             required
         ></avk-guide>
       </div>
@@ -27,7 +27,7 @@
       </div>
       <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
         <input id="revenue" placeholder="Einnahmen" type="text" style='width:100%'
-               [readOnly]="!(userValState >= 0)" pInputText>
+               [readOnly]="!(userValState >= 1)" pInputText>
       </div>
     </div>
 
@@ -89,7 +89,7 @@
   <!--Ausrüstung, Besondere Vorausssetzungen-->
   <ng-container *ngIf="(topicGroup$ | async) as topicGroup">
     <form [formGroup]="topicGroup">
-    <fieldset [disabled]="true">
+    <fieldset [disabled]="!(userValState >= 1)">
       <ng-container *ngIf="!instructionGroup.get('isSpecial').value">
 <!--        <div class="p-grid" style="background-color:#D8D8D8">-->
         <div class="p-grid">
@@ -204,7 +204,7 @@
 
   <!--Teilnehmeranzahl, Strecke, Materialservice-->
   <form class="p-grid" [formGroup]="instructionGroup">
-
+  <fieldset [disabled]="!(userValState >= 1)">
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
       <avk-membernumber
           formControlName="minQuantity"
@@ -232,6 +232,7 @@
           binary="true"
       ></p-checkbox>
     </div>
+  </fieldset>
   </form>
 
   <!--Liste mit Parametern (Tabelle)-->
@@ -263,7 +264,7 @@
   <ng-container *ngIf="currentEventGroup">
     <p-dialog header="EventDetail" [modal]="true" [(visible)]="display" [style]="{width: '60%', height: '60%'}">
       <form [formGroup]="currentEventGroup">
-      <fieldset [disabled]="true">
+      <fieldset [disabled]="!(userValState >= 1)">
         <!--Kurztitel, Langtitel-->
         <div class="p-grid">
           <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
@@ -407,7 +408,7 @@
 
   <!--Teilnehmergebühr, Vorauszahlung & Zusatzkosten-->
   <form [formGroup]="instructionGroup">
-  <fieldset [disabled]="true">
+  <fieldset [disabled]="!(userValState >= 1)">
     <div class="p-grid" *ngIf="!(climbingTopicIds.indexOf(instructionGroup.get('topicId').value) !== -1)">
     <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
       <div class="ui-inputgroup">
