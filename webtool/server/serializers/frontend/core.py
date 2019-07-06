@@ -145,9 +145,6 @@ class EventSerializer(serializers.ModelSerializer):
         )
 
     def validate(self, data):
-        print("Validate Event")
-        print(data)
-
         instance_data = data.get('pk')
         if (instance_data is not None) or (self.instance is not None):
             # This is the Update case

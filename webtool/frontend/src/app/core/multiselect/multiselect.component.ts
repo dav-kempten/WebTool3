@@ -106,7 +106,11 @@ export class MultiselectComponent implements OnInit, AfterViewInit, OnDestroy, A
       const choiceNew = choiceOld;
       this.formControl.setValue(choiceNew);
       this.choiceValueControl.setValue(choiceNew);
-      onChange(choiceNew);
+      let choiceNewId: number[] = [];
+      for (const el in choiceNew) {
+        choiceNewId.push(choiceNew[el].id);
+      }
+      onChange(choiceNewId);
     });
   }
 
