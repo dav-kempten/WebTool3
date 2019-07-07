@@ -15,7 +15,7 @@
 WebTool3
 ========
 
-Version: 0.0.7
+Version: 0.0.8
 
 This is a Django_ based web application, supporting the full time employees and volunteers staff
 of the DAV (German Alpine Club) section Allgäu Kempten in their work with
