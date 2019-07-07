@@ -1,6 +1,6 @@
-import {Anniversaries, Calendars, Vacations} from "./calendar.model";
-import {Anniversary, Calendar, Vacation} from "../../model/calendar";
-import {CalendarActions, CalendarActionTypes} from "./calendar.actions";
+import {Anniversaries, Calendars, Vacations} from './calendar.model';
+import {Anniversary, Calendar, Vacation} from '../../model/calendar';
+import {CalendarActions, CalendarActionTypes} from './calendar.actions';
 
 
 export interface CalendarState {
@@ -15,20 +15,18 @@ export const initialState: CalendarState = {
   calendars: null
 };
 
-/* Eventuell Transform-Funktion für Kalendarformate -/.
- * oder umformatieren amerikanisches/deutsches Datumsformat */
-
-
-function transform (rawCalendar: Calendar | null): Calendars | null {
+function transform(rawCalendar: Calendar | null): Calendars | null {
   if (rawCalendar) {
     return {
       id: rawCalendar.id,
       year: rawCalendar.year,
       anniversaries: rawCalendar.anniversaries.reduce(
-        (anniversaries: Anniversaries, anniversary: Anniversary) => {anniversaries[anniversary.id] = anniversary; return anniversaries;}, {}
+        (anniversaries: Anniversaries, anniversary: Anniversary) => {
+          anniversaries[anniversary.id] = anniversary; return anniversaries;
+          }, {}
       ),
       vacations: rawCalendar.vacations.reduce(
-        (vacations: Vacations, vacation: Vacation) => {vacations[vacation.id] = vacation; return vacations}, {}
+        (vacations: Vacations, vacation: Vacation) => {vacations[vacation.id] = vacation; return vacations; }, {}
       )
     };
   }

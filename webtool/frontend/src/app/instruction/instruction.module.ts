@@ -6,14 +6,8 @@ import {InstructionDetailComponent} from './instruction-detail/instruction-detai
 import {CoreModule} from '../core/core.module';
 import {ReactiveFormsModule} from '@angular/forms';
 
-import {InputTextareaModule} from 'primeng/inputtextarea';
-import {DropdownModule, InputTextModule} from "primeng/primeng";
-import {ListboxModule} from "primeng/listbox";
-import {MultiSelectModule} from 'primeng/multiselect';
-import {SpinnerModule} from 'primeng/spinner';
-import {CheckboxModule} from 'primeng/checkbox';
-import {TableModule} from "primeng/table";
-
+import {TableModule} from 'primeng/table';
+import {TabMenuModule} from 'primeng/tabmenu';
 
 const routes: Routes = [
   {path: ':id', component: InstructionDetailComponent},
@@ -27,14 +21,8 @@ const routes: Routes = [
     CoreModule,
     RouterModule.forChild(routes),
     ReactiveFormsModule,
-    InputTextareaModule,
-    InputTextModule,
-    DropdownModule,
-    ListboxModule,
-    MultiSelectModule,
-    SpinnerModule,
-    CheckboxModule,
-    TableModule
+    TableModule,
+    TabMenuModule
   ]
 })
 export class InstructionModule {

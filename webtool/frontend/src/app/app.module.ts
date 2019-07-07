@@ -6,7 +6,7 @@ import {environment} from '../environments/environment';
 import {PageNotFoundComponent} from './page-not-found/page-not-found.component';
 import {DashboardComponent} from './dashboard/dashboard.component';
 import {RouterModule, Routes} from '@angular/router';
-import {HttpClientModule} from '@angular/common/http';
+import {HttpClientModule, HttpClientXsrfModule} from '@angular/common/http';
 import {NavigationActionTiming, routerReducer, StoreRouterConnectingModule} from '@ngrx/router-store';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {EffectsModule} from '@ngrx/effects';
@@ -25,6 +25,10 @@ import {buildSpecificModules} from './build-specifics';
   imports: [
     BrowserModule,
     HttpClientModule,
+    HttpClientXsrfModule.withOptions({
+    cookieName: 'csrftoken',
+    headerName: 'X-CSRFToken',
+    }),
     BrowserAnimationsModule,
     RouterModule.forRoot(routes, {enableTracing: false && !environment.production}),
     StoreModule.forRoot({router: routerReducer}, {initialState: initialAppState}),

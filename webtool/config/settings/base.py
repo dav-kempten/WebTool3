@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.redirects',
     'django.contrib.auth',
     'django.contrib.contenttypes',
+    'django.contrib.sessions',
     'django.contrib.staticfiles',
     'rest_framework',
     'django_filters',
@@ -50,6 +51,8 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -100,6 +103,11 @@ CACHES = {
         'LOCATION': 'wt3_cache',
     }
 }
+
+AUTHENTICATION_BACKENDS = [
+    'server.backend.Backend',
+    'django.contrib.auth.backends.ModelBackend'
+]
 
 # http://www.django-rest-framework.org/api-guide/filtering/
 

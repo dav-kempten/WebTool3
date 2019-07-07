@@ -1,15 +1,12 @@
 <h1>Tour #{{tourId$ | async}}</h1>
 <form [formGroup]="tourForm">
-<button type="button" class="btn btn-default btn-sm" data-toggle="collapse" data-target="#demo">
-<span class="glyphicon glyphicon-plus-sign"></span> Anmeldung</button>
-<div id="demo" class="collapse">
 <p><avk-date formControlName="deadline"
              id="d1" label="Anmeldung"
              [optMax]="preliminary.value"
              [optMaxInclude]="true"
              [max]="tourStart.value"
              required
-></avk-date></p></div>
+></avk-date></p>
 <p><avk-date formControlName="preliminary"
              id="d2" label="Besprechung"
              [min]="deadline.value"

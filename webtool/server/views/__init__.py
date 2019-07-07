@@ -2,3 +2,4 @@
 
 from . import client
 from . import frontend
+from . import auth

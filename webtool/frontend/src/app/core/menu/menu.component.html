@@ -1,8 +1,42 @@
-<p-sidebar [(visible)]="display">
+<p-sidebar [(visible)]="displayMenu">
   <p-scrollPanel [style]="{'width':'100%', 'height': '95%'}">
     <p-tree [style]="{'width': '100%'}" [value]="items" selectionMode="single" [(selection)]="selectedItem" (onNodeSelect)="nodeSelect($event)"></p-tree>
   </p-scrollPanel>
 </p-sidebar>
-<button type="button" (click)="display = true" pButton icon="pi pi-bars" label="Menü"></button>
-<p-splitButton (onClick)="userLogin()" icon="pi pi-user" [label]="label" [model]="buttonItems"></p-splitButton>
-<p-toast [style]="{marginTop: '80px'}"></p-toast>
+<button type="button" (click)="displayMenu = true" pButton icon="pi pi-bars" label="Menü"></button>
+<p-splitButton (onClick)="loginButtonHandler()" icon="pi pi-user" [label]="label" [model]="buttonItems"></p-splitButton>
+<!--p-toast [style]="{marginTop: '80px'}"></p-toast-->
+
+<p-dialog [modal]="true" [(visible)]="displayMemberLogin">
+  <form autocomplete="off" novalidate [formGroup]="memberForm">
+    <fieldset>
+        <legend>Anmeldung Trainer</legend>
+        <div>
+            <label for="memberId">Mitgliednummer:</label>
+            <input id="memberId" formControlName="memberId">
+        </div>
+        <div>
+            <button (click)="loginMember()" [disabled]="memberForm.invalid">Trainer anmelden</button>
+        </div>
+    </fieldset>
+</form>
+</p-dialog>
+
+<p-dialog [modal]="true" [(visible)]="displayUserLogin">
+<form novalidate [formGroup]="userForm">
+    <fieldset>
+        <legend>Anmeldung Benutzer</legend>
+        <div>
+            <label for="userName">Benutzer:</label>
+            <input id="userName" formControlName="userName" autocomplete="username">
+        </div>
+        <div>
+            <label for="password">Password:</label>
+            <input id="password" formControlName="password" type="password" autocomplete="current-password">
+        </div>
+        <div>
+          <button (click)="loginUser()" [disabled]="userForm.invalid">Benutzer anmelden</button>
+        </div>
+    </fieldset>
+</form>
+</p-dialog>

@@ -1,8 +1,12 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Store} from '@ngrx/store';
 import {AppState} from '../../app.state';
 import {MenuItem, MessageService, TreeNode} from 'primeng/api';
 import {NavigationExtras, Router} from '@angular/router';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {ANONYMOUS_USER, AuthService, User} from '../service/auth.service';
+import {Subject} from 'rxjs';
+import {filter, takeUntil} from 'rxjs/operators';
 
 interface MenuData {
   routerLink: string;
@@ -16,27 +20,56 @@ interface MenuData {
   styleUrls: ['./menu.component.css'],
   providers: [MessageService]
 })
-export class MenuComponent implements OnInit {
+export class MenuComponent implements OnInit, OnDestroy {
 
-  label = 'Anmelden';
-  display: boolean;
+  private destroySubject = new Subject<void>();
+
+  memberForm: FormGroup = this.fb.group({memberId: ['', Validators.required]});
+  userForm = this.fb.group({
+      userName: ['', Validators.required],
+      password: ['', Validators.required]
+  });
+
+  user: User;
+  isLoggedIn: boolean;
+  isLoggedOut: boolean;
+
+  label: string;
   items: TreeNode[];
   selectedItem: TreeNode;
 
   buttonItems: MenuItem[];
 
-  userLogin() {
-    if (this.label === 'Anmelden') {
-      this.label = 'Abmelden';
-      this.buttonItems[0].label = 'Wolfgang Doll';
-      this.buttonItems[0].visible = true;
-      this.buttonItems[0].disabled = false;
-      this.buttonItems[1].visible = false;
-    } else {
-      this.label = 'Anmelden';
-      this.buttonItems[0].label = '';
-      this.buttonItems[0].visible = false;
-      this.buttonItems[1].visible = true;
+  displayMenu: boolean;
+  displayMemberLogin: boolean;
+  displayUserLogin: boolean;
+
+  loginMember() {
+    const value = this.memberForm.value;
+    if (value.memberId) {
+      this.userService.login('', '', value.memberId)
+        .subscribe( user => {
+          this.displayMemberLogin = false;
+        });
+    }
+  }
+
+  loginUser() {
+    const value = this.userForm.value;
+    if (value.userName && value.password) {
+      this.userService.login(value.userName, value.password, '')
+        .subscribe( user => {
+          this.displayUserLogin = false;
+        });
+    }
+  }
+
+  loginButtonHandler() {
+    if (this.isLoggedOut) {
+      this.displayMemberLogin = true;
+    }
+    if (this.isLoggedIn) {
+      this.userService.logout();
       void this.router.navigate(['/dashboard']);
     }
   }
@@ -45,7 +78,7 @@ export class MenuComponent implements OnInit {
     const node: TreeNode = event.node;
     const link: MenuData = node.data;
 
-    this.display = false;
+    this.displayMenu = false;
     this.selectedItem = null;
 
     if (link && link.routerLink) {
@@ -65,29 +98,27 @@ export class MenuComponent implements OnInit {
         }
       }
     }
-    this.messageService.add({severity: 'success', summary: 'Node Selected', detail: event.node.label});
+    // this.messageService.add({severity: 'success', summary: 'Node Selected', detail: event.node.label});
   }
 
   constructor(
     private store: Store<AppState>,
     private router: Router,
-    private messageService: MessageService) {}
+    private messageService: MessageService,
+    private fb: FormBuilder,
+    private userService: AuthService) {}
 
   ngOnInit() {
+
     this.buttonItems = [
       {
         icon: 'pi pi-user',
         visible: false,
-        command: () => void this.router.navigate(['/trainers/22'])
+        command: () => void this.router.navigate([`/trainers/${this.user.id}`])
       },
       {
-        label: 'Service Zugang', icon: 'pi pi-lock', command: () => {
-          this.label = 'Abmelden';
-          this.buttonItems[0].label = 'Steffi';
-          this.buttonItems[0].visible = true;
-          this.buttonItems[0].disabled = true;
-          this.buttonItems[1].visible = false;
-        }
+        label: 'Service Zugang', icon: 'pi pi-lock',
+        command: () => this.displayUserLogin = true
       }
     ];
 
@@ -122,5 +153,36 @@ export class MenuComponent implements OnInit {
         {label: 'Events', icon: 'pi pi-bookmark', data: {routerLink: '/talks', queryParams: {g: 'EVT'}}},
         ]}
     ];
+
+    this.userService.user$.pipe(
+      takeUntil(this.destroySubject),
+      filter(user => !!user)
+    ).subscribe(user => {
+      if (user !== ANONYMOUS_USER) {
+        this.user = user;
+        this.buttonItems[0].label = `${user.firstName} ${user.lastName}`;
+        this.buttonItems[0].visible = true;
+        this.buttonItems[0].disabled = false;
+        this.buttonItems[1].visible = false;
+        this.label = 'Abmelden';
+        this.isLoggedIn = true;
+        this.isLoggedOut = false;
+      } else {
+        this.buttonItems[0].label = '';
+        this.buttonItems[0].visible = false;
+        this.buttonItems[0].disabled = true;
+        this.buttonItems[1].visible = true;
+        this.label = 'Anmelden';
+        this.isLoggedIn = false;
+        this.isLoggedOut = true;
+      }
+    });
+
   }
+
+  ngOnDestroy(): void {
+    this.destroySubject.next();
+    this.destroySubject.complete();
+  }
+
 }

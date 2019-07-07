@@ -14,3 +14,18 @@ __pycache__/
 .doctree
 .dicts/
 .dic
+.idea/
+
+
+# angular-test #
+**/angular-test/e2e
+**/angular-test/node_modules
+**/angular-test/src
+**/angular-test/
+
+# ubuntu vm log #
+ubuntu-xenial-16.04-cloudimg-console.log
+
+# packages for node.js #
+package-lock.json
+node_modules/

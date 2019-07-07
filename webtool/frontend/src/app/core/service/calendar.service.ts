@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse} from "@angular/common/http";
 import {Observable, of} from "rxjs";
 import {Calendar as RawCalendar} from "../../model/calendar";
-import {catchError, first, map, shareReplay} from "rxjs/operators";
+import {catchError, first, map, publishReplay, refCount} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
@@ -39,13 +39,14 @@ export class CalendarService {
           if (responseHeaders.keys().indexOf('etag') > -1) {
             this.etag = responseHeaders.get('etag').replace(/(W\/)?(".+")/g, '$2');
           }
-          return response.body as RawCalendar;
+          return response.body;
         } else {
           return {id: 0} as RawCalendar;
         }
       }),
       first(),
-      shareReplay()
+      publishReplay(1),
+      refCount()
     );
   }
 }

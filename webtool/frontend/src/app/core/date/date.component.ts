@@ -95,6 +95,7 @@ export class DateComponent implements OnInit, OnDestroy, AfterViewInit, AfterCon
 
   @Input()
   set min(value: string) {
+    value = !!value ? value : '';
     this.minValueControl.setValue(value);
     if (!!value) {
       this.defaultDate = new Date(value);
@@ -108,6 +109,7 @@ export class DateComponent implements OnInit, OnDestroy, AfterViewInit, AfterCon
 
   @Input()
   set optMin(value: string) {
+    value = !!value ? value : '';
     this.optMinValueControl.setValue(value);
     if (!!value) {
       this.defaultDate = new Date(value);
@@ -126,6 +128,7 @@ export class DateComponent implements OnInit, OnDestroy, AfterViewInit, AfterCon
 
   @Input()
   set max(value: string) {
+    value = !!value ? value : '';
     this.maxValueControl.setValue(value);
     if (!!value) {
       this.defaultDate = new Date(value);
@@ -139,6 +142,7 @@ export class DateComponent implements OnInit, OnDestroy, AfterViewInit, AfterCon
 
   @Input()
   set optMax(value: string) {
+    value = !!value ? value : '';
     this.optMaxValueControl.setValue(value);
     if (!!value) {
       this.defaultDate = new Date(value);
@@ -167,7 +171,7 @@ export class DateComponent implements OnInit, OnDestroy, AfterViewInit, AfterCon
   }
 
   writeValue(isoDate: string): void {
-    const stdDate = isoDate.split('-').reverse().join('.');
+    const stdDate = !!isoDate ?  isoDate.split('-').reverse().join('.') : '';
     this.delegatedMethodCalls.next(accessor => accessor.writeValue(stdDate));
   }
 
@@ -199,7 +203,7 @@ export class DateComponent implements OnInit, OnDestroy, AfterViewInit, AfterCon
 }
 
 export const dateTransformer = (date: string | null): string => {
-  return date ? date.split('.').reverse().join('-') : '';
+  return !!date ? date.split('.').reverse().join('-') : null;
 };
 
 export const dateValidator: ValidatorFn = (group: FormGroup): ValidationErrors | null => {
@@ -208,7 +212,7 @@ export const dateValidator: ValidatorFn = (group: FormGroup): ValidationErrors |
   const optMinInclude: boolean = group.get('optMinInclude').value;
   const optMin: string = group.get('optMin').value;
   const dateField = group.get('date');
-  const date = dateField.value;
+  const date = !!dateField.value ? dateField.value : '';
   const dateIsRequired = group.get('dateIsRequired').value;
   const optMaxInclude: boolean = group.get('optMaxInclude').value;
   const optMax: string = group.get('optMax').value;

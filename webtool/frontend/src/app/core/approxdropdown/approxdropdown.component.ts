@@ -1,4 +1,14 @@
-import {Component, ContentChild, forwardRef, Input, OnInit, ViewChild} from '@angular/core';
+import {
+  AfterContentInit,
+  AfterViewInit,
+  Component,
+  ContentChild,
+  forwardRef,
+  Input,
+  OnDestroy,
+  OnInit,
+  ViewChild
+} from '@angular/core';
 import {ControlValueAccessor, FormControl, FormControlName, FormGroup, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {Dropdown} from 'primeng/primeng';
 import {Observable, ReplaySubject, Subscription} from 'rxjs';
@@ -23,7 +33,7 @@ import {getApproxState} from '../store/value.selectors';
   templateUrl: './approxdropdown.component.html',
   styleUrls: ['./approxdropdown.component.css']
 })
-export class ApproxdropdownComponent implements OnInit {
+export class ApproxdropdownComponent implements OnInit, OnDestroy, AfterViewInit, AfterContentInit, ControlValueAccessor {
 
   @ViewChild(Dropdown) dropdown: Dropdown;
   @ContentChild(FormControlName) formControlNameRef: FormControlName;
@@ -39,8 +49,8 @@ export class ApproxdropdownComponent implements OnInit {
   readonly = false; /* init of readonly in guide component */
 
   @Input()
-  set readOnly(value: boolean) {
-    this.readonly = value;
+  set readOnly(value) {
+    this.readonly = !!value;
   }
 
   disabledState = false;
@@ -62,12 +72,12 @@ export class ApproxdropdownComponent implements OnInit {
 
    OnChangeWrapper(onChange: (stateIn) => void): (stateOut: RawApprox) => void {
     return ((state: RawApprox): void => {
-      if ((state.id == 0)) {
+      if ((state.id === 0)) {
         state = null;
       }
       this.formControl.setValue(state);
       this.choiceControl.setValue(state);
-      onChange(state);
+      onChange(state.id);
     });
   }
 

@@ -3,5 +3,3 @@ export interface Name {
   firstName: string;
   lastName: string;
 }
-
-export type NameList = Name[];
