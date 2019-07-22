@@ -140,9 +140,10 @@ class InstructionSerializer(serializers.ModelSerializer):
                 meeting_ids = set(instruction.meeting_list.values_list('pk', flat=True))
                 for meeting_data in meeting_list:
                     meeting_instance = meeting_data.get('pk')
-                    # if meeting_instance is None:
-                    #   meeting will be new created
-                    if meeting_instance and meeting_instance.pk not in meeting_ids:
+                    if meeting_instance is None:
+                        # meeting will be new created
+                        continue
+                    elif meeting_instance.pk not in meeting_ids:
                         raise serializers.ValidationError(
                             f"meeting Id {meeting_instance.pk} is not member of instruction with id {instruction.pk}"
                         )
