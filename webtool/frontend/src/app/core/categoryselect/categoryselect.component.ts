@@ -1,4 +1,13 @@
-import {Component, ContentChild, forwardRef, Input, OnInit, ViewChild} from '@angular/core';
+import {
+  AfterContentInit,
+  AfterViewInit,
+  Component,
+  ContentChild,
+  forwardRef,
+  Input,
+  OnInit,
+  ViewChild
+} from '@angular/core';
 import {ControlValueAccessor, FormControl, FormControlName, FormGroup, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {Dropdown} from 'primeng/primeng';
 import {Observable, ReplaySubject, Subscription} from 'rxjs';
@@ -23,7 +32,7 @@ import {delay, tap} from 'rxjs/operators';
   templateUrl: './categoryselect.component.html',
   styleUrls: ['./categoryselect.component.css']
 })
-export class CategoryselectComponent implements OnInit {
+export class CategoryselectComponent implements OnInit, AfterViewInit, AfterContentInit {
 
   @ViewChild(Dropdown) dropdown: Dropdown;
   @ContentChild(FormControlName) formControlNameRef: FormControlName;

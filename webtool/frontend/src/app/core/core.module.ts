@@ -108,7 +108,7 @@ import { AddcourseComponent } from './addcourse/addcourse.component';
     GuideComponent, TeamComponent, DateComponent, TimeComponent, NamePipe, NamesPipe, MenuComponent,
     BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent, DropdownComponent,
     MultiselectComponent, ButtonModule, ToggleButtonModule, ApproxdropdownComponent, CategoryselectComponent,
-    DialogModule, CheckboxModule, InputTextModule, InputTextareaModule, DatePipe, TimePipe
+    DialogModule, CheckboxModule, InputTextModule, InputTextareaModule, DatePipe, TimePipe, AddcourseComponent
   ]
 })
 export class CoreModule { }
