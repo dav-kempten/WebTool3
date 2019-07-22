@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {select, Store} from '@ngrx/store';
 import {AppState, selectRouterFragment} from '../../app.state';
-import {Observable, Subject} from 'rxjs';
+import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {InstructionSummary} from '../../model/instruction';
 import {getInstructionSummaries} from '../../core/store/instruction-summary.selectors';
 import {RequestInstructionSummaries} from '../../core/store/instruction-summary.actions';
@@ -9,6 +9,9 @@ import {flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operat
 import {Router} from '@angular/router';
 import {MenuItem} from 'primeng/api';
 import {NamesRequested} from '../../core/store/name.actions';
+import {FormControl, FormGroup} from "@angular/forms";
+import {Topic} from "../../model/value";
+import {ValuesRequested} from "../../core/store/value.actions";
 
 @Component({
   selector: 'avk-instruction-list',
@@ -18,9 +21,14 @@ import {NamesRequested} from '../../core/store/name.actions';
 export class InstructionListComponent implements OnInit, OnDestroy {
 
   private destroySubject = new Subject<void>();
+
   part$: Observable<string>;
   instructions$: Observable<InstructionSummary[]>;
   activeItem$: Observable<MenuItem>;
+
+  formGroup = new FormGroup({
+    addCourse: new FormControl('')}
+  )
 
   menuItems: MenuItem[] = [
     {label: 'Alle Kurse', routerLink: ['/instructions']},
@@ -31,6 +39,7 @@ export class InstructionListComponent implements OnInit, OnDestroy {
 
   constructor(private store: Store<AppState>, private router: Router) {
     this.store.dispatch(new NamesRequested());
+    this.store.dispatch(new ValuesRequested());
   }
 
   ngOnInit() {
@@ -97,3 +106,4 @@ export class InstructionListComponent implements OnInit, OnDestroy {
     this.router.navigate(['instructions', instruction.id]);
   }
 }
+

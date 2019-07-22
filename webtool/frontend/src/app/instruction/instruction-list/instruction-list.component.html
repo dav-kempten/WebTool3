@@ -1,4 +1,13 @@
 <ng-container *ngIf="(activeItem$ | async) as activeItem">
+<!--  <ng-container *ngIf="(instructionGroup$ | async) as instructionGroup else loading">-->
+    <form [formGroup]="formGroup">
+      <avk-addcourse
+        formControlName="addCourse"
+        id="addCourse"
+      >
+      </avk-addcourse>
+    </form>
+<!--  </ng-container>-->
   <p-tabMenu [model]="menuItems" [activeItem]="{}"></p-tabMenu>
   <ng-container *ngIf="(instructions$ | async) as instructions">
     <p-table [value]="instructions" selectionMode="single" (selectionChange)="selectInstruction($event)">
@@ -23,3 +32,4 @@
     </p-table>
   </ng-container>
 </ng-container>
+<ng-template #loading>Bitte kurz warten!</ng-template>
