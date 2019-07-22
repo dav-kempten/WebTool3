@@ -56,12 +56,13 @@ import {ApproxdropdownComponent} from './approxdropdown/approxdropdown.component
 import {CategoryselectComponent} from './categoryselect/categoryselect.component';
 import {DatePipe} from './date/date.pipe';
 import {TimePipe} from './time/time.pipe';
+import { AddcourseComponent } from './addcourse/addcourse.component';
 
 @NgModule({
   declarations: [
     GuideComponent, TeamComponent, DateComponent, TimeComponent, NamePipe, NamesPipe, MenuComponent,
     BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent, DropdownComponent,
-    MultiselectComponent, ApproxdropdownComponent, CategoryselectComponent, DatePipe, TimePipe
+    MultiselectComponent, ApproxdropdownComponent, CategoryselectComponent, DatePipe, TimePipe, AddcourseComponent
   ],
   imports: [
     CommonModule,
