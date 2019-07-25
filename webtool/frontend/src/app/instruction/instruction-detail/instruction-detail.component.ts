@@ -214,7 +214,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   }
 }
 
-function instructionGroupFactory(instruction: Instruction): FormGroup {
+export function instructionGroupFactory(instruction: Instruction): FormGroup {
     return new FormGroup({
       id: new FormControl(instruction.id),
       reference: new FormControl(instruction.reference),
@@ -273,7 +273,7 @@ function categoryGroupFactory(category: Category): FormGroup {
   });
 }
 
-function eventGroupFactory(event: Event): FormGroup {
+export function eventGroupFactory(event: Event): FormGroup {
     return new FormGroup({
       id: new FormControl(event.id),
       title: new FormControl(event.title),

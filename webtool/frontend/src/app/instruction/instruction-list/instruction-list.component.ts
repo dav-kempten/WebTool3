@@ -1,17 +1,20 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {select, Store} from '@ngrx/store';
-import {AppState, selectRouterFragment} from '../../app.state';
+import {AppState, selectRouterFragment, selectRouterDetailId} from '../../app.state';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {InstructionSummary} from '../../model/instruction';
 import {getInstructionSummaries} from '../../core/store/instruction-summary.selectors';
 import {RequestInstructionSummaries} from '../../core/store/instruction-summary.actions';
-import {flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
+import {filter, flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {Router} from '@angular/router';
 import {MenuItem} from 'primeng/api';
 import {NamesRequested} from '../../core/store/name.actions';
+import {Instruction} from '../../core/store/instruction.model';
 import {FormControl, FormGroup} from "@angular/forms";
-import {Topic} from "../../model/value";
+import {Category, Topic} from "../../model/value";
 import {ValuesRequested} from "../../core/store/value.actions";
+import {getCategoryById, getCategoryState} from "../../core/store/value.selectors";
+import {State as CategoryState} from "../../core/store/category.reducer";
 
 @Component({
   selector: 'avk-instruction-list',
@@ -25,10 +28,11 @@ export class InstructionListComponent implements OnInit, OnDestroy {
   part$: Observable<string>;
   instructions$: Observable<InstructionSummary[]>;
   activeItem$: Observable<MenuItem>;
+  // category$: Observable<Category>;
 
   formGroup = new FormGroup({
     addCourse: new FormControl('')}
-  )
+  );
 
   menuItems: MenuItem[] = [
     {label: 'Alle Kurse', routerLink: ['/instructions']},
@@ -43,6 +47,7 @@ export class InstructionListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+
     this.part$ = this.store.pipe(
       takeUntil(this.destroySubject),
       select(selectRouterFragment),
@@ -95,6 +100,7 @@ export class InstructionListComponent implements OnInit, OnDestroy {
     this.part$.subscribe();
     this.activeItem$.subscribe();
     this.instructions$.subscribe();
+    // this.category$.subscribe();
   }
 
   ngOnDestroy(): void {

@@ -18,14 +18,20 @@ import {
   ValidationErrors,
   ValidatorFn
 } from "@angular/forms";
-import {Observable, ReplaySubject, Subscription} from "rxjs";
+import {Observable, ReplaySubject, Subject, Subscription} from "rxjs";
 import {State as CategoryState} from "../store/category.reducer";
 import {Category as RawCategory} from "../../model/value";
 import {Store} from "@ngrx/store";
 import {AppState} from "../../app.state";
 import {ValuesRequested} from "../store/value.actions";
 import {getCategoryState} from "../store/value.selectors";
-import {delay, tap} from "rxjs/operators";
+import {delay, publishReplay, refCount, takeUntil, tap} from "rxjs/operators";
+import {
+  eventGroupFactory,
+  instructionGroupFactory
+} from "../../instruction/instruction-detail/instruction-detail.component";
+import {Instruction} from "../store/instruction.model";
+import {Event} from "../../model/event";
 
 @Component({
   selector: 'avk-addcourse',
@@ -43,6 +49,7 @@ export class AddcourseComponent implements OnInit, AfterViewInit, AfterContentIn
 
   @ViewChild(Dropdown) addcourse: Dropdown;
   @ContentChild(FormControlName) formControlNameRef: FormControlName;
+  private destroySubject = new Subject<void>();
   formControl: FormControl;
   delegatedMethodCalls = new ReplaySubject<(_: ControlValueAccessor) => void>();
   delegatedMethodsSubscription: Subscription;
@@ -52,8 +59,64 @@ export class AddcourseComponent implements OnInit, AfterViewInit, AfterContentIn
 
   formState$: Observable<CategoryState>;
 
+  display = false;
   readonly = false;
   editable = false;
+
+  event: Event = {
+    id: 0,
+    title: "",
+    name: "",
+    description: "",
+    startDate: "", // date
+    startTime: null, // time
+    approximateId: null,
+    endDate: null, // date
+    endTime: null, // time
+    rendezvous: "",
+    location: "",
+    reservationService: false,
+    source: "",
+    link: "",
+    map: "",
+    distal: false,
+    distance: 0,
+    publicTransport: false,
+    shuttleService: false,
+    deprecated: false,
+  };
+  instruction: Instruction = {
+    id: 0,
+    reference: "",
+    guideId: 0,
+    teamIds: [],
+    topicId: 0,
+    instructionId: 0,
+    meetingIds: [],
+    lowEmissionAdventure: false,
+    ladiesOnly: false,
+    isSpecial: false,
+    categoryId: 0,
+    qualificationIds: [],
+    preconditions: "",
+    equipmentIds: [],
+    miscEquipment: "",
+    equipmentService: false,
+    admission: 0,
+    advances: 0,
+    advancesInfo: "",
+    extraCharges: 0,
+    extraChargesInfo: "",
+    minQuantity: 0,
+    maxQuantity: 0,
+    curQuantity: 0,
+    stateId: 0,
+  };
+
+  eventGroup: FormGroup = eventGroupFactory(this.event);
+  instructionGroup: FormGroup = instructionGroupFactory(this.instruction);
+
+
 
   @Input()
   set readOnly(value: boolean) {
@@ -113,9 +176,12 @@ export class AddcourseComponent implements OnInit, AfterViewInit, AfterContentIn
   }
 
   ngOnInit() {
+    // this.instructionGroup = instructionGroupFactory(this.instruction);
+
     this.formState$ = this.store.select(getCategoryState);
 
     this.formState$.pipe(
+      takeUntil(this.destroySubject),
       tap( (state) => {
         for (const key in state.entities) {
           const statePush: RawCategory = {
@@ -131,8 +197,10 @@ export class AddcourseComponent implements OnInit, AfterViewInit, AfterContentIn
             indoor: state.entities[key].indoor};
           this.status.push(statePush);
         }
-      })
-    ).subscribe().unsubscribe();
+      }),
+      publishReplay(1),
+      refCount()
+    ).subscribe();
   }
 
   ngAfterViewInit(): void {
@@ -142,6 +210,8 @@ export class AddcourseComponent implements OnInit, AfterViewInit, AfterContentIn
   }
 
   ngOnDestroy(): void {
+    this.destroySubject.next();
+    this.destroySubject.complete();
     if (this.delegatedMethodsSubscription) {
       this.delegatedMethodsSubscription.unsubscribe();
     }
@@ -151,6 +221,11 @@ export class AddcourseComponent implements OnInit, AfterViewInit, AfterContentIn
     this.formControl = this.formControlNameRef.control;
     this.originalControl.setValue(this.formControl);
     this.choiceControl.setValue(this.formControl.value);
+  }
+
+  selectEvent(index) {
+    console.log(index.value);
+    this.display = true;
   }
 
 }
