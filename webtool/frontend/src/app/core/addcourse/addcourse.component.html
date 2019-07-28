@@ -8,7 +8,6 @@
 
 <form [formGroup]="instructionGroup">
 <p-dialog header="NewEvent" [modal]="true" [(visible)]="display" [style]="{width: '60%', height: '100%'}">
-  <form [formGroup]="eventGroup">
   <div class="p-grid">
     <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
       <input formControlName="reference" id="reference" placeholder="Buchungsnummer" type="text" style='width:100%'
@@ -21,6 +20,7 @@
       </avk-categoryselect>
     </div>
   </div>
+  <form [formGroup]="eventGroup">
   <div class="p-grid">
     <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
       <avk-date formControlName="startDate"

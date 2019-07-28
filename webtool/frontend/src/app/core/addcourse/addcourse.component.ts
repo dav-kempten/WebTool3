@@ -56,6 +56,7 @@ export class AddcourseComponent implements OnInit, AfterViewInit, AfterContentIn
 
   originalControl = new FormControl(null);
   choiceControl = new FormControl('');
+  topicId = new FormControl('');
 
   formState$: Observable<CategoryState>;
 
@@ -117,7 +118,6 @@ export class AddcourseComponent implements OnInit, AfterViewInit, AfterContentIn
   instructionGroup: FormGroup = instructionGroupFactory(this.instruction);
 
 
-
   @Input()
   set readOnly(value: boolean) {
     this.readonly = value;
@@ -131,7 +131,7 @@ export class AddcourseComponent implements OnInit, AfterViewInit, AfterContentIn
   group = new FormGroup(
     {
       original: this.originalControl,
-      choice: this.choiceControl,
+      choice: this.choiceControl
     },
     [stateValidator]
   );
@@ -176,9 +176,12 @@ export class AddcourseComponent implements OnInit, AfterViewInit, AfterContentIn
   }
 
   ngOnInit() {
-    // this.instructionGroup = instructionGroupFactory(this.instruction);
 
     this.formState$ = this.store.select(getCategoryState);
+
+    // setTimeout(() => {
+    //   console.log("timeout");
+    // }, 500);
 
     this.formState$.pipe(
       takeUntil(this.destroySubject),
