@@ -11,9 +11,11 @@ import {MenuItem} from 'primeng/api';
 import {NamesRequested} from '../../core/store/name.actions';
 import {ValuesRequested} from "../../core/store/value.actions";
 import {Instruction} from "../../core/store/instruction.model";
-import {FormControl, FormGroup} from "@angular/forms";
 import {eventGroupFactory, instructionGroupFactory} from "../../core/factories";
 import {Event} from "../../model/event";
+import {AuthService, User} from "../../core/service/auth.service";
+import {AddInstruction} from "../../core/store/instruction.actions";
+import {AddEvent} from "../../core/store/event.actions";
 
 @Component({
   selector: 'avk-instruction-list',
@@ -27,6 +29,8 @@ export class InstructionListComponent implements OnInit, OnDestroy {
   instructions$: Observable<InstructionSummary[]>;
   activeItem$: Observable<MenuItem>;
   display: boolean = false;
+
+  user$: Observable<User>;
 
   instruction: Instruction = {
     id: 0, // InstructionId
@@ -89,12 +93,17 @@ export class InstructionListComponent implements OnInit, OnDestroy {
     {label: 'Winter Kurse', url: '/instructions#winter'},
   ];
 
-  constructor(private store: Store<AppState>, private router: Router) {
+  constructor(private store: Store<AppState>, private router: Router, private authService: AuthService) {
     this.store.dispatch(new NamesRequested());
     this.store.dispatch(new ValuesRequested());
   }
 
   ngOnInit() {
+    this.user$ = this.authService.user$;
+    this.user$.pipe(
+      tap(value => console.log(value)),
+    ).subscribe();
+
     this.part$ = this.store.pipe(
       takeUntil(this.destroySubject),
       select(selectRouterFragment),
@@ -166,6 +175,8 @@ export class InstructionListComponent implements OnInit, OnDestroy {
   confirmClick() {
     console.log(this.instructionGroup.value);
     console.log(this.eventGroup.value);
-    // console.log("I'm a confirm click!");
+
+    this.store.dispatch(new AddInstruction(this.instructionGroup.value));
+    this.store.dispatch(new AddEvent(this.eventGroup.value));
   }
 }

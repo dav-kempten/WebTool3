@@ -24,7 +24,18 @@
     </p-table>
   </ng-container>
   <form [formGroup]="instructionGroup">
-  <p-dialog header="Neuer Kurs" [modal]="true" [(visible)]="display" [style]="{width: '60%', height: '100%'}">
+
+  <!--  Beginn Dialogfenster  -->
+  <p-dialog header="Neuer Kurs" [modal]="true" [(visible)]="display"
+            [contentStyle]="{'max-width': '800px', 'max-height': '800px'}">
+    <div class="p-grid">
+      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+        <input formControlName="id" id="id" placeholder="ID" type="number" style='width:100%'
+               pInputText>
+      </div>
+      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+      </div>
+    </div>
     <div class="p-grid">
       <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
         <input formControlName="reference" id="reference" placeholder="Buchungsnummer" type="text" style='width:100%'
@@ -55,7 +66,14 @@
         ></avk-membernumber>
       </div>
     </div>
-    <form [formGroup]="eventGroup">
+    <form [formGroup]="eventGroup"><div class="p-grid">
+      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+        <input formControlName="id" id="eventId" placeholder="EventId" type="number" style='width:100%'
+               pInputText>
+      </div>
+      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+      </div>
+    </div>
     <div class="p-grid">
       <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
         <avk-date formControlName="startDate"
