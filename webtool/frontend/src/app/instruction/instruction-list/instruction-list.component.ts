@@ -12,7 +12,8 @@ import {NamesRequested} from '../../core/store/name.actions';
 import {ValuesRequested} from "../../core/store/value.actions";
 import {Instruction} from "../../core/store/instruction.model";
 import {FormControl, FormGroup} from "@angular/forms";
-import {instructionGroupFactory} from "../../core/factories";
+import {eventGroupFactory, instructionGroupFactory} from "../../core/factories";
+import {Event} from "../../model/event";
 
 @Component({
   selector: 'avk-instruction-list',
@@ -25,6 +26,61 @@ export class InstructionListComponent implements OnInit, OnDestroy {
   part$: Observable<string>;
   instructions$: Observable<InstructionSummary[]>;
   activeItem$: Observable<MenuItem>;
+  display: boolean = false;
+
+  instruction: Instruction = {
+    id: 0, // InstructionId
+    reference: "",
+    guideId: 0, // NameId
+    teamIds: [], // NameId
+    topicId: 0, // TopicId
+    instructionId: 0, // EventId
+    meetingIds: [], // EventId
+    lowEmissionAdventure: false,
+    ladiesOnly: false,
+    isSpecial: false,
+    categoryId: null,
+    qualificationIds: [], // QualificationId
+    preconditions: "",
+    equipmentIds: [], // EquipmentId
+    miscEquipment: "",
+    equipmentService: false,
+    admission: 0, // Decimal
+    advances: 0, // Decimal
+    advancesInfo: "",
+    extraCharges: 0, // Decimal
+    extraChargesInfo: "",
+    minQuantity: 0,
+    maxQuantity: 0,
+    curQuantity : 0,
+    stateId: 0,
+  };
+
+  event: Event = {
+    id: 0,
+    title: "",
+    name: "",
+    description: "",
+    startDate: "", // date
+    startTime: null, // time
+    approximateId: null,
+    endDate: null, // date
+    endTime: null, // time
+    rendezvous: "",
+    location: "",
+    reservationService: false,
+    source: "",
+    link: "",
+    map: "",
+    distal: false,
+    distance: 0,
+    publicTransport: false,
+    shuttleService: false,
+    deprecated: false,
+  };
+
+  instructionGroup = instructionGroupFactory(this.instruction);
+  eventGroup = eventGroupFactory(this.event);
 
   menuItems: MenuItem[] = [
     {label: 'Alle Kurse', routerLink: ['/instructions']},
@@ -35,6 +91,7 @@ export class InstructionListComponent implements OnInit, OnDestroy {
 
   constructor(private store: Store<AppState>, private router: Router) {
     this.store.dispatch(new NamesRequested());
+    this.store.dispatch(new ValuesRequested());
   }
 
   ngOnInit() {
@@ -99,5 +156,16 @@ export class InstructionListComponent implements OnInit, OnDestroy {
 
   selectInstruction(instruction): void {
     this.router.navigate(['instructions', instruction.id]);
+  }
+
+  handleClick() {
+    this.display = true;
+    console.log("this.display: ", this.display);
+  }
+
+  confirmClick() {
+    console.log(this.instructionGroup.value);
+    console.log(this.eventGroup.value);
+    // console.log("I'm a confirm click!");
   }
 }
