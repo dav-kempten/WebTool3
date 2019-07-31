@@ -179,4 +179,16 @@ export class InstructionListComponent implements OnInit, OnDestroy {
     this.store.dispatch(new AddInstruction(this.instructionGroup.value));
     this.store.dispatch(new AddEvent(this.eventGroup.value));
   }
+
+  clone() {
+    console.log("clone");
+  }
+
+  delete() {
+    console.log("delete");
+  }
+
+  deactivate() {
+    console.log("deactivate");
+  }
 }
