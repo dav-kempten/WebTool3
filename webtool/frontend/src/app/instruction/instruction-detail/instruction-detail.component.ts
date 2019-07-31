@@ -6,16 +6,16 @@ import {getCategoryById, getTopicById} from '../../core/store/value.selectors';
 import {NamesRequested} from '../../core/store/name.actions';
 import {ValuesRequested} from '../../core/store/value.actions';
 import {CalendarRequested} from '../../core/store/calendar.actions';
-import {RequestInstruction, UpdateInstruction} from '../../core/store/instruction.actions';
+import {RequestInstruction, UpdateInstruction, UpsertInstruction} from '../../core/store/instruction.actions';
 import {getInstructionById} from '../../core/store/instruction.selectors';
 import {Instruction} from '../../core/store/instruction.model';
 import {filter, flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {getEventsByIds} from '../../core/store/event.selectors';
-import {AuthService, Role, User} from '../../core/service/auth.service';
+import {AuthService, User} from '../../core/service/auth.service';
 import {Event} from '../../model/event';
 import {Category, Topic} from '../../model/value';
-import {FormArray, FormControl, FormGroup} from '@angular/forms';
-import {UpdateEvent} from '../../core/store/event.actions';
+import {FormArray, FormGroup} from '@angular/forms';
+import {AddEvent, UpdateEvent} from '../../core/store/event.actions';
 import {
   categoryGroupFactory,
   eventGroupFactory,
@@ -58,6 +58,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   display = false;
   currentEventGroup: FormGroup = undefined;
   climbingTopicIds: number[] = [18, 26, 31, 46, 45, 44, 35, 41, 97, 92, 32, 56, 57, 100, 47];
+  eventNumber: number[];
 
   constructor(private store: Store<AppState>, private userService: AuthService) {
     this.store.dispatch(new NamesRequested());
@@ -144,7 +145,11 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     this.eventIds$ = this.instruction$.pipe(
       takeUntil(this.destroySubject),
       filter(instruction => !!instruction),
-      map(instruction => [instruction.instructionId, ...instruction.meetingIds])
+      map(instruction => [instruction.instructionId, ...instruction.meetingIds]),
+      tap(instruction => console.log(instruction)),
+      tap(instruction => this.eventNumber = instruction),
+      publishReplay(1),
+      refCount()
     );
 
     this.events$ = this.eventIds$.pipe(
@@ -166,6 +171,8 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
           this.eventsSubject.next(eventArray);
         })
       )),
+      publishReplay(1),
+      refCount()
     );
 
     this.instructionId$.subscribe();
@@ -177,7 +184,10 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
 
     this.eventChange$.pipe(
       takeUntil(this.destroySubject),
-      filter(event => !!event)
+      filter(event => !!event),
+      tap(event => console.log(event)),
+      publishReplay(1),
+      refCount()
     ).subscribe(
       event => this.store.dispatch(
         new UpdateEvent({event: {id: event.id, changes: {...event}}})
@@ -186,7 +196,10 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
 
     this.instructionChange$.pipe(
       takeUntil(this.destroySubject),
-      filter(instruction => !!instruction)
+      filter(instruction => !!instruction),
+      tap(instruction => console.log(instruction)),
+      publishReplay(1),
+      refCount()
     ).subscribe(
       instruction => this.store.dispatch(
         new UpdateInstruction({instruction: {id: instruction.id, changes: {
@@ -213,9 +226,42 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
       eventArray => this.currentEventGroup = (eventArray.at(index)) as FormGroup
     );
     this.display = true;
+    // console.log(index);
   }
 
   switchDistal(isDistal, distal) {
     distal.disabled = !isDistal;
+  }
+
+  addEvent() {
+    this.eventNumber.push(this.eventNumber[this.eventNumber.length-1] + 1);
+
+    console.log(this.eventNumber);
+
+    let event: Event = {
+      id: this.eventNumber[this.eventNumber.length-1],
+      title: "",
+      name: "",
+      description: "",
+      startDate: "",
+      startTime: null,
+      approximateId: null,
+      endDate: null,
+      endTime: null,
+      rendezvous: "",
+      location: "",
+      reservationService: false,
+      source: "",
+      link: "",
+      map: "",
+      distal: false,
+      distance: 0,
+      publicTransport: false,
+      shuttleService: false,
+      deprecated: false,
+    };
+
+    this.store.dispatch(new AddEvent({event}));
+    this.instructionSubject['meetingsIds'] = this.eventNumber;
   }
 }

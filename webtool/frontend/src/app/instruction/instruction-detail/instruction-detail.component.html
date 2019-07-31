@@ -235,6 +235,9 @@
 <!--  </fieldset>-->
   </form>
 
+  <!--Button für neues Event-->
+  <p-button label="Event hinzufügen" (onClick)="addEvent()"></p-button>
+
   <!--Liste mit Parametern (Tabelle)-->
   <ng-container *ngIf="(eventArray$ | async) as eventArray">
     <div class="p-grid">
@@ -264,7 +267,6 @@
   <ng-container *ngIf="currentEventGroup">
     <p-dialog header="EventDetail" [modal]="true" [(visible)]="display" [style]="{width: '60%', height: '60%'}">
       <form [formGroup]="currentEventGroup">
-<!--      <fieldset [disabled]="!(userValState >= 1)">-->
         <!--Kurztitel, Langtitel-->
         <div class="p-grid">
           <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
@@ -400,7 +402,6 @@
                    pInputText>
           </div>
         </div>
-<!--      </fieldset>-->
       </form>
     </p-dialog>
   </ng-container>
