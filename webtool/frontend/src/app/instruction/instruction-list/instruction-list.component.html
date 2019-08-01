@@ -32,26 +32,17 @@
   <form [formGroup]="instructionGroup">
 
   <!--  Beginn Dialogfenster  -->
+  <!--<ng-container *ngIf="categoryGroup$ | async as instructionGroup else loading">  -->
   <p-dialog header="Neuer Kurs" [modal]="true" [(visible)]="display"
             [contentStyle]="{'max-width': '800px', 'max-height': '800px'}">
     <div class="p-grid">
-      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
-        <input formControlName="id" id="id" placeholder="ID" type="number" style='width:100%'
-               pInputText>
-      </div>
-      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
-      </div>
-    </div>
-    <div class="p-grid">
-      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
-        <input formControlName="reference" id="reference" placeholder="Buchungsnummer" type="text" style='width:100%'
-               pInputText>
-      </div>
       <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
         <avk-categoryselect
             formControlName="topicId"
             id="topicId">
         </avk-categoryselect>
+      </div>
+      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
       </div>
     </div>
     <div class="p-grid">
@@ -72,15 +63,8 @@
         ></avk-membernumber>
       </div>
     </div>
-    <form [formGroup]="eventGroup"><div class="p-grid">
-      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
-        <input formControlName="id" id="eventId" placeholder="EventId" type="number" style='width:100%'
-               pInputText>
-      </div>
-      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
-      </div>
-    </div>
-    <div class="p-grid">
+    <form [formGroup]="eventGroup">
+      <div class="p-grid">
       <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
         <avk-date formControlName="startDate"
                   id="dbeginn" label="Start"
@@ -99,5 +83,6 @@
     </form>
     <p-button label="Bestätigen" (onClick)="confirmClick()"></p-button>
   </p-dialog>
+  <!--</ng-container>-->
   </form>
 </ng-container>
