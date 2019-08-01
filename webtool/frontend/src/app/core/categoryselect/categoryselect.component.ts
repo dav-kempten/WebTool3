@@ -1,7 +1,24 @@
-import {Component, ContentChild, forwardRef, Input, OnInit, ViewChild} from '@angular/core';
-import {ControlValueAccessor, FormControl, FormControlName, FormGroup, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {
+  AfterContentInit,
+  AfterViewInit,
+  Component,
+  ContentChild,
+  forwardRef,
+  Input,
+  OnDestroy,
+  OnInit,
+  ViewChild
+} from '@angular/core';
+import {
+  ControlValueAccessor,
+  FormArray,
+  FormControl,
+  FormControlName,
+  FormGroup,
+  NG_VALUE_ACCESSOR
+} from '@angular/forms';
 import {Dropdown} from 'primeng/primeng';
-import {Observable, ReplaySubject, Subscription} from 'rxjs';
+import {BehaviorSubject, Observable, ReplaySubject, Subject, Subscription} from 'rxjs';
 import {stateValidator} from '../dropdown/dropdown.component';
 import {State as CategoryState} from '../store/category.reducer';
 import {Category as RawCategory} from '../../model/value';
@@ -9,7 +26,7 @@ import {Store} from '@ngrx/store';
 import {AppState} from '../../app.state';
 import {ValuesRequested} from '../store/value.actions';
 import {getCategoryState} from '../store/value.selectors';
-import {delay, tap} from 'rxjs/operators';
+import {delay, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 
 @Component({
   selector: 'avk-categoryselect',
@@ -23,20 +40,24 @@ import {delay, tap} from 'rxjs/operators';
   templateUrl: './categoryselect.component.html',
   styleUrls: ['./categoryselect.component.css']
 })
-export class CategoryselectComponent implements OnInit {
+export class CategoryselectComponent implements OnInit, OnDestroy, AfterViewInit, AfterContentInit, ControlValueAccessor {
 
   @ViewChild(Dropdown) dropdown: Dropdown;
   @ContentChild(FormControlName) formControlNameRef: FormControlName;
   formControl: FormControl;
   delegatedMethodCalls = new ReplaySubject<(_: ControlValueAccessor) => void>();
   delegatedMethodsSubscription: Subscription;
+  private destroySubject = new Subject<void>();
+  // private categorySubject = new BehaviorSubject<FormArray>(undefined);
+
+  // categoryGroup$: Observable<FormArray> = this.categorySubject.asObservable();
 
   originalControl = new FormControl(null);
   choiceControl = new FormControl('');
 
   formState$: Observable<CategoryState>;
 
-  readonly = false; /* init of readonly in guide component */
+  readonly = false;
   editable = false;
 
   @Input()
@@ -97,10 +118,12 @@ export class CategoryselectComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    console.log("categorySelect");
 
     this.formState$ = this.store.select(getCategoryState);
 
     this.formState$.pipe(
+      takeUntil(this.destroySubject),
       tap( (state) => {
         for (const key in state.entities) {
           const statePush: RawCategory = {
@@ -116,9 +139,12 @@ export class CategoryselectComponent implements OnInit {
             indoor: state.entities[key].indoor};
           this.status.push(statePush);
         }
-      })
-    ).subscribe().unsubscribe();
-
+      }),
+      // tap(() => console.log(this.status)),
+      // shareReplay(),
+      publishReplay(1),
+      refCount()
+    ).subscribe();
   }
 
   ngAfterViewInit(): void {
@@ -131,6 +157,9 @@ export class CategoryselectComponent implements OnInit {
     if (this.delegatedMethodsSubscription) {
       this.delegatedMethodsSubscription.unsubscribe();
     }
+    this.destroySubject.next();
+    this.destroySubject.complete();
+    // this.categorySubject.complete();
   }
 
   ngAfterContentInit(): void {
