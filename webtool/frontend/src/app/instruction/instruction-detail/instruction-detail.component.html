@@ -8,7 +8,6 @@
 <!--  <p>EventArray:<br/>{{(eventArray$ | async)?.value | json}}</p>-->
 
   <form [formGroup]="instructionGroup">
-<!--  <fieldset [disabled]="!(userValState >= 1)">-->
     <!--GuideComponent // TeamComponent // Abrechnung-->
     <div class="p-grid">
       <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
@@ -83,13 +82,11 @@
         ></p-checkbox>
       </div>
     </div>
-<!--  </fieldset>-->
   </form>
 
   <!--Ausrüstung, Besondere Vorausssetzungen-->
   <ng-container *ngIf="(topicGroup$ | async) as topicGroup">
     <form [formGroup]="topicGroup">
-<!--    <fieldset [disabled]="!(userValState >= 1)">-->
       <ng-container *ngIf="!instructionGroup.get('isSpecial').value">
 <!--        <div class="p-grid" style="background-color:#D8D8D8">-->
         <div class="p-grid">
@@ -148,7 +145,6 @@
           </div>
         </div>
       </ng-container>
-<!--    </fieldset>-->
     </form>
   </ng-container>
 
@@ -204,7 +200,6 @@
 
   <!--Teilnehmeranzahl, Strecke, Materialservice-->
   <form class="p-grid" [formGroup]="instructionGroup">
-<!--  <fieldset [disabled]="!(userValState >= 1)">-->
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
       <avk-membernumber
           formControlName="minQuantity"
@@ -232,7 +227,6 @@
           binary="true"
       ></p-checkbox>
     </div>
-<!--  </fieldset>-->
   </form>
 
   <!--Button für neues Event-->
@@ -281,8 +275,8 @@
 
         <!--Zeitpunkt Event-->
         <div class="p-grid">
-          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6"  *
-               ngIf="!(climbingTopicIds.indexOf(instructionGroup.get('topicId').value) !== -1)">
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6"
+               *ngIf="!(climbingTopicIds.indexOf(instructionGroup.get('topicId').value) !== -1)">
             <avk-approxdropdown formControlName="approximateId" id="approx" [readOnly]="!(userValState >= 1)"
                                 [disable]="!!currentEventGroup.get('startTime').value"></avk-approxdropdown>
           </div>
@@ -409,7 +403,6 @@
 
   <!--Teilnehmergebühr, Vorauszahlung & Zusatzkosten-->
   <form [formGroup]="instructionGroup">
-<!--  <fieldset [disabled]="!(userValState >= 1)">-->
     <div class="p-grid" *ngIf="!(climbingTopicIds.indexOf(instructionGroup.get('topicId').value) !== -1)">
     <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
       <div class="ui-inputgroup">
@@ -475,7 +468,6 @@
       ></textarea>
       </div>
     </div>
-<!--  </fieldset>-->
   </form>
 
 </ng-container>
