@@ -29,12 +29,12 @@
       </ng-template>
     </p-table>
   </ng-container>
-  <form [formGroup]="instructionGroup">
 
   <!--  Beginn Dialogfenster  -->
+  <form [formGroup]="createInstruction">
   <!--<ng-container *ngIf="categoryGroup$ | async as instructionGroup else loading">  -->
   <p-dialog header="Neuer Kurs" [modal]="true" [(visible)]="display"
-            [contentStyle]="{'max-width': '800px', 'max-height': '800px'}">
+            [contentStyle]="{'width': '800px', 'height': '800px'}">
     <div class="p-grid">
       <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
         <avk-categoryselect
@@ -45,42 +45,15 @@
       <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
       </div>
     </div>
-    <div class="p-grid">
-      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
-        <avk-membernumber
-          formControlName="minQuantity"
-          label="Mindestens"
-          id="m1"
-          [maxMember]="instructionGroup.get('maxQuantity').value"
-        ></avk-membernumber>
-      </div>
-      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
-        <avk-membernumber
-          formControlName="maxQuantity"
-          label="Maximal"
-          id="m2"
-          [minMember]="instructionGroup.get('minQuantity').value"
-        ></avk-membernumber>
-      </div>
-    </div>
-    <form [formGroup]="eventGroup">
       <div class="p-grid">
       <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
         <avk-date formControlName="startDate"
                   id="dbeginn" label="Start"
-                  [maxInclude]="true"
-                  [max]="eventGroup.get('endDate').value"
         ></avk-date>
       </div>
       <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
-        <avk-date formControlName="endDate"
-                  id="dend" label="Ende"
-                  [minInclude]="true"
-                  [min]="eventGroup.get('startDate').value"
-        ></avk-date>
       </div>
     </div>
-    </form>
     <p-button label="Bestätigen" (onClick)="confirmClick()"></p-button>
   </p-dialog>
   <!--</ng-container>-->

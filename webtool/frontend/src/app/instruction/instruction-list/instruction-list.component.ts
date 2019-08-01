@@ -10,12 +10,9 @@ import {Router} from '@angular/router';
 import {MenuItem} from 'primeng/api';
 import {NamesRequested} from '../../core/store/name.actions';
 import {ValuesRequested} from "../../core/store/value.actions";
-import {Instruction} from "../../core/store/instruction.model";
-import {eventGroupFactory, instructionGroupFactory} from "../../core/factories";
-import {Event} from "../../model/event";
 import {AuthService, User} from "../../core/service/auth.service";
-import {AddInstruction} from "../../core/store/instruction.actions";
-import {AddEvent} from "../../core/store/event.actions";
+import {CloneInstruction, CreateInstruction} from "../../core/store/instruction.actions";
+import {FormControl, FormGroup} from "@angular/forms";
 
 @Component({
   selector: 'avk-instruction-list',
@@ -32,59 +29,13 @@ export class InstructionListComponent implements OnInit, OnDestroy {
 
   user$: Observable<User>;
 
-  instruction: Instruction = {
-    id: 0, // InstructionId
-    reference: "",
-    guideId: 0, // NameId
-    teamIds: [], // NameId
-    topicId: 0, // TopicId
-    instructionId: 0, // EventId
-    meetingIds: [], // EventId
-    lowEmissionAdventure: false,
-    ladiesOnly: false,
-    isSpecial: false,
-    categoryId: null,
-    qualificationIds: [], // QualificationId
-    preconditions: "",
-    equipmentIds: [], // EquipmentId
-    miscEquipment: "",
-    equipmentService: false,
-    admission: 0, // Decimal
-    advances: 0, // Decimal
-    advancesInfo: "",
-    extraCharges: 0, // Decimal
-    extraChargesInfo: "",
-    minQuantity: 0,
-    maxQuantity: 0,
-    curQuantity : 0,
-    stateId: 0,
-  };
+  topicId = new FormControl('');
+  startDate = new FormControl('');
 
-  event: Event = {
-    id: 0,
-    title: "",
-    name: "",
-    description: "",
-    startDate: "", // date
-    startTime: null, // time
-    approximateId: null,
-    endDate: null, // date
-    endTime: null, // time
-    rendezvous: "",
-    location: "",
-    reservationService: false,
-    source: "",
-    link: "",
-    map: "",
-    distal: false,
-    distance: 0,
-    publicTransport: false,
-    shuttleService: false,
-    deprecated: false,
-  };
-
-  instructionGroup = instructionGroupFactory(this.instruction);
-  eventGroup = eventGroupFactory(this.event);
+  createInstruction: FormGroup = new FormGroup({
+    topicId: this.topicId,
+    startDate: this.startDate
+  });
 
   menuItems: MenuItem[] = [
     {label: 'Alle Kurse', routerLink: ['/instructions']},
@@ -102,7 +53,7 @@ export class InstructionListComponent implements OnInit, OnDestroy {
     this.user$ = this.authService.user$;
     this.user$.pipe(
       tap(value => console.log(value)),
-    ).subscribe();
+    );
 
     this.part$ = this.store.pipe(
       takeUntil(this.destroySubject),
@@ -153,6 +104,7 @@ export class InstructionListComponent implements OnInit, OnDestroy {
       refCount()
     );
 
+    this.user$.subscribe();
     this.part$.subscribe();
     this.activeItem$.subscribe();
     this.instructions$.subscribe();
@@ -173,15 +125,14 @@ export class InstructionListComponent implements OnInit, OnDestroy {
   }
 
   confirmClick() {
-    console.log(this.instructionGroup.value);
-    console.log(this.eventGroup.value);
-
-    this.store.dispatch(new AddInstruction(this.instructionGroup.value));
-    this.store.dispatch(new AddEvent(this.eventGroup.value));
+    // this.store.dispatch(new CreateInstruction({this.createInstruction.get('topicId').value,
+    //   this.createInstruction.get('startDate').value}));
   }
 
   clone() {
     console.log("clone");
+    // this.store.dispatch(new CloneInstruction(this.createInstruction.value));
+
   }
 
   delete() {

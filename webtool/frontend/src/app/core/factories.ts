@@ -2,6 +2,7 @@ import {Instruction} from "./store/instruction.model";
 import {FormControl, FormGroup} from "@angular/forms";
 import {Category, Topic} from "../model/value";
 import {Event} from "../model/event";
+import {Tour} from "../model/tour";
 
 export function instructionGroupFactory(instruction: Instruction): FormGroup {
   return new FormGroup({
@@ -82,35 +83,5 @@ export function eventGroupFactory(event: Event): FormGroup {
     distance: new FormControl({value: event.distance, disabled: !event.distal}),
     publicTransport: new FormControl(event.publicTransport),
     shuttleService: new FormControl(event.shuttleService)
-  });
-}
-
-export function tourGroupFactory(tour: Tour): FormGroup {
-  return new FormGroup({
-    id: new FormControl(instruction.id),
-    reference: new FormControl(instruction.reference),
-    guideId: new FormControl(instruction.guideId),
-    teamIds: new FormControl(instruction.teamIds),
-    topicId: new FormControl(instruction.topicId),
-    instructionId: new FormControl(instruction.instructionId),
-    meetingIds: new FormControl(instruction.meetingIds),
-    lowEmissionAdventure: new FormControl(instruction.lowEmissionAdventure),
-    ladiesOnly: new FormControl(instruction.ladiesOnly),
-    isSpecial: new FormControl(instruction.isSpecial),
-    categoryId: new FormControl(instruction.categoryId),
-    qualificationIds: new FormControl(instruction.qualificationIds),
-    preconditions: new FormControl(instruction.preconditions),
-    equipmentIds: new FormControl(instruction.equipmentIds),
-    miscEquipment: new FormControl(instruction.miscEquipment),
-    equipmentService: new FormControl(instruction.equipmentService),
-    admission: new FormControl((instruction.admission / 100).toFixed(2)),
-    advances: new FormControl((instruction.advances / 100).toFixed(2)),
-    advancesInfo: new FormControl(instruction.advancesInfo),
-    extraCharges: new FormControl((instruction.extraCharges / 100).toFixed(2)),
-    extraChargesInfo: new FormControl(instruction.extraChargesInfo),
-    minQuantity: new FormControl(instruction.minQuantity),
-    maxQuantity: new FormControl(instruction.maxQuantity),
-    curQuantity: new FormControl(instruction.curQuantity),
-    stateId: new FormControl(instruction.stateId)
   });
 }

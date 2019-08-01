@@ -90,13 +90,13 @@ export class ClearInstructions implements Action {
 export class CreateInstruction implements Action {
   readonly type = InstructionActionTypes.CreateInstruction;
 
-  constructor(public payload: { topicId: number }) {}
+  constructor(public payload: { topicId: number, startDate: string}) {}
 }
 
 export class CloneInstruction implements Action {
   readonly type = InstructionActionTypes.CloneInstruction;
 
-  constructor(public payload: { ids: number }) {}
+  constructor(public payload: { id: number }) {}
 }
 
 export type InstructionActions =
