@@ -88,7 +88,6 @@
   <ng-container *ngIf="(topicGroup$ | async) as topicGroup">
     <form [formGroup]="topicGroup">
       <ng-container *ngIf="!instructionGroup.get('isSpecial').value">
-<!--        <div class="p-grid" style="background-color:#D8D8D8">-->
         <div class="p-grid">
           <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
             <avk-multiselect
@@ -257,7 +256,6 @@
     </div>
   </ng-container>
 
-  <form [formGroup]="instructionGroup">
   <ng-container *ngIf="currentEventGroup">
     <p-dialog header="EventDetail" [modal]="true" [(visible)]="display" [style]="{width: '60%', height: '60%'}">
       <form [formGroup]="currentEventGroup">
@@ -399,7 +397,6 @@
       </form>
     </p-dialog>
   </ng-container>
-  </form>
 
   <!--Teilnehmergebühr, Vorauszahlung & Zusatzkosten-->
   <form [formGroup]="instructionGroup">
@@ -474,8 +471,3 @@
 <ng-template #loading>Bitte kurz warten!</ng-template>
 
 <a routerLink="../"><p-button label="Zurück"></p-button></a>
-
-
-  <!--Muster-Container zum Ausblenden der nicht gewünschten Felder, in Abhängigkeit der topicId-->
-  <!--<ng-container *ngIf="!(climbingTopicIds.indexOf(instructionGroup.get('topicId').value) !== -1)">-->
-  <!--</ng-container>-->
