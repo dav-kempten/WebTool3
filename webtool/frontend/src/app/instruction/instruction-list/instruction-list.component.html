@@ -21,9 +21,12 @@
           <td>{{instruction.guideId | name}}</td>
           <td>{{instruction.minQuantity}} | {{instruction.curQuantity}} | {{instruction.maxQuantity}}</td>
           <td>
-            <button pButton type="button" label="Klonen" class="ui-button-success" (click)="clone()"></button>
-            <button pButton type="button" label="Löschen" class="ui-button-warning" (click)="delete()"></button>
-            <button pButton type="button" label="Deaktivieren" class="ui-button-info" (click)="deactivate()"></button>
+            <button pButton type="button" label="Klonen" class="ui-button-success"
+                    (click)="clone(instruction.id)"></button>
+            <button pButton type="button" label="Löschen" class="ui-button-warning"
+                    (click)="delete(instruction.id)"></button>
+            <button pButton type="button" label="Deaktivieren" class="ui-button-info"
+                    (click)="deactivate(instruction.id)"></button>
           </td>
         </tr>
       </ng-template>

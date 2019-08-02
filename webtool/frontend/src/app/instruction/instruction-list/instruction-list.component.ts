@@ -11,7 +11,12 @@ import {MenuItem} from 'primeng/api';
 import {NamesRequested} from '../../core/store/name.actions';
 import {ValuesRequested} from "../../core/store/value.actions";
 import {AuthService, User} from "../../core/service/auth.service";
-import {CloneInstruction, CreateInstruction} from "../../core/store/instruction.actions";
+import {
+  CloneInstruction,
+  CreateInstruction,
+  DeactivateInstruction,
+  DeleteInstruction
+} from "../../core/store/instruction.actions";
 import {FormControl, FormGroup} from "@angular/forms";
 
 @Component({
@@ -125,21 +130,24 @@ export class InstructionListComponent implements OnInit, OnDestroy {
   }
 
   confirmClick() {
-    // this.store.dispatch(new CreateInstruction({this.createInstruction.get('topicId').value,
-    //   this.createInstruction.get('startDate').value}));
+    console.log("TopicId",this.createInstruction.get('topicId').value);
+    console.log("StartDate",this.createInstruction.get('startDate').value);
+    this.store.dispatch(new CreateInstruction({topicId: this.createInstruction.get('topicId').value,
+      startDate: this.createInstruction.get('startDate').value}));
   }
 
-  clone() {
-    console.log("clone");
-    // this.store.dispatch(new CloneInstruction(this.createInstruction.value));
-
+  clone(instructionId) {
+    console.log("clone", instructionId);
+    this.store.dispatch(new CloneInstruction({id: instructionId}));
   }
 
-  delete() {
-    console.log("delete");
+  delete(instructionId) {
+    console.log("delete", instructionId);
+    this.store.dispatch(new DeleteInstruction({id: instructionId}));
   }
 
-  deactivate() {
-    console.log("deactivate");
+  deactivate(instructionId) {
+    console.log("deactivate", instructionId);
+    this.store.dispatch(new DeactivateInstruction({id: instructionId}))
   }
 }
