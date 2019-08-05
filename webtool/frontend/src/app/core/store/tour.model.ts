@@ -5,6 +5,8 @@ export interface Tour {
   miscCategory: string;
   ladiesOnly: boolean;
   youthOnTour: boolean;
+  lowEmissionAdventure: boolean;
+  bikeTrain: boolean;
   deadline: string;
   preliminary: string;
   info: string;
@@ -13,8 +15,8 @@ export interface Tour {
   portal: string;
   season: string;
   guideId: number;
-  teamIds: number;
-  preconditions: string;
+  teamIds: number[];
+  preconditionId: number;
   miscEquipment: string;
   admission: number;
   advances: number;
@@ -31,4 +33,9 @@ export interface Tour {
   stateId: number;
   updated: string;
   deprecated: boolean;
+  shortTitle: string;
+  longTitle: string;
+  equipmentIds: number[];
+  equipmentService: boolean;
+  preconditions: string;
 }
