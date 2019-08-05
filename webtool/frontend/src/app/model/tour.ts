@@ -1,5 +1,5 @@
 export interface Tour {
-  season: any;
+  season: Season;
   deadline: string;
   preliminary: string | null;
   info: string;
@@ -25,4 +25,9 @@ export interface Tour {
   stateId: number;
   updated: string;
   deprecated: boolean;
+}
+
+enum Season {
+  winter = "winter",
+  summer = "summer"
 }

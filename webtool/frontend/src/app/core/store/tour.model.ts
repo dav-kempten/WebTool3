@@ -1,12 +1,20 @@
 export interface Tour {
-  season: string;
-  deadline: string;
-  preliminary: string | null;
-  info: string;
-  tour: string;
-  guideId: number;
-  preconditions: string;
+  id: number;
+  reference: string;
+  categoryId: number;
+  miscCategory: string;
   ladiesOnly: boolean;
+  youthOnTour: boolean;
+  deadline: string;
+  preliminary: string;
+  info: string;
+  tourstart: string;
+  tourend: string;
+  portal: string;
+  season: string;
+  guideId: number;
+  teamIds: number;
+  preconditions: string;
   miscEquipment: string;
   admission: number;
   advances: number;
@@ -15,8 +23,6 @@ export interface Tour {
   minQuantity: number;
   maxQuantity: number;
   curQuantity?: number;
-  miscCategory: string;
-  portal: string;
   calcBudget: number;
   realCosts: number;
   budgetInfo: string;
