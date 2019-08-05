@@ -1,38 +1,105 @@
+<ng-container *ngIf="tourGroup$ | async as instructionGroup else loading">
 <h1>Tour #{{tourId$ | async}}</h1>
+<p>{{tourForm.value | json}}</p>
+<!--<div class="p-grid">-->
+<!--    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">    -->
+<!--    </div>-->
+<!--</div>-->
+
 <form [formGroup]="tourForm">
-<p><avk-date formControlName="deadline"
+  <!--Guide, Kosten, Einnahmen-->
+  <div class="p-grid">
+      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+        <avk-guide
+            formControlName="guideId"
+            id="g1"
+            label="Trainer"
+            [nameIdList]="tourForm.get('teamIds').value"
+            required
+        ></avk-guide>
+      </div>
+      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+        <input id="costs" placeholder="Kosten" type="text" style='width:100%'
+               pInputText>
+      </div>
+      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+        <input id="revenue" placeholder="Einnahmen" type="text" style='width:100%'
+               pInputText>
+      </div>
+  </div>
+
+  <!--Team, LadiesOnly, Bike/Bahn, LEA-->
+
+  <!--Buchungscode, Status, Hauptkategorie-->
+
+  <!--Nebenkategorie, Technik, Ausdauer-->
+
+  <!--Kurztitel, Langtitel-->
+
+  <!--Beschreibung-->
+
+  <!--Voraussetzung, Materialservice, Ausrüstung, Zusatzausrüstung-->
+
+  <!--Teilnehmer, Besondere Vorraussetzungen-->
+
+  <!--Datum (Deadline, Preliminary, Start, End)-->
+  <div class="p-grid">
+      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+        <avk-date formControlName="deadline"
              id="d1" label="Anmeldung"
-             [optMax]="preliminary.value"
+             [optMax]="tourForm.get('preliminary').value"
              [optMaxInclude]="true"
-             [max]="tourStart.value"
+             [max]="tourForm.get('tourstart').value"
              required
-></avk-date></p>
-<p><avk-date formControlName="preliminary"
+        ></avk-date>
+      </div>
+      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+        <avk-date formControlName="preliminary"
              id="d2" label="Besprechung"
-             [min]="deadline.value"
+             [min]="tourForm.get('deadline').value"
              [minInclude]="true"
-             [max]="tourStart.value"
-></avk-date></p>
-<p><avk-date formControlName="tourStart"
+             [max]="tourForm.get('tourstart').value"
+        ></avk-date>
+      </div>
+      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+        <avk-date formControlName="tourstart"
              id="d3" label="Start"
-             [min]="deadline.value"
-             [optMin]="preliminary.value"
-             [max]="tourEnd.value"
+             [min]="tourForm.get('deadline').value"
+             [optMin]="tourForm.get('preliminary').value"
+             [max]="tourForm.get('tourend').value"
              [maxInclude]="true"
              required>
-></avk-date></p>
-<p><avk-date formControlName="tourEnd"
+        ></avk-date>
+      </div>
+      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+        <avk-date formControlName="tourend"
              id="d4" label="Ende"
-             [min]="tourStart.value"
+             [min]="tourForm.get('tourstart').value"
              [minInclude]="true"
-></avk-date></p>
-</form>
-<p>{{deadline.value}} &lt;= [{{preliminary.value}}] &lt; {{tourStart.value}} &lt;= [{{tourEnd.value}}]</p>
-<p>{{tourForm.value | json}}</p>
+        ></avk-date>
+      </div>
+  </div>
+
+  <!--Treffpunkt, Startpunkt, Übernachtungsorte-->
+
+  <!--Alpinshuttle, Strecke, Fahrtkosten, Zusatzkosten, Anzahlung-->
+
+  <!--Teilnehmergebühr-->
+
+  <!--Bemerkung-->
+
+<p>{{tourForm.get('deadline').value}} &lt;= [{{tourForm.get('preliminary').value}}] &lt;
+   {{tourForm.get('tourstart').value}} &lt;= [{{tourForm.get('tourend').value}}]</p>
 <ul>
   <li>Valid: {{tourForm.valid}}</li>
   <li>Dirty: {{tourForm.dirty}}</li>
   <li>Pristine: {{tourForm.pristine}}</li>
   <li>Touched: {{tourForm.touched}}</li>
 </ul>
+</form>
+
+</ng-container>
+
+<ng-template #loading>Bitte kurz warten!</ng-template>
+
 <a routerLink="../"><p-button label="Zurück"></p-button></a>
