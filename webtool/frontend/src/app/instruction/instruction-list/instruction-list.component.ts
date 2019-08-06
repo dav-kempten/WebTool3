@@ -5,7 +5,7 @@ import {Observable, Subject} from 'rxjs';
 import {InstructionSummary} from '../../model/instruction';
 import {getInstructionSummaries} from '../../core/store/instruction-summary.selectors';
 import {RequestInstructionSummaries} from '../../core/store/instruction-summary.actions';
-import {flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
+import {filter, flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {Router} from '@angular/router';
 import {MenuItem} from 'primeng/api';
 import {NamesRequested} from '../../core/store/name.actions';
@@ -18,6 +18,8 @@ import {
   DeleteInstruction
 } from '../../core/store/instruction.actions';
 import {FormControl, FormGroup} from '@angular/forms';
+import {Category} from '../../model/value';
+import {CalendarRequested} from '../../core/store/calendar.actions';
 
 @Component({
   selector: 'avk-instruction-list',
@@ -33,6 +35,8 @@ export class InstructionListComponent implements OnInit, OnDestroy {
   display = false;
 
   user$: Observable<User>;
+  authState$: Observable<User>;
+  userValState = 0;
 
   topicId = new FormControl('');
   startDate = new FormControl('');
@@ -49,23 +53,40 @@ export class InstructionListComponent implements OnInit, OnDestroy {
     {label: 'Winter Kurse', url: '/instructions#winter'},
   ];
 
+  category$: Observable<Category>;
+
   constructor(private store: Store<AppState>, private router: Router, private authService: AuthService) {
     this.store.dispatch(new NamesRequested());
     this.store.dispatch(new ValuesRequested());
+    this.store.dispatch(new CalendarRequested());
   }
 
   ngOnInit() {
-    this.user$ = this.authService.user$;
-    this.user$.pipe(
+    this.authState$ = this.authService.user$;
+    this.authState$.pipe(
       tap(value => console.log(value)),
-    );
+      tap(value => {
+        if (value.role === 'Administrator') {
+          this.userValState = 4;
+        } else if (value.role === 'Geschäftsstelle') {
+          this.userValState = 3;
+        } else if (value.role === 'Fachbereichssprecher') {
+          this.userValState = 2;
+        } else if (value.role === 'Trainer') {
+          this.userValState = 1;
+        } else { this.userValState = 0; }
+      }),
+      tap(() => console.log('UserValState', this.userValState)),
+    ).subscribe();
 
-    this.part$ = this.store.pipe(
-      takeUntil(this.destroySubject),
-      select(selectRouterFragment),
-      publishReplay(1),
-      refCount()
-    );
+    this.part$ = this.store.select(selectRouterFragment);
+
+    // this.part$ = this.store.pipe(
+    //   takeUntil(this.destroySubject),
+    //   select(selectRouterFragment),
+    //   publishReplay(1),
+    //   refCount()
+    // );
 
     this.activeItem$ = this.part$.pipe(
       takeUntil(this.destroySubject),
@@ -109,11 +130,19 @@ export class InstructionListComponent implements OnInit, OnDestroy {
       refCount()
     );
 
-    this.user$.subscribe();
-    this.part$.subscribe();
-    this.activeItem$.subscribe();
-    this.instructions$.subscribe();
-  }
+    // this.category$ = this.part$.pipe(
+    //   takeUntil(this.destroySubject),
+    //   filter(topic => !!topic),
+    //   flatMap(topic => this.store.pipe(
+    //
+    //   ))
+    // );
+
+    // this.part$.subscribe();
+    // this.activeItem$.subscribe();
+    // this.instructions$.subscribe();
+
+    }
 
   ngOnDestroy(): void {
     this.destroySubject.next();

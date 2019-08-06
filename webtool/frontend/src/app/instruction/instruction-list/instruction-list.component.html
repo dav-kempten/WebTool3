@@ -1,6 +1,6 @@
-<ng-container *ngIf="(activeItem$ | async) as activeItem">
+<ng-container *ngIf="(activeItem$ | async) as activeItem else loading">
   <p-tabMenu [model]="menuItems" [activeItem]="{}"></p-tabMenu>
-  <p-button label="Kurs hinzufügen" (onClick)="handleClick()"></p-button>
+  <p-button label="Kurs hinzufügen" (onClick)="handleClick()" *ngIf="this.userValState >= 3"></p-button>
   <ng-container *ngIf="(instructions$ | async) as instructions">
     <p-table [value]="instructions" selectionMode="single" (selectionChange)="selectInstruction($event)">
       <ng-template pTemplate="header">
@@ -22,11 +22,11 @@
           <td>{{instruction.minQuantity}} | {{instruction.curQuantity}} | {{instruction.maxQuantity}}</td>
           <td>
             <button pButton type="button" label="Klonen" class="ui-button-success"
-                    (click)="clone(instruction.id)"></button>
+                    (click)="clone(instruction.id)" *ngIf="this.userValState >= 3"></button>
             <button pButton type="button" label="Löschen" class="ui-button-warning"
-                    (click)="delete(instruction.id)"></button>
+                    (click)="delete(instruction.id)" *ngIf="this.userValState >= 3"></button>
             <button pButton type="button" label="Deaktivieren" class="ui-button-info"
-                    (click)="deactivate(instruction.id)"></button>
+                    (click)="deactivate(instruction.id)" *ngIf="this.userValState >= 3"></button>
           </td>
         </tr>
       </ng-template>
@@ -37,12 +37,13 @@
   <form [formGroup]="createInstruction">
   <!--<ng-container *ngIf="categoryGroup$ | async as instructionGroup else loading">  -->
   <p-dialog header="Neuer Kurs" [modal]="true" [(visible)]="display"
-            [contentStyle]="{'width': '800px', 'height': '800px'}">
+            [style]="{width: '600px'}">
     <div class="p-grid">
       <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
         <avk-categoryselect
             formControlName="topicId"
-            id="topicId">
+            id="topicId"
+        >
         </avk-categoryselect>
       </div>
       <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
@@ -62,3 +63,4 @@
   <!--</ng-container>-->
   </form>
 </ng-container>
+<ng-template #loading>Bitte kurz warten!</ng-template>
