@@ -9,15 +9,15 @@ import {flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operat
 import {Router} from '@angular/router';
 import {MenuItem} from 'primeng/api';
 import {NamesRequested} from '../../core/store/name.actions';
-import {ValuesRequested} from "../../core/store/value.actions";
-import {AuthService, User} from "../../core/service/auth.service";
+import {ValuesRequested} from '../../core/store/value.actions';
+import {AuthService, User} from '../../core/service/auth.service';
 import {
   CloneInstruction,
   CreateInstruction,
   DeactivateInstruction,
   DeleteInstruction
-} from "../../core/store/instruction.actions";
-import {FormControl, FormGroup} from "@angular/forms";
+} from '../../core/store/instruction.actions';
+import {FormControl, FormGroup} from '@angular/forms';
 
 @Component({
   selector: 'avk-instruction-list',
@@ -30,7 +30,7 @@ export class InstructionListComponent implements OnInit, OnDestroy {
   part$: Observable<string>;
   instructions$: Observable<InstructionSummary[]>;
   activeItem$: Observable<MenuItem>;
-  display: boolean = false;
+  display = false;
 
   user$: Observable<User>;
 
@@ -126,28 +126,29 @@ export class InstructionListComponent implements OnInit, OnDestroy {
 
   handleClick() {
     this.display = true;
-    console.log("this.display: ", this.display);
+    console.log('this.display: ', this.display);
   }
 
   confirmClick() {
-    console.log("TopicId",this.createInstruction.get('topicId').value);
-    console.log("StartDate",this.createInstruction.get('startDate').value);
+    console.log('TopicId', this.createInstruction.get('topicId').value);
+    console.log('StartDate', this.createInstruction.get('startDate').value);
     this.store.dispatch(new CreateInstruction({topicId: this.createInstruction.get('topicId').value,
       startDate: this.createInstruction.get('startDate').value}));
+    this.display = false;
   }
 
   clone(instructionId) {
-    console.log("clone", instructionId);
+    console.log('clone', instructionId);
     this.store.dispatch(new CloneInstruction({id: instructionId}));
   }
 
   delete(instructionId) {
-    console.log("delete", instructionId);
+    console.log('delete', instructionId);
     this.store.dispatch(new DeleteInstruction({id: instructionId}));
   }
 
   deactivate(instructionId) {
-    console.log("deactivate", instructionId);
-    this.store.dispatch(new DeactivateInstruction({id: instructionId}))
+    console.log('deactivate', instructionId);
+    this.store.dispatch(new DeactivateInstruction({id: instructionId}));
   }
 }
