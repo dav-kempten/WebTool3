@@ -21,7 +21,7 @@ import {
   eventGroupFactory,
   instructionGroupFactory,
   topicGroupFactory
-} from "../../core/factories";
+} from '../../core/factories';
 
 @Component({
   selector: 'avk-instruction-detail',
@@ -72,13 +72,17 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     this.authState$.pipe(
       tap(value => console.log(value)),
       tap(value => {
-        if (value.role === "Administrator") {this.userValState = 4;}
-        else if(value.role === 'Geschäftsstelle') {this.userValState = 3;}
-        else if(value.role === 'Fachbereichssprecher') {this.userValState = 2;}
-        else if(value.role === 'Trainer') {this.userValState = 1;}
-        else {this.userValState = 0;}
+        if (value.role === 'Administrator') {
+          this.userValState = 4;
+        } else if (value.role === 'Geschäftsstelle') {
+          this.userValState = 3;
+        } else if (value.role === 'Fachbereichssprecher') {
+          this.userValState = 2;
+        } else if (value.role === 'Trainer') {
+          this.userValState = 1;
+        } else { this.userValState = 0; }
       }),
-      tap(() => console.log("UserValState", this.userValState)),
+      tap(() => console.log('UserValState', this.userValState)),
     ).subscribe();
 
     this.instructionId$ = this.store.select(selectRouterDetailId);
@@ -178,7 +182,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     this.instructionId$.subscribe();
     this.instruction$.subscribe();
     this.topic$.subscribe();
-    this.category$.subscribe();
+    // this.category$.subscribe();
     this.eventIds$.subscribe();
     this.events$.subscribe();
 
@@ -234,26 +238,26 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   }
 
   addEvent() {
-    this.eventNumber.push(this.eventNumber[this.eventNumber.length-1] + 1);
+    this.eventNumber.push(this.eventNumber[this.eventNumber.length - 1] + 1);
 
     console.log(this.eventNumber);
 
     let event: Event = {
-      id: this.eventNumber[this.eventNumber.length-1],
-      title: "",
-      name: "",
-      description: "",
-      startDate: "",
+      id: this.eventNumber[this.eventNumber.length - 1],
+      title: '',
+      name: '',
+      description: '',
+      startDate: '',
       startTime: null,
       approximateId: null,
       endDate: null,
       endTime: null,
-      rendezvous: "",
-      location: "",
+      rendezvous: '',
+      location: '',
       reservationService: false,
-      source: "",
-      link: "",
-      map: "",
+      source: '',
+      link: '',
+      map: '',
       distal: false,
       distance: 0,
       publicTransport: false,
