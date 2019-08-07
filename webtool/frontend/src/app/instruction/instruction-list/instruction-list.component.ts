@@ -33,6 +33,7 @@ export class InstructionListComponent implements OnInit, OnDestroy {
   instructions$: Observable<InstructionSummary[]>;
   activeItem$: Observable<MenuItem>;
   display = false;
+  finishedInstructions = [6, 7, 8];
 
   user$: Observable<User>;
   authState$: Observable<User>;
@@ -79,14 +80,14 @@ export class InstructionListComponent implements OnInit, OnDestroy {
       tap(() => console.log('UserValState', this.userValState)),
     ).subscribe();
 
-    this.part$ = this.store.select(selectRouterFragment);
+    // this.part$ = this.store.select(selectRouterFragment);
 
-    // this.part$ = this.store.pipe(
-    //   takeUntil(this.destroySubject),
-    //   select(selectRouterFragment),
-    //   publishReplay(1),
-    //   refCount()
-    // );
+    this.part$ = this.store.pipe(
+      takeUntil(this.destroySubject),
+      select(selectRouterFragment),
+      publishReplay(1),
+      refCount()
+    );
 
     this.activeItem$ = this.part$.pipe(
       takeUntil(this.destroySubject),
@@ -126,6 +127,7 @@ export class InstructionListComponent implements OnInit, OnDestroy {
           )
         )
       ),
+      tap(value => console.log('InstructionSummary', value.map(value => value.stateId))),
       publishReplay(1),
       refCount()
     );
@@ -138,9 +140,9 @@ export class InstructionListComponent implements OnInit, OnDestroy {
     //   ))
     // );
 
-    // this.part$.subscribe();
-    // this.activeItem$.subscribe();
-    // this.instructions$.subscribe();
+    this.part$.subscribe();
+    this.activeItem$.subscribe();
+    this.instructions$.subscribe();
 
     }
 

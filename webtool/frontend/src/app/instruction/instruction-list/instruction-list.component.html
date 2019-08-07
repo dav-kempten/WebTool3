@@ -24,7 +24,8 @@
             <button pButton type="button" label="Klonen" class="ui-button-success"
                     (click)="clone(instruction.id)" *ngIf="this.userValState >= 3"></button>
             <button pButton type="button" label="Löschen" class="ui-button-warning"
-                    (click)="delete(instruction.id)" *ngIf="this.userValState >= 3"></button>
+                    (click)="delete(instruction.id)"
+                    *ngIf="this.userValState >= 3 && this.finishedInstructions.indexOf(instruction.stateId) === -1"></button>
             <button pButton type="button" label="Deaktivieren" class="ui-button-info"
                     (click)="deactivate(instruction.id)" *ngIf="this.userValState >= 3"></button>
           </td>
@@ -39,23 +40,19 @@
   <p-dialog header="Neuer Kurs" [modal]="true" [(visible)]="display"
             [style]="{width: '600px'}">
     <div class="p-grid">
-      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+      <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
         <avk-categoryselect
             formControlName="topicId"
             id="topicId"
         >
         </avk-categoryselect>
       </div>
-      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
-      </div>
     </div>
       <div class="p-grid">
-      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+      <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
         <avk-date formControlName="startDate"
                   id="dbeginn" label="Start"
         ></avk-date>
-      </div>
-      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
       </div>
     </div>
     <p-button label="Bestätigen" (onClick)="confirmClick()"></p-button>
