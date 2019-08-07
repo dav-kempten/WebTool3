@@ -56,10 +56,16 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   formState$: Observable<StateState>;
 
   readonly = false; /* init of readonly in guide component */
+  testrun = false;
 
   @Input()
   set readOnly(value: boolean) {
     this.readonly = value;
+  }
+
+  @Input()
+  set testRun(value: boolean) {
+    this.testrun = value;
   }
 
   group = new FormGroup(
@@ -119,7 +125,11 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           this.status.push(statePush);
         }
       })
-    ).subscribe()
+    ).subscribe();
+
+    if (this.testrun === true && this.status.length > 1) {
+      this.status = this.status.slice(0,3);
+    }
   }
 
 
