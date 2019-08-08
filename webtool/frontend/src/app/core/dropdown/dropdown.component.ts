@@ -123,8 +123,7 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           const statePush: RawState = {
             id: state.entities[key].id,
             state: state.entities[key].state,
-            description: state.entities[key].description,
-            disabled: false};
+            description: state.entities[key].description};
           this.status.push(statePush);
         }
       })
