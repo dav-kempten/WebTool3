@@ -22,11 +22,12 @@ import {BehaviorSubject, Observable, ReplaySubject, Subject, Subscription} from 
 import {stateValidator} from '../dropdown/dropdown.component';
 import {State as CategoryState} from '../store/category.reducer';
 import {Category as RawCategory} from '../../model/value';
-import {Store} from '@ngrx/store';
+import {select, Store} from '@ngrx/store';
 import {AppState} from '../../app.state';
 import {ValuesRequested} from '../store/value.actions';
 import {getCategoryState} from '../store/value.selectors';
-import {delay, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
+import {delay, flatMap, publishReplay, refCount, takeUntil, tap, timeout} from 'rxjs/operators';
+import {categoryGroupFactory} from "../factories";
 
 @Component({
   selector: 'avk-categoryselect',
@@ -60,6 +61,9 @@ export class CategoryselectComponent implements OnInit, OnDestroy, AfterViewInit
   readonly = false;
   editable = false;
 
+  instructionFlag = false;
+  climbingTopicIds: number[] = [0, 18, 26, 31, 46, 45, 44, 35, 41, 97, 92, 32, 56, 57, 100, 47];
+
   @Input()
   set readOnly(value: boolean) {
     this.readonly = value;
@@ -68,6 +72,11 @@ export class CategoryselectComponent implements OnInit, OnDestroy, AfterViewInit
   @Input()
   set editAble(value: boolean) {
     this.editable = value;
+  }
+
+  @Input()
+  set instructionSpecific (value: boolean) {
+    this.instructionFlag = value;
   }
 
   group = new FormGroup(
@@ -145,6 +154,18 @@ export class CategoryselectComponent implements OnInit, OnDestroy, AfterViewInit
       publishReplay(1),
       refCount()
     ).subscribe();
+    /* Filter for climbing topics */
+    if (this.instructionFlag) {
+      let bufferArray = [];
+      for (let topicIdx of this.climbingTopicIds) {
+        for (let statusIdx in this.status) {
+          if (topicIdx === this.status[statusIdx].id) {
+            bufferArray.push(this.status[statusIdx]);
+          }
+        }
+      }
+      this.status = bufferArray;
+    }
   }
 
   ngAfterViewInit(): void {

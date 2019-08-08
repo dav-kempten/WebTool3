@@ -2,6 +2,7 @@ export interface State {
   id: number;
   state: string;
   description: string;
+  disabled?: boolean;
 }
 
 export interface Category {

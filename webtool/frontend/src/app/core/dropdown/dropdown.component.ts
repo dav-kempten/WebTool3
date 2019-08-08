@@ -18,7 +18,7 @@ import {
   ValidationErrors,
   ValidatorFn
 } from '@angular/forms';
-import {Dropdown} from 'primeng/primeng';
+import {Dropdown, SelectItem} from 'primeng/primeng';
 import {Observable, ReplaySubject, Subject, Subscription} from 'rxjs';
 import {delay, takeUntil, tap} from 'rxjs/operators';
 import {Store} from '@ngrx/store';
@@ -40,6 +40,7 @@ import {State as RawState} from '../../model/value';
   templateUrl: './dropdown.component.html',
   styleUrls: ['./dropdown.component.css']
 })
+
 export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, AfterContentInit, ControlValueAccessor  {
 
   @ViewChild(Dropdown) dropdown: Dropdown;
@@ -76,7 +77,8 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     [stateValidator]
   );
 
-  status: RawState[] = new Array(1).fill({id: 0, state: 'Bearbeitungsstand', description: null});
+  status: RawState[] = new Array(1).fill({id: 0, state: 'Bearbeitungsstand',
+    description: null, disabled: true});
 
 
   OnChangeWrapper(onChange: (stateIn) => void): (stateOut: RawState) => void {
@@ -121,7 +123,8 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           const statePush: RawState = {
             id: state.entities[key].id,
             state: state.entities[key].state,
-            description: state.entities[key].description};
+            description: state.entities[key].description,
+            disabled: false};
           this.status.push(statePush);
         }
       })
