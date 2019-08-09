@@ -14,14 +14,8 @@ import {getEventsByIds} from '../../core/store/event.selectors';
 import {AuthService, User} from '../../core/service/auth.service';
 import {Event} from '../../model/event';
 import {Category, Topic} from '../../model/value';
-import {FormArray, FormGroup} from '@angular/forms';
-import {AddEvent, UpdateEvent} from '../../core/store/event.actions';
-import {
-  categoryGroupFactory,
-  eventGroupFactory,
-  instructionGroupFactory,
-  topicGroupFactory
-} from '../../core/factories';
+import {FormArray, FormControl, FormGroup} from '@angular/forms';
+import {AddEvent, CreateEvent, UpdateEvent} from '../../core/store/event.actions';
 
 @Component({
   selector: 'avk-instruction-detail',
@@ -70,7 +64,6 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
 
     this.authState$ = this.userService.user$;
     this.authState$.pipe(
-      tap(value => console.log(value)),
       tap(value => {
         if (value.role === 'Administrator') {
           this.userValState = 4;
@@ -82,7 +75,6 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
           this.userValState = 1;
         } else { this.userValState = 0; }
       }),
-      tap(() => console.log('UserValState', this.userValState)),
     ).subscribe();
 
     this.instructionId$ = this.store.select(selectRouterDetailId);
@@ -93,7 +85,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
         select(getInstructionById(id)),
         tap(instruction => {
           if (!instruction) {
-            this.store.dispatch(new RequestInstruction({id}));
+            this.store.dispatch(new RequestInstruction({id: id}));
           } else {
             const instructionGroup = instructionGroupFactory(instruction);
             instructionGroup.valueChanges.pipe(
@@ -150,7 +142,6 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
       takeUntil(this.destroySubject),
       filter(instruction => !!instruction),
       map(instruction => [instruction.instructionId, ...instruction.meetingIds]),
-      tap(instruction => console.log(instruction)),
       tap(instruction => this.eventNumber = instruction),
       publishReplay(1),
       refCount()
@@ -189,7 +180,6 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     this.eventChange$.pipe(
       takeUntil(this.destroySubject),
       filter(event => !!event),
-      tap(event => console.log(event)),
       publishReplay(1),
       refCount()
     ).subscribe(
@@ -201,9 +191,9 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     this.instructionChange$.pipe(
       takeUntil(this.destroySubject),
       filter(instruction => !!instruction),
-      tap(instruction => console.log(instruction)),
       publishReplay(1),
-      refCount()
+      refCount(),
+      tap(instruction => console.log('Instruction', instruction)),
     ).subscribe(
       instruction => this.store.dispatch(
         new UpdateInstruction({instruction: {id: instruction.id, changes: {
@@ -230,7 +220,6 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
       eventArray => this.currentEventGroup = (eventArray.at(index)) as FormGroup
     );
     this.display = true;
-    // console.log(index);
   }
 
   switchDistal(isDistal, distal) {
@@ -238,34 +227,89 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   }
 
   addEvent() {
-    this.eventNumber.push(this.eventNumber[this.eventNumber.length - 1] + 1);
-
-    console.log(this.eventNumber);
-
-    let event: Event = {
-      id: this.eventNumber[this.eventNumber.length - 1],
-      title: '',
-      name: '',
-      description: '',
-      startDate: '',
-      startTime: null,
-      approximateId: null,
-      endDate: null,
-      endTime: null,
-      rendezvous: '',
-      location: '',
-      reservationService: false,
-      source: '',
-      link: '',
-      map: '',
-      distal: false,
-      distance: 0,
-      publicTransport: false,
-      shuttleService: false,
-      deprecated: false,
-    };
-
-    this.store.dispatch(new AddEvent({event}));
-    this.instructionSubject['meetingsIds'] = this.eventNumber;
+    this.store.dispatch(new CreateEvent({id: this.instructionSubject.value.get('id').value}));
   }
+}
+
+
+function instructionGroupFactory(instruction: Instruction): FormGroup {
+  return new FormGroup({
+    id: new FormControl(instruction.id),
+    reference: new FormControl(instruction.reference),
+    guideId: new FormControl(instruction.guideId),
+    teamIds: new FormControl(instruction.teamIds),
+    topicId: new FormControl(instruction.topicId),
+    instructionId: new FormControl(instruction.instructionId),
+    meetingIds: new FormControl(instruction.meetingIds),
+    lowEmissionAdventure: new FormControl(instruction.lowEmissionAdventure),
+    ladiesOnly: new FormControl(instruction.ladiesOnly),
+    isSpecial: new FormControl(instruction.isSpecial),
+    categoryId: new FormControl(instruction.categoryId),
+    qualificationIds: new FormControl(instruction.qualificationIds),
+    preconditions: new FormControl(instruction.preconditions),
+    equipmentIds: new FormControl(instruction.equipmentIds),
+    miscEquipment: new FormControl(instruction.miscEquipment),
+    equipmentService: new FormControl(instruction.equipmentService),
+    admission: new FormControl((instruction.admission / 100).toFixed(2)),
+    advances: new FormControl((instruction.advances / 100).toFixed(2)),
+    advancesInfo: new FormControl(instruction.advancesInfo),
+    extraCharges: new FormControl((instruction.extraCharges / 100).toFixed(2)),
+    extraChargesInfo: new FormControl(instruction.extraChargesInfo),
+    minQuantity: new FormControl(instruction.minQuantity),
+    maxQuantity: new FormControl(instruction.maxQuantity),
+    curQuantity: new FormControl(instruction.curQuantity),
+    stateId: new FormControl(instruction.stateId)
+  });
+}
+
+function topicGroupFactory(topic: Topic): FormGroup {
+  return new FormGroup({
+    id: new FormControl(topic.id),
+    code: new FormControl(topic.code),
+    title: new FormControl(topic.title),
+    name: new FormControl(topic.name),
+    description: new FormControl(topic.description),
+    preconditions: new FormControl(topic.preconditions),
+    qualificationIds: new FormControl(topic.qualificationIds),
+    equipmentIds: new FormControl(topic.equipmentIds),
+    miscEquipment: new FormControl(topic.miscEquipment)
+  });
+}
+
+function categoryGroupFactory(category: Category): FormGroup {
+  return new FormGroup({
+    id: new FormControl(category.id),
+    code: new FormControl(category.code),
+    name: new FormControl(category.name),
+    tour: new FormControl(category.tour),
+    talk: new FormControl(category.talk),
+    instruction: new FormControl(category.instruction),
+    collective: new FormControl(category.collective),
+    winter: new FormControl(category.winter),
+    summer: new FormControl(category.summer),
+    indoor: new FormControl(category.indoor),
+  });
+}
+
+function eventGroupFactory(event: Event): FormGroup {
+  return new FormGroup({
+    id: new FormControl(event.id),
+    title: new FormControl(event.title),
+    name: new FormControl(event.name),
+    description: new FormControl(event.description),
+    startDate: new FormControl(event.startDate),
+    startTime: new FormControl(event.startTime),
+    approximateId: new FormControl(event.approximateId),
+    endDate: new FormControl(event.endDate),
+    rendezvous: new FormControl(event.rendezvous),
+    location: new FormControl(event.location),
+    reservationService: new FormControl(event.reservationService),
+    source: new FormControl(event.source),
+    link: new FormControl(event.link),
+    map: new FormControl(event.map),
+    distal: new FormControl(event.distal),
+    distance: new FormControl({value: event.distance, disabled: !event.distal}),
+    publicTransport: new FormControl(event.publicTransport),
+    shuttleService: new FormControl(event.shuttleService)
+  });
 }
