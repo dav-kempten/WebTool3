@@ -83,14 +83,14 @@ class InstructionSerializer(serializers.ModelSerializer):
     equipmentIds = serializers.PrimaryKeyRelatedField(
         source='equipments', many=True, default=[], queryset=Equipment.objects.all()
     )
-    miscEquipment = serializers.CharField(source='misc_equipment', default='', allow_blank=True)
+    miscEquipment = serializers.CharField(source='misc_equipment', max_length=75, default='', allow_blank=True)
     equipmentService = serializers.BooleanField(source='equipment_service', default=False)
 
     admission = MoneyField()
     advances = MoneyField()
     advancesInfo = serializers.CharField(source='advances_info', default='', allow_blank=True)
     extraCharges = MoneyField(source='extra_charges')
-    extraChargesInfo = serializers.CharField(source='extra_charges_info', default='', allow_blank=True)
+    extraChargesInfo = serializers.CharField(source='extra_charges_info', max_length=75, default='', allow_blank=True)
     minQuantity = serializers.IntegerField(source='min_quantity', default=0)
     maxQuantity = serializers.IntegerField(source='max_quantity', default=0)
     curQuantity = serializers.IntegerField(source='cur_quantity', read_only=True)
@@ -116,6 +116,7 @@ class InstructionSerializer(serializers.ModelSerializer):
         )
 
     def validate(self, data):
+        print(self.instance)
         if self.instance is not None:
             # This is the Update case
 
