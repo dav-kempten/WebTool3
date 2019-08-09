@@ -1,16 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
-from __future__ import unicode_literals
 from __future__ import print_function
-
-import io
+from __future__ import unicode_literals
 
 import datetime
+
 from django.core.management.base import BaseCommand
 
 from server.models import Instruction, Tour, Talk, Session, Season
-from server.views.bulletin import Activities
-from server.views.bulletin.translator import Translator
 
 
 class Command(BaseCommand):

@@ -88,8 +88,11 @@ class ActivityListSerializer(serializers.ModelSerializer):
             'speaker',
             'guide',
             'division',
+            'skill',
+            'fitness',
             'ladiesOnly', 'youthOnTour', 'publicTransport', 'lowEmissionAdventure',
             'state',
+            'new',
             'detail'
         )
         extra_kwargs = {'id': {'lookup_field': 'reference'}}
@@ -137,5 +140,6 @@ class ActivitySerializer(ActivityListSerializer):
             'equipments',
             'ladiesOnly', 'youthOnTour', 'publicTransport', 'lowEmissionAdventure',
             'state',
+            'new',
             'cover', 'portal', 'map', 'ics'
         )

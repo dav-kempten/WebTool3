@@ -8,14 +8,14 @@
    :target: http://webtool3.readthedocs.io/de/latest/?badge=latest
    :alt: Documentation Status
 
-.. image:: https://travis-ci.org/wodo/WebTool3.svg?branch=master
-   :target: https://travis-ci.org/wodo/WebTool3
+.. image:: https://travis-ci.org/dav-kempten/WebTool3.svg?branch=master
+   :target: https://travis-ci.org/dav-kempten/WebTool3
    :alt: Build Status
 
 WebTool3
 ========
 
-Version: 0.0.6
+Version: 0.0.8
 
 This is a Django_ based web application, supporting the full time employees and volunteers staff
 of the DAV (German Alpine Club) section Allgäu Kempten in their work with
@@ -30,5 +30,5 @@ The official documentation is hosted on http://webtool3.readthedocs.io/de/latest
 The project language is german, and so all other documents are written in german language.
 
 .. _Django: https://docs.djangoproject.com/en/1.11/
-.. _Sphinx: http://www.sphinx-doc.org/en/1.6.2/
+.. _Sphinx: https://www.sphinx-doc.org/en/1.6/
 
