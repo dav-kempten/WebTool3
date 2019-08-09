@@ -65,7 +65,6 @@ export class InstructionListComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.authState$ = this.authService.user$;
     this.authState$.pipe(
-      tap(value => console.log(value)),
       tap(value => {
         if (value.role === 'Administrator') {
           this.userValState = 4;
@@ -77,7 +76,6 @@ export class InstructionListComponent implements OnInit, OnDestroy {
           this.userValState = 1;
         } else { this.userValState = 0; }
       }),
-      tap(() => console.log('UserValState', this.userValState)),
     ).subscribe();
 
     // this.part$ = this.store.select(selectRouterFragment);
@@ -127,7 +125,6 @@ export class InstructionListComponent implements OnInit, OnDestroy {
           )
         )
       ),
-      tap(value => console.log('InstructionSummary', value.map(value => value.stateId))),
       publishReplay(1),
       refCount()
     );
@@ -157,29 +154,23 @@ export class InstructionListComponent implements OnInit, OnDestroy {
 
   handleClick() {
     this.display = true;
-    console.log('this.display: ', this.display);
   }
 
   confirmClick() {
-    console.log('TopicId', this.createInstruction.get('topicId').value);
-    console.log('StartDate', this.createInstruction.get('startDate').value);
     this.store.dispatch(new CreateInstruction({topicId: this.createInstruction.get('topicId').value,
       startDate: this.createInstruction.get('startDate').value}));
     this.display = false;
   }
 
   clone(instructionId) {
-    console.log('clone', instructionId);
     this.store.dispatch(new CloneInstruction({id: instructionId}));
   }
 
   delete(instructionId) {
-    console.log('delete', instructionId);
     this.store.dispatch(new DeleteInstruction({id: instructionId}));
   }
 
   deactivate(instructionId) {
-    console.log('deactivate', instructionId);
     this.store.dispatch(new DeactivateInstruction({id: instructionId}));
   }
 }
