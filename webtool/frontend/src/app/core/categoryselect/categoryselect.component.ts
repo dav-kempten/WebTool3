@@ -22,12 +22,10 @@ import {BehaviorSubject, Observable, ReplaySubject, Subject, Subscription} from 
 import {stateValidator} from '../dropdown/dropdown.component';
 import {State as CategoryState} from '../store/category.reducer';
 import {Category as RawCategory} from '../../model/value';
-import {select, Store} from '@ngrx/store';
+import {Store} from '@ngrx/store';
 import {AppState} from '../../app.state';
-import {ValuesRequested} from '../store/value.actions';
 import {getCategoryState} from '../store/value.selectors';
-import {delay, flatMap, publishReplay, refCount, takeUntil, tap, timeout} from 'rxjs/operators';
-import {categoryGroupFactory} from "../factories";
+import {delay, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 
 @Component({
   selector: 'avk-categoryselect',
@@ -49,14 +47,14 @@ export class CategoryselectComponent implements OnInit, OnDestroy, AfterViewInit
   delegatedMethodCalls = new ReplaySubject<(_: ControlValueAccessor) => void>();
   delegatedMethodsSubscription: Subscription;
   private destroySubject = new Subject<void>();
-  // private categorySubject = new BehaviorSubject<FormArray>(undefined);
-
-  // categoryGroup$: Observable<FormArray> = this.categorySubject.asObservable();
+  private categorySubject = new BehaviorSubject<FormArray>(undefined);
+  private categoryGroup$: Observable<FormArray> = this.categorySubject.asObservable();
 
   originalControl = new FormControl(null);
   choiceControl = new FormControl('');
 
   formState$: Observable<CategoryState>;
+  formStateComponent$: Observable<CategoryState>;
 
   readonly = false;
   editable = false;
@@ -122,50 +120,47 @@ export class CategoryselectComponent implements OnInit, OnDestroy, AfterViewInit
     this.delegatedMethodCalls.next(accessor => accessor.writeValue(stateId));
   }
 
-  constructor(private store: Store<AppState>) {
-    this.store.dispatch(new ValuesRequested());
-  }
+  constructor(private store: Store<AppState>) { }
 
   ngOnInit(): void {
-    console.log("categorySelect");
-
     this.formState$ = this.store.select(getCategoryState);
 
-    this.formState$.pipe(
+    this.formStateComponent$ = this.formState$.pipe(
       takeUntil(this.destroySubject),
-      tap( (state) => {
-        for (const key in state.entities) {
-          const statePush: RawCategory = {
-            id: state.entities[key].id,
-            code: state.entities[key].code,
-            name: state.entities[key].name,
-            tour: state.entities[key].tour,
-            talk: state.entities[key].talk,
-            instruction: state.entities[key].instruction,
-            collective: state.entities[key].collective,
-            winter: state.entities[key].winter,
-            summer: state.entities[key].summer,
-            indoor: state.entities[key].indoor};
-          this.status.push(statePush);
+      tap( state => {
+        const categoryFormArray = new FormArray([categoryGroupFactory(this.status[0])]);
+        if (state.ids.length === 0) {
+          this.categorySubject.next(categoryFormArray);
+        } else {
+          for (const key in state.entities) {
+            const statePush: RawCategory = {
+              id: state.entities[key].id,
+              code: state.entities[key].code,
+              name: state.entities[key].name,
+              tour: state.entities[key].tour,
+              talk: state.entities[key].talk,
+              instruction: state.entities[key].instruction,
+              collective: state.entities[key].collective,
+              winter: state.entities[key].winter,
+              summer: state.entities[key].summer,
+              indoor: state.entities[key].indoor
+            };
+            this.status.push(statePush);
+            categoryFormArray.push(categoryGroupFactory(statePush));
+          }
+
+          if (this.instructionFlag) {
+            this.filterCategoryArray(categoryFormArray.value, this.climbingTopicIds);
+          } else {
+            this.categorySubject.next(categoryFormArray);
+          }
         }
-      }),
-      // tap(() => console.log(this.status)),
+        }),
       // shareReplay(),
       publishReplay(1),
       refCount()
-    ).subscribe();
-    /* Filter for climbing topics */
-    if (this.instructionFlag) {
-      let bufferArray = [];
-      for (let topicIdx of this.climbingTopicIds) {
-        for (let statusIdx in this.status) {
-          if (topicIdx === this.status[statusIdx].id) {
-            bufferArray.push(this.status[statusIdx]);
-          }
-        }
-      }
-      this.status = bufferArray;
-    }
+    );
+    this.formStateComponent$.subscribe();
   }
 
   ngAfterViewInit(): void {
@@ -180,7 +175,7 @@ export class CategoryselectComponent implements OnInit, OnDestroy, AfterViewInit
     }
     this.destroySubject.next();
     this.destroySubject.complete();
-    // this.categorySubject.complete();
+    this.categorySubject.complete();
   }
 
   ngAfterContentInit(): void {
@@ -188,4 +183,31 @@ export class CategoryselectComponent implements OnInit, OnDestroy, AfterViewInit
     this.originalControl.setValue(this.formControl);
     this.choiceControl.setValue(this.formControl.value);
   }
+
+  filterCategoryArray(categoryArray: RawCategory[], filterArray: Number[]): void {
+    const categoryFormArray = new FormArray([]);
+    for (let idxFilter in filterArray) {
+      for (let idxCategory in categoryArray) {
+        if (filterArray[idxFilter] === categoryArray[idxCategory].id) {
+          categoryFormArray.push(categoryGroupFactory(categoryArray[idxCategory]));
+        }
+      }
+    }
+    this.categorySubject.next(categoryFormArray);
+  }
+}
+
+function categoryGroupFactory(category: RawCategory): FormGroup {
+  return new FormGroup({
+    id: new FormControl(category.id),
+    code: new FormControl(category.code),
+    name: new FormControl(category.name),
+    tour: new FormControl(category.tour),
+    talk: new FormControl(category.talk),
+    instruction: new FormControl(category.instruction),
+    collective: new FormControl(category.collective),
+    winter: new FormControl(category.winter),
+    summer: new FormControl(category.summer),
+    indoor: new FormControl(category.indoor),
+  });
 }
