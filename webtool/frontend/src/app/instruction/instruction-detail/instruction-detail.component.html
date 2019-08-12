@@ -71,8 +71,8 @@
         <avk-categoryselect
             formControlName="topicId"
             id="topicId"
-            [readOnly]="!(userValState >= 1)"
-            [instructionSpecific]="climbingTopicIds.indexOf(instructionGroup.get('topicId').value) !== -1">
+            [readOnly]="true"
+            [instructionSpecific]="this.instructionCategory.value">
         </avk-categoryselect>
       </div>
       <div class="p-col-12 p-sm-3 p-md-3 p-lg-3"

@@ -33,6 +33,8 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   private instructionChangeSubject = new BehaviorSubject<Instruction>(undefined);
   private eventChangeSubject = new BehaviorSubject<Event>(undefined);
 
+  instructionCategory = new BehaviorSubject<String>('');
+
   instructionGroup$: Observable<FormGroup> = this.instructionSubject.asObservable();
   topicGroup$: Observable<FormGroup> = this.topicSubject.asObservable();
   categoryGroup$: Observable<FormGroup> = this.categorySubject.asObservable();
@@ -131,6 +133,13 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
           } else {
             this.categorySubject.next(categoryGroupFactory(category));
           }
+          if (category.indoor === true) {
+            this.instructionCategory.next('indoor');
+          } else if (category.summer === true) {
+            this.instructionCategory.next('summer');
+          } else if (category.winter === true) {
+            this.instructionCategory.next('winter');
+          }
         })
       )),
       // shareReplay(),
@@ -173,7 +182,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     this.instructionId$.subscribe();
     this.instruction$.subscribe();
     this.topic$.subscribe();
-    // this.category$.subscribe();
+    this.category$.subscribe();
     this.eventIds$.subscribe();
     this.events$.subscribe();
 
