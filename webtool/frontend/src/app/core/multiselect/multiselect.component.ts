@@ -58,8 +58,8 @@ export class MultiselectComponent implements OnInit, AfterViewInit, OnDestroy, A
   formEquipState$: Observable<EquipState>;
   formSkillState$: Observable<SkillState>;
 
-  statusEquipment: RawEquipment[] = new Array(1).fill({id: 0, code: '', name: 'Ausrüstung', description: ''});
-  statusSkills: RawSkill[] = new Array(1).fill({id: 0, level: '', categoryId: '', code: 'Skills', description: ''});
+  statusEquipment: RawEquipment[] = new Array(0);
+  statusSkills: RawSkill[] = new Array(0);
 
   @Input()
   set choice(value: string) {
