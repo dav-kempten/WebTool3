@@ -59,8 +59,7 @@ export class CategoryselectComponent implements OnInit, OnDestroy, AfterViewInit
   readonly = false;
   editable = false;
 
-  instructionFlag = false;
-  climbingTopicIds: number[] = [0, 18, 26, 31, 46, 45, 44, 35, 41, 97, 92, 32, 56, 57, 100, 47];
+  topicKeyword = '';
 
   @Input()
   set readOnly(value: boolean) {
@@ -73,8 +72,11 @@ export class CategoryselectComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   @Input()
-  set instructionSpecific (value: boolean) {
-    this.instructionFlag = value;
+  set instructionSpecific(value: string) {
+    this.topicKeyword = value;
+    if (this.status.length > 1 && this.categorySubject.value !== undefined) {
+      this.filterBySeason(this.status, this.topicKeyword);
+    }
   }
 
   group = new FormGroup(
@@ -86,7 +88,7 @@ export class CategoryselectComponent implements OnInit, OnDestroy, AfterViewInit
   );
 
   status: RawCategory[] = new Array(1).fill({id: 0, code: null, name: 'Kategorie', tour: false,
-    talk: false, instruction: false, collective: false, winter: false, summer: false, indoor: false});
+    talk: false, instruction: false, collective: false, winter: true, summer: true, indoor: true});
 
 
   OnChangeWrapper(onChange: (stateIn) => void): (stateOut: RawCategory) => void {
@@ -148,14 +150,9 @@ export class CategoryselectComponent implements OnInit, OnDestroy, AfterViewInit
             this.status.push(statePush);
             categoryFormArray.push(categoryGroupFactory(statePush));
           }
-
-          if (this.instructionFlag) {
-            this.filterCategoryArray(categoryFormArray.value, this.climbingTopicIds);
-          } else {
-            this.categorySubject.next(categoryFormArray);
-          }
+          this.filterBySeason(categoryFormArray.value, this.topicKeyword);
         }
-        }),
+      }),
       // shareReplay(),
       publishReplay(1),
       refCount()
@@ -184,13 +181,38 @@ export class CategoryselectComponent implements OnInit, OnDestroy, AfterViewInit
     this.choiceControl.setValue(this.formControl.value);
   }
 
-  filterCategoryArray(categoryArray: RawCategory[], filterArray: Number[]): void {
+  filterBySeason(categoryArray: RawCategory[], topicKeyword: string): void {
     const categoryFormArray = new FormArray([]);
-    for (let idxFilter in filterArray) {
-      for (let idxCategory in categoryArray) {
-        if (filterArray[idxFilter] === categoryArray[idxCategory].id) {
-          categoryFormArray.push(categoryGroupFactory(categoryArray[idxCategory]));
+    switch (topicKeyword) {
+      case 'indoor': {
+        for (const idxCategory in categoryArray) {
+          if (categoryArray[idxCategory].indoor === true) {
+            categoryFormArray.push(categoryGroupFactory(categoryArray[idxCategory]));
+          }
         }
+        break;
+      }
+      case 'summer': {
+        for (const idxCategory in categoryArray) {
+          if (categoryArray[idxCategory].summer === true) {
+            categoryFormArray.push(categoryGroupFactory(categoryArray[idxCategory]));
+          }
+        }
+        break;
+      }
+      case 'winter': {
+        for (const idxCategory in categoryArray) {
+          if (categoryArray[idxCategory].winter === true) {
+            categoryFormArray.push(categoryGroupFactory(categoryArray[idxCategory]));
+          }
+        }
+        break;
+      }
+      default: {
+        for (const idxCategory in categoryArray) {
+            categoryFormArray.push(categoryGroupFactory(categoryArray[idxCategory]));
+        }
+        break;
       }
     }
     this.categorySubject.next(categoryFormArray);
