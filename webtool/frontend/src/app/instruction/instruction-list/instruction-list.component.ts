@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {select, Store} from '@ngrx/store';
 import {AppState, selectRouterFragment} from '../../app.state';
-import {Observable, Subject} from 'rxjs';
+import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {InstructionSummary} from '../../model/instruction';
 import {getInstructionSummaries} from '../../core/store/instruction-summary.selectors';
 import {RequestInstructionSummaries} from '../../core/store/instruction-summary.actions';
@@ -34,6 +34,8 @@ export class InstructionListComponent implements OnInit, OnDestroy {
   activeItem$: Observable<MenuItem>;
   display = false;
   finishedInstructions = [6, 7, 8];
+
+  partNewInstruction = new BehaviorSubject<String>('');
 
   user$: Observable<User>;
   authState$: Observable<User>;
@@ -78,8 +80,6 @@ export class InstructionListComponent implements OnInit, OnDestroy {
       }),
     ).subscribe();
 
-    // this.part$ = this.store.select(selectRouterFragment);
-
     this.part$ = this.store.pipe(
       takeUntil(this.destroySubject),
       select(selectRouterFragment),
@@ -122,20 +122,13 @@ export class InstructionListComponent implements OnInit, OnDestroy {
               (part === 'indoor' && instruction.indoor) ||
               !part
             )
-          )
+          ),
+          tap(() => this.partNewInstruction.next(part)),
         )
       ),
       publishReplay(1),
       refCount()
     );
-
-    // this.category$ = this.part$.pipe(
-    //   takeUntil(this.destroySubject),
-    //   filter(topic => !!topic),
-    //   flatMap(topic => this.store.pipe(
-    //
-    //   ))
-    // );
 
     this.part$.subscribe();
     this.activeItem$.subscribe();

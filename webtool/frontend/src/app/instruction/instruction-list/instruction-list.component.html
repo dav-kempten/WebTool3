@@ -36,16 +36,13 @@
 
   <!--  Beginn Dialogfenster  -->
   <form [formGroup]="createInstruction">
-  <!--<ng-container *ngIf="categoryGroup$ | async as instructionGroup else loading">  -->
-  <p-dialog header="Neuer Kurs" [modal]="true" [(visible)]="display"
-            [style]="{width: '600px'}">
+  <p-dialog header="Neuer Kurs" [modal]="true" [(visible)]="display" [style]="{width: '600px'}">
     <div class="p-grid">
       <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
         <avk-categoryselect
             formControlName="topicId"
             id="topicId"
-            [instructionSpecific]="true"
-        >
+            [instructionSpecific]="this.partNewInstruction.value">
         </avk-categoryselect>
       </div>
     </div>
@@ -58,7 +55,6 @@
     </div>
     <p-button label="Bestätigen" (onClick)="confirmClick()"></p-button>
   </p-dialog>
-  <!--</ng-container>-->
   </form>
 </ng-container>
 <ng-template #loading>Bitte kurz warten!</ng-template>
