@@ -50,8 +50,8 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   delegatedMethodsSubscription: Subscription;
 
   private destroySubject = new Subject<void>();
-  private stateSubject = new BehaviorSubject<FormArray>(undefined);
-  private stateGroup$: Observable<FormArray> = this.stateSubject.asObservable();
+  stateSubject = new BehaviorSubject<RawState[]>(undefined);
+  // private stateGroup$: Observable<FormArray> = this.stateSubject.asObservable();
 
   originalControl = new FormControl(null);
   choiceControl = new FormControl('');
@@ -60,16 +60,10 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   formStateComponent$: Observable<StateState>;
 
   readonly = false; /* init of readonly in guide component */
-  testrun = false;
 
   @Input()
   set readOnly(value: boolean) {
     this.readonly = value;
-  }
-
-  @Input()
-  set testRun(value: boolean) {
-    this.testrun = value;
   }
 
   group = new FormGroup(
@@ -124,20 +118,20 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.formStateComponent$ = this.formState$.pipe(
       takeUntil(this.destroySubject),
       tap( (state) => {
-        const stateFormArray = new FormArray([stateGroupFactory(this.status[0])]);
         if (state.ids.length === 0) {
-          this.stateSubject.next(stateFormArray);
+          this.stateSubject.next(this.status);
         } else {
           for (const key in state.entities) {
-            const statePush: RawState = {
-              id: state.entities[key].id,
-              state: state.entities[key].state,
-              description: state.entities[key].description
-            };
-            this.status.push(statePush);
-            stateFormArray.push(stateGroupFactory(statePush));
+            if (state.entities.hasOwnProperty(key)) {
+              const statePush: RawState = {
+                id: state.entities[key].id,
+                state: state.entities[key].state,
+                description: state.entities[key].description
+              };
+              this.status.push(statePush);
+            }
           }
-          this.stateSubject.next(stateFormArray);
+          this.stateSubject.next(this.status);
         }
       }),
       // shareReplay(),
@@ -146,10 +140,7 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     );
 
     this.formStateComponent$.subscribe();
-
-    if (this.testrun === true && this.status.length > 1) {
-      this.status = this.status.slice(0,3);
-    }
+    console.log('this.status', this.status);
   }
 
 
