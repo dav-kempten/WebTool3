@@ -47,8 +47,7 @@ export class CategoryselectComponent implements OnInit, OnDestroy, AfterViewInit
   delegatedMethodCalls = new ReplaySubject<(_: ControlValueAccessor) => void>();
   delegatedMethodsSubscription: Subscription;
   private destroySubject = new Subject<void>();
-  private categorySubject = new BehaviorSubject<FormArray>(undefined);
-  private categoryGroup$: Observable<FormArray> = this.categorySubject.asObservable();
+  categorySubject = new BehaviorSubject<RawCategory[]>(undefined);
 
   originalControl = new FormControl(null);
   choiceControl = new FormControl('');
@@ -130,27 +129,29 @@ export class CategoryselectComponent implements OnInit, OnDestroy, AfterViewInit
     this.formStateComponent$ = this.formState$.pipe(
       takeUntil(this.destroySubject),
       tap( state => {
-        const categoryFormArray = new FormArray([categoryGroupFactory(this.status[0])]);
+        // const categoryFormArray = new FormArray([categoryGroupFactory(this.status[0])]);
         if (state.ids.length === 0) {
-          this.categorySubject.next(categoryFormArray);
+          this.categorySubject.next(this.status);
         } else {
           for (const key in state.entities) {
-            const statePush: RawCategory = {
-              id: state.entities[key].id,
-              code: state.entities[key].code,
-              name: state.entities[key].name,
-              tour: state.entities[key].tour,
-              talk: state.entities[key].talk,
-              instruction: state.entities[key].instruction,
-              collective: state.entities[key].collective,
-              winter: state.entities[key].winter,
-              summer: state.entities[key].summer,
-              indoor: state.entities[key].indoor
-            };
-            this.status.push(statePush);
-            categoryFormArray.push(categoryGroupFactory(statePush));
+            if (state.entities.hasOwnProperty(key)) {
+              const statePush: RawCategory = {
+                id: state.entities[key].id,
+                code: state.entities[key].code,
+                name: state.entities[key].name,
+                tour: state.entities[key].tour,
+                talk: state.entities[key].talk,
+                instruction: state.entities[key].instruction,
+                collective: state.entities[key].collective,
+                winter: state.entities[key].winter,
+                summer: state.entities[key].summer,
+                indoor: state.entities[key].indoor
+              };
+              this.status.push(statePush);
+              // categoryFormArray.push(categoryGroupFactory(statePush));
+            }
           }
-          this.filterBySeason(categoryFormArray.value, this.topicKeyword);
+          this.filterBySeason(this.status, this.topicKeyword);
         }
       }),
       // shareReplay(),
@@ -182,12 +183,14 @@ export class CategoryselectComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   filterBySeason(categoryArray: RawCategory[], topicKeyword: string): void {
-    const categoryFormArray = new FormArray([]);
+    // const categoryFormArray = new FormArray([]);
+    const categorySeasonArray = new Array(0);
     switch (topicKeyword) {
       case 'indoor': {
         for (const idxCategory in categoryArray) {
           if (categoryArray[idxCategory].indoor === true) {
-            categoryFormArray.push(categoryGroupFactory(categoryArray[idxCategory]));
+            // categoryFormArray.push(categoryGroupFactory(categoryArray[idxCategory]));
+            categorySeasonArray.push(categoryArray[idxCategory]);
           }
         }
         break;
@@ -195,7 +198,8 @@ export class CategoryselectComponent implements OnInit, OnDestroy, AfterViewInit
       case 'summer': {
         for (const idxCategory in categoryArray) {
           if (categoryArray[idxCategory].summer === true) {
-            categoryFormArray.push(categoryGroupFactory(categoryArray[idxCategory]));
+            // categoryFormArray.push(categoryGroupFactory(categoryArray[idxCategory]));
+            categorySeasonArray.push(categoryArray[idxCategory]);
           }
         }
         break;
@@ -203,19 +207,22 @@ export class CategoryselectComponent implements OnInit, OnDestroy, AfterViewInit
       case 'winter': {
         for (const idxCategory in categoryArray) {
           if (categoryArray[idxCategory].winter === true) {
-            categoryFormArray.push(categoryGroupFactory(categoryArray[idxCategory]));
+            // categoryFormArray.push(categoryGroupFactory(categoryArray[idxCategory]));
+            categorySeasonArray.push(categoryArray[idxCategory]);
           }
         }
         break;
       }
       default: {
         for (const idxCategory in categoryArray) {
-            categoryFormArray.push(categoryGroupFactory(categoryArray[idxCategory]));
+            // categoryFormArray.push(categoryGroupFactory(categoryArray[idxCategory]));
+            categorySeasonArray.push(categoryArray[idxCategory]);
         }
+        // categorySeasonArray = categoryArray;
         break;
       }
     }
-    this.categorySubject.next(categoryFormArray);
+    this.categorySubject.next(categorySeasonArray);
   }
 }
 
