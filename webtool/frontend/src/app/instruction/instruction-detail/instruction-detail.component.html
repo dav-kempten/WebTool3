@@ -22,7 +22,7 @@
       </div>
       <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
         <input id="costs" placeholder="Kosten" type="text" style='width:100%'
-               pInputText>
+                                          pInputText>
       </div>
       <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
         <input id="revenue" placeholder="Einnahmen" type="text" style='width:100%'
@@ -40,8 +40,7 @@
             [readOnly]="!(userValState >= 1)"
         ></avk-team>
       </div>
-      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3"
-           *ngIf="!(climbingTopicIds.indexOf(instructionGroup.get('topicId').value) !== -1)">
+      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3" *ngIf="this.instructionCategory.value !== 'indoor'">
         <p-checkbox
             [formControl]="instructionGroup.get('lowEmissionAdventure')"
             label="LEA"
@@ -77,7 +76,7 @@
         </avk-categoryselect>
       </div>
       <div class="p-col-12 p-sm-3 p-md-3 p-lg-3"
-           *ngIf="!(climbingTopicIds.indexOf(instructionGroup.get('topicId').value) !== -1)">
+           *ngIf="this.instructionCategory.value !== 'indoor'">
         <p-checkbox
             [formControl]="instructionGroup.get('isSpecial')"
             label="Spezial"
@@ -151,7 +150,7 @@
   </ng-container>
 
   <form [formGroup]="instructionGroup">
-    <ng-container *ngIf="!(climbingTopicIds.indexOf(instructionGroup.get('topicId').value) !== -1)">
+    <ng-container *ngIf="this.instructionCategory.value !== 'indoor'">
     <!--Zusatzausrüstung & -anforderungen-->
     <div class="p-grid"  style="background-color:#D8D8D8">
       <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
@@ -222,7 +221,7 @@
       <label>Teilnehmer</label>
     </div>
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3"
-         *ngIf="!(climbingTopicIds.indexOf(instructionGroup.get('topicId').value) !== -1)">
+         *ngIf="this.instructionCategory.value !== 'indoor'">
       <p-checkbox
           [formControl]="instructionGroup.get('equipmentService')"
           label="Materialservice"
@@ -277,7 +276,7 @@
         <!--Zeitpunkt Event-->
         <div class="p-grid">
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6"
-               *ngIf="!(climbingTopicIds.indexOf(instructionGroup.get('topicId').value) !== -1)">
+               *ngIf="this.instructionCategory.value !== 'indoor'">
             <avk-approxdropdown formControlName="approximateId" id="approx" [readOnly]="!(userValState >= 1)"
                                 [disable]="!!currentEventGroup.get('startTime').value"></avk-approxdropdown>
           </div>
@@ -333,7 +332,7 @@
         </div>
 
         <!--ReservierungsService-->
-        <div class="p-grid" *ngIf="!(climbingTopicIds.indexOf(instructionGroup.get('topicId').value) !== -1)">
+        <div class="p-grid" *ngIf="this.instructionCategory.value !== 'indoor'">
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
             <p-checkbox
                 [formControl]="currentEventGroup.get('reservationService')"
@@ -346,7 +345,7 @@
         </div>
 
         <!--Distal & Distance-->
-        <div class="p-grid" *ngIf="!(climbingTopicIds.indexOf(instructionGroup.get('topicId').value) !== -1)">
+        <div class="p-grid" *ngIf="this.instructionCategory.value !== 'indoor'">
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
             <p-checkbox
                 [formControl]="currentEventGroup.get('distal')"
@@ -362,7 +361,7 @@
           </div>
         </div>
         <!--ShuttleService & PublicTransport-->
-        <div class="p-grid" *ngIf="!(climbingTopicIds.indexOf(instructionGroup.get('topicId').value) !== -1)">
+        <div class="p-grid" *ngIf="this.instructionCategory.value !== 'indoor'">
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
             <p-checkbox
                 [formControl]="currentEventGroup.get('publicTransport')"
@@ -380,7 +379,7 @@
         </div>
 
         <!--Source, Link & Map-->
-        <div class="p-grid" *ngIf="!(climbingTopicIds.indexOf(instructionGroup.get('topicId').value) !== -1)">
+        <div class="p-grid" *ngIf="this.instructionCategory.value !== 'indoor'">
           <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
             <input formControlName="source" id="source" placeholder="Source"
                    type="text" style="width:100%"
@@ -403,7 +402,7 @@
 
   <!--Teilnehmergebühr, Vorauszahlung & Zusatzkosten-->
   <form [formGroup]="instructionGroup">
-    <div class="p-grid" *ngIf="!(climbingTopicIds.indexOf(instructionGroup.get('topicId').value) !== -1)">
+    <div class="p-grid" *ngIf="this.instructionCategory.value !== 'indoor'">
     <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
       <div class="ui-inputgroup">
         <span class="ui-inputgroup-addon">TN-Gebühr</span>
@@ -431,7 +430,7 @@
     </div>
 
     <!--Zusatzkosten & Advances Details-->
-    <div class="p-grid" *ngIf="!(climbingTopicIds.indexOf(instructionGroup.get('topicId').value) !== -1)">
+    <div class="p-grid" *ngIf="this.instructionCategory.value !== 'indoor'">
       <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
       </div>
       <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">

@@ -6,7 +6,7 @@ import {getCategoryById, getTopicById} from '../../core/store/value.selectors';
 import {NamesRequested} from '../../core/store/name.actions';
 import {ValuesRequested} from '../../core/store/value.actions';
 import {CalendarRequested} from '../../core/store/calendar.actions';
-import {RequestInstruction, UpdateInstruction, UpsertInstruction} from '../../core/store/instruction.actions';
+import {RequestInstruction, UpdateInstruction} from '../../core/store/instruction.actions';
 import {getInstructionById} from '../../core/store/instruction.selectors';
 import {Instruction} from '../../core/store/instruction.model';
 import {filter, flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
@@ -15,7 +15,7 @@ import {AuthService, User} from '../../core/service/auth.service';
 import {Event} from '../../model/event';
 import {Category, Topic} from '../../model/value';
 import {FormArray, FormControl, FormGroup} from '@angular/forms';
-import {AddEvent, CreateEvent, UpdateEvent} from '../../core/store/event.actions';
+import {CreateEvent, UpdateEvent} from '../../core/store/event.actions';
 
 @Component({
   selector: 'avk-instruction-detail',
@@ -33,11 +33,10 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   private instructionChangeSubject = new BehaviorSubject<Instruction>(undefined);
   private eventChangeSubject = new BehaviorSubject<Event>(undefined);
 
-  instructionCategory = new BehaviorSubject<String>('');
+  instructionCategory = new BehaviorSubject<string>('');
 
   instructionGroup$: Observable<FormGroup> = this.instructionSubject.asObservable();
   topicGroup$: Observable<FormGroup> = this.topicSubject.asObservable();
-  categoryGroup$: Observable<FormGroup> = this.categorySubject.asObservable();
   eventArray$: Observable<FormArray> = this.eventsSubject.asObservable();
   instructionChange$: Observable<Instruction> = this.instructionChangeSubject.asObservable();
   eventChange$: Observable<Event> = this.eventChangeSubject.asObservable();
@@ -53,7 +52,6 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   userValState = 0;
   display = false;
   currentEventGroup: FormGroup = undefined;
-  climbingTopicIds: number[] = [18, 26, 31, 46, 45, 44, 35, 41, 97, 92, 32, 56, 57, 100, 47];
   eventNumber: number[];
 
   constructor(private store: Store<AppState>, private userService: AuthService) {
@@ -87,7 +85,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
         select(getInstructionById(id)),
         tap(instruction => {
           if (!instruction) {
-            this.store.dispatch(new RequestInstruction({id: id}));
+            this.store.dispatch(new RequestInstruction({id}));
           } else {
             const instructionGroup = instructionGroupFactory(instruction);
             instructionGroup.valueChanges.pipe(
@@ -133,11 +131,11 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
           } else {
             this.categorySubject.next(categoryGroupFactory(category));
           }
-          if (category.indoor === true) {
+          if (category.indoor) {
             this.instructionCategory.next('indoor');
-          } else if (category.summer === true) {
+          } else if (category.summer) {
             this.instructionCategory.next('summer');
-          } else if (category.winter === true) {
+          } else if (category.winter) {
             this.instructionCategory.next('winter');
           }
         })

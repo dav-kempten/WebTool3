@@ -18,7 +18,7 @@ import {
   ValidationErrors,
   ValidatorFn
 } from '@angular/forms';
-import {Dropdown, SelectItem} from 'primeng/primeng';
+import {Dropdown} from 'primeng/primeng';
 import {BehaviorSubject, Observable, ReplaySubject, Subject, Subscription} from 'rxjs';
 import {delay, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {Store} from '@ngrx/store';
