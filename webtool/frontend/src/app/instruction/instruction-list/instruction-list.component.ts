@@ -35,7 +35,7 @@ export class InstructionListComponent implements OnInit, OnDestroy {
   display = false;
   finishedInstructions = [6, 7, 8];
 
-  partNewInstruction = new BehaviorSubject<String>('');
+  partNewInstruction = new BehaviorSubject<string>('');
 
   user$: Observable<User>;
   authState$: Observable<User>;

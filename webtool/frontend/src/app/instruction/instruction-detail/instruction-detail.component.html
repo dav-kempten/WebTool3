@@ -63,8 +63,8 @@
         <input formControlName="reference" id="reference" placeholder="Buchungsnummer" type="text" style='width:100%'
                readonly pInputText>
       </div>
-      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3" *ngIf="instructionGroup.get('stateId') <= 2">
-        <avk-dropdown formControlName="stateId" id="stateId" [readOnly]="!(userValState >= 3)" [testRun]="true">
+      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+        <avk-dropdown formControlName="stateId" id="stateId" [readOnly]="!(userValState >= 3)">
         </avk-dropdown>
       </div>
       <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">

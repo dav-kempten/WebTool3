@@ -23,10 +23,9 @@ import {BehaviorSubject, Observable, ReplaySubject, Subject, Subscription} from 
 import {delay, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {Store} from '@ngrx/store';
 import {AppState} from '../../app.state';
-import {ValuesRequested} from '../store/value.actions';
 import {selectStatesState} from '../store/value.selectors';
 import {State as StateState} from '../store/state.reducer';
-import {Category as RawCategory, State as RawState} from '../../model/value';
+import {State as RawState} from '../../model/value';
 
 @Component({
   selector: 'avk-dropdown',
@@ -51,7 +50,6 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
   private destroySubject = new Subject<void>();
   stateSubject = new BehaviorSubject<RawState[]>(undefined);
-  // private stateGroup$: Observable<FormArray> = this.stateSubject.asObservable();
 
   originalControl = new FormControl(null);
   choiceControl = new FormControl('');
@@ -136,7 +134,6 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     );
 
     this.formStateComponent$.subscribe();
-    console.log('this.status', this.status);
   }
 
 

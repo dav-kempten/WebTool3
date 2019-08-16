@@ -177,13 +177,11 @@ export class CategoryselectComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   filterBySeason(categoryArray: RawCategory[], topicKeyword: string): void {
-    // const categoryFormArray = new FormArray([]);
-    const categorySeasonArray = new Array(0);
+    let categorySeasonArray = new Array(0);
     switch (topicKeyword) {
       case 'indoor': {
         for (const idxCategory in categoryArray) {
           if (categoryArray[idxCategory].indoor === true) {
-            // categoryFormArray.push(categoryGroupFactory(categoryArray[idxCategory]));
             categorySeasonArray.push(categoryArray[idxCategory]);
           }
         }
@@ -192,7 +190,6 @@ export class CategoryselectComponent implements OnInit, OnDestroy, AfterViewInit
       case 'summer': {
         for (const idxCategory in categoryArray) {
           if (categoryArray[idxCategory].summer === true) {
-            // categoryFormArray.push(categoryGroupFactory(categoryArray[idxCategory]));
             categorySeasonArray.push(categoryArray[idxCategory]);
           }
         }
@@ -201,18 +198,13 @@ export class CategoryselectComponent implements OnInit, OnDestroy, AfterViewInit
       case 'winter': {
         for (const idxCategory in categoryArray) {
           if (categoryArray[idxCategory].winter === true) {
-            // categoryFormArray.push(categoryGroupFactory(categoryArray[idxCategory]));
             categorySeasonArray.push(categoryArray[idxCategory]);
           }
         }
         break;
       }
       default: {
-        for (const idxCategory in categoryArray) {
-            // categoryFormArray.push(categoryGroupFactory(categoryArray[idxCategory]));
-            categorySeasonArray.push(categoryArray[idxCategory]);
-        }
-        // categorySeasonArray = categoryArray;
+        categorySeasonArray = [...categoryArray];
         break;
       }
     }
