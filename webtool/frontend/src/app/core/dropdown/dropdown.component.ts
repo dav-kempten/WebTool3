@@ -118,21 +118,17 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.formStateComponent$ = this.formState$.pipe(
       takeUntil(this.destroySubject),
       tap( (state) => {
-        if (state.ids.length === 0) {
-          this.stateSubject.next(this.status);
-        } else {
-          for (const key in state.entities) {
-            if (state.entities.hasOwnProperty(key)) {
-              const statePush: RawState = {
-                id: state.entities[key].id,
-                state: state.entities[key].state,
-                description: state.entities[key].description
-              };
-              this.status.push(statePush);
-            }
+        for (const key in state.entities) {
+          if (state.entities.hasOwnProperty(key)) {
+            const statePush: RawState = {
+              id: state.entities[key].id,
+              state: state.entities[key].state,
+              description: state.entities[key].description
+            };
+            this.status.push(statePush);
           }
-          this.stateSubject.next(this.status);
         }
+        this.stateSubject.next(this.status);
       }),
       // shareReplay(),
       publishReplay(1),

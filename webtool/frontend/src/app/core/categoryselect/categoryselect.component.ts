@@ -129,30 +129,24 @@ export class CategoryselectComponent implements OnInit, OnDestroy, AfterViewInit
     this.formStateComponent$ = this.formState$.pipe(
       takeUntil(this.destroySubject),
       tap( state => {
-        // const categoryFormArray = new FormArray([categoryGroupFactory(this.status[0])]);
-        if (state.ids.length === 0) {
-          this.categorySubject.next(this.status);
-        } else {
-          for (const key in state.entities) {
-            if (state.entities.hasOwnProperty(key)) {
-              const statePush: RawCategory = {
-                id: state.entities[key].id,
-                code: state.entities[key].code,
-                name: state.entities[key].name,
-                tour: state.entities[key].tour,
-                talk: state.entities[key].talk,
-                instruction: state.entities[key].instruction,
-                collective: state.entities[key].collective,
-                winter: state.entities[key].winter,
-                summer: state.entities[key].summer,
-                indoor: state.entities[key].indoor
-              };
-              this.status.push(statePush);
-              // categoryFormArray.push(categoryGroupFactory(statePush));
-            }
+        for (const key in state.entities) {
+          if (state.entities.hasOwnProperty(key)) {
+            const statePush: RawCategory = {
+              id: state.entities[key].id,
+              code: state.entities[key].code,
+              name: state.entities[key].name,
+              tour: state.entities[key].tour,
+              talk: state.entities[key].talk,
+              instruction: state.entities[key].instruction,
+              collective: state.entities[key].collective,
+              winter: state.entities[key].winter,
+              summer: state.entities[key].summer,
+              indoor: state.entities[key].indoor
+            };
+            this.status.push(statePush);
           }
-          this.filterBySeason(this.status, this.topicKeyword);
         }
+        this.filterBySeason(this.status, this.topicKeyword);
       }),
       // shareReplay(),
       publishReplay(1),
