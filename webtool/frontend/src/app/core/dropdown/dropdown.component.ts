@@ -10,7 +10,7 @@ import {
   ViewChild
 } from '@angular/core';
 import {
-  ControlValueAccessor, FormArray,
+  ControlValueAccessor,
   FormControl,
   FormControlName,
   FormGroup,
@@ -116,16 +116,9 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     this.formStateComponent$ = this.formState$.pipe(
       takeUntil(this.destroySubject),
       tap( (state) => {
-        for (const key in state.entities) {
-          if (state.entities.hasOwnProperty(key)) {
-            const statePush: RawState = {
-              id: state.entities[key].id,
-              state: state.entities[key].state,
-              description: state.entities[key].description
-            };
-            this.status.push(statePush);
-          }
-        }
+        Object.keys(state.entities).forEach(key => {
+          this.status.push(state.entities[key]);
+        });
         this.stateSubject.next(this.status);
       }),
       // shareReplay(),
