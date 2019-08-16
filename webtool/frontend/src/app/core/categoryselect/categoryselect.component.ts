@@ -11,7 +11,6 @@ import {
 } from '@angular/core';
 import {
   ControlValueAccessor,
-  FormArray,
   FormControl,
   FormControlName,
   FormGroup,
@@ -25,7 +24,7 @@ import {Category as RawCategory} from '../../model/value';
 import {Store} from '@ngrx/store';
 import {AppState} from '../../app.state';
 import {getCategoryState} from '../store/value.selectors';
-import {delay, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
+import {delay, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 
 @Component({
   selector: 'avk-categoryselect',
@@ -58,6 +57,7 @@ export class CategoryselectComponent implements OnInit, OnDestroy, AfterViewInit
   readonly = false;
   editable = false;
 
+  seasonKeyword = '';
   topicKeyword = '';
 
   @Input()
@@ -71,11 +71,16 @@ export class CategoryselectComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   @Input()
-  set instructionSpecific(value: string) {
-    this.topicKeyword = value;
+  set seasonSpecific(value: string) {
+    this.seasonKeyword = value;
     if (this.status.length > 1 && this.categorySubject.value !== undefined) {
-      this.filterBySeason(this.status, this.topicKeyword);
+      this.filterBySeason(this.status, this.seasonKeyword);
     }
+  }
+
+  @Input()
+  set topicSpecific(value: string) {
+    this.topicKeyword = value;
   }
 
   group = new FormGroup(
@@ -129,24 +134,32 @@ export class CategoryselectComponent implements OnInit, OnDestroy, AfterViewInit
     this.formStateComponent$ = this.formState$.pipe(
       takeUntil(this.destroySubject),
       tap( state => {
-        for (const key in state.entities) {
-          if (state.entities.hasOwnProperty(key)) {
-            const statePush: RawCategory = {
-              id: state.entities[key].id,
-              code: state.entities[key].code,
-              name: state.entities[key].name,
-              tour: state.entities[key].tour,
-              talk: state.entities[key].talk,
-              instruction: state.entities[key].instruction,
-              collective: state.entities[key].collective,
-              winter: state.entities[key].winter,
-              summer: state.entities[key].summer,
-              indoor: state.entities[key].indoor
-            };
-            this.status.push(statePush);
+        Object.keys(state.entities).forEach( key => {
+          switch (this.topicKeyword) {
+            case 'instruction': {
+              if (state.entities[key].instruction) {
+                this.status.push(state.entities[key]);
+              }
+              break;
+            }
+            case 'talk': {
+              if (state.entities[key].talk) {
+                this.status.push(state.entities[key]);
+              }
+              break;
+            }
+            case 'tour': {
+              if (state.entities[key].tour) {
+                this.status.push(state.entities[key]);
+              }
+              break;
+            }
+            default: {
+              break;
+            }
           }
-        }
-        this.filterBySeason(this.status, this.topicKeyword);
+        });
+        this.filterBySeason(this.status, this.seasonKeyword);
       }),
       // shareReplay(),
       publishReplay(1),
@@ -176,9 +189,9 @@ export class CategoryselectComponent implements OnInit, OnDestroy, AfterViewInit
     this.choiceControl.setValue(this.formControl.value);
   }
 
-  filterBySeason(categoryArray: RawCategory[], topicKeyword: string): void {
+  filterBySeason(categoryArray: RawCategory[], seasonKeyword: string): void {
     let categorySeasonArray = new Array(0);
-    switch (topicKeyword) {
+    switch (seasonKeyword) {
       case 'indoor': {
         for (const idxCategory in categoryArray) {
           if (categoryArray[idxCategory].indoor === true) {

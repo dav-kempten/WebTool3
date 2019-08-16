@@ -56,8 +56,6 @@ export class InstructionListComponent implements OnInit, OnDestroy {
     {label: 'Winter Kurse', url: '/instructions#winter'},
   ];
 
-  category$: Observable<Category>;
-
   constructor(private store: Store<AppState>, private router: Router, private authService: AuthService) {
     this.store.dispatch(new NamesRequested());
     this.store.dispatch(new ValuesRequested());

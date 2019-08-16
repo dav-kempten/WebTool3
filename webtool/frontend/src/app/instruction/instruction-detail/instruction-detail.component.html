@@ -72,7 +72,8 @@
             formControlName="topicId"
             id="topicId"
             [readOnly]="true"
-            [instructionSpecific]="this.instructionCategory.value">
+            [seasonSpecific]="this.instructionCategory.value"
+            [topicSpecific]="'instruction'">
         </avk-categoryselect>
       </div>
       <div class="p-col-12 p-sm-3 p-md-3 p-lg-3"
