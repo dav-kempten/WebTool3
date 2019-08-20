@@ -102,14 +102,25 @@ class TourViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
             tour.deprecated = True
             tour.save()
 
-        meetings = instance.meeting_list.all()
-        for meeting in meetings:
-            reference = meeting.reference
+        deadline = instance.deadline
+        if deadline:
+            reference = deadline.reference
             if reference:
                 reference.deprecated = True
                 reference.save()
-            meeting.deprecated = True
-            meeting.save()
+
+            deadline.deprecated = True
+            deadline.save()
+
+        preliminary = instance.preliminary
+        if preliminary:
+            reference = preliminary.reference
+            if reference:
+                reference.deprecated = True
+                reference.save()
+
+            preliminary.deprecated = True
+            preliminary.save()
 
         instance.deprecated = True
         instance.save()
