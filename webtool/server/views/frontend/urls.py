@@ -4,9 +4,11 @@ from . import NamesViewSet
 from . import ValuesViewSet
 from . import CalendarsViewSet
 from . import InstructionViewSet
+from . import TourViewSet
 
 router = DefaultRouter()
 router.register(r'names', NamesViewSet, base_name='names')
 router.register(r'values', ValuesViewSet, base_name='values')
 router.register(r'calendars', CalendarsViewSet, base_name='calendars')
 router.register(r'instructions', InstructionViewSet, base_name='instructions')
+router.register(r'tours', TourViewSet, base_name='tours')

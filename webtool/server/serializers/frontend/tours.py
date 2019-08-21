@@ -97,7 +97,7 @@ class TourSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'reference',
             'guideId', 'teamIds',
-            'instruction', 'deadline', 'preliminary'
+            'tour', 'deadline', 'preliminary',
             'lowEmissionAdventure', 'ladiesOnly',
             'isSpecial', 'categoryId',
             'qualificationIds', 'preconditions',
