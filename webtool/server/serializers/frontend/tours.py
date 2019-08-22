@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.reverse import reverse
 
 from server.models import (
-    Tour, Guide, Category, Equipment, State, get_default_state, get_default_season, Event, Qualification
+    Tour, Guide, Category, Equipment, State, get_default_state, get_default_season, Event, Reference
 )
 from server.serializers.frontend.core import EventSerializer, MoneyField, create_event, update_event
 
@@ -61,15 +61,16 @@ class TourSerializer(serializers.ModelSerializer):
     tour = EventSerializer(default={})
     deadline = EventSerializer(default={})
     preliminary = EventSerializer(default={})
+    info = serializers.CharField(default='', allow_blank=True)
     lowEmissionAdventure = serializers.BooleanField(source='tour.lea', default=False)
     ladiesOnly = serializers.BooleanField(source='ladies_only', default=False)
-    isSpecial = serializers.BooleanField(source='is_special', default=False)
+    youthOnTour = serializers.BooleanField(source='youth_on_tour', default=False)
     categoryId = serializers.PrimaryKeyRelatedField(
-        source='category', default=None, allow_null=True, queryset=Category.objects.all()
+       source='tour.reference.category', default=None, allow_null=True, queryset=Tour.objects.all()
     )
-
+    miscCategory = serializers.CharField(source='misc_category', max_length=75, default='', allow_blank=True)
     qualificationIds = serializers.PrimaryKeyRelatedField(
-        source='qualifications', many=True, default=[], queryset=Qualification.objects.all()
+        source='qualifications', many=True, default=[], queryset=Category.objects.all()
     )
     preconditions = serializers.CharField(default='', allow_blank=True)
 
@@ -88,6 +89,7 @@ class TourSerializer(serializers.ModelSerializer):
     maxQuantity = serializers.IntegerField(source='max_quantity', default=0)
     curQuantity = serializers.IntegerField(source='cur_quantity', read_only=True)
 
+    portal = serializers.URLField(default='', allow_blank=True)
     stateId = serializers.PrimaryKeyRelatedField(source='state', required=False, queryset=State.objects.all())
 
     # Administrative Felder fehlen noch !
@@ -98,13 +100,14 @@ class TourSerializer(serializers.ModelSerializer):
             'id', 'reference',
             'guideId', 'teamIds',
             'tour', 'deadline', 'preliminary',
-            'lowEmissionAdventure', 'ladiesOnly',
-            'isSpecial', 'categoryId',
+            'info',
+            'lowEmissionAdventure', 'ladiesOnly', 'youthOnTour',
+            'categoryId', 'miscCategory',
             'qualificationIds', 'preconditions',
             'equipmentIds', 'miscEquipment', 'equipmentService',
             'admission', 'advances', 'advancesInfo', 'extraCharges', 'extraChargesInfo',
             'minQuantity', 'maxQuantity', 'curQuantity',
-            'stateId',
+            'portal','stateId',
         )
 
     def validate(self, data):
@@ -158,7 +161,7 @@ class TourSerializer(serializers.ModelSerializer):
             qualifications = validated_data.pop('qualifications')
             equipments = validated_data.pop('equipments')
             state = validated_data.pop('state', get_default_state())
-            category = validated_data.category
+            category = validated_data.reference.category
             season = get_default_season()
             event = create_event(event_data, dict(category=category, season=season, type=dict(topic=True)))
             tour = Tour.objects.create(tour=event, state=state, **validated_data)
@@ -185,8 +188,6 @@ class TourSerializer(serializers.ModelSerializer):
             preliminary = Event.objects.get(pk=preliminary_data.get('pk'))
             update_event(preliminary, preliminary_data, self.context)
         instance.ladies_only = validated_data.get('ladies_only', instance.ladies_only)
-        instance.is_special = validated_data.get('is_special', instance.is_special)
-        instance.category = validated_data.get('category', instance.category)
         qualifications = validated_data.get('qualifications')
         if qualifications is not None:
             instance.qualifications = qualifications
