@@ -65,12 +65,9 @@ class TourSerializer(serializers.ModelSerializer):
     lowEmissionAdventure = serializers.BooleanField(source='tour.lea', default=False)
     ladiesOnly = serializers.BooleanField(source='ladies_only', default=False)
     youthOnTour = serializers.BooleanField(source='youth_on_tour', default=False)
-    categoryId = serializers.PrimaryKeyRelatedField(
-       source='tour.reference.category', default=None, allow_null=True, queryset=Tour.objects.all()
-    )
     miscCategory = serializers.CharField(source='misc_category', max_length=75, default='', allow_blank=True)
     qualificationIds = serializers.PrimaryKeyRelatedField(
-        source='qualifications', many=True, default=[], queryset=Category.objects.all()
+        source='qualifications', many=True, default=[], queryset=Tour.objects.all()
     )
     preconditions = serializers.CharField(default='', allow_blank=True)
 
@@ -102,7 +99,7 @@ class TourSerializer(serializers.ModelSerializer):
             'tour', 'deadline', 'preliminary',
             'info',
             'lowEmissionAdventure', 'ladiesOnly', 'youthOnTour',
-            'categoryId', 'miscCategory',
+            'miscCategory',
             'qualificationIds', 'preconditions',
             'equipmentIds', 'miscEquipment', 'equipmentService',
             'admission', 'advances', 'advancesInfo', 'extraCharges', 'extraChargesInfo',
@@ -163,7 +160,7 @@ class TourSerializer(serializers.ModelSerializer):
             state = validated_data.pop('state', get_default_state())
             category = validated_data.reference.category
             season = get_default_season()
-            event = create_event(event_data, dict(category=category, season=season, type=dict(topic=True)))
+            event = create_event(event_data, dict(category=category, season=season, type=dict(topic=False)))
             tour = Tour.objects.create(tour=event, state=state, **validated_data)
             tour.team = team
             tour.qualifications = qualifications
