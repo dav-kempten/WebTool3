@@ -17,6 +17,7 @@ class TourListSerializer(serializers.ModelSerializer):
     ladiesOnly = serializers.BooleanField(source='ladies_only', read_only=True)
     winter = serializers.BooleanField(source='tour.reference.category.winter', read_only=True)
     summer = serializers.BooleanField(source='tour.reference.category.summer', read_only=True)
+    youthOnTour = serializers.BooleanField(source='youth_on_tour', default=False)
     minQuantity = serializers.IntegerField(source='min_quantity', read_only=True)
     maxQuantity = serializers.IntegerField(source='max_quantity', read_only=True)
     curQuantity = serializers.IntegerField(source='cur_quantity', read_only=True)
@@ -34,6 +35,7 @@ class TourListSerializer(serializers.ModelSerializer):
             'ladiesOnly',
             'winter',
             'summer',
+            'youthOnTour',
             'minQuantity', 'maxQuantity', 'curQuantity',
             'stateId',
             'url'
@@ -132,7 +134,7 @@ class TourSerializer(serializers.ModelSerializer):
             if deadline_data is not None:
                 deadline_instance = deadline_data.get('pk')
                 if deadline_instance is None:
-                    raise serializers.ValidationError("deadline Id is missing")
+                    raise serializers.ValidationError("deadline is not defined")
                 elif deadline_instance.pk != tour.deadline_id:
                     raise serializers.ValidationError("Wrong deadline Id")
 
@@ -140,9 +142,9 @@ class TourSerializer(serializers.ModelSerializer):
             if preliminary_data is not None:
                 preliminary_instance = preliminary_data.get('pk')
                 if preliminary_instance is None:
-                    raise serializers.ValidationError("deadline Id is missing")
+                    raise serializers.ValidationError("preliminary is not defined")
                 elif preliminary_instance.pk != tour.preliminary_id:
-                    raise serializers.ValidationError("Wrong deadline Id")
+                    raise serializers.ValidationError("Wrong preliminary Id")
 
         return data
 
@@ -151,7 +153,7 @@ class TourSerializer(serializers.ModelSerializer):
         if instance:
             return self.update(instance, validated_data)
         else:
-            event_data = validated_data.pop('tour')
+            tour_data = validated_data.pop('tour')
             deadline_data = validated_data.pop('deadline')
             preliminary_data = validated_data.pop('preliminary')
             team = validated_data.pop('team')
@@ -159,12 +161,18 @@ class TourSerializer(serializers.ModelSerializer):
             equipments = validated_data.pop('equipments')
             state = validated_data.pop('state', get_default_state())
             category = validated_data.reference.category
-            season = get_default_season()
-            event = create_event(event_data, dict(category=category, season=season, type=dict(topic=False)))
-            tour = Tour.objects.create(tour=event, state=state, **validated_data)
+            season = category.seasons.get(current=True)
+            tour_event = create_event(tour_data, dict(category=category, season=season, type=dict(tour=True)))
+            tour = Tour.objects.create(tour=tour_event, state=state, **validated_data)
             tour.team = team
             tour.qualifications = qualifications
             tour.equipments = equipments
+            if deadline_data:
+                deadline_event = create_event(deadline_data, dict(category=None, type=dict(deadline=True)))
+                tour.deadline = deadline_event
+            if preliminary_data:
+                preliminary_event = create_event(preliminary_data, dict(category=None, type=dict(preliminary=True)))
+                tour.preliminary = preliminary_event
             return tour
 
     def update(self, instance, validated_data):
