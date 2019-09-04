@@ -4,7 +4,13 @@ import {Action, Store} from '@ngrx/store';
 import {Actions, Effect, ofType} from '@ngrx/effects';
 import {Injectable} from '@angular/core';
 import {InstructionService} from '../service/instruction.service';
-import {AddInstruction, InstructionActionTypes, InstructionNotModified, RequestInstruction} from './instruction.actions';
+import {
+  AddInstruction,
+  CloneInstruction,
+  InstructionActionTypes,
+  InstructionNotModified,
+  RequestInstruction
+} from './instruction.actions';
 import {Event} from '../../model/event';
 import {AppState} from '../../app.state';
 import {AddEvent} from './event.actions';
@@ -28,6 +34,23 @@ export class InstructionEffects {
     map((action: RequestInstruction) => action.payload),
     switchMap(payload => {
       return this.instructionService.getInstruction(payload.id).pipe(
+        map(instruction => {
+          if (instruction.id !== 0) {
+            return new AddInstruction({instruction: this.transformInstruction(instruction)});
+          } else {
+            return new InstructionNotModified();
+          }
+        })
+      );
+    })
+  );
+
+  @Effect()
+  cloneInstruction$: Observable<Action> = this.actions$.pipe(
+    ofType<CloneInstruction>(InstructionActionTypes.CloneInstruction),
+    map((action: CloneInstruction) => action.payload),
+    switchMap(payload => {
+      return this.instructionService.cloneInstruction(payload.id).pipe(
         map(instruction => {
           if (instruction.id !== 0) {
             return new AddInstruction({instruction: this.transformInstruction(instruction)});

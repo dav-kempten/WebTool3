@@ -1,15 +1,30 @@
-import {Component, ContentChild, forwardRef, Input, OnInit, ViewChild} from '@angular/core';
-import {ControlValueAccessor, FormControl, FormControlName, FormGroup, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {
+  AfterContentInit,
+  AfterViewInit,
+  Component,
+  ContentChild,
+  forwardRef,
+  Input,
+  OnDestroy,
+  OnInit,
+  ViewChild
+} from '@angular/core';
+import {
+  ControlValueAccessor,
+  FormControl,
+  FormControlName,
+  FormGroup,
+  NG_VALUE_ACCESSOR
+} from '@angular/forms';
 import {Dropdown} from 'primeng/primeng';
-import {Observable, ReplaySubject, Subscription} from 'rxjs';
+import {BehaviorSubject, Observable, ReplaySubject, Subject, Subscription} from 'rxjs';
 import {stateValidator} from '../dropdown/dropdown.component';
 import {State as CategoryState} from '../store/category.reducer';
 import {Category as RawCategory} from '../../model/value';
 import {Store} from '@ngrx/store';
 import {AppState} from '../../app.state';
-import {ValuesRequested} from '../store/value.actions';
 import {getCategoryState} from '../store/value.selectors';
-import {delay, tap} from 'rxjs/operators';
+import {delay, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 
 @Component({
   selector: 'avk-categoryselect',
@@ -23,21 +38,27 @@ import {delay, tap} from 'rxjs/operators';
   templateUrl: './categoryselect.component.html',
   styleUrls: ['./categoryselect.component.css']
 })
-export class CategoryselectComponent implements OnInit {
+export class CategoryselectComponent implements OnInit, OnDestroy, AfterViewInit, AfterContentInit, ControlValueAccessor {
 
   @ViewChild(Dropdown) dropdown: Dropdown;
   @ContentChild(FormControlName) formControlNameRef: FormControlName;
   formControl: FormControl;
   delegatedMethodCalls = new ReplaySubject<(_: ControlValueAccessor) => void>();
   delegatedMethodsSubscription: Subscription;
+  private destroySubject = new Subject<void>();
+  categorySubject = new BehaviorSubject<RawCategory[]>(undefined);
 
   originalControl = new FormControl(null);
   choiceControl = new FormControl('');
 
   formState$: Observable<CategoryState>;
+  formStateComponent$: Observable<CategoryState>;
 
-  readonly = false; /* init of readonly in guide component */
+  readonly = false;
   editable = false;
+
+  seasonKeyword = '';
+  topicKeyword = '';
 
   @Input()
   set readOnly(value: boolean) {
@@ -49,6 +70,19 @@ export class CategoryselectComponent implements OnInit {
     this.editable = value;
   }
 
+  @Input()
+  set seasonSpecific(value: string) {
+    this.seasonKeyword = value;
+    if (this.status.length > 1 && this.categorySubject.value !== undefined) {
+      this.filterBySeason(this.status, this.seasonKeyword);
+    }
+  }
+
+  @Input()
+  set topicSpecific(value: string) {
+    this.topicKeyword = value;
+  }
+
   group = new FormGroup(
     {
       original: this.originalControl,
@@ -58,7 +92,7 @@ export class CategoryselectComponent implements OnInit {
   );
 
   status: RawCategory[] = new Array(1).fill({id: 0, code: null, name: 'Kategorie', tour: false,
-    talk: false, instruction: false, collective: false, winter: false, summer: false, indoor: false});
+    talk: false, instruction: false, collective: false, winter: true, summer: true, indoor: true});
 
 
   OnChangeWrapper(onChange: (stateIn) => void): (stateOut: RawCategory) => void {
@@ -92,33 +126,46 @@ export class CategoryselectComponent implements OnInit {
     this.delegatedMethodCalls.next(accessor => accessor.writeValue(stateId));
   }
 
-  constructor(private store: Store<AppState>) {
-    this.store.dispatch(new ValuesRequested());
-  }
+  constructor(private store: Store<AppState>) { }
 
   ngOnInit(): void {
-
     this.formState$ = this.store.select(getCategoryState);
 
-    this.formState$.pipe(
-      tap( (state) => {
-        for (const key in state.entities) {
-          const statePush: RawCategory = {
-            id: state.entities[key].id,
-            code: state.entities[key].code,
-            name: state.entities[key].name,
-            tour: state.entities[key].tour,
-            talk: state.entities[key].talk,
-            instruction: state.entities[key].instruction,
-            collective: state.entities[key].collective,
-            winter: state.entities[key].winter,
-            summer: state.entities[key].summer,
-            indoor: state.entities[key].indoor};
-          this.status.push(statePush);
-        }
-      })
-    ).subscribe().unsubscribe();
-
+    this.formStateComponent$ = this.formState$.pipe(
+      takeUntil(this.destroySubject),
+      tap( state => {
+        Object.keys(state.entities).forEach( key => {
+          switch (this.topicKeyword) {
+            case 'instruction': {
+              if (state.entities[key].instruction) {
+                this.status.push(state.entities[key]);
+              }
+              break;
+            }
+            case 'talk': {
+              if (state.entities[key].talk) {
+                this.status.push(state.entities[key]);
+              }
+              break;
+            }
+            case 'tour': {
+              if (state.entities[key].tour) {
+                this.status.push(state.entities[key]);
+              }
+              break;
+            }
+            default: {
+              break;
+            }
+          }
+        });
+        this.filterBySeason(this.status, this.seasonKeyword);
+      }),
+      // shareReplay(),
+      publishReplay(1),
+      refCount()
+    );
+    this.formStateComponent$.subscribe();
   }
 
   ngAfterViewInit(): void {
@@ -131,6 +178,9 @@ export class CategoryselectComponent implements OnInit {
     if (this.delegatedMethodsSubscription) {
       this.delegatedMethodsSubscription.unsubscribe();
     }
+    this.destroySubject.next();
+    this.destroySubject.complete();
+    this.categorySubject.complete();
   }
 
   ngAfterContentInit(): void {
@@ -138,4 +188,54 @@ export class CategoryselectComponent implements OnInit {
     this.originalControl.setValue(this.formControl);
     this.choiceControl.setValue(this.formControl.value);
   }
+
+  filterBySeason(categoryArray: RawCategory[], seasonKeyword: string): void {
+    let categorySeasonArray = new Array(0);
+    switch (seasonKeyword) {
+      case 'indoor': {
+        for (const idxCategory in categoryArray) {
+          if (categoryArray[idxCategory].indoor === true) {
+            categorySeasonArray.push(categoryArray[idxCategory]);
+          }
+        }
+        break;
+      }
+      case 'summer': {
+        for (const idxCategory in categoryArray) {
+          if (categoryArray[idxCategory].summer === true) {
+            categorySeasonArray.push(categoryArray[idxCategory]);
+          }
+        }
+        break;
+      }
+      case 'winter': {
+        for (const idxCategory in categoryArray) {
+          if (categoryArray[idxCategory].winter === true) {
+            categorySeasonArray.push(categoryArray[idxCategory]);
+          }
+        }
+        break;
+      }
+      default: {
+        categorySeasonArray = [...categoryArray];
+        break;
+      }
+    }
+    this.categorySubject.next(categorySeasonArray);
+  }
+}
+
+function categoryGroupFactory(category: RawCategory): FormGroup {
+  return new FormGroup({
+    id: new FormControl(category.id),
+    code: new FormControl(category.code),
+    name: new FormControl(category.name),
+    tour: new FormControl(category.tour),
+    talk: new FormControl(category.talk),
+    instruction: new FormControl(category.instruction),
+    collective: new FormControl(category.collective),
+    winter: new FormControl(category.winter),
+    summer: new FormControl(category.summer),
+    indoor: new FormControl(category.indoor),
+  });
 }

@@ -14,7 +14,10 @@ export enum InstructionActionTypes {
   UpdateInstructions = '[Instruction] Update Instructions',
   DeleteInstruction = '[Instruction] Delete Instruction',
   DeleteInstructions = '[Instruction] Delete Instructions',
-  ClearInstructions = '[Instruction] Clear Instructions'
+  ClearInstructions = '[Instruction] Clear Instructions',
+  CreateInstruction = '[Instruction] Create Instruction',
+  CloneInstruction = '[Instruction] Clone Instruction',
+  DeactivateInstruction = '[Instruction] Deactivate Instruction',
 }
 
 export class RequestInstruction implements Action {
@@ -85,6 +88,24 @@ export class ClearInstructions implements Action {
   readonly type = InstructionActionTypes.ClearInstructions;
 }
 
+export class CreateInstruction implements Action {
+  readonly type = InstructionActionTypes.CreateInstruction;
+
+  constructor(public payload: { topicId: number, startDate: string}) {}
+}
+
+export class CloneInstruction implements Action {
+  readonly type = InstructionActionTypes.CloneInstruction;
+
+  constructor(public payload: { id: number }) {}
+}
+
+export class DeactivateInstruction implements Action {
+  readonly type = InstructionActionTypes.DeactivateInstruction;
+
+  constructor(public payload: { id: number }) {}
+}
+
 export type InstructionActions =
   RequestInstruction
   | InstructionNotModified
@@ -97,4 +118,7 @@ export type InstructionActions =
   | UpdateInstructions
   | DeleteInstruction
   | DeleteInstructions
-  | ClearInstructions;
+  | ClearInstructions
+  | CreateInstruction
+  | CloneInstruction
+  | DeactivateInstruction;

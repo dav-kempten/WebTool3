@@ -19,11 +19,10 @@ import {
   ValidatorFn
 } from '@angular/forms';
 import {Dropdown} from 'primeng/primeng';
-import {Observable, ReplaySubject, Subject, Subscription} from 'rxjs';
-import {delay, takeUntil, tap} from 'rxjs/operators';
+import {BehaviorSubject, Observable, ReplaySubject, Subject, Subscription} from 'rxjs';
+import {delay, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {Store} from '@ngrx/store';
 import {AppState} from '../../app.state';
-import {ValuesRequested} from '../store/value.actions';
 import {selectStatesState} from '../store/value.selectors';
 import {State as StateState} from '../store/state.reducer';
 import {State as RawState} from '../../model/value';
@@ -40,6 +39,7 @@ import {State as RawState} from '../../model/value';
   templateUrl: './dropdown.component.html',
   styleUrls: ['./dropdown.component.css']
 })
+
 export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, AfterContentInit, ControlValueAccessor  {
 
   @ViewChild(Dropdown) dropdown: Dropdown;
@@ -49,11 +49,13 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   delegatedMethodsSubscription: Subscription;
 
   private destroySubject = new Subject<void>();
+  stateSubject = new BehaviorSubject<RawState[]>(undefined);
 
   originalControl = new FormControl(null);
   choiceControl = new FormControl('');
 
   formState$: Observable<StateState>;
+  formStateComponent$: Observable<StateState>;
 
   readonly = false; /* init of readonly in guide component */
 
@@ -70,8 +72,8 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     [stateValidator]
   );
 
-  status: RawState[] = new Array(1).fill({id: 0, state: 'Bearbeitungsstand', description: null});
-
+  status: RawState[] = new Array(1).fill({id: 0, state: 'Bearbeitungsstand',
+    description: null});
 
   OnChangeWrapper(onChange: (stateIn) => void): (stateOut: RawState) => void {
     return ((state: RawState): void => {
@@ -94,32 +96,37 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   }
 
   writeValue(stateId): void {
-    if ((typeof stateId === 'number') && (stateId <= this.status.length)) {
-      stateId = this.status[stateId];
+    if (typeof stateId === 'number') {
+      for (const el in this.status) {
+        if (stateId === this.status[el].id) {
+          stateId = this.status[stateId];
+        }
+      }
     }
+
     this.delegatedMethodCalls.next(accessor => accessor.writeValue(stateId));
   }
 
-  constructor(private store: Store<AppState>) {
-    this.store.dispatch(new ValuesRequested());
-  }
+  constructor(private store: Store<AppState>) { }
 
   ngOnInit(): void {
 
     this.formState$ = this.store.select(selectStatesState);
 
-    this.formState$.pipe(
+    this.formStateComponent$ = this.formState$.pipe(
       takeUntil(this.destroySubject),
       tap( (state) => {
-        for (const key in state.entities) {
-          const statePush: RawState = {
-            id: state.entities[key].id,
-            state: state.entities[key].state,
-            description: state.entities[key].description};
-          this.status.push(statePush);
-        }
-      })
-    ).subscribe()
+        Object.keys(state.entities).forEach(key => {
+          this.status.push(state.entities[key]);
+        });
+        this.stateSubject.next(this.status);
+      }),
+      // shareReplay(),
+      publishReplay(1),
+      refCount()
+    );
+
+    this.formStateComponent$.subscribe();
   }
 
 
@@ -166,3 +173,11 @@ export const stateValidator: ValidatorFn = (group: FormGroup): ValidationErrors 
 
   return null;
 };
+
+function stateGroupFactory(state: RawState): FormGroup {
+  return new FormGroup({
+    id: new FormControl(state.id),
+    state: new FormControl(state.state),
+    description: new FormControl(state.description)
+  });
+}

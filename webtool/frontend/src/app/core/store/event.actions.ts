@@ -11,7 +11,8 @@ export enum EventActionTypes {
   UpdateEvents = '[Event] Update Events',
   DeleteEvent = '[Event] Delete Event',
   DeleteEvents = '[Event] Delete Events',
-  ClearEvents = '[Event] Clear Events'
+  ClearEvents = '[Event] Clear Events',
+  CreateEvent = '[Event] Create Event',
 }
 
 export class AddEvent implements Action {
@@ -66,6 +67,12 @@ export class ClearEvents implements Action {
   readonly type = EventActionTypes.ClearEvents;
 }
 
+export class CreateEvent implements Action {
+  readonly type = EventActionTypes.CreateEvent;
+
+  constructor(public payload: { id: number }) {}
+}
+
 export type EventActions =
  AddEvent
  | UpsertEvent
@@ -75,4 +82,5 @@ export type EventActions =
  | UpdateEvents
  | DeleteEvent
  | DeleteEvents
- | ClearEvents;
+ | ClearEvents
+ | CreateEvent;

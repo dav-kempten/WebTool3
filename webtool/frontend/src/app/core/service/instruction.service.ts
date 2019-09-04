@@ -91,4 +91,9 @@ export class InstructionService {
       refCount()
     );
   }
+
+  cloneInstruction(id: number): Observable<Instruction> {
+    console.log('Clone Instruction', id);
+    return of({id : 0} as Instruction);
+  }
 }

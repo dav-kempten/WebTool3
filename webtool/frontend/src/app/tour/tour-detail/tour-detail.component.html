@@ -1,38 +1,315 @@
+<ng-container *ngIf="tourGroup$ | async as tourGroup else loading">
 <h1>Tour #{{tourId$ | async}}</h1>
-<form [formGroup]="tourForm">
-<p><avk-date formControlName="deadline"
+<p>{{tourGroup.value | json}}</p>
+
+<form [formGroup]="tourGroup">
+  <!--Guide, Kosten, Einnahmen-->
+  <div class="p-grid">
+      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+        <avk-guide
+            formControlName="guideId"
+            id="g1"
+            label="Trainer"
+            [nameIdList]="tourGroup.get('teamIds').value"
+            required
+        ></avk-guide>
+      </div>
+      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+        <input id="costs" placeholder="Kosten" type="text" style='width:100%'
+               pInputText>
+      </div>
+      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+        <input id="revenue" placeholder="Einnahmen" type="text" style='width:100%'
+               pInputText>
+      </div>
+  </div>
+
+  <!--Team, LadiesOnly, Bike/Bahn, LEA-->
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+      <avk-team
+          formControlName="teamIds"
+          [nameId]="tourGroup.get('guideId').value"
+          id="g2"
+          label="Team"
+      ></avk-team>
+    </div>
+    <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
+      <p-checkbox
+          [formControl]="tourGroup.get('ladiesOnly')"
+          label="LadiesOnly"
+          binary="true"
+      ></p-checkbox>
+    </div>
+    <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
+      <p-checkbox
+          [formControl]="tourGroup.get('bikeTrain')"
+          label="Bike/Bahn"
+          binary="true"
+      ></p-checkbox>
+    </div>
+    <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
+      <p-checkbox
+          [formControl]="tourGroup.get('lowEmissionAdventure')"
+          label="LEA"
+          binary="true"
+      ></p-checkbox>
+    </div>
+  </div>
+
+  <!--Buchungscode, Status, Hauptkategorie-->
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <input formControlName="reference" id="reference" placeholder="Buchungsnummer" type="text" style='width:100%'
+             readonly pInputText>
+    </div>
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <avk-dropdown formControlName="stateId" id="stateId"></avk-dropdown>
+    </div>
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+        <avk-categoryselect
+            formControlName="categoryId"
+            id="categoryId">
+        </avk-categoryselect>
+    </div>
+  </div>
+
+  <!--Nebenkategorie, Technik, Ausdauer-->
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+    </div>
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+    </div>
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+    </div>
+  </div>
+
+  <!--Kurztitel, Langtitel-->
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <input formControlName="shortTitle" id="shortTitle" placeholder="Kurztitel" type="text" style='width:100%'
+             pInputText>
+    </div>
+    <div class="p-col-12 p-sm-8 p-md-8 p-lg-8">
+      <input formControlName="longTitle" id="longTitle" placeholder="Langtitel" type="text" style='width:100%'
+             pInputText>
+    </div>
+  </div>
+
+  <!--Beschreibung (Info)-->
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+      <textarea
+          [rows]="5"
+          pInputTextarea
+          formControlName="info"
+          id="info"
+          placeholder="Beschreibung"
+          autoResize="autoResize"
+          style='width:100%'
+      ></textarea>
+    </div>
+  </div>
+
+  <!--Voraussetzung, Materialservice, Ausrüstung, Zusatzausrüstung-->
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <avk-multiselect
+          formControlName="preconditionId"
+          choice="requirement"
+          label="Voraussetzungen"
+      ></avk-multiselect>
+    </div>
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <p-checkbox
+          [formControl]="tourGroup.get('equipmentService')"
+          label="Materialservice"
+          binary="true"
+      ></p-checkbox>
+    </div>
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <avk-multiselect
+          formControlName="equipmentIds"
+          choice="equipment"
+          label="Ausrüstung"
+      ></avk-multiselect>
+    </div>
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <textarea
+          [rows]="2"
+          pInputTextarea
+          formControlName="miscEquipment"
+          id="miscEquipmentTopic"
+          readonly
+          placeholder="Weitere Ausrüstung"
+          autoResize="autoResize"
+          style='width:100%'
+      ></textarea>
+    </div>
+  </div>
+
+  <!--Teilnehmer, Besondere Vorraussetzungen-->
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <avk-membernumber
+          formControlName="minQuantity"
+          label="Mindestens"
+          id="m1"
+          [maxMember]="tourGroup.get('maxQuantity').value"
+      ></avk-membernumber>
+    </div>
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <avk-membernumber
+          formControlName="maxQuantity"
+          label="Maximal"
+          id="m2"
+          [minMember]="tourGroup.get('minQuantity').value"
+      ></avk-membernumber>
+    </div>
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+        <textarea
+            [rows]="3"
+            pInputTextarea
+            formControlName="preconditions"
+            id="preconditions"
+            placeholder="Spezielle Voraussetzungen (z.B. Trittsicherheit)"
+            autoResize="autoResize"
+            style='width:100%'
+        ></textarea>
+    </div>
+  </div>
+
+  <!--Datum (Deadline, Preliminary, Start, End)-->
+  <div class="p-grid">
+      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+        <avk-date formControlName="deadline"
              id="d1" label="Anmeldung"
-             [optMax]="preliminary.value"
+             [optMax]="tourGroup.get('preliminary').value"
              [optMaxInclude]="true"
-             [max]="tourStart.value"
+             [max]="tourGroup.get('tourstart').value"
              required
-></avk-date></p>
-<p><avk-date formControlName="preliminary"
+        ></avk-date>
+      </div>
+      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+        <avk-date formControlName="preliminary"
              id="d2" label="Besprechung"
-             [min]="deadline.value"
+             [min]="tourGroup.get('deadline').value"
              [minInclude]="true"
-             [max]="tourStart.value"
-></avk-date></p>
-<p><avk-date formControlName="tourStart"
+             [max]="tourGroup.get('tourstart').value"
+        ></avk-date>
+      </div>
+    </div>
+    <div class="p-grid">
+      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+        <avk-date formControlName="tourstart"
              id="d3" label="Start"
-             [min]="deadline.value"
-             [optMin]="preliminary.value"
-             [max]="tourEnd.value"
+             [min]="tourGroup.get('deadline').value"
+             [optMin]="tourGroup.get('preliminary').value"
+             [max]="tourGroup.get('tourend').value"
              [maxInclude]="true"
              required>
-></avk-date></p>
-<p><avk-date formControlName="tourEnd"
+        ></avk-date>
+      </div>
+      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+        <avk-date formControlName="tourend"
              id="d4" label="Ende"
-             [min]="tourStart.value"
+             [min]="tourGroup.get('tourstart').value"
              [minInclude]="true"
-></avk-date></p>
-</form>
-<p>{{deadline.value}} &lt;= [{{preliminary.value}}] &lt; {{tourStart.value}} &lt;= [{{tourEnd.value}}]</p>
-<p>{{tourForm.value | json}}</p>
+        ></avk-date>
+      </div>
+  </div>
+
+  <!--Treffpunkt, Startpunkt, Übernachtungsorte-->
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <input id="meetingPlace" placeholder="Treffpunkt"
+             type="text" style="width:100%" pInputText>
+    </div>
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <input id="startingPlace" placeholder="Startpunkt"
+             type="text" style="width:100%" pInputText>
+    </div>
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <input id="sleepOver" placeholder="Übernachtungsorte"
+             type="text" style="width:100%" pInputText>
+    </div>
+  </div>
+
+  <!--Alpinshuttle, Strecke, Fahrtkosten, Zusatzkosten, Anzahlung-->
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
+      <p-checkbox
+          label="Alpinshuttle"
+          binary="true"
+      ></p-checkbox>
+    </div>
+    <div class="p-col-12 p-sm-1 p-md-1 p-lg-1">
+      <input id="strecke" placeholder="Strecke"
+             type="text" style="width:100%" pInputText>
+    </div>
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <div class="ui-inputgroup">
+        <span class="ui-inputgroup-addon">Fahrt</span>
+        <input id="rideCosts" placeholder="Fahrtkosten" type="number" min="0"
+             pInputText>
+        <span class="ui-inputgroup-addon">€</span>
+      </div>
+    </div>
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <div class="ui-inputgroup">
+        <span class="ui-inputgroup-addon">Zusatz</span>
+        <input id="extraCosts" placeholder="Zusatzkosten" type="number" min="0"
+             pInputText>
+        <span class="ui-inputgroup-addon">€</span>
+      </div>
+    </div>
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <div class="ui-inputgroup">
+        <span class="ui-inputgroup-addon">Anzahlung</span>
+        <input id="deposit" placeholder="Anzahlung" type="number" min="0"
+             pInputText>
+        <span class="ui-inputgroup-addon">€</span>
+      </div>
+    </div>
+  </div>
+
+  <!--Teilnehmergebühr-->
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <div class="ui-inputgroup">
+        <span class="ui-inputgroup-addon">TN-Gebühr</span>
+        <input formControlName="admission" id="admission" placeholder="Teilnehmergebühr" type="number" min="0"
+             pInputText>
+        <span class="ui-inputgroup-addon">€</span>
+      </div>
+    </div>
+  </div>
+
+  <!--Bemerkung-->
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+      <textarea
+          [rows]="3"
+          pInputTextarea
+          placeholder="Bemerkungen"
+          autoResize="autoResize"
+          style='width:100%'
+      ></textarea>
+    </div>
+  </div>
+
+<p>{{tourGroup.get('deadline').value}} &lt;= [{{tourGroup.get('preliminary').value}}] &lt;
+   {{tourGroup.get('tourstart').value}} &lt;= [{{tourGroup.get('tourend').value}}]</p>
 <ul>
-  <li>Valid: {{tourForm.valid}}</li>
-  <li>Dirty: {{tourForm.dirty}}</li>
-  <li>Pristine: {{tourForm.pristine}}</li>
-  <li>Touched: {{tourForm.touched}}</li>
+  <li>Valid: {{tourGroup.valid}}</li>
+  <li>Dirty: {{tourGroup.dirty}}</li>
+  <li>Pristine: {{tourGroup.pristine}}</li>
+  <li>Touched: {{tourGroup.touched}}</li>
 </ul>
-<p><a routerLink="../">Zurück</a></p>
+</form>
+
+</ng-container>
+
+<ng-template #loading>Bitte kurz warten!</ng-template>
+
+<a routerLink="../"><p-button label="Zurück"></p-button></a>
