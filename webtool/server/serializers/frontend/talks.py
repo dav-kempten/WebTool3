@@ -13,11 +13,9 @@ class TalkListSerializer(serializers.ModelSerializer):
     reference = serializers.CharField(source='talk.reference.__str__', read_only=True)
     title = serializers.SerializerMethodField()
     startDate = serializers.DateField(source='talk.start_date', read_only=True)
-    speaker = serializers.PrimaryKeyRelatedField(source='speaker', read_only=True)
-    minQuantity = serializers.IntegerField(source='min_quantity', read_only=True)
-    maxQuantity = serializers.IntegerField(source='max_quantity', read_only=True)
-    curQuantity = serializers.IntegerField(source='cur_quantity', read_only=True)
-    tariffs = serializers.PrimaryKeyRelatedField(source='tariffs', read_only=True)
+    speaker = serializers.CharField(default=None, read_only=True)
+    tariffs = serializers.IntegerField(source='tariffs', read_only=True)
+    stateId = serializers.PrimaryKeyRelatedField(source='state_id', read_only=True)
     url = serializers.SerializerMethodField()
 
     class Meta:
@@ -28,7 +26,6 @@ class TalkListSerializer(serializers.ModelSerializer):
             'title',
             'startDate',
             'speaker',
-            'minQuantity', 'maxQuantity', 'curQuantity',
             'tariffs',
             'url'
         )
@@ -43,17 +40,26 @@ class TalkListSerializer(serializers.ModelSerializer):
 class TalkSerializer(serializers.ModelSerializer):
 
     id = serializers.PrimaryKeyRelatedField(source='pk', queryset=Talk.objects.all(), default=None, allow_null=True)
-    reference = serializers.CharField(source='instruction.reference.__str__', read_only=True)
-
+    reference = serializers.CharField(source='talk.reference.__str__', read_only=True)
+    title = serializers.SerializerMethodField()
+    startDate = serializers.DateField(source='talk.start_date', read_only=True)
     speaker = serializers.CharField(default=None, allow_null=True)
-
+    admission = serializers.IntegerField(default=None, allow_null=True)
+    minQuantity = serializers.IntegerField(source='min_quantity', read_only=True)
+    maxQuantity = serializers.IntegerField(source='max_quantity', read_only=True)
+    curQuantity = serializers.IntegerField(source='cur_quantity', read_only=True)
+    tariffs = serializers.IntegerField(source='tariffs', read_only=True)
     stateId = serializers.PrimaryKeyRelatedField(source='state', required=False, queryset=State.objects.all())
 
     class Meta:
         model = Talk
         fields = (
             'id', 'reference',
+            'title',
+            'startDate',
             'speaker',
+            'minQuantity', 'maxQuantity', 'curQuantity',
+            'tariffs',
             'stateId',
         )
 
@@ -101,6 +107,11 @@ class TalkSerializer(serializers.ModelSerializer):
         if talk_data is not None:
             talk = Event.objects.get(pk=talk_data.get('pk'))
             update_event(talk, talk_data, self.context)
+        instance.title = validated_data.get('title', instance.title)
+        instance.admission = validated_data.get('admission', instance.admission)
+        instance.min_quantity = validated_data.get('min_quantity', instance.min_quantity)
+        instance.max_quantity = validated_data.get('max_quantity', instance.max_quantity)
+        instance.tariffs = validated_data.get('tariffs', instance.tariffs)
         instance.state = validated_data.get('state', instance.state)
         instance.save()
         return instance
