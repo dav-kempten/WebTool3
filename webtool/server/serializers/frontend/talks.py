@@ -5,7 +5,8 @@ from server.models import (
     Talk, State, get_default_state, Event
 )
 
-from server.serializers.frontend.core import create_event, update_event
+from server.serializers.frontend.core import create_event, update_event, EventSerializer
+
 
 class TalkListSerializer(serializers.ModelSerializer):
 
@@ -41,23 +42,24 @@ class TalkSerializer(serializers.ModelSerializer):
 
     id = serializers.PrimaryKeyRelatedField(source='pk', queryset=Talk.objects.all(), default=None, allow_null=True)
     reference = serializers.CharField(source='talk.reference.__str__', read_only=True)
-    title = serializers.SerializerMethodField()
+    talk = EventSerializer(default={})
     startDate = serializers.DateField(source='talk.start_date', read_only=True)
     speaker = serializers.CharField(default=None, allow_null=True)
     admission = serializers.IntegerField(default=None, allow_null=True)
     minQuantity = serializers.IntegerField(source='min_quantity', read_only=True)
     maxQuantity = serializers.IntegerField(source='max_quantity', read_only=True)
     curQuantity = serializers.IntegerField(source='cur_quantity', read_only=True)
-    tariffs = serializers.IntegerField(source='tariffs', read_only=True)
+    tariffs = serializers.IntegerField(read_only=True)
     stateId = serializers.PrimaryKeyRelatedField(source='state', required=False, queryset=State.objects.all())
 
     class Meta:
         model = Talk
         fields = (
             'id', 'reference',
-            'title',
+            'talk',
             'startDate',
             'speaker',
+            'admission',
             'minQuantity', 'maxQuantity', 'curQuantity',
             'tariffs',
             'stateId',
