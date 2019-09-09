@@ -7,6 +7,8 @@ import {Tour} from '../../core/store/tour.model';
 import {NamesRequested} from '../../core/store/name.actions';
 import {ValuesRequested} from '../../core/store/value.actions';
 import {CalendarRequested} from '../../core/store/calendar.actions';
+import {Category} from '../../model/value';
+import {Event} from '../../model/event';
 
 @Component({
   selector: 'avk-tour-detail',
@@ -120,5 +122,43 @@ export function tourGroupFactory(tour: Tour): FormGroup {
     equipmentIds: new FormControl(tour.equipmentIds),
     equipmentService: new FormControl(tour.equipmentService),
     preconditions: new FormControl(tour.preconditions)
+  });
+}
+
+function categoryGroupFactory(category: Category): FormGroup {
+  return new FormGroup({
+    id: new FormControl(category.id),
+    code: new FormControl(category.code),
+    name: new FormControl(category.name),
+    tour: new FormControl(category.tour),
+    talk: new FormControl(category.talk),
+    instruction: new FormControl(category.instruction),
+    collective: new FormControl(category.collective),
+    winter: new FormControl(category.winter),
+    summer: new FormControl(category.summer),
+    indoor: new FormControl(category.indoor),
+  });
+}
+
+function eventGroupFactory(event: Event): FormGroup {
+  return new FormGroup({
+    id: new FormControl(event.id),
+    title: new FormControl(event.title),
+    name: new FormControl(event.name),
+    description: new FormControl(event.description),
+    startDate: new FormControl(event.startDate),
+    startTime: new FormControl(event.startTime),
+    approximateId: new FormControl(event.approximateId),
+    endDate: new FormControl(event.endDate),
+    rendezvous: new FormControl(event.rendezvous),
+    location: new FormControl(event.location),
+    reservationService: new FormControl(event.reservationService),
+    source: new FormControl(event.source),
+    link: new FormControl(event.link),
+    map: new FormControl(event.map),
+    distal: new FormControl(event.distal),
+    distance: new FormControl({value: event.distance, disabled: !event.distal}),
+    publicTransport: new FormControl(event.publicTransport),
+    shuttleService: new FormControl(event.shuttleService)
   });
 }
