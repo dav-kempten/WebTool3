@@ -160,19 +160,22 @@ class TourSerializer(serializers.ModelSerializer):
             qualifications = validated_data.pop('qualifications')
             equipments = validated_data.pop('equipments')
             state = validated_data.pop('state', get_default_state())
-            category = validated_data.reference.category
-            season = category.seasons.get(current=True)
-            tour_event = create_event(tour_data, dict(category=category, season=season, type=dict(tour=True)))
-            tour = Tour.objects.create(tour=tour_event, state=state, **validated_data)
+            # category = validated_data.pop('categories')
+            season = get_default_season()
+            # season = category.seasons.get(current=True)
+            tour_event = create_event(tour_data, dict(season=season, type=dict(meeting=True)))
+            # tour_event = create_event(tour_data, dict(category=category, season=season, type=dict(tour=True)))
+
+            deadline_event = create_event(deadline_data, dict(season=season, type=dict(deadline=True)))
+            preliminary_event = create_event(preliminary_data, dict(season=season, type=dict(preliminary=True)))
+
+            tour = Tour.objects.create(tour=tour_event, deadline=deadline_event, preliminary=preliminary_event,
+                                       state=state, **validated_data)
+
             tour.team = team
             tour.qualifications = qualifications
             tour.equipments = equipments
-            if deadline_data:
-                deadline_event = create_event(deadline_data, dict(category=None, type=dict(deadline=True)))
-                tour.deadline = deadline_event
-            if preliminary_data:
-                preliminary_event = create_event(preliminary_data, dict(category=None, type=dict(preliminary=True)))
-                tour.preliminary = preliminary_event
+
             return tour
 
     def update(self, instance, validated_data):
