@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.reverse import reverse
 
 from server.models import (
-    Talk, State, get_default_state, Event
+    Talk, State, get_default_state, Event, get_default_season
 )
 
 from server.serializers.frontend.core import create_event, update_event, EventSerializer
@@ -96,11 +96,14 @@ class TalkSerializer(serializers.ModelSerializer):
             talk_data = validated_data.pop('talk')
             speaker = validated_data.pop('speaker')
             admission = validated_data.pop('admission')
+            # max_quantity = validated_data.pop('max_quantity')
             state = validated_data.pop('state', get_default_state())
-            talk_event = create_event(talk_data, dict(type=dict(talk=True)))
+            season = get_default_season()
+            talk_event = create_event(talk_data, dict(season=season, type=dict(talk=True)))
             talk = Talk.objects.create(talk=talk_event, state=state, **validated_data)
             talk.speaker = speaker
             talk.admission = admission
+            # talk.max_quantity = max_quantity
             return talk
 
     def update(self, instance, validated_data):

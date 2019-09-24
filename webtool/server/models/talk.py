@@ -46,6 +46,7 @@ class Talk(TimeMixin, StateMixin, ChapterMixin, models.Model):
 
     max_quantity = models.PositiveIntegerField(
         'Max. Tln',
+        blank=True, default=0,
         help_text="Wieviel Teilnehemr können maximal teilnehmen",
     )
 
