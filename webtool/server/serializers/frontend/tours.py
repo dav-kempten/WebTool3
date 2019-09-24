@@ -59,7 +59,9 @@ class TourSerializer(serializers.ModelSerializer):
     teamIds = serializers.PrimaryKeyRelatedField(
         source='team', many=True, default=[], queryset=Guide.objects.all()
     )
-
+    categoryIds = serializers.PrimaryKeyRelatedField(
+        source='categories', many=True, default=[], queryset=Category.objects.all()
+    )
     tour = EventSerializer(default={})
     deadline = EventSerializer(default={})
     preliminary = EventSerializer(default={})
@@ -97,7 +99,7 @@ class TourSerializer(serializers.ModelSerializer):
         model = Tour
         fields = (
             'id', 'reference',
-            'guideId', 'teamIds',
+            'guideId', 'teamIds', 'categoryIds',
             'tour', 'deadline', 'preliminary',
             'info',
             'lowEmissionAdventure', 'ladiesOnly', 'youthOnTour',
@@ -160,11 +162,10 @@ class TourSerializer(serializers.ModelSerializer):
             qualifications = validated_data.pop('qualifications')
             equipments = validated_data.pop('equipments')
             state = validated_data.pop('state', get_default_state())
-            # category = validated_data.pop('categories')
+            categories = validated_data.pop('categories')
             season = get_default_season()
             # season = category.seasons.get(current=True)
-            tour_event = create_event(tour_data, dict(season=season, type=dict(meeting=True)))
-            # tour_event = create_event(tour_data, dict(category=category, season=season, type=dict(tour=True)))
+            tour_event = create_event(tour_data, dict(category=categories[0], season=season, type=dict(tour=True)))
 
             deadline_event = create_event(deadline_data, dict(season=season, type=dict(deadline=True)))
             preliminary_event = create_event(preliminary_data, dict(season=season, type=dict(preliminary=True)))
