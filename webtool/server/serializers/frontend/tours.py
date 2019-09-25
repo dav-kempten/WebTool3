@@ -112,7 +112,6 @@ class TourSerializer(serializers.ModelSerializer):
         )
 
     def validate(self, data):
-        print(self.instance)
         if self.instance is not None:
             # This is the Update case
 
@@ -221,7 +220,5 @@ class TourSerializer(serializers.ModelSerializer):
         instance.max_quantity = validated_data.get('max_quantity', instance.max_quantity)
         instance.state = validated_data.get('state', instance.state)
         instance.save()
+
         return instance
-
-
-
