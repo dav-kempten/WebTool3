@@ -64,7 +64,7 @@ class TourSerializer(serializers.ModelSerializer):
     )
     tour = EventSerializer(default={})
     deadline = EventSerializer(default={})
-    preliminary = EventSerializer(default={})
+    preliminary = EventSerializer(default={}, allow_null=True)
     info = serializers.CharField(default='', allow_blank=True)
     lowEmissionAdventure = serializers.BooleanField(source='tour.lea', default=False)
     ladiesOnly = serializers.BooleanField(source='ladies_only', default=False)
@@ -158,6 +158,7 @@ class TourSerializer(serializers.ModelSerializer):
             tour_data = validated_data.pop('tour')
             deadline_data = validated_data.pop('deadline')
             preliminary_data = validated_data.pop('preliminary')
+            info = validated_data.pop('info')
             team = validated_data.pop('team')
             qualifications = validated_data.pop('qualifications')
             equipments = validated_data.pop('equipments')
@@ -168,11 +169,16 @@ class TourSerializer(serializers.ModelSerializer):
             tour_event = create_event(tour_data, dict(category=categories[0], season=season, type=dict(tour=True)))
 
             deadline_event = create_event(deadline_data, dict(season=season, type=dict(deadline=True)))
-            preliminary_event = create_event(preliminary_data, dict(season=season, type=dict(preliminary=True)))
 
-            tour = Tour.objects.create(tour=tour_event, deadline=deadline_event, preliminary=preliminary_event,
-                                       state=state, **validated_data)
+            if not preliminary_data:
+                tour = Tour.objects.create(tour=tour_event, deadline=deadline_event, preliminary=None,
+                                           state=state, **validated_data)
+            else:
+                preliminary_event = create_event(preliminary_data, dict(season=season, type=dict(preliminary=True)))
+                tour = Tour.objects.create(tour=tour_event, deadline=deadline_event, preliminary=preliminary_event,
+                                        state=state, **validated_data)
 
+            tour.info = info
             tour.team = team
             tour.qualifications = qualifications
             tour.equipments = equipments
