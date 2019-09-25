@@ -54,7 +54,7 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
     start_time = models.TimeField(
         'Abreisezeit (Genau)',
         blank=True, null=True,
-        help_text="Je nach Abreisezeit wird eventuell Urlaub benötgit",
+        help_text="Je nach Abreisezeit wird eventuell Urlaub benötigt",
     )
 
     # approximate is valid only if start_time is None
