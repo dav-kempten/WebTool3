@@ -16,9 +16,6 @@ class SessionListSerializer(serializers.ModelSerializer):
     startDate = serializers.DateField(source='session.start_date', read_only=True)
     speaker = serializers.CharField(default=None, read_only=True)
     ladiesOnly = serializers.BooleanField(source='ladies_only', read_only=True)
-    winter = serializers.BooleanField(source='session.reference.category.winter', read_only=True)
-    summer = serializers.BooleanField(source='session.reference.category.summer', read_only=True)
-    indoor = serializers.BooleanField(source='session.reference.category.climbing', read_only=True)
     stateId = serializers.PrimaryKeyRelatedField(source='state_id', read_only=True)
     url = serializers.SerializerMethodField()
 
@@ -31,9 +28,6 @@ class SessionListSerializer(serializers.ModelSerializer):
             'startDate',
             'speaker',
             'ladiesOnly',
-            'winter',
-            'summer',
-            'indoor',
             'stateId',
             'url'
         )
@@ -52,18 +46,19 @@ class SessionSerializer(serializers.ModelSerializer):
 
     speaker = serializers.CharField(default=None, allow_null=True)
 
-    collective = serializers.PrimaryKeyRelatedField(queryset=Collective.objects.all())
+    collectiveId = serializers.PrimaryKeyRelatedField(source='collective', queryset=Collective.objects.all())
     session = EventSerializer(default={})
     ladiesOnly = serializers.BooleanField(source='ladies_only', default=False)
-    categoryId = serializers.PrimaryKeyRelatedField(
-        source='category', default=None, allow_null=True, queryset=Category.objects.all()
+    categoryIds = serializers.PrimaryKeyRelatedField(
+        source='categories', many=True, default=[], queryset=Category.objects.all()
     )
-    misc_category = serializers.CharField(default=None, allow_null=True)
+    misc_category = serializers.CharField(default=None, allow_null=True, allow_blank=True)
 
     equipmentIds = serializers.PrimaryKeyRelatedField(
         source='equipments', many=True, default=[], queryset=Equipment.objects.all()
     )
-    miscEquipment = serializers.CharField(source='misc_equipment', max_length=75, default='', allow_blank=True)
+    miscEquipment = serializers.CharField(source='misc_equipment', max_length=75, default='', allow_blank=True,
+                                          allow_null=True)
 
     stateId = serializers.PrimaryKeyRelatedField(source='state', required=False, queryset=State.objects.all())
 
@@ -72,10 +67,10 @@ class SessionSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'reference',
             'speaker',
-            'collective',
+            'collectiveId',
             'session',
             'ladiesOnly',
-            'categoryId', 'misc_category',
+            'categoryIds', 'misc_category',
             'equipmentIds', 'miscEquipment',
             'stateId',
         )
@@ -108,12 +103,13 @@ class SessionSerializer(serializers.ModelSerializer):
         if instance:
             return self.update(instance, validated_data)
         else:
-            event_data = validated_data.pop('session')
+            session_data = validated_data.pop('session')
             equipments = validated_data.pop('equipments')
             state = validated_data.pop('state', get_default_state())
+            collective = validated_data.get('collective')
             category = collective.category
             season = get_default_season()
-            event = create_event(event_data, dict(category=category, season=season, type=dict(collective=True)))
+            event = create_event(session_data, dict(category=category, season=season, type=dict(collective=True)))
             session = Session.objects.create(session=event, state=state, **validated_data)
             session.equipments = equipments
             return session
@@ -125,7 +121,6 @@ class SessionSerializer(serializers.ModelSerializer):
             session = Event.objects.get(pk=session_data.get('pk'))
             update_event(session, session_data, self.context)
         instance.ladies_only = validated_data.get('ladies_only', instance.ladies_only)
-        instance.category = validated_data.get('category', instance.category)
         equipments = validated_data.get('equipments')
         if equipments is not None:
             instance.equipments = equipments
