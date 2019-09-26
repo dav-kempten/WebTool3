@@ -3,10 +3,9 @@ from rest_framework import serializers
 from rest_framework.reverse import reverse
 
 from server.models import (
-    Session,
-    Collective, Category, Equipment, State, get_default_state, get_default_season, collective, Event)
-from server.serializers.frontend import EventSerializer
-from server.serializers.frontend.core import create_event, update_event
+    Session, Collective, Category, Equipment, State, Event, get_default_state, get_default_season
+)
+from server.serializers.frontend.core import EventSerializer, create_event, update_event
 
 
 class SessionListSerializer(serializers.ModelSerializer):
