@@ -44,7 +44,7 @@ class SessionSerializer(serializers.ModelSerializer):
     id = serializers.PrimaryKeyRelatedField(source='pk', queryset=Session.objects.all(), default=None, allow_null=True)
     reference = serializers.CharField(source='session.reference.__str__', read_only=True)
 
-    speaker = serializers.CharField(default=None, allow_null=True)
+    speaker = serializers.CharField(default=None, allow_blank=True, allow_null=True)
 
     collectiveId = serializers.PrimaryKeyRelatedField(source='collective', queryset=Collective.objects.all())
     session = EventSerializer(default={})
@@ -103,6 +103,7 @@ class SessionSerializer(serializers.ModelSerializer):
         if instance:
             return self.update(instance, validated_data)
         else:
+            speaker_data = validated_data.pop('speaker')
             session_data = validated_data.pop('session')
             equipments = validated_data.pop('equipments')
             state = validated_data.pop('state', get_default_state())
@@ -110,7 +111,14 @@ class SessionSerializer(serializers.ModelSerializer):
             category = collective.category
             season = get_default_season()
             event = create_event(session_data, dict(category=category, season=season, type=dict(collective=True)))
-            session = Session.objects.create(session=event, state=state, **validated_data)
+
+            if not speaker_data:
+                # speaker = collective.managers
+                speaker = ""
+            else:
+                speaker = speaker_data
+
+            session = Session.objects.create(session=event, state=state, speaker=speaker, **validated_data)
             session.equipments = equipments
             return session
 

@@ -110,7 +110,7 @@ class Session(TimeMixin, GuidedEventMixin, RequirementMixin, EquipmentMixin, Sta
         max_length=125,
         blank=True, default='',
         help_text="Name der/des Referenten",
-
+        null=True,
     )
 
     portal = models.URLField(
