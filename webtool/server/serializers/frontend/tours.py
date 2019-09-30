@@ -166,6 +166,9 @@ class TourSerializer(serializers.ModelSerializer):
             season = get_default_season()
             # season = category.seasons.get(current=True)
 
+            if not 'start_date' in tour_data:
+                raise serializers.ValidationError("Tour 'start_date' have to be defined")
+
             if len(categories) > 0:
                 tour_event = create_event(tour_data, dict(category=categories[0], season=season, type=dict(tour=True)))
             else:
