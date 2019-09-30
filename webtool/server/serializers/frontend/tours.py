@@ -59,10 +59,12 @@ class TourSerializer(serializers.ModelSerializer):
     teamIds = serializers.PrimaryKeyRelatedField(
         source='team', many=True, default=[], queryset=Guide.objects.all()
     )
-
+    categoryIds = serializers.PrimaryKeyRelatedField(
+        source='categories', many=True, default=[], queryset=Category.objects.all()
+    )
     tour = EventSerializer(default={})
     deadline = EventSerializer(default={})
-    preliminary = EventSerializer(default={})
+    preliminary = EventSerializer(default={}, allow_null=True)
     info = serializers.CharField(default='', allow_blank=True)
     lowEmissionAdventure = serializers.BooleanField(source='tour.lea', default=False)
     ladiesOnly = serializers.BooleanField(source='ladies_only', default=False)
@@ -97,7 +99,7 @@ class TourSerializer(serializers.ModelSerializer):
         model = Tour
         fields = (
             'id', 'reference',
-            'guideId', 'teamIds',
+            'guideId', 'teamIds', 'categoryIds',
             'tour', 'deadline', 'preliminary',
             'info',
             'lowEmissionAdventure', 'ladiesOnly', 'youthOnTour',
@@ -110,7 +112,6 @@ class TourSerializer(serializers.ModelSerializer):
         )
 
     def validate(self, data):
-        print(self.instance)
         if self.instance is not None:
             # This is the Update case
 
@@ -156,23 +157,41 @@ class TourSerializer(serializers.ModelSerializer):
             tour_data = validated_data.pop('tour')
             deadline_data = validated_data.pop('deadline')
             preliminary_data = validated_data.pop('preliminary')
+            info = validated_data.pop('info')
             team = validated_data.pop('team')
             qualifications = validated_data.pop('qualifications')
             equipments = validated_data.pop('equipments')
             state = validated_data.pop('state', get_default_state())
-            category = validated_data.reference.category
-            season = category.seasons.get(current=True)
-            tour_event = create_event(tour_data, dict(category=category, season=season, type=dict(tour=True)))
-            tour = Tour.objects.create(tour=tour_event, state=state, **validated_data)
+            categories = validated_data.pop('categories')
+            season = get_default_season()
+            # season = category.seasons.get(current=True)
+
+            if not 'start_date' in tour_data:
+                raise serializers.ValidationError("Tour 'start_date' have to be defined")
+
+            if len(categories) > 0:
+                tour_event = create_event(tour_data, dict(category=categories[0], season=season, type=dict(tour=True)))
+            else:
+                tour_event = create_event(tour_data, dict(season=season, type=dict(tour=True)))
+
+            if not deadline_data:
+                raise serializers.ValidationError("Deadline have to be defined")
+
+            deadline_event = create_event(deadline_data, dict(season=season, type=dict(deadline=True)))
+
+            if not preliminary_data:
+                tour = Tour.objects.create(tour=tour_event, deadline=deadline_event, preliminary=None,
+                                           state=state, **validated_data)
+            else:
+                preliminary_event = create_event(preliminary_data, dict(season=season, type=dict(preliminary=True)))
+                tour = Tour.objects.create(tour=tour_event, deadline=deadline_event, preliminary=preliminary_event,
+                                        state=state, **validated_data)
+
+            tour.info = info
             tour.team = team
             tour.qualifications = qualifications
             tour.equipments = equipments
-            if deadline_data:
-                deadline_event = create_event(deadline_data, dict(category=None, type=dict(deadline=True)))
-                tour.deadline = deadline_event
-            if preliminary_data:
-                preliminary_event = create_event(preliminary_data, dict(category=None, type=dict(preliminary=True)))
-                tour.preliminary = preliminary_event
+
             return tour
 
     def update(self, instance, validated_data):
@@ -211,7 +230,5 @@ class TourSerializer(serializers.ModelSerializer):
         instance.max_quantity = validated_data.get('max_quantity', instance.max_quantity)
         instance.state = validated_data.get('state', instance.state)
         instance.save()
+
         return instance
-
-
-

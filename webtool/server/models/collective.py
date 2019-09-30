@@ -27,6 +27,7 @@ class Collective(SeasonsMixin, SectionMixin, TimeMixin, DescriptionMixin, models
         primary_key=True,
         verbose_name='Kategorie',
         related_name='category_collective',
+        on_delete=models.PROTECT,
     )
 
     managers = models.ManyToManyField(
@@ -109,7 +110,7 @@ class Session(TimeMixin, GuidedEventMixin, RequirementMixin, EquipmentMixin, Sta
         max_length=125,
         blank=True, default='',
         help_text="Name der/des Referenten",
-
+        null=True,
     )
 
     portal = models.URLField(
