@@ -165,7 +165,11 @@ class TourSerializer(serializers.ModelSerializer):
             categories = validated_data.pop('categories')
             season = get_default_season()
             # season = category.seasons.get(current=True)
-            tour_event = create_event(tour_data, dict(category=categories[0], season=season, type=dict(tour=True)))
+
+            if len(categories) > 0:
+                tour_event = create_event(tour_data, dict(category=categories[0], season=season, type=dict(tour=True)))
+            else:
+                tour_event = create_event(tour_data, dict(season=season, type=dict(tour=True)))
 
             deadline_event = create_event(deadline_data, dict(season=season, type=dict(deadline=True)))
 
