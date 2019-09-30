@@ -171,6 +171,9 @@ class TourSerializer(serializers.ModelSerializer):
             else:
                 tour_event = create_event(tour_data, dict(season=season, type=dict(tour=True)))
 
+            if not deadline_data:
+                raise serializers.ValidationError("Deadline have to be defined")
+
             deadline_event = create_event(deadline_data, dict(season=season, type=dict(deadline=True)))
 
             if not preliminary_data:
