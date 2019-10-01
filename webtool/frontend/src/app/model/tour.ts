@@ -1,33 +1,44 @@
-export interface Tour {
-  season: Season;
-  deadline: string;
-  preliminary: string | null;
-  info: string;
-  tour: string;
+import {Event} from './event';
+
+export interface TourSummary {
+  id: number;
+  reference: string;
+  title: string;
+  startDate: string;
   guideId: number;
-  preconditions: string;
   ladiesOnly: boolean;
+  winter: boolean;
+  summer: boolean;
+  youthOnTour: boolean;
+  minQuantity: number;
+  maxQuantity: number;
+  curQuantity: number;
+  stateId: number;
+  url: string;
+}
+
+export interface Tour {
+  id: number;
+  reference: string;
+  guideId: number | null;
+  teamIds: number[];
+  categoryIds: number[];
+  tour: Event;
+  deadline: Event;
+  preliminary: Event | null;
+  lowEmissionAdventure: boolean;
+  ladiesOnly: boolean;
+  preconditions: string;
+  equipmentIds: number[];
   miscEquipment: string;
+  equipmentService: boolean;
   admission: string;
   advances: string;
   advancesInfo: string;
   extraCharges: string;
+  extraChargesInfo: string;
   minQuantity: number;
   maxQuantity: number;
   curQuantity?: number;
-  miscCategory: string;
-  portal: string;
-  calcBudget: string;
-  realCosts: string;
-  budgetInfo: string;
-  message: string;
-  comment: string;
   stateId: number;
-  updated: string;
-  deprecated: boolean;
-}
-
-enum Season {
-  winter = "winter",
-  summer = "summer"
 }
