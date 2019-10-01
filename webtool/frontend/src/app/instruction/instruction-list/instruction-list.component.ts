@@ -132,7 +132,7 @@ export class InstructionListComponent implements OnInit, OnDestroy {
     this.activeItem$.subscribe();
     this.instructions$.subscribe();
 
-    }
+  }
 
   ngOnDestroy(): void {
     this.destroySubject.next();
