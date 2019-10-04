@@ -1,8 +1,62 @@
-<h1>Touren</h1>
-<ul>
-  <li><a routerLink="/tours/1">Tour #1</a></li>
-  <li><a routerLink="/tours/2">Tour #2</a></li>
-  <li><a routerLink="/tours/3">Tour #3</a></li>
-  <li><a routerLink="/tours/4">Tour #4</a></li>
-  <li><a routerLink="/tours/5">Tour #5</a></li>
-</ul>
+<ng-container *ngIf="(activeItem$ | async) as activeItem else loading">
+  <p-tabMenu [model]="menuItems" [activeItem]="{}"></p-tabMenu>
+  <p-button label="Tour hinzufügen" (onClick)="handleClick()" *ngIf="this.userValState >= 3"></p-button>
+  <ng-container *ngIf="(tours$ | async) as tours">
+    <p-table [value]="tours" selectionMode="single" (selectionChange)="selectTour($event)">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Buchungscode</th>
+          <th>Datum</th>
+          <th>Bezeichnung</th>
+          <th>Tourenleiter</th>
+          <th>Belegung (Min|Aktuell|Max)</th>
+          <th>Kursaktionen</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-tour>
+        <tr [pSelectableRow]="tour">
+          <td>{{tour.reference}}</td>
+          <td>{{tour.startDate | date}}</td>
+          <td>{{tour.title}}</td>
+          <td>{{tour.guideId | name}}</td>
+          <td>{{tour.minQuantity}} | {{tour.curQuantity}} | {{tour.maxQuantity}}</td>
+          <td>
+            <button pButton type="button" label="Klonen" class="ui-button-success"
+                    (click)="clone(tour.id)" *ngIf="this.userValState >= 3"></button>
+            <button pButton type="button" label="Löschen" class="ui-button-warning"
+                    (click)="delete(tour.id)"
+                    *ngIf="this.userValState >= 3 && this.finishedTours.indexOf(tour.stateId) === -1"></button>
+            <button pButton type="button" label="Deaktivieren" class="ui-button-info"
+                    (click)="deactivate(tour.id)" *ngIf="this.userValState >= 3"></button>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </ng-container>
+
+  <!--  Beginn Dialogfenster  -->
+  <form [formGroup]="createTour">
+  <p-dialog header="Neue Tour" [modal]="true" [(visible)]="display" [style]="{width: '600px'}">
+    <div class="p-grid">
+      <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+        <avk-categoryselect
+            formControlName="categoryIds"
+            id="categoryIds"
+            [seasonSpecific]="this.partNewTour.value"
+            [topicSpecific]="'tour'">
+        </avk-categoryselect>
+      </div>
+    </div>
+      <div class="p-grid">
+      <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+        <avk-date formControlName="startDate"
+                  id="dbeginn" label="Start"
+        ></avk-date>
+      </div>
+    </div>
+    <p-button label="Bestätigen" (onClick)="confirmClick()"></p-button>
+  </p-dialog>
+  </form>
+</ng-container>
+<ng-template #loading>Bitte kurz warten!</ng-template>
+
