@@ -47,7 +47,7 @@ export class TourListComponent implements OnInit, OnDestroy {
     {label: 'Alle Touren', routerLink: ['/tours']},
     {label: 'Sommertouren', url: '/tours#summer'},
     {label: 'Wintertouren', url: '/tours#winter'},
-    {label: 'Jugendtouren', url: '/tours#youthOnTour'},
+    {label: 'Jugendtouren', url: '/tours#youth'},
   ];
 
   constructor(private store: Store<AppState>, private router: Router, private authService: AuthService) {
@@ -72,8 +72,6 @@ export class TourListComponent implements OnInit, OnDestroy {
       }),
     ).subscribe();
 
-    console.log('valState');
-
     this.part$ = this.store.pipe(
       takeUntil(this.destroySubject),
       select(selectRouterFragment),
@@ -85,7 +83,7 @@ export class TourListComponent implements OnInit, OnDestroy {
       takeUntil(this.destroySubject),
       map(part => {
         switch (part) {
-          case 'youthOnTour':
+          case 'youth':
             return this.menuItems[3];
           case 'summer':
             return this.menuItems[1];
@@ -99,17 +97,13 @@ export class TourListComponent implements OnInit, OnDestroy {
       refCount()
     );
 
-    console.log('activeItem');
-
     this.tours$ = this.part$.pipe(
       takeUntil(this.destroySubject),
       flatMap( part =>
         this.store.pipe(
-          select(getTourSummaries), /* Finde den Fehler */
+          select(getTourSummaries),
           tap(tours => {
-            console.log('tapTours');
             if (!tours || !tours.length) {
-              console.log('RequestTourSummaries');
               this.store.dispatch(new RequestTourSummaries());
             }
           }),
@@ -117,7 +111,7 @@ export class TourListComponent implements OnInit, OnDestroy {
             tours.filter(tour =>
               (part === 'winter' && tour.winter) ||
               (part === 'summer' && tour.summer) ||
-              (part === 'youthOnTour' && tour.youthOnTour) ||
+              (part === 'youth' && tour.youthOnTour) ||
               !part
             )
           ),
