@@ -8,6 +8,9 @@ import {getInstructionById} from '../store/instruction.selectors';
 import {RequestInstruction} from '../store/instruction.actions';
 import {getCategoryById} from '../store/value.selectors';
 import {ValuesRequested} from '../store/value.actions';
+import {getTourById} from '../store/tour.selectors';
+import {RequestTour} from '../store/tour.actions';
+
 
 @Component({
   selector: 'avk-breadcrumb',
@@ -72,6 +75,45 @@ export class BreadcrumbComponent implements OnInit {
               }
             );
           }
+          if (part === 'Touren') {
+            this.store.pipe(
+              select(getTourById(id)),
+              tap(tour => {
+                if (!tour) {
+                  this.store.dispatch(new RequestTour({id}));
+                }
+              }),
+              filter(tour => !!tour),
+              first()
+            ).subscribe(
+              tour => {
+                this.store.pipe(
+                  select(getCategoryById(tour.categoryIds[0])),
+                  tap(category => {
+                    if (!category) {
+                      this.store.dispatch(new ValuesRequested());
+                    }
+                  }),
+                  filter(category => !!category),
+                  first()
+                ).subscribe(category => {
+                  if (category.summer) {
+                    breadcrumbs[breadcrumbs.length - 1].label = 'Sommer Touren';
+                    breadcrumbs[breadcrumbs.length - 1].fragment = 'summer';
+                  }
+                  if (category.winter) {
+                    breadcrumbs[breadcrumbs.length - 1].label = 'Winter Touren';
+                    breadcrumbs[breadcrumbs.length - 1].fragment = 'winter';
+                  }
+                  breadcrumbs[breadcrumbs.length - 1].url = '/tours';
+                  breadcrumbs.push({
+                    url: `/tours/${tour.id}`,
+                    label: tour.reference
+                  });
+                });
+              }
+            );
+          }
         }
         if (fragment) {
           const part = breadcrumbs[breadcrumbs.length - 1].label;
@@ -99,6 +141,34 @@ export class BreadcrumbComponent implements OnInit {
                   label: 'Kletterschule',
                   url: '/instructions',
                   fragment: 'indoor'
+                });
+                break;
+            }
+          }
+          if (part === 'Touren') {
+            breadcrumbs[breadcrumbs.length - 1].label = 'Touren';
+            breadcrumbs[breadcrumbs.length - 1].url = '/tours';
+            delete breadcrumbs[breadcrumbs.length - 1].fragment;
+            switch (fragment) {
+              case 'summer':
+                breadcrumbs.push({
+                  label: 'Sommer Touren',
+                  url: '/tours',
+                  fragment: 'summer'
+                });
+                break;
+              case 'winter':
+                breadcrumbs.push({
+                  label: 'Winter Touren',
+                  url: '/tours',
+                  fragment: 'winter'
+                });
+                break;
+              case 'youth':
+                breadcrumbs.push({
+                  label: 'Jugend Touren',
+                  url: '/tours',
+                  fragment: 'youth'
                 });
                 break;
             }
