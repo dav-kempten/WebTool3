@@ -3,6 +3,7 @@ export interface Tour {
   reference: string;
   guideId: number;
   teamIds: number[];
+  categoryId: number;
   categoryIds: number[];
   tourId: number;
   deadlineId: number;
@@ -10,6 +11,7 @@ export interface Tour {
   youthOnTour: boolean;
   lowEmissionAdventure: boolean;
   ladiesOnly: boolean;
+  qualificationsIds: number[];
   preconditions: string;
   equipmentIds: number[];
   miscEquipment: string;

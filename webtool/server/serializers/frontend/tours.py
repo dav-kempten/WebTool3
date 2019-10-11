@@ -59,6 +59,11 @@ class TourSerializer(serializers.ModelSerializer):
     teamIds = serializers.PrimaryKeyRelatedField(
         source='team', many=True, default=[], queryset=Guide.objects.all()
     )
+
+    categoryId = serializers.PrimaryKeyRelatedField(
+        source='tour.reference.category', queryset=Tour.objects.all()
+    )
+
     categoryIds = serializers.PrimaryKeyRelatedField(
         source='categories', many=True, default=[], queryset=Category.objects.all()
     )
@@ -71,7 +76,7 @@ class TourSerializer(serializers.ModelSerializer):
     youthOnTour = serializers.BooleanField(source='youth_on_tour', default=False)
     miscCategory = serializers.CharField(source='misc_category', max_length=75, default='', allow_blank=True)
     qualificationIds = serializers.PrimaryKeyRelatedField(
-        source='qualifications', many=True, default=[], queryset=Tour.objects.all()
+        source='qualifications', many=True, default=[], read_only=True
     )
     preconditions = serializers.CharField(default='', allow_blank=True)
 
@@ -99,7 +104,8 @@ class TourSerializer(serializers.ModelSerializer):
         model = Tour
         fields = (
             'id', 'reference',
-            'guideId', 'teamIds', 'categoryIds',
+            'guideId', 'teamIds',
+            'categoryId', 'categoryIds',
             'tour', 'deadline', 'preliminary',
             'info',
             'lowEmissionAdventure', 'ladiesOnly', 'youthOnTour',

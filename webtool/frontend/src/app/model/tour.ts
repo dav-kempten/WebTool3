@@ -22,6 +22,7 @@ export interface Tour {
   reference: string;
   guideId: number | null;
   teamIds: number[];
+  categoryId: number;
   categoryIds: number[];
   tour: Event;
   deadline: Event;
@@ -29,6 +30,7 @@ export interface Tour {
   youthOnTour: boolean;
   lowEmissionAdventure: boolean;
   ladiesOnly: boolean;
+  qualificationIds: number[];
   preconditions: string;
   equipmentIds: number[];
   miscEquipment: string;
