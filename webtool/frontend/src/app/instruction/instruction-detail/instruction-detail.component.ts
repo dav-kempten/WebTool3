@@ -200,7 +200,6 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
       filter(instruction => !!instruction),
       publishReplay(1),
       refCount(),
-      tap(instruction => console.log('Instruction', instruction)),
     ).subscribe(
       instruction => this.store.dispatch(
         new UpdateInstruction({instruction: {id: instruction.id, changes: {
