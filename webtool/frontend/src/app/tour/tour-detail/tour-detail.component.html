@@ -43,7 +43,6 @@
     </div>
     <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
       <p-checkbox
-          [formControl]="tourGroup.get('bikeTrain')"
           label="Bike/Bahn"
           binary="true"
       ></p-checkbox>
@@ -69,7 +68,9 @@
     <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
         <avk-categoryselect
             formControlName="categoryId"
-            id="categoryId">
+            id="categoryId"
+            [readOnly]="false"
+            [topicSpecific]="'tour'">
         </avk-categoryselect>
     </div>
   </div>
@@ -87,11 +88,11 @@
   <!--Kurztitel, Langtitel-->
   <div class="p-grid">
     <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-      <input formControlName="shortTitle" id="shortTitle" placeholder="Kurztitel" type="text" style='width:100%'
+      <input id="shortTitle" placeholder="Kurztitel" type="text" style='width:100%'
              pInputText>
     </div>
     <div class="p-col-12 p-sm-8 p-md-8 p-lg-8">
-      <input formControlName="longTitle" id="longTitle" placeholder="Langtitel" type="text" style='width:100%'
+      <input id="longTitle" placeholder="Langtitel" type="text" style='width:100%'
              pInputText>
     </div>
   </div>
@@ -102,7 +103,6 @@
       <textarea
           [rows]="5"
           pInputTextarea
-          formControlName="info"
           id="info"
           placeholder="Beschreibung"
           autoResize="autoResize"
@@ -115,7 +115,7 @@
   <div class="p-grid">
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
       <avk-multiselect
-          formControlName="preconditionId"
+          formControlName="qualificationIds"
           choice="requirement"
           label="Voraussetzungen"
       ></avk-multiselect>
@@ -170,7 +170,6 @@
         <textarea
             [rows]="3"
             pInputTextarea
-            formControlName="preconditions"
             id="preconditions"
             placeholder="Spezielle Voraussetzungen (z.B. Trittsicherheit)"
             autoResize="autoResize"
@@ -179,45 +178,6 @@
     </div>
   </div>
 
-  <!--Datum (Deadline, Preliminary, Start, End)-->
-  <div class="p-grid">
-      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
-        <avk-date formControlName="deadline"
-             id="d1" label="Anmeldung"
-             [optMax]="tourGroup.get('preliminary').value"
-             [optMaxInclude]="true"
-             [max]="tourGroup.get('tourstart').value"
-             required
-        ></avk-date>
-      </div>
-      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
-        <avk-date formControlName="preliminary"
-             id="d2" label="Besprechung"
-             [min]="tourGroup.get('deadline').value"
-             [minInclude]="true"
-             [max]="tourGroup.get('tourstart').value"
-        ></avk-date>
-      </div>
-    </div>
-    <div class="p-grid">
-      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
-        <avk-date formControlName="tourstart"
-             id="d3" label="Start"
-             [min]="tourGroup.get('deadline').value"
-             [optMin]="tourGroup.get('preliminary').value"
-             [max]="tourGroup.get('tourend').value"
-             [maxInclude]="true"
-             required>
-        ></avk-date>
-      </div>
-      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
-        <avk-date formControlName="tourend"
-             id="d4" label="Ende"
-             [min]="tourGroup.get('tourstart').value"
-             [minInclude]="true"
-        ></avk-date>
-      </div>
-  </div>
 
   <!--Treffpunkt, Startpunkt, Übernachtungsorte-->
   <div class="p-grid">
@@ -298,14 +258,178 @@
     </div>
   </div>
 
-<p>{{tourGroup.get('deadline').value}} &lt;= [{{tourGroup.get('preliminary').value}}] &lt;
-   {{tourGroup.get('tourstart').value}} &lt;= [{{tourGroup.get('tourend').value}}]</p>
-<ul>
-  <li>Valid: {{tourGroup.valid}}</li>
-  <li>Dirty: {{tourGroup.dirty}}</li>
-  <li>Pristine: {{tourGroup.pristine}}</li>
-  <li>Touched: {{tourGroup.touched}}</li>
-</ul>
+  <!--Liste mit Parametern (Tabelle)-->
+  <ng-container *ngIf="(eventArray$ | async) as eventArray">
+    <div class="p-grid">
+      <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+        <p-table [value]="eventArray.value" selectionMode="single"
+                 (selectionChange)="selectEvent($event)">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Datum</th>
+              <th>Uhrzeit</th>
+              <th>Beschreibung</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-event let-i="rowIndex">
+            <tr [pSelectableRow]="i">
+              <td>{{event.startDate | date}}</td>
+              <td>{{event.startTime | time: event.approximateId}}</td>
+              <td>{{event.name}}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="currentEventGroup">
+    <p-dialog header="EventDetail" [modal]="true" [(visible)]="display" [style]="{width: '60%', height: '60%'}">
+      <form [formGroup]="currentEventGroup">
+        <!--Kurztitel, Langtitel-->
+        <div class="p-grid">
+          <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+            <input formControlName="title" id="title" placeholder="Kurztitel" type="text" style='width:100%'
+                   pInputText>
+          </div>
+          <div class="p-col-12 p-sm-8 p-md-8 p-lg-8">
+            <input formControlName="name" id="name" placeholder="Langtitel" type="text" style='width:100%'
+                   pInputText>
+          </div>
+        </div>
+
+        <!--Zeitpunkt Event-->
+        <div class="p-grid">
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+            <avk-approxdropdown formControlName="approximateId" id="approx" [readOnly]="!(userValState >= 1)"
+                                [disable]="!!currentEventGroup.get('startTime').value"></avk-approxdropdown>
+          </div>
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+            <avk-time formControlName="startTime" id="time" [disable]="!!currentEventGroup.get('approximateId').value"
+            ></avk-time>
+          </div>
+        </div>
+
+        <!--Zusatz: Datumseingabe (Anfang + Ende + Art)-->
+        <div class="p-grid">
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+            <avk-date formControlName="startDate"
+                      id="dbeginn" label="Start"
+                      [maxInclude]="true"
+                      [max]="currentEventGroup.get('endDate').value"
+            ></avk-date>
+          </div>
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+            <avk-date formControlName="endDate"
+                      id="dend" label="Ende"
+                      [minInclude]="true"
+                      [min]="currentEventGroup.get('startDate').value"
+            ></avk-date>
+          </div>
+        </div>
+        <div class="p-grid">
+          <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+            <textarea
+                [rows]="3"
+                pInputTextarea
+                formControlName="description"
+                id="description"
+                placeholder="Beschreibung"
+                autoResize="autoResize"
+                style='width:100%'
+            ></textarea>
+          </div>
+        </div>
+
+        <!--Ziel und Treffpunkt-->
+        <div class="p-grid">
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+            <input formControlName="location" id="location" placeholder="Ziel/Unterkunft (Hütte, Gipfel etc.)"
+                   type="text" style="width:100%"
+                   pInputText>
+          </div>
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+            <input formControlName="rendezvous" id="rendezvous" placeholder="Treffpunkt"
+                   type="text" style="width:100%"
+                   pInputText>
+          </div>
+        </div>
+
+        <!--ReservierungsService-->
+        <div class="p-grid">
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+            <p-checkbox
+                [formControl]="currentEventGroup.get('reservationService')"
+                label="Reservierungsservice"
+                binary="true"
+            ></p-checkbox>
+          </div>
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+          </div>
+        </div>
+
+        <!--Distal & Distance-->
+        <div class="p-grid">
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+            <p-checkbox
+                [formControl]="currentEventGroup.get('distal')"
+                label="Gemeinschaftsanreise"
+                binary="true"
+                (onChange)="switchDistal($event, distal)"
+            ></p-checkbox>
+          </div>
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+            <input #distal formControlName="distance" id="distance" placeholder="Entfernung"
+                   type="text" style="width:100%"
+                   pInputText>
+          </div>
+        </div>
+        <!--ShuttleService & PublicTransport-->
+        <div class="p-grid">
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+            <p-checkbox
+                [formControl]="currentEventGroup.get('publicTransport')"
+                label="Öffentliche Anreise"
+                binary="true"
+            ></p-checkbox>
+          </div>
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+            <p-checkbox
+                [formControl]="currentEventGroup.get('shuttleService')"
+                label="ShuttleSerivce"
+                binary="true"
+            ></p-checkbox>
+          </div>
+        </div>
+
+        <!--Source, Link & Map-->
+        <div class="p-grid">
+          <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+            <input formControlName="source" id="source" placeholder="Source"
+                   type="text" style="width:100%"
+                   pInputText>
+          </div>
+          <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+            <input formControlName="link" id="link" placeholder="Link"
+                   type="text" style="width:100%"
+                   pInputText>
+          </div>
+          <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+            <input formControlName="map" id="map" placeholder="Map"
+                   type="text" style="width:100%"
+                   pInputText>
+          </div>
+        </div>
+      </form>
+    </p-dialog>
+  </ng-container>
+
+<!--<ul>-->
+<!--  <li>Valid: {{tourGroup.valid}}</li>-->
+<!--  <li>Dirty: {{tourGroup.dirty}}</li>-->
+<!--  <li>Pristine: {{tourGroup.pristine}}</li>-->
+<!--  <li>Touched: {{tourGroup.touched}}</li>-->
+<!--</ul>-->
 </form>
 
 </ng-container>
