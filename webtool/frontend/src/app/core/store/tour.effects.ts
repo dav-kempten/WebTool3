@@ -65,11 +65,15 @@ export class TourEffects {
   transformTour(tour: RawTour): Tour {
     const tourId = tour.id;
     const deadlineId = tour.deadline.id;
-    const preliminaryId = tour.preliminary.id;
+    let preliminaryId = null;
 
     this.store.dispatch(new AddEvent({event: tour.tour}));
     this.store.dispatch(new AddEvent({event: tour.deadline}));
-    this.store.dispatch(new AddEvent({event: tour.preliminary}));
+
+    if (tour.preliminary !== null) {
+      preliminaryId = tour.preliminary.id;
+      this.store.dispatch(new AddEvent({event: tour.preliminary}));
+    }
 
     delete tour.tour;
     delete tour.deadline;
