@@ -24,7 +24,7 @@
       </div>
   </div>
 
-  <!--Team, LadiesOnly, Bike/Bahn, LEA-->
+  <!--Team, LadiesOnly, YouthOnTour, LEA-->
   <div class="p-grid">
     <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
       <avk-team
@@ -43,7 +43,8 @@
     </div>
     <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
       <p-checkbox
-          label="Bike/Bahn"
+          [formControl]="tourGroup.get('youthOnTour')"
+          label="YouthOnTour"
           binary="true"
       ></p-checkbox>
     </div>
@@ -170,91 +171,12 @@
         <textarea
             [rows]="3"
             pInputTextarea
+            formControlName="preconditions"
             id="preconditions"
             placeholder="Spezielle Voraussetzungen (z.B. Trittsicherheit)"
             autoResize="autoResize"
             style='width:100%'
         ></textarea>
-    </div>
-  </div>
-
-
-  <!--Treffpunkt, Startpunkt, Übernachtungsorte-->
-  <div class="p-grid">
-    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-      <input id="meetingPlace" placeholder="Treffpunkt"
-             type="text" style="width:100%" pInputText>
-    </div>
-    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-      <input id="startingPlace" placeholder="Startpunkt"
-             type="text" style="width:100%" pInputText>
-    </div>
-    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-      <input id="sleepOver" placeholder="Übernachtungsorte"
-             type="text" style="width:100%" pInputText>
-    </div>
-  </div>
-
-  <!--Alpinshuttle, Strecke, Fahrtkosten, Zusatzkosten, Anzahlung-->
-  <div class="p-grid">
-    <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
-      <p-checkbox
-          label="Alpinshuttle"
-          binary="true"
-      ></p-checkbox>
-    </div>
-    <div class="p-col-12 p-sm-1 p-md-1 p-lg-1">
-      <input id="strecke" placeholder="Strecke"
-             type="text" style="width:100%" pInputText>
-    </div>
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <div class="ui-inputgroup">
-        <span class="ui-inputgroup-addon">Fahrt</span>
-        <input id="rideCosts" placeholder="Fahrtkosten" type="number" min="0"
-             pInputText>
-        <span class="ui-inputgroup-addon">€</span>
-      </div>
-    </div>
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <div class="ui-inputgroup">
-        <span class="ui-inputgroup-addon">Zusatz</span>
-        <input id="extraCosts" placeholder="Zusatzkosten" type="number" min="0"
-             pInputText>
-        <span class="ui-inputgroup-addon">€</span>
-      </div>
-    </div>
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <div class="ui-inputgroup">
-        <span class="ui-inputgroup-addon">Anzahlung</span>
-        <input id="deposit" placeholder="Anzahlung" type="number" min="0"
-             pInputText>
-        <span class="ui-inputgroup-addon">€</span>
-      </div>
-    </div>
-  </div>
-
-  <!--Teilnehmergebühr-->
-  <div class="p-grid">
-    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-      <div class="ui-inputgroup">
-        <span class="ui-inputgroup-addon">TN-Gebühr</span>
-        <input formControlName="admission" id="admission" placeholder="Teilnehmergebühr" type="number" min="0"
-             pInputText>
-        <span class="ui-inputgroup-addon">€</span>
-      </div>
-    </div>
-  </div>
-
-  <!--Bemerkung-->
-  <div class="p-grid">
-    <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
-      <textarea
-          [rows]="3"
-          pInputTextarea
-          placeholder="Bemerkungen"
-          autoResize="autoResize"
-          style='width:100%'
-      ></textarea>
     </div>
   </div>
 
@@ -424,6 +346,84 @@
     </p-dialog>
   </ng-container>
 
+  <!--Treffpunkt, Startpunkt, Übernachtungsorte-->
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <input id="meetingPlace" placeholder="Treffpunkt"
+             type="text" style="width:100%" pInputText>
+    </div>
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <input id="startingPlace" placeholder="Startpunkt"
+             type="text" style="width:100%" pInputText>
+    </div>
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <input id="sleepOver" placeholder="Übernachtungsorte"
+             type="text" style="width:100%" pInputText>
+    </div>
+  </div>
+
+  <!--Alpinshuttle, Strecke, Fahrtkosten, Zusatzkosten, Anzahlung-->
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
+      <p-checkbox
+          label="Alpinshuttle"
+          binary="true"
+      ></p-checkbox>
+    </div>
+    <div class="p-col-12 p-sm-1 p-md-1 p-lg-1">
+      <input id="strecke" placeholder="Strecke"
+             type="text" style="width:100%" pInputText>
+    </div>
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <div class="ui-inputgroup">
+        <span class="ui-inputgroup-addon">Fahrt</span>
+        <input id="rideCosts" placeholder="Fahrtkosten" type="number" min="0"
+             pInputText>
+        <span class="ui-inputgroup-addon">€</span>
+      </div>
+    </div>
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <div class="ui-inputgroup">
+        <span class="ui-inputgroup-addon">Zusatz</span>
+        <input id="extraCharges" id="extraCharges" placeholder="Zusatzkosten" type="number" min="0"
+             pInputText>
+        <span class="ui-inputgroup-addon">€</span>
+      </div>
+    </div>
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <div class="ui-inputgroup">
+        <span class="ui-inputgroup-addon">Anzahlung</span>
+        <input formControlName="advances" id="advances" placeholder="Anzahlung" type="number" min="0"
+             pInputText>
+        <span class="ui-inputgroup-addon">€</span>
+      </div>
+    </div>
+  </div>
+
+  <!--Teilnehmergebühr-->
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <div class="ui-inputgroup">
+        <span class="ui-inputgroup-addon">TN-Gebühr</span>
+        <input formControlName="admission" id="admission" placeholder="Teilnehmergebühr" type="number" min="0"
+             pInputText>
+        <span class="ui-inputgroup-addon">€</span>
+      </div>
+    </div>
+  </div>
+
+  <!--Bemerkung-->
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+      <textarea
+          [rows]="3"
+          pInputTextarea
+          placeholder="Bemerkungen"
+          autoResize="autoResize"
+          style='width:100%'
+      ></textarea>
+    </div>
+  </div>
 <!--<ul>-->
 <!--  <li>Valid: {{tourGroup.valid}}</li>-->
 <!--  <li>Dirty: {{tourGroup.dirty}}</li>-->
