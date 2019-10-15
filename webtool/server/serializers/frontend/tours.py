@@ -2,8 +2,8 @@ from rest_framework import serializers
 from rest_framework.reverse import reverse
 
 from server.models import (
-    Tour, Guide, Category, Equipment, State, get_default_state, get_default_season, Event, Reference
-)
+    Tour, Guide, Category, Equipment, State, get_default_state, get_default_season, Event, Reference,
+    Skill)
 from server.serializers.frontend.core import EventSerializer, MoneyField, create_event, update_event
 
 
@@ -86,6 +86,13 @@ class TourSerializer(serializers.ModelSerializer):
     miscEquipment = serializers.CharField(source='misc_equipment', max_length=75, default='', allow_blank=True)
     equipmentService = serializers.BooleanField(source='equipment_service', default=False)
 
+    skillId = serializers.PrimaryKeyRelatedField(
+        source='skill', default=None, allow_null=True, queryset=Skill.objects.all()
+    )
+    fitnessId = serializers.PrimaryKeyRelatedField(
+        source='fitness', default=None, allow_null=True, queryset=Skill.objects.all()
+    )
+
     admission = MoneyField()
     advances = MoneyField()
     advancesInfo = serializers.CharField(source='advances_info', default='', allow_blank=True)
@@ -112,9 +119,10 @@ class TourSerializer(serializers.ModelSerializer):
             'miscCategory',
             'qualificationIds', 'preconditions',
             'equipmentIds', 'miscEquipment', 'equipmentService',
+            'skillId', 'fitnessId',
             'admission', 'advances', 'advancesInfo', 'extraCharges', 'extraChargesInfo',
             'minQuantity', 'maxQuantity', 'curQuantity',
-            'portal','stateId',
+            'portal', 'stateId',
         )
 
     def validate(self, data):

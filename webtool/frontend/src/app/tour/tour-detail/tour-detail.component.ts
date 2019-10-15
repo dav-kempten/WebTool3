@@ -219,6 +219,8 @@ export function tourGroupFactory(tour: Tour): FormGroup {
     equipmentIds: new FormControl(tour.equipmentIds),
     miscEquipment: new FormControl(tour.miscEquipment),
     equipmentService: new FormControl(tour.equipmentService),
+    skillId: new FormControl(tour.skillId),
+    fitnessId: new FormControl(tour.fitnessId),
     admission: new FormControl((tour.admission / 100).toFixed(2)),
     advances: new FormControl((tour.advances / 100).toFixed(2)),
     advancesInfo: new FormControl(tour.advancesInfo),

@@ -35,6 +35,8 @@ export interface Tour {
   equipmentIds: number[];
   miscEquipment: string;
   equipmentService: boolean;
+  skillId: number | null;
+  fitnessId: number | null;
   admission: string;
   advances: string;
   advancesInfo: string;

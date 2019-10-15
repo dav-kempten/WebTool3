@@ -16,6 +16,8 @@ export interface Tour {
   equipmentIds: number[];
   miscEquipment: string;
   equipmentService: boolean;
+  skillId: number;
+  fitnessId: number;
   admission: number;
   advances: number;
   advancesInfo: string;
