@@ -83,8 +83,7 @@ export class FitnessselectComponent implements OnInit, OnDestroy, AfterViewInit,
     return ((state: RawFitness): void => {
       this.formControl.setValue(state);
       this.choiceControl.setValue(state);
-      console.log(state);
-      onChange(state.id);
+      onChange(state.level);
     });
   }
 
@@ -103,7 +102,7 @@ export class FitnessselectComponent implements OnInit, OnDestroy, AfterViewInit,
   writeValue(stateId): void {
     if (typeof stateId === 'number') {
       for (const el in this.status) {
-        if (stateId === this.status[el].id) {
+        if (stateId === this.status[el].level) {
           stateId = this.status[el];
         }
       }

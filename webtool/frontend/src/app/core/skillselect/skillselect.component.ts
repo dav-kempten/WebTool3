@@ -84,7 +84,7 @@ export class SkillselectComponent implements OnInit, OnDestroy, AfterViewInit, A
     return ((state: RawSkill): void => {
       this.formControl.setValue(state);
       this.choiceControl.setValue(state);
-      onChange(state.id);
+      onChange(state.level);
     });
   }
 
@@ -103,7 +103,7 @@ export class SkillselectComponent implements OnInit, OnDestroy, AfterViewInit, A
   writeValue(stateId): void {
     if (typeof stateId === 'number') {
       for (const el in this.status) {
-        if (stateId === this.status[el].id) {
+        if (stateId === this.status[el].level) {
           stateId = this.status[el];
         }
       }
