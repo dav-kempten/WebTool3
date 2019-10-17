@@ -51,6 +51,8 @@ export class SkillselectComponent implements OnInit, OnDestroy, AfterViewInit, A
   readonly = false;
   editable = false;
 
+  categorySelect = 0;
+
   @Input()
   set readOnly(value: boolean) {
     this.readonly = value;
@@ -59,6 +61,11 @@ export class SkillselectComponent implements OnInit, OnDestroy, AfterViewInit, A
   @Input()
   set editAble(value: boolean) {
     this.editable = value;
+  }
+
+  @Input()
+  set categorySet(value: number) {
+    this.categorySelect = value;
   }
 
   group = new FormGroup(
@@ -70,7 +77,7 @@ export class SkillselectComponent implements OnInit, OnDestroy, AfterViewInit, A
   );
 
   status: RawSkill[] = new Array(1).fill({id: 0, level: null, categoryId: null, code: 'Skills',
-    description: null});
+    description: 'Skills auswählen'});
 
 
   OnChangeWrapper(onChange: (stateIn) => void): (stateOut: RawSkill) => void {
@@ -113,33 +120,10 @@ export class SkillselectComponent implements OnInit, OnDestroy, AfterViewInit, A
       takeUntil(this.destroySubject),
       tap( state => {
         Object.keys(state.entities).forEach( key => {
-          console.log(this.status);
-          this.status.push(state.entities[key]);
-    //       switch (this.topicKeyword) {
-    //         case 'instruction': {
-    //           if (state.entities[key].instruction) {
-    //             this.status.push(state.entities[key]);
-    //           }
-    //           break;
-    //         }
-    //         case 'talk': {
-    //           if (state.entities[key].talk) {
-    //             this.status.push(state.entities[key]);
-    //           }
-    //           break;
-    //         }
-    //         case 'tour': {
-    //           if (state.entities[key].tour) {
-    //             this.status.push(state.entities[key]);
-    //           }
-    //           break;
-    //         }
-    //         default: {
-    //           break;
-    //         }
-    //       }
+          if (state.entities[key].categoryId === this.categorySelect) {
+            this.status.push(state.entities[key]);
+          }
         });
-    //     this.filterBySeason(this.status, this.seasonKeyword);
       }),
       // shareReplay(),
       publishReplay(1),
