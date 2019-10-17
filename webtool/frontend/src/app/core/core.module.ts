@@ -116,7 +116,7 @@ import { SkillselectComponent } from './skillselect/skillselect.component';
     GuideComponent, TeamComponent, DateComponent, TimeComponent, NamePipe, NamesPipe, MenuComponent,
     BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent, DropdownComponent,
     MultiselectComponent, ButtonModule, ToggleButtonModule, ApproxdropdownComponent, CategoryselectComponent,
-    DialogModule, CheckboxModule, InputTextModule, InputTextareaModule, DatePipe, TimePipe
+    DialogModule, CheckboxModule, InputTextModule, InputTextareaModule, DatePipe, TimePipe, SkillselectComponent
   ]
 })
 export class CoreModule { }
