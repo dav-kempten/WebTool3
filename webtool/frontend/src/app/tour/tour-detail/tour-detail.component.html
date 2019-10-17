@@ -81,8 +81,19 @@
     <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
     </div>
     <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <avk-skillselect
+          formControlName="skillId"
+          label="Skills"
+          [categorySet]="tourGroup.get('categoryId').value"
+      ></avk-skillselect>
     </div>
     <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <avk-fitnessselect
+          formControlName="fitnessId"
+          id="fitnessId"
+          [readOnly]="false"
+          [categorySet]="tourGroup.get('categoryId').value"
+      ></avk-fitnessselect>
     </div>
   </div>
 
@@ -115,11 +126,6 @@
   <!--Voraussetzung, Materialservice, Ausrüstung, Zusatzausrüstung-->
   <div class="p-grid">
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <avk-skillselect
-          formControlName="skillId"
-          label="Skills"
-          [categorySet]="tourGroup.get('categoryId').value"
-      ></avk-skillselect>
     </div>
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
       <p-checkbox
