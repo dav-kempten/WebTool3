@@ -8,6 +8,7 @@ import {State as EquipState} from './equipment.reducer';
 import {State as SkillState} from './skill.reducer';
 import {State as CategoryState} from './category.reducer';
 import {State as TopicState} from './topic.reducer';
+import {State as FitnessState} from './fitness.reducer';
 import {Dictionary} from '@ngrx/entity';
 
 export const getValueState = createFeatureSelector<ValueState>('values');
@@ -15,6 +16,7 @@ export const selectStatesState = createFeatureSelector<StatesState>('states');
 export const getApproxState = createFeatureSelector<ApproxState>('approximates');
 export const getEquipState = createFeatureSelector<EquipState>('equipments');
 export const getSkillState = createFeatureSelector<SkillState>('skills');
+export const getFitnessState = createFeatureSelector<FitnessState>('fitness');
 export const getCategoryState = createFeatureSelector<CategoryState>('categories');
 export const getTopicState = createFeatureSelector<TopicState>('topics');
 
