@@ -61,12 +61,13 @@ import {CategoryselectComponent} from './categoryselect/categoryselect.component
 import {DatePipe} from './date/date.pipe';
 import {TimePipe} from './time/time.pipe';
 import { SkillselectComponent } from './skillselect/skillselect.component';
+import { FitnessselectComponent } from './fitnessselect/fitnessselect.component';
 
 @NgModule({
   declarations: [
     GuideComponent, TeamComponent, DateComponent, TimeComponent, NamePipe, NamesPipe, MenuComponent,
     BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent, DropdownComponent,
-    MultiselectComponent, ApproxdropdownComponent, CategoryselectComponent, DatePipe, TimePipe, SkillselectComponent
+    MultiselectComponent, ApproxdropdownComponent, CategoryselectComponent, DatePipe, TimePipe, SkillselectComponent, FitnessselectComponent
   ],
   imports: [
     CommonModule,
