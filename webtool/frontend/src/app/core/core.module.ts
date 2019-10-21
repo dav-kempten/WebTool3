@@ -120,7 +120,7 @@ import { QualificationselectComponent } from './qualificationselect/qualificatio
     BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent, DropdownComponent,
     MultiselectComponent, ButtonModule, ToggleButtonModule, ApproxdropdownComponent, CategoryselectComponent,
     DialogModule, CheckboxModule, InputTextModule, InputTextareaModule, DatePipe, TimePipe, SkillselectComponent,
-    FitnessselectComponent
+    FitnessselectComponent, QualificationselectComponent
   ]
 })
 export class CoreModule { }
