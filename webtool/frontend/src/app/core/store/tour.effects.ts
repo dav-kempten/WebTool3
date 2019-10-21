@@ -84,7 +84,6 @@ export class TourEffects {
       tourId,
       deadlineId,
       preliminaryId,
-      qualificationsIds: tour.qualificationIds,
       admission: convertDecimal(tour.admission),
       advances: convertDecimal(tour.advances),
       extraCharges: convertDecimal(tour.extraCharges)

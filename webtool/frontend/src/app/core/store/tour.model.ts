@@ -11,7 +11,7 @@ export interface Tour {
   youthOnTour: boolean;
   lowEmissionAdventure: boolean;
   ladiesOnly: boolean;
-  qualificationsIds: number[];
+  qualificationIds: number[];
   preconditions: string;
   equipmentIds: number[];
   miscEquipment: string;
