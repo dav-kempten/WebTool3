@@ -41,10 +41,14 @@ import {reducer as instructionReducer} from './store/instruction.reducer';
 import {reducer as instructionSummaryReducer} from './store/instruction-summary.reducer';
 import {reducer as tourReducer} from './store/tour.reducer';
 import {reducer as tourSummaryReducer} from './store/tour-summary.reducer';
+import {reducer as sessionReducer} from './store/session.reducer';
+import {reducer as sessionSummaryReducer} from './store/session-summary.reducer';
 import {InstructionSummaryEffects} from './store/instruction-summary.effects';
 import {InstructionEffects} from './store/instruction.effects';
 import {TourSummaryEffects} from './store/tour-summary.effects';
 import {TourEffects} from './store/tour.effects';
+import {SessionSummaryEffects} from './store/session-summary.effects';
+import {SessionEffects} from './store/session.effects';
 import {reducer as stateReducer} from './store/state.reducer';
 import {reducer as categoryReducer} from './store/category.reducer';
 import {reducer as approximateReducer} from './store/approximate.reducer';
@@ -102,6 +106,10 @@ import { QualificationselectComponent } from './qualificationselect/qualificatio
     EffectsModule.forFeature([TourEffects]),
     StoreModule.forFeature('tourSummaries', tourSummaryReducer),
     EffectsModule.forFeature([TourSummaryEffects]),
+    StoreModule.forFeature('sessions', sessionReducer),
+    EffectsModule.forFeature([SessionEffects]),
+    StoreModule.forFeature('sessionSummaries', sessionSummaryReducer),
+    EffectsModule.forFeature([SessionSummaryEffects]),
     StoreModule.forFeature('states', stateReducer),
     StoreModule.forFeature('categories', categoryReducer),
     StoreModule.forFeature('approximates', approximateReducer),
