@@ -1,5 +1,5 @@
 import {createFeatureSelector, createSelector} from '@ngrx/store';
 import {State, selectAll} from './session-summary.reducer';
 
-export const getTourSummaryState = createFeatureSelector<State>('sessionSummaries');
-export const getTourSummaries = createSelector(getTourSummaryState, selectAll);
+export const getSessionSummaryState = createFeatureSelector<State>('sessionSummaries');
+export const getSessionSummaries = createSelector(getSessionSummaryState, selectAll);
