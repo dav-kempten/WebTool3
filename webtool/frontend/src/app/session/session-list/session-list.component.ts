@@ -11,6 +11,9 @@ import {NamesRequested} from '../../core/store/name.actions';
 import {ValuesRequested} from '../../core/store/value.actions';
 import {CalendarRequested} from '../../core/store/calendar.actions';
 import {flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
+import {RequestSessionSummaries} from '../../core/store/session-summary.actions';
+import {getSessionSummaries} from '../../core/store/session-summary.selectors';
+
 
 @Component({
   selector: 'avk-session-list',
