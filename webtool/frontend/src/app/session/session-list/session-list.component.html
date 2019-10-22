@@ -1,1 +1,64 @@
-<h1>Gruppentermine</h1>
+<ng-container *ngIf="(activeItem$ | async) as activeItem else loading">
+  <p-tabMenu [model]="menuItems" [activeItem]="{}"></p-tabMenu>
+  <p-button label="Gruppentermin hinzufügen" (onClick)="handleClick()" *ngIf="this.userValState >= 3"></p-button>
+  <ng-container *ngIf="(sessions$ | async) as sessions">
+    <p-table [value]="sessions" selectionMode="single" (selectionChange)="selectSession($event)">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Buchungscode</th>
+          <th>Datum</th>
+          <th>Gruppe</th>
+          <th>Bezeichnung</th>
+          <th>Tourenleiter</th>
+          <th>Sprecher</th>
+          <th>Kursaktionen</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-session>
+        <tr [pSelectableRow]="session">
+          <td>{{session.reference}}</td>
+          <td>{{session.startDate | date}}</td>
+          <td>{{session.collectiveId | name}}</td>
+          <td>{{session.title}}</td>
+          <td>{{session.guideId | name}}</td>
+          <td>{{session.speaker}}</td>
+          <td>
+            <button pButton type="button" label="Klonen" class="ui-button-success"
+                    (click)="clone(session.id)" *ngIf="this.userValState >= 3"></button>
+            <button pButton type="button" label="Löschen" class="ui-button-warning"
+                    (click)="delete(session.id)"
+                    *ngIf="this.userValState >= 3 && this.finishedSessions.indexOf(session.stateId) === -1"></button>
+            <button pButton type="button" label="Deaktivieren" class="ui-button-info"
+                    (click)="deactivate(session.id)" *ngIf="this.userValState >= 3"></button>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </ng-container>
+
+  <!--  Beginn Dialogfenster  -->
+  <form [formGroup]="createSession">
+  <p-dialog header="Neuer Gruppentermin" [modal]="true" [(visible)]="display" [style]="{width: '600px'}">
+    <div class="p-grid">
+      <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+<!--        <avk-categoryselect-->
+<!--            formControlName="categoryIds"-->
+<!--            id="categoryIds"-->
+<!--            [seasonSpecific]="this.partNewSession.value"-->
+<!--        >-->
+<!--        </avk-categoryselect>-->
+      </div>
+    </div>
+      <div class="p-grid">
+      <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+        <avk-date formControlName="startDate"
+                  id="dbeginn" label="Start"
+        ></avk-date>
+      </div>
+    </div>
+    <p-button label="Bestätigen" (onClick)="confirmClick()"></p-button>
+  </p-dialog>
+  </form>
+</ng-container>
+<ng-template #loading>Bitte kurz warten!</ng-template>
+
