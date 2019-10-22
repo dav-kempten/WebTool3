@@ -6,10 +6,12 @@ import {AppState, Breadcrumbs, selectRouterBreadcrumbs} from '../../app.state';
 import {filter, first, map, tap} from 'rxjs/operators';
 import {getInstructionById} from '../store/instruction.selectors';
 import {RequestInstruction} from '../store/instruction.actions';
-import {getCategoryById} from '../store/value.selectors';
+import {getCategoryById, getCollectiveById} from '../store/value.selectors';
 import {ValuesRequested} from '../store/value.actions';
 import {getTourById} from '../store/tour.selectors';
 import {RequestTour} from '../store/tour.actions';
+import {getSessionById} from '../store/session.selectors';
+import {RequestSession} from '../store/session.actions';
 
 
 @Component({
@@ -32,6 +34,7 @@ export class BreadcrumbComponent implements OnInit {
         if (!fragment && discriminator.startsWith('#')) {
           const part = breadcrumbs[breadcrumbs.length - 2].label;
           const id = parseInt(discriminator.slice(1), 10);
+          console.log(breadcrumbs);
           if (part === 'Kurse') {
             this.store.pipe(
               select(getInstructionById(id)),
@@ -109,6 +112,37 @@ export class BreadcrumbComponent implements OnInit {
                   breadcrumbs.push({
                     url: `/tours/${tour.id}`,
                     label: tour.reference
+                  });
+                });
+              }
+            );
+          }
+          if (part === 'Gruppen') {
+            this.store.pipe(
+              select(getSessionById(id)),
+              tap(session => {
+                if (!session) {
+                  this.store.dispatch(new RequestSession({id}));
+                }
+              }),
+              filter(session => !!session),
+              first()
+            ).subscribe(
+              session => {
+                this.store.pipe(
+                  select(getCollectiveById(session.collectiveId)),
+                  tap(collective => {
+                    if (!collective) {
+                      this.store.dispatch(new ValuesRequested());
+                    }
+                  }),
+                  filter(collective => !!collective),
+                  first()
+                ).subscribe(collective => {
+                  breadcrumbs[breadcrumbs.length - 1].url = '/sessions';
+                  breadcrumbs.push({
+                    url: `/sessions/${session.id}`,
+                    label: session.reference
                   });
                 });
               }
