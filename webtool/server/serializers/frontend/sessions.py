@@ -3,7 +3,7 @@ from rest_framework import serializers
 from rest_framework.reverse import reverse
 
 from server.models import (
-    Session, Collective, Category, Equipment, State, Event, get_default_state, get_default_season
+    Guide, Session, Collective, Category, Equipment, State, Event, get_default_state, get_default_season
 )
 from server.serializers.frontend.core import EventSerializer, create_event, update_event
 
@@ -14,6 +14,7 @@ class SessionListSerializer(serializers.ModelSerializer):
     reference = serializers.CharField(source='session.reference.__str__', read_only=True)
     title = serializers.SerializerMethodField()
     startDate = serializers.DateField(source='session.start_date', read_only=True)
+    guideId = serializers.PrimaryKeyRelatedField(source='guide_id', read_only=True)
     speaker = serializers.CharField(default=None, read_only=True)
     ladiesOnly = serializers.BooleanField(source='ladies_only', read_only=True)
     stateId = serializers.PrimaryKeyRelatedField(source='state_id', read_only=True)
@@ -26,6 +27,7 @@ class SessionListSerializer(serializers.ModelSerializer):
             'reference',
             'title',
             'startDate',
+            'guideId',
             'speaker',
             'ladiesOnly',
             'stateId',
@@ -43,6 +45,13 @@ class SessionSerializer(serializers.ModelSerializer):
 
     id = serializers.PrimaryKeyRelatedField(source='pk', queryset=Session.objects.all(), default=None, allow_null=True)
     reference = serializers.CharField(source='session.reference.__str__', read_only=True)
+
+    guideId = serializers.PrimaryKeyRelatedField(
+        source='guide', default=None, allow_null=True, queryset=Guide.objects.all()
+    )
+    teamIds = serializers.PrimaryKeyRelatedField(
+        source='team', many=True, default=[], queryset=Guide.objects.all()
+    )
 
     speaker = serializers.CharField(default=None, allow_blank=True, allow_null=True)
 
@@ -66,6 +75,7 @@ class SessionSerializer(serializers.ModelSerializer):
         model = Session
         fields = (
             'id', 'reference',
+            'guideId', 'teamIds',
             'speaker',
             'collectiveId',
             'session',
