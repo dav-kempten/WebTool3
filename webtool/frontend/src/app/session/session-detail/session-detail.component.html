@@ -1,1 +1,8 @@
-<h1>Session #{{sessionId$ | async}}</h1>
+<ng-container *ngIf="sessionGroup$ | async as sessionGroup else loading">
+<h1>Tour #{{sessionId$ | async}}</h1>
+<p>{{sessionGroup.value | json}}</p>
+</ng-container>
+
+<ng-template #loading>Bitte kurz warten!</ng-template>
+
+<a routerLink="../"><p-button label="Zurück"></p-button></a>
