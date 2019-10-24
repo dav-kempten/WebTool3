@@ -94,18 +94,14 @@
           <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
             <avk-multiselect
                 formControlName="equipmentIds"
-                choice="equipment"
-                label="Ausrüstung"
                 readOnly="'true'"
             ></avk-multiselect>
           </div>
           <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-            <avk-multiselect
+            <avk-qualificationselect
                 formControlName="qualificationIds"
-                choice="requirement"
-                label="Voraussetzungen"
                 readOnly="'true'"
-            ></avk-multiselect>
+            ></avk-qualificationselect>
           </div>
           <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
           <textarea
@@ -156,18 +152,14 @@
       <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
         <avk-multiselect
             formControlName="equipmentIds"
-            choice="equipment"
-            label="Zusatzausrüstung"
             [readOnly]="!(userValState >= 1)"
         ></avk-multiselect>
       </div>
       <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
-        <avk-multiselect
+        <avk-qualificationselect
             formControlName="qualificationIds"
-            choice="requirement"
-            label="Voraussetzungen"
             [readOnly]="!(userValState >= 1)"
-        ></avk-multiselect>
+        ></avk-qualificationselect>
       </div>
     </div>
 
