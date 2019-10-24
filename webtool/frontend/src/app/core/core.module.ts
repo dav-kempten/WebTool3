@@ -129,7 +129,7 @@ import { CollectiveselectComponent } from './collectiveselect/collectiveselect.c
     BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent, DropdownComponent,
     MultiselectComponent, ButtonModule, ToggleButtonModule, ApproxdropdownComponent, CategoryselectComponent,
     DialogModule, CheckboxModule, InputTextModule, InputTextareaModule, DatePipe, TimePipe, SkillselectComponent,
-    FitnessselectComponent, QualificationselectComponent
+    FitnessselectComponent, QualificationselectComponent, CollectiveselectComponent
   ]
 })
 export class CoreModule { }
