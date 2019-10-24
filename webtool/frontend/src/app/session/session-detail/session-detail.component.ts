@@ -32,8 +32,6 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
   private sessionChangeSubject = new BehaviorSubject<Session>(undefined);
   private eventChangeSubject = new BehaviorSubject<Event>(undefined);
 
-  sessionCollective  = new BehaviorSubject<string>('');
-
   sessionGroup$: Observable<FormGroup> = this.sessionSubject.asObservable();
   sessionChange$: Observable<Session> = this.sessionChangeSubject.asObservable();
   eventArray$: Observable<FormArray> = this.eventsSubject.asObservable();
@@ -94,7 +92,6 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
           } else {
             this.collectiveSubject.next(collectiveGroupFactory(collective));
           }
-          this.sessionCollective.next(collective.title);
         })
       )),
       // shareReplay(),
