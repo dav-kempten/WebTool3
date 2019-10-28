@@ -149,17 +149,28 @@
     <ng-container *ngIf="this.instructionCategory.value !== 'indoor'">
     <!--Zusatzausrüstung & -anforderungen-->
     <div class="p-grid">
-      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
         <avk-multiselect
             formControlName="equipmentIds"
             [readOnly]="!(userValState >= 1)"
         ></avk-multiselect>
       </div>
-      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      </div>
+      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
         <avk-qualificationselect
             formControlName="qualificationIds"
             [readOnly]="!(userValState >= 1)"
         ></avk-qualificationselect>
+      </div>
+      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+        <avk-categoryselect
+            formControlName="categoryId"
+            id="categoryId"
+            [readOnly]="!(userValState >= 1)"
+            [seasonSpecific]="this.instructionCategory.value"
+            [topicSpecific]="'instruction'"
+        ></avk-categoryselect>
       </div>
     </div>
 
