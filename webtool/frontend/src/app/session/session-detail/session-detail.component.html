@@ -45,14 +45,18 @@
 
   <!--Buchungscode, Status, Gruppe-->
   <div class="p-grid">
-    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
       <input formControlName="reference" id="reference" placeholder="Buchungsnummer" type="text" style='width:100%'
              readonly pInputText>
     </div>
-    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
       <avk-dropdown formControlName="stateId" id="stateId"></avk-dropdown>
     </div>
-    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <input formControlName="speaker" id="speaker" placeholder="Sprecher" type="text" style='width:100%'
+             pInputText>
+    </div>
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
       <avk-collectiveselect formControlName="collectiveId" id="collectiveId"></avk-collectiveselect>
     </div>
   </div>
