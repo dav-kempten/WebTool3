@@ -76,11 +76,9 @@
     </div>
   </div>
 
-  <!--Nebenkategorie, Technik, Ausdauer-->
+  <!--Technik, Ausdauer-->
   <div class="p-grid">
-    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-    </div>
-    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+    <div class="p-col-12 p-sm-8 p-md-8 p-lg-8">
       <avk-skillselect
           formControlName="skillId"
           label="Skills"
@@ -94,18 +92,6 @@
           [readOnly]="false"
           [categorySet]="tourGroup.get('categoryId').value"
       ></avk-fitnessselect>
-    </div>
-  </div>
-
-  <!--Kurztitel, Langtitel-->
-  <div class="p-grid">
-    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-      <input id="shortTitle" placeholder="Kurztitel" type="text" style='width:100%'
-             pInputText>
-    </div>
-    <div class="p-col-12 p-sm-8 p-md-8 p-lg-8">
-      <input id="longTitle" placeholder="Langtitel" type="text" style='width:100%'
-             pInputText>
     </div>
   </div>
 
@@ -131,7 +117,18 @@
           label="Qualifikation"
       ></avk-qualificationselect>
     </div>
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+    <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
+        <textarea
+            [rows]="2"
+            pInputTextarea
+            formControlName="preconditions"
+            id="preconditions"
+            placeholder="Spezielle Voraussetzungen (z.B. Trittsicherheit)"
+            autoResize="autoResize"
+            style='width:100%'
+        ></textarea>
+    </div>
+    <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
       <p-checkbox
           [formControl]="tourGroup.get('equipmentService')"
           label="Materialservice"
@@ -144,7 +141,7 @@
           label="Ausrüstung"
       ></avk-multiselect>
     </div>
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+    <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
       <textarea
           [rows]="2"
           pInputTextarea
@@ -177,15 +174,11 @@
       ></avk-membernumber>
     </div>
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-        <textarea
-            [rows]="3"
-            pInputTextarea
-            formControlName="preconditions"
-            id="preconditions"
-            placeholder="Spezielle Voraussetzungen (z.B. Trittsicherheit)"
-            autoResize="autoResize"
-            style='width:100%'
-        ></textarea>
+      <avk-membernumber
+          formControlName="curQuantity"
+          label="Aktuell"
+          id="m3"
+      ></avk-membernumber>
     </div>
   </div>
 
@@ -355,61 +348,7 @@
     </p-dialog>
   </ng-container>
 
-  <!--Treffpunkt, Startpunkt, Übernachtungsorte-->
-  <div class="p-grid">
-    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-      <input id="meetingPlace" placeholder="Treffpunkt"
-             type="text" style="width:100%" pInputText>
-    </div>
-    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-      <input id="startingPlace" placeholder="Startpunkt"
-             type="text" style="width:100%" pInputText>
-    </div>
-    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-      <input id="sleepOver" placeholder="Übernachtungsorte"
-             type="text" style="width:100%" pInputText>
-    </div>
-  </div>
-
   <!--Alpinshuttle, Strecke, Fahrtkosten, Zusatzkosten, Anzahlung-->
-  <div class="p-grid">
-    <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
-      <p-checkbox
-          label="Alpinshuttle"
-          binary="true"
-      ></p-checkbox>
-    </div>
-    <div class="p-col-12 p-sm-1 p-md-1 p-lg-1">
-      <input id="strecke" placeholder="Strecke"
-             type="text" style="width:100%" pInputText>
-    </div>
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <div class="ui-inputgroup">
-        <span class="ui-inputgroup-addon">Fahrt</span>
-        <input id="rideCosts" placeholder="Fahrtkosten" type="number" min="0"
-             pInputText>
-        <span class="ui-inputgroup-addon">€</span>
-      </div>
-    </div>
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <div class="ui-inputgroup">
-        <span class="ui-inputgroup-addon">Zusatz</span>
-        <input id="extraCharges" id="extraCharges" placeholder="Zusatzkosten" type="number" min="0"
-             pInputText>
-        <span class="ui-inputgroup-addon">€</span>
-      </div>
-    </div>
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <div class="ui-inputgroup">
-        <span class="ui-inputgroup-addon">Anzahlung</span>
-        <input formControlName="advances" id="advances" placeholder="Anzahlung" type="number" min="0"
-             pInputText>
-        <span class="ui-inputgroup-addon">€</span>
-      </div>
-    </div>
-  </div>
-
-  <!--Teilnehmergebühr-->
   <div class="p-grid">
     <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
       <div class="ui-inputgroup">
@@ -419,7 +358,48 @@
         <span class="ui-inputgroup-addon">€</span>
       </div>
     </div>
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <div class="ui-inputgroup">
+        <span class="ui-inputgroup-addon">Zusatz</span>
+        <input id="extraCharges" id="extraCharges" placeholder="Zusatzkosten" type="number" min="0"
+             pInputText>
+        <span class="ui-inputgroup-addon">€</span>
+      </div>
+    </div>
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <div class="ui-inputgroup">
+        <span class="ui-inputgroup-addon">Anzahlung</span>
+        <input formControlName="advances" id="advances" placeholder="Anzahlung" type="number" min="0"
+             pInputText>
+        <span class="ui-inputgroup-addon">€</span>
+      </div>
+    </div>
   </div>
+
+    <!--Zusatzkosten & Advances Details-->
+    <div class="p-grid">
+      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      </div>
+      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <textarea
+          [rows]="2"
+          pInputTextarea
+          placeholder="Zusatzkosten Details"
+          autoResize="autoResize"
+          style='width:100%'
+      ></textarea>
+      </div>
+      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <textarea
+          [rows]="2"
+          formControlName="advancesInfo"
+          placeholder="Anzahlung Details"
+          autoResize="autoResize"
+          style='width:100%'
+          pInputTextarea
+      ></textarea>
+      </div>
+    </div>
 
   <!--Bemerkung-->
   <div class="p-grid">
@@ -433,12 +413,6 @@
       ></textarea>
     </div>
   </div>
-<!--<ul>-->
-<!--  <li>Valid: {{tourGroup.valid}}</li>-->
-<!--  <li>Dirty: {{tourGroup.dirty}}</li>-->
-<!--  <li>Pristine: {{tourGroup.pristine}}</li>-->
-<!--  <li>Touched: {{tourGroup.touched}}</li>-->
-<!--</ul>-->
 </form>
 
 </ng-container>
