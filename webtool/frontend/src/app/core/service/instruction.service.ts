@@ -1,5 +1,13 @@
-import {Observable, of} from 'rxjs';
-import {catchError, first, map, publishLast, publishReplay, refCount, shareReplay} from 'rxjs/operators';
+import {BehaviorSubject, Observable, of, Subject} from 'rxjs';
+import {
+  catchError,
+  first,
+  map,
+  publishReplay,
+  refCount,
+  takeUntil,
+  tap
+} from 'rxjs/operators';
 
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse} from '@angular/common/http';
@@ -13,6 +21,9 @@ export class InstructionService {
   etag: string;
 
   constructor(private http: HttpClient) { }
+
+  private destroySubject = new Subject<void>();
+  private cloneSubject = new BehaviorSubject<Instruction>(undefined);
 
   getInstructionSummaries(): Observable<InstructionSummary[]> {
     const headers = {
@@ -93,7 +104,36 @@ export class InstructionService {
   }
 
   cloneInstruction(id: number): Observable<Instruction> {
-    console.log('Clone Instruction', id);
+    /* zu langsam --> Bug beim ersten Mal ausführen TODO: finden!!!*/
+    this.getInstruction(id).pipe(
+      takeUntil(this.destroySubject),
+      tap(val => {
+        this.cloneSubject.next(this.tranformInstructionForCloning(val));
+      }),
+      tap(() => console.log(this.cloneSubject.value)),
+    ).subscribe();
+
+    return this.http.post<Instruction>(
+      `/api/frontend/instructions/`,
+      this.cloneSubject.value
+    ).pipe(
+      catchError((error: HttpErrorResponse): Observable<Instruction> => {
+        console.log(error.statusText, error.status);
+        return of ({id: 0} as Instruction);
+      })
+    );
+  }
+
+  deleteInstruction(id: number): Observable<Instruction> {
+    console.log('Delete Instruction', id);
     return of({id : 0} as Instruction);
+  }
+
+  tranformInstructionForCloning(instruction: Instruction): any {
+    delete instruction.id;
+    delete instruction.reference;
+    delete instruction.instruction.id;
+    instruction.meetings.forEach((meeting) => delete meeting.id);
+    return instruction;
   }
 }
