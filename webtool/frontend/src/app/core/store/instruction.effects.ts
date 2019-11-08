@@ -6,8 +6,8 @@ import {Injectable} from '@angular/core';
 import {InstructionService} from '../service/instruction.service';
 import {
   AddInstruction,
-  CloneInstruction, DeactivateInstruction, DeleteInstruction,
-  InstructionActionTypes, InstructionDeactivateComplete, InstructionDeleteComplete,
+  CloneInstruction, CreateInstruction, DeactivateInstruction, DeleteInstruction,
+  InstructionActionTypes, InstructionCreateComplete, InstructionDeactivateComplete, InstructionDeleteComplete,
   InstructionNotModified,
   RequestInstruction
 } from './instruction.actions';
@@ -66,7 +66,7 @@ export class InstructionEffects {
   deleteInstruction$: Observable<Action> = this.actions$.pipe(
     ofType<DeleteInstruction>(InstructionActionTypes.DeleteInstruction),
     map((action: DeleteInstruction) => action.payload),
-    switchMap(payload => {
+    switchMap((payload) => {
       return this.instructionService.deleteInstruction(payload.id).pipe(
         map(instruction => {
           if (instruction === null) {
@@ -88,6 +88,24 @@ export class InstructionEffects {
         map(instruction => {
           if (instruction.id !== 0) {
             return new InstructionDeactivateComplete();
+          } else {
+            return new InstructionNotModified();
+          }
+        })
+      );
+    })
+  );
+
+  @Effect()
+  createInstruction$: Observable<Action> = this.actions$.pipe(
+    ofType<CreateInstruction>(InstructionActionTypes.CreateInstruction),
+    map((action: CreateInstruction) => action.payload),
+    switchMap(payload => {
+      return this.instructionService.createInstruction(payload.topicId, payload.startDate).pipe(
+        map(instruction => {
+          console.log('instruction: ', instruction);
+          if (instruction.topicId !== 0) {
+            return new InstructionCreateComplete();
           } else {
             return new InstructionNotModified();
           }

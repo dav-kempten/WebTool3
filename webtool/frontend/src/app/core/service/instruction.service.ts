@@ -1,4 +1,4 @@
-import {BehaviorSubject, Observable, of, Subject} from 'rxjs';
+import {BehaviorSubject, Observable, of, pipe, Subject} from 'rxjs';
 import {
   catchError,
   first,
@@ -12,6 +12,7 @@ import {
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse} from '@angular/common/http';
 import {Instruction, InstructionSummary} from '../../model/instruction';
+import {Event} from '../../model/event';
 
 @Injectable({
   providedIn: 'root'
@@ -25,6 +26,7 @@ export class InstructionService {
   private destroySubject = new Subject<void>();
   private cloneSubject = new BehaviorSubject<Instruction>(undefined);
   private deactivateSubject = new BehaviorSubject<Instruction>(undefined);
+  private createSubject = new BehaviorSubject<Instruction>(null);
 
   getInstructionSummaries(): Observable<InstructionSummary[]> {
     const headers = {
@@ -149,6 +151,20 @@ export class InstructionService {
     return this.http.put<Instruction>(
       `/api/frontend/instructions/${id}/`,
       this.deactivateSubject.value
+    ).pipe(
+      catchError((error: HttpErrorResponse): Observable<Instruction> => {
+        console.log(error.statusText, error.status);
+        return of ({id: 0} as Instruction);
+      }),
+    );
+  }
+
+  createInstruction(topic: number, date: string): Observable<Instruction> {
+    this.createSubject.next({topicId: topic, instruction: {startDate: date} as Event } as Instruction);
+
+    return this.http.post<Instruction>(
+      `/api/frontend/instructions/`,
+      this.createSubject.value
     ).pipe(
       catchError((error: HttpErrorResponse): Observable<Instruction> => {
         console.log(error.statusText, error.status);
