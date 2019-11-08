@@ -137,8 +137,6 @@ export class InstructionService {
   }
 
   deactivateInstruction(id: number): Observable<Instruction> {
-    console.log('Deactivate Instruction', id);
-    /* TODO: Fehler in Deaktivierung finden --> PUT-Request wird abgesetzt und angenommen aber hat keine Wirkung */
     this.getInstruction(id).pipe(
       takeUntil(this.destroySubject),
       tap(val => {
