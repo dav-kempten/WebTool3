@@ -6,7 +6,7 @@ import {Injectable} from '@angular/core';
 import {InstructionService} from '../service/instruction.service';
 import {
   AddInstruction,
-  CloneInstruction,
+  CloneInstruction, DeactivateInstruction, DeleteInstruction,
   InstructionActionTypes,
   InstructionNotModified,
   RequestInstruction
@@ -54,6 +54,40 @@ export class InstructionEffects {
         map(instruction => {
           if (instruction.id !== 0) {
             return new AddInstruction({instruction: this.transformInstruction(instruction)});
+          } else {
+            return new InstructionNotModified();
+          }
+        })
+      );
+    })
+  );
+
+  @Effect()
+  deleteInstruction$: Observable<Action> = this.actions$.pipe(
+    ofType<DeleteInstruction>(InstructionActionTypes.DeleteInstruction),
+    map((action: DeleteInstruction) => action.payload),
+    switchMap(payload => {
+      return this.instructionService.deleteInstruction(payload.id).pipe(
+        map(instruction => {
+          if (instruction.id !== 0) {
+            return new DeleteInstruction({id: instruction.id});
+          } else {
+            return new InstructionNotModified();
+          }
+        })
+      );
+    })
+  );
+
+  @Effect()
+  deactivateInstruction$: Observable<Action> = this.actions$.pipe(
+    ofType<DeactivateInstruction>(InstructionActionTypes.DeactivateInstruction),
+    map((action: DeactivateInstruction) => action.payload),
+    switchMap(payload => {
+      return this.instructionService.deactivateInstruction(payload.id).pipe(
+        map(instruction => {
+          if (instruction.id !== 0) {
+            return new DeactivateInstruction({id: instruction.id});
           } else {
             return new InstructionNotModified();
           }

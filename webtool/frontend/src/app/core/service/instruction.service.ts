@@ -129,6 +129,11 @@ export class InstructionService {
     return of({id : 0} as Instruction);
   }
 
+  deactivateInstruction(id: number): Observable<Instruction> {
+    console.log('Deactivate Instruction', id);
+    return of({id : 0} as Instruction);
+  }
+
   tranformInstructionForCloning(instruction: Instruction): any {
     delete instruction.id;
     delete instruction.reference;
