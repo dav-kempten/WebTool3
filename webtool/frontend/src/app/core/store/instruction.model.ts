@@ -23,5 +23,6 @@ export interface Instruction {
   minQuantity: number;
   maxQuantity: number;
   curQuantity?: number;
+  deprecated: boolean;
   stateId: number;
 }

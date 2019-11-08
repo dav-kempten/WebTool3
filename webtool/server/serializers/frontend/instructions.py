@@ -96,6 +96,7 @@ class InstructionSerializer(serializers.ModelSerializer):
     curQuantity = serializers.IntegerField(source='cur_quantity', read_only=True)
 
     stateId = serializers.PrimaryKeyRelatedField(source='state', required=False, queryset=State.objects.all())
+    deprecated = serializers.BooleanField()
 
     # Administrative Felder fehlen noch !
 
@@ -112,7 +113,7 @@ class InstructionSerializer(serializers.ModelSerializer):
             'equipmentIds', 'miscEquipment', 'equipmentService',
             'admission', 'advances', 'advancesInfo', 'extraCharges', 'extraChargesInfo',
             'minQuantity', 'maxQuantity', 'curQuantity',
-            'stateId',
+            'deprecated','stateId',
         )
 
     def validate(self, data):
