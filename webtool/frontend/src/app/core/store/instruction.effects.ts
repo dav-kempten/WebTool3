@@ -7,7 +7,7 @@ import {InstructionService} from '../service/instruction.service';
 import {
   AddInstruction,
   CloneInstruction, DeactivateInstruction, DeleteInstruction,
-  InstructionActionTypes,
+  InstructionActionTypes, InstructionDeleteComplete,
   InstructionNotModified,
   RequestInstruction
 } from './instruction.actions';
@@ -69,8 +69,8 @@ export class InstructionEffects {
     switchMap(payload => {
       return this.instructionService.deleteInstruction(payload.id).pipe(
         map(instruction => {
-          if (instruction.id !== 0) {
-            return new DeleteInstruction({id: instruction.id});
+          if (instruction === null) {
+            return new InstructionDeleteComplete();
           } else {
             return new InstructionNotModified();
           }

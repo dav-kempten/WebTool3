@@ -123,8 +123,14 @@ export class InstructionService {
   }
 
   deleteInstruction(id: number): Observable<Instruction> {
-    console.log('Delete Instruction', id);
-    return of({id : 0} as Instruction);
+    return this.http.delete<Instruction>(
+      `/api/frontend/instructions/${id}/`,
+    ).pipe(
+      catchError((error: HttpErrorResponse): Observable<Instruction> => {
+        console.log(error.statusText, error.status);
+        return of ({id: 0} as Instruction);
+      }),
+    );
   }
 
   deactivateInstruction(id: number): Observable<Instruction> {
