@@ -107,9 +107,7 @@ export class InstructionService {
     /* zu langsam --> Bug beim ersten Mal ausführen TODO: finden!!!*/
     this.getInstruction(id).pipe(
       takeUntil(this.destroySubject),
-      tap(val => {
-        this.cloneSubject.next(this.tranformInstructionForCloning(val));
-      }),
+      tap(val => this.cloneSubject.next(this.tranformInstructionForCloning(val))),
       tap(() => console.log(this.cloneSubject.value)),
     ).subscribe();
 
