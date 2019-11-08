@@ -24,6 +24,7 @@ export class InstructionService {
 
   private destroySubject = new Subject<void>();
   private cloneSubject = new BehaviorSubject<Instruction>(undefined);
+  private deactivateSubject = new BehaviorSubject<Instruction>(undefined);
 
   getInstructionSummaries(): Observable<InstructionSummary[]> {
     const headers = {
@@ -104,7 +105,7 @@ export class InstructionService {
   }
 
   cloneInstruction(id: number): Observable<Instruction> {
-    /* zu langsam --> Bug beim ersten Mal ausführen TODO: finden!!!*/
+    /* TODO: zu langsam --> Bug beim ersten Mal ausführen, die Befehle überholen sich */
     this.getInstruction(id).pipe(
       takeUntil(this.destroySubject),
       tap(val => this.cloneSubject.next(this.tranformInstructionForCloning(val))),
@@ -135,7 +136,25 @@ export class InstructionService {
 
   deactivateInstruction(id: number): Observable<Instruction> {
     console.log('Deactivate Instruction', id);
-    return of({id : 0} as Instruction);
+    /* TODO: Fehler in Deaktivierung finden --> PUT-Request wird abgesetzt und angenommen aber hat keine Wirkung */
+    this.getInstruction(id).pipe(
+      takeUntil(this.destroySubject),
+      tap(val => {
+        val.deprecated = true;
+        this.deactivateSubject.next(val);
+      }),
+      tap(() => console.log(this.deactivateSubject.value)),
+    ).subscribe();
+
+    return this.http.put<Instruction>(
+      `/api/frontend/instructions/${id}/`,
+      this.deactivateSubject.value
+    ).pipe(
+      catchError((error: HttpErrorResponse): Observable<Instruction> => {
+        console.log(error.statusText, error.status);
+        return of ({id: 0} as Instruction);
+      }),
+    );
   }
 
   tranformInstructionForCloning(instruction: Instruction): any {
