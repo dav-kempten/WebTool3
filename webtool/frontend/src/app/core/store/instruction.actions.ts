@@ -6,6 +6,7 @@ export enum InstructionActionTypes {
   InstructionNotModified = '[Instruction] Instruction not modified',
   InstructionDeleteComplete = '[Instruction] Instruction delete complete',
   InstructionDeactivateComplete = '[Instruction] Instruction deactivate complete',
+  InstructionCreateComplete = '[Instruction] Instruction create complete',
   RequestInstruction = '[Instruction] Request Instruction',
   LoadInstructions = '[Instruction] Load Instructions',
   AddInstruction = '[Instruction] Add Instruction',
@@ -38,6 +39,10 @@ export class InstructionDeleteComplete implements Action {
 
 export class InstructionDeactivateComplete implements Action {
   readonly type = InstructionActionTypes.InstructionDeactivateComplete;
+}
+
+export class InstructionCreateComplete implements Action {
+  readonly type = InstructionActionTypes.InstructionCreateComplete;
 }
 
 export class LoadInstructions implements Action {
@@ -121,6 +126,7 @@ export type InstructionActions =
   | InstructionNotModified
   | InstructionDeleteComplete
   | InstructionDeactivateComplete
+  | InstructionCreateComplete
   | LoadInstructions
   | AddInstruction
   | UpsertInstruction
