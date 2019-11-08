@@ -147,9 +147,8 @@ export class InstructionListComponent implements OnInit, OnDestroy {
     this.display = true;
   }
 
-  confirmClick() {
-    this.store.dispatch(new CreateInstruction({topicId: this.createInstruction.get('topicId').value,
-      startDate: this.createInstruction.get('startDate').value}));
+  create(topic, date) {
+    this.store.dispatch(new CreateInstruction({topicId: topic, startDate: date}));
     this.display = false;
   }
 

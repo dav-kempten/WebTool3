@@ -54,7 +54,7 @@
         ></avk-date>
       </div>
     </div>
-    <p-button label="Bestätigen" (onClick)="confirmClick()"></p-button>
+    <p-button label="Bestätigen" (onClick)="create(createInstruction.get('topicId').value, createInstruction.get('startDate').value)"></p-button>
   </p-dialog>
   </form>
 </ng-container>
