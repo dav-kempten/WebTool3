@@ -5,6 +5,7 @@ import { Instruction } from './instruction.model';
 export enum InstructionActionTypes {
   InstructionNotModified = '[Instruction] Instruction not modified',
   InstructionDeleteComplete = '[Instruction] Instruction delete complete',
+  InstructionDeactivateComplete = '[Instruction] Instruction deactivate complete',
   RequestInstruction = '[Instruction] Request Instruction',
   LoadInstructions = '[Instruction] Load Instructions',
   AddInstruction = '[Instruction] Add Instruction',
@@ -33,6 +34,10 @@ export class InstructionNotModified implements Action {
 
 export class InstructionDeleteComplete implements Action {
   readonly type = InstructionActionTypes.InstructionDeleteComplete;
+}
+
+export class InstructionDeactivateComplete implements Action {
+  readonly type = InstructionActionTypes.InstructionDeactivateComplete;
 }
 
 export class LoadInstructions implements Action {
@@ -115,6 +120,7 @@ export type InstructionActions =
   RequestInstruction
   | InstructionNotModified
   | InstructionDeleteComplete
+  | InstructionDeactivateComplete
   | LoadInstructions
   | AddInstruction
   | UpsertInstruction
