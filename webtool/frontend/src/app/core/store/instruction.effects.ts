@@ -8,8 +8,8 @@ import {
   AddInstruction,
   CloneInstruction, CreateInstruction, DeactivateInstruction, DeleteInstruction,
   InstructionActionTypes, InstructionCreateComplete, InstructionDeactivateComplete, InstructionDeleteComplete,
-  InstructionNotModified,
-  RequestInstruction
+  InstructionNotModified, InstructionUpdateComplete,
+  RequestInstruction, UpsertInstruction
 } from './instruction.actions';
 import {Event} from '../../model/event';
 import {AppState} from '../../app.state';
@@ -103,9 +103,26 @@ export class InstructionEffects {
     switchMap(payload => {
       return this.instructionService.createInstruction(payload.topicId, payload.startDate).pipe(
         map(instruction => {
-          console.log('instruction: ', instruction);
           if (instruction.topicId !== 0) {
             return new InstructionCreateComplete();
+          } else {
+            return new InstructionNotModified();
+          }
+        })
+      );
+    })
+  );
+
+  @Effect()
+  safeInstruction$: Observable<Action> = this.actions$.pipe(
+    ofType<UpsertInstruction>(InstructionActionTypes.UpsertInstruction),
+    map((action: UpsertInstruction) => action.payload),
+    switchMap(payload  => {
+      console.log(payload);
+      return this.instructionService.upsertInstruction(payload).pipe(
+        map(instruction => {
+          if (instruction !== null) {
+            return new InstructionUpdateComplete();
           } else {
             return new InstructionNotModified();
           }

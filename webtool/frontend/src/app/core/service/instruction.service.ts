@@ -27,6 +27,7 @@ export class InstructionService {
   private cloneSubject = new BehaviorSubject<Instruction>(undefined);
   private deactivateSubject = new BehaviorSubject<Instruction>(undefined);
   private createSubject = new BehaviorSubject<Instruction>(null);
+  private updateSubject = new BehaviorSubject<Instruction>(null);
 
   getInstructionSummaries(): Observable<InstructionSummary[]> {
     const headers = {
@@ -163,6 +164,22 @@ export class InstructionService {
     return this.http.post<Instruction>(
       `/api/frontend/instructions/`,
       this.createSubject.value
+    ).pipe(
+      catchError((error: HttpErrorResponse): Observable<Instruction> => {
+        console.log(error.statusText, error.status);
+        return of ({id: 0} as Instruction);
+      }),
+    );
+  }
+
+  upsertInstruction(instruction: any): Observable<Instruction> {
+    console.log(instruction);
+    this.updateSubject.next(instruction as Instruction);
+    // console.log(this.updateSubject.value.instruction.id);
+
+    return this.http.put<Instruction>(
+      `/api/frontend/instructions/${this.updateSubject.value.instruction.id}/`,
+      this.updateSubject.value.instruction
     ).pipe(
       catchError((error: HttpErrorResponse): Observable<Instruction> => {
         console.log(error.statusText, error.status);
