@@ -151,6 +151,7 @@ export class InstructionEffects {
       );
     })
   );
+
   transformInstruction(instruction: RawInstruction): Instruction {
     const instructionId = instruction.id;
     let meetingIds: number[];
@@ -196,9 +197,9 @@ export class InstructionEffects {
       ... instructionInterface,
       instruction,
       meetings,
-      admission: String(instructionInterface.admission * 100),
-      advances: String(instructionInterface.advances * 100),
-      extraCharges: String(instructionInterface.extraCharges * 100)
+      admission: String(instructionInterface.admission),
+      advances: String(instructionInterface.advances),
+      extraCharges: String(instructionInterface.extraCharges)
     };
   }
 }
