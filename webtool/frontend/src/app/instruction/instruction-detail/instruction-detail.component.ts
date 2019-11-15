@@ -237,12 +237,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     this.store.dispatch(new CreateEvent({id: this.instructionSubject.value.get('id').value}));
   }
 
-  save(instruction, eventGroup) {
-    console.log(instruction.value);
-    console.log(eventGroup);
-
-    // console.log(this.tranformInstruction(instruction, eventGroup));
-
+  save(instruction) {
     this.store.dispatch(new UpsertInstruction({instruction: instruction as Instruction}));
   }
 }

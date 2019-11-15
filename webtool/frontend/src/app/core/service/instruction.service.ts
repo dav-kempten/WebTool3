@@ -184,10 +184,10 @@ export class InstructionService {
 
     return this.http.put<Instruction>(
       `/api/frontend/instructions/${this.updateSubject.value.id}/`,
-      this.updateSubject.value.instruction
+      this.updateSubject.value
     ).pipe(
       catchError((error: HttpErrorResponse): Observable<Instruction> => {
-        console.log(error.statusText, error.status, error.message);
+        console.log(error.statusText, error.status);
         return of ({id: 0} as Instruction);
       }),
     );
