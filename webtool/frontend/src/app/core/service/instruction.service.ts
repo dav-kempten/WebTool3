@@ -13,6 +13,11 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse} from '@angular/common/http';
 import {Instruction, InstructionSummary} from '../../model/instruction';
 import {Event} from '../../model/event';
+import {Instruction as InstructionInterface} from '../../core/store/instruction.model';
+
+function convertDecimal(rawValue: string): number {
+  return Number(rawValue.replace('.', ''));
+}
 
 @Injectable({
   providedIn: 'root'
@@ -172,17 +177,17 @@ export class InstructionService {
     );
   }
 
-  upsertInstruction(instruction: any): Observable<Instruction> {
+  upsertInstruction(instruction: Instruction): Observable<Instruction> {
     console.log(instruction);
-    this.updateSubject.next(instruction as Instruction);
-    // console.log(this.updateSubject.value.instruction.id);
+    this.updateSubject.next(instruction);
+    console.log(this.updateSubject.value.id);
 
     return this.http.put<Instruction>(
-      `/api/frontend/instructions/${this.updateSubject.value.instruction.id}/`,
+      `/api/frontend/instructions/${this.updateSubject.value.id}/`,
       this.updateSubject.value.instruction
     ).pipe(
       catchError((error: HttpErrorResponse): Observable<Instruction> => {
-        console.log(error.statusText, error.status);
+        console.log(error.statusText, error.status, error.message);
         return of ({id: 0} as Instruction);
       }),
     );

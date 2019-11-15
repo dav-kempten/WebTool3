@@ -119,7 +119,7 @@ export class InstructionEffects {
     map((action: UpsertInstruction) => action.payload),
     switchMap(payload  => {
       console.log(payload);
-      return this.instructionService.upsertInstruction(payload).pipe(
+      return this.instructionService.upsertInstruction(this.tranformInstructionForSaving(payload.instruction)).pipe(
         map(instruction => {
           if (instruction !== null) {
             return new InstructionUpdateComplete();
@@ -151,6 +151,25 @@ export class InstructionEffects {
       admission: convertDecimal(instruction.admission),
       advances: convertDecimal(instruction.advances),
       extraCharges: convertDecimal(instruction.extraCharges)
+    };
+  }
+
+  tranformInstructionForSaving(instructionInterface: Instruction): RawInstruction {
+    const instruction: any = {};
+    const meetings: any[] = [];
+
+    delete instructionInterface.instructionId;
+    delete instructionInterface.meetingIds;
+
+    console.log(instructionInterface);
+
+    return {
+      ... instructionInterface,
+      instruction,
+      meetings,
+      admission: String(instructionInterface.admission * 100),
+      advances: String(instructionInterface.advances * 100),
+      extraCharges: String(instructionInterface.extraCharges * 100)
     };
   }
 }
