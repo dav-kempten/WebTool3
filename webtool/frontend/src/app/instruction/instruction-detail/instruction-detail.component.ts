@@ -240,6 +240,9 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
 
   addEvent(instruction) {
     this.store.dispatch(new AddEventInstruction({instruction: instruction as Instruction}));
+    setTimeout(() => {
+      window.location.reload();
+    }, 200);
   }
 
   save(instruction) {

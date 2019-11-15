@@ -122,7 +122,6 @@ export class InstructionEffects {
     ofType<UpsertInstruction>(InstructionActionTypes.UpsertInstruction),
     map((action: UpsertInstruction) => action.payload),
     switchMap(payload  => {
-      console.log(payload);
       return this.instructionService.upsertInstruction(this.tranformInstructionForSaving(payload.instruction)).pipe(
         map(instruction => {
           if (instruction !== null) {
