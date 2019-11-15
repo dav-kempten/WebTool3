@@ -6,7 +6,12 @@ import {getCategoryById, getTopicById} from '../../core/store/value.selectors';
 import {NamesRequested} from '../../core/store/name.actions';
 import {ValuesRequested} from '../../core/store/value.actions';
 import {CalendarRequested} from '../../core/store/calendar.actions';
-import {RequestInstruction, UpdateInstruction, UpsertInstruction} from '../../core/store/instruction.actions';
+import {
+  AddEventInstruction,
+  RequestInstruction,
+  UpdateInstruction,
+  UpsertInstruction
+} from '../../core/store/instruction.actions';
 import {getInstructionById} from '../../core/store/instruction.selectors';
 import {Instruction} from '../../core/store/instruction.model';
 import {filter, flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
@@ -15,7 +20,7 @@ import {AuthService, User} from '../../core/service/auth.service';
 import {Event} from '../../model/event';
 import {Category, Topic} from '../../model/value';
 import {FormArray, FormControl, FormGroup} from '@angular/forms';
-import {CreateEvent, UpdateEvent} from '../../core/store/event.actions';
+import {AddEvent, CreateEvent, UpdateEvent} from '../../core/store/event.actions';
 import {Instruction as RawInstruction} from '../../model/instruction';
 
 @Component({
@@ -233,8 +238,8 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     distal.disabled = !isDistal;
   }
 
-  addEvent() {
-    this.store.dispatch(new CreateEvent({id: this.instructionSubject.value.get('id').value}));
+  addEvent(instruction) {
+    this.store.dispatch(new AddEventInstruction({instruction: instruction as Instruction}));
   }
 
   save(instruction) {

@@ -5,6 +5,7 @@ import {Actions, Effect, ofType} from '@ngrx/effects';
 import {Injectable} from '@angular/core';
 import {InstructionService} from '../service/instruction.service';
 import {
+  AddEventInstruction,
   AddInstruction,
   CloneInstruction, CreateInstruction, DeactivateInstruction, DeleteInstruction,
   InstructionActionTypes, InstructionCreateComplete, InstructionDeactivateComplete, InstructionDeleteComplete,
@@ -134,6 +135,22 @@ export class InstructionEffects {
     })
   );
 
+  @Effect()
+  addEventInstruction$: Observable<Action> = this.actions$.pipe(
+    ofType<AddEventInstruction>(InstructionActionTypes.AddEventInstruction),
+    map((action: AddEventInstruction) => action.payload),
+    switchMap(payload  => {
+      return this.instructionService.addEventInstruction(this.tranformInstructionForSaving(payload.instruction)).pipe(
+        map(instruction => {
+          if (instruction !== null) {
+            return new InstructionUpdateComplete();
+          } else {
+            return new InstructionNotModified();
+          }
+        })
+      );
+    })
+  );
   transformInstruction(instruction: RawInstruction): Instruction {
     const instructionId = instruction.id;
     let meetingIds: number[];

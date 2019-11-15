@@ -33,6 +33,7 @@ export class InstructionService {
   private deactivateSubject = new BehaviorSubject<Instruction>(undefined);
   private createSubject = new BehaviorSubject<Instruction>(null);
   private updateSubject = new BehaviorSubject<Instruction>(null);
+  private addEventSubject = new BehaviorSubject<Instruction>(null);
 
   getInstructionSummaries(): Observable<InstructionSummary[]> {
     const headers = {
@@ -178,13 +179,27 @@ export class InstructionService {
   }
 
   upsertInstruction(instruction: Instruction): Observable<Instruction> {
-    console.log(instruction);
     this.updateSubject.next(instruction);
-    console.log(this.updateSubject.value.id);
 
     return this.http.put<Instruction>(
       `/api/frontend/instructions/${this.updateSubject.value.id}/`,
       this.updateSubject.value
+    ).pipe(
+      catchError((error: HttpErrorResponse): Observable<Instruction> => {
+        console.log(error.statusText, error.status);
+        return of ({id: 0} as Instruction);
+      }),
+    );
+  }
+
+  addEventInstruction(instruction: Instruction): Observable<Instruction> {
+    const newEvent: Event = {...instruction.instruction, id: null};
+    instruction.meetings.push(newEvent);
+    this.addEventSubject.next(instruction);
+
+    return this.http.put<Instruction>(
+      `/api/frontend/instructions/${this.addEventSubject.value.id}/`,
+      this.addEventSubject.value
     ).pipe(
       catchError((error: HttpErrorResponse): Observable<Instruction> => {
         console.log(error.statusText, error.status);

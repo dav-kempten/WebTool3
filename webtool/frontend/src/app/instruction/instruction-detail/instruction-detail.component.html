@@ -234,7 +234,7 @@
   </form>
 
   <!--Button für neues Event-->
-  <p-button label="Event hinzufügen" (onClick)="addEvent()"></p-button>
+  <p-button label="Event hinzufügen" (onClick)="addEvent(this.instructionGroup.value)"></p-button>
 
   <!--Liste mit Parametern (Tabelle)-->
   <ng-container *ngIf="(eventArray$ | async) as eventArray">
@@ -471,7 +471,7 @@
       </div>
     </div>
   <p-button pButton type="button" label="Speichern" class="ui-button-info"
-            (click)="save(this.instructionGroup.value, this.eventsSubject.value.value)"></p-button>
+            (click)="save(this.instructionGroup.value)"></p-button>
   </form>
 </ng-container>
 <ng-template #loading>Bitte kurz warten!</ng-template>

@@ -12,6 +12,7 @@ export enum InstructionActionTypes {
   LoadInstructions = '[Instruction] Load Instructions',
   AddInstruction = '[Instruction] Add Instruction',
   UpsertInstruction = '[Instruction] Upsert Instruction',
+  AddEventInstruction = '[Instruction] AddEvent Instruction',
   AddInstructions = '[Instruction] Add Instructions',
   UpsertInstructions = '[Instruction] Upsert Instructions',
   UpdateInstruction = '[Instruction] Update Instruction',
@@ -64,6 +65,12 @@ export class AddInstruction implements Action {
 
 export class UpsertInstruction implements Action {
   readonly type = InstructionActionTypes.UpsertInstruction;
+
+  constructor(public payload: { instruction: Instruction }) {}
+}
+
+export class AddEventInstruction implements Action {
+  readonly type = InstructionActionTypes.AddEventInstruction;
 
   constructor(public payload: { instruction: Instruction }) {}
 }
@@ -136,6 +143,7 @@ export type InstructionActions =
   | LoadInstructions
   | AddInstruction
   | UpsertInstruction
+  | AddEventInstruction
   | AddInstructions
   | UpsertInstructions
   | UpdateInstruction
