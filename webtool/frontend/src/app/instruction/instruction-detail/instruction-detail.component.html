@@ -1,11 +1,11 @@
 <ng-container *ngIf="instructionGroup$ | async as instructionGroup else loading">
 
-<!--  <p>InstructionGroup:<br/>{{instructionGroup.value | json}}</p>-->
+  <p>InstructionGroup:<br/>{{instructionGroup.value | json}}</p>
 <!--  <p>TopicGroup:<br/>{{(topicGroup$ | async)?.value | json}}</p>-->
 <!--  <p>CategoryGroup:<br />{{(categoryGroup$ | async)?.value | json}}</p>-->
 <!--  <p>EventIds: {{instructionGroup.get('instructionId').value}},-->
 <!--    {{instructionGroup.get('meetingIds').value.join(', ')}}</p>-->
-<!--  <p>EventArray:<br/>{{(eventArray$ | async)?.value | json}}</p>-->
+  <p>EventArray:<br/>{{(eventArray$ | async)?.value | json}}</p>
 
   <form [formGroup]="instructionGroup">
     <!--GuideComponent // Kosten // Einnahmen-->
@@ -470,10 +470,15 @@
       ></textarea>
       </div>
     </div>
-  <p-button pButton type="button" label="Speichern" class="ui-button-info"
+    <div class="p-grid">
+      <div class="p-col-12 p-sm-1 p-md-1 p-lg-1">
+        <p-button type="button" label="Speichern" class="ui-button-info"
             (click)="save(this.instructionGroup.value)"></p-button>
+        </div>
+      <div class="p-col-12 p-sm-1 p-md-1 p-lg-1">
+        <a routerLink="../"><p-button label="Zurück"></p-button></a>
+      </div>
+    </div>
   </form>
 </ng-container>
 <ng-template #loading>Bitte kurz warten!</ng-template>
-
-<a routerLink="../"><p-button label="Zurück"></p-button></a>
