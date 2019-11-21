@@ -4,6 +4,7 @@ import { Tour } from './tour.model';
 
 export enum TourActionTypes {
   TourNotModified = '[Tour] Tour not modified',
+  TourCreateComplete = '[Tour] Tour create complete',
   RequestTour = '[Tour] Request Tour',
   LoadTours = '[Tour] Load Tours',
   AddTour = '[Tour] Add Tour',
@@ -28,6 +29,10 @@ export class RequestTour implements Action {
 
 export class TourNotModified implements Action {
   readonly type = TourActionTypes.TourNotModified;
+}
+
+export class TourCreateComplete implements Action {
+  readonly type = TourActionTypes.TourCreateComplete;
 }
 
 export class LoadTours implements Action {

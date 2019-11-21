@@ -9,7 +9,7 @@ import {
   CloneTour,
   TourActionTypes,
   TourNotModified,
-  RequestTour
+  RequestTour, TourCreateComplete
 } from './tour.actions';
 import {Event} from '../../model/event';
 import {AppState} from '../../app.state';
@@ -53,7 +53,7 @@ export class TourEffects {
       return this.tourService.cloneTour(payload.id).pipe(
         map(tour => {
           if (tour.id !== 0) {
-            return new AddTour({tour: this.transformTour(tour)});
+            return new TourCreateComplete();
           } else {
             return new TourNotModified();
           }

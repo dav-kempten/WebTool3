@@ -13,6 +13,7 @@ import {Router} from '@angular/router';
 import {flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {RequestTourSummaries} from '../../core/store/tour-summary.actions';
 import {getTourSummaries} from '../../core/store/tour-summary.selectors';
+import {CloneTour} from '../../core/store/tour.actions';
 
 @Component({
   selector: 'avk-tour-list',
@@ -147,7 +148,7 @@ export class TourListComponent implements OnInit, OnDestroy {
   }
 
   clone(tourId) {
-    // this.store.dispatch(new CloneTour({id: tourId}));
+    this.store.dispatch(new CloneTour({id: tourId}));
   }
 
   delete(tourId) {

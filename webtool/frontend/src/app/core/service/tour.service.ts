@@ -1,5 +1,15 @@
-import {Observable, of} from 'rxjs';
-import {catchError, first, map, publishLast, publishReplay, refCount, shareReplay} from 'rxjs/operators';
+import {BehaviorSubject, Observable, of, Subject} from 'rxjs';
+import {
+  catchError,
+  first,
+  map,
+  publishLast,
+  publishReplay,
+  refCount,
+  shareReplay,
+  takeUntil,
+  tap
+} from 'rxjs/operators';
 
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse} from '@angular/common/http';
@@ -13,6 +23,9 @@ export class TourService {
   etag: string;
 
   constructor(private http: HttpClient) { }
+
+  private destroySubject = new Subject<void>();
+  private cloneSubject = new BehaviorSubject<Tour>(undefined);
 
   getTourSummaries(): Observable<TourSummary[]> {
     const headers = {
@@ -93,7 +106,31 @@ export class TourService {
   }
 
   cloneTour(id: number): Observable<Tour> {
-    console.log('Clone Tour', id);
-    return of({id : 0} as Tour);
+
+    this.getTour(id).pipe(
+      takeUntil(this.destroySubject),
+      tap(val => this.cloneSubject.next(this.transformTourForCloning(val))),
+    ).subscribe();
+
+    return this.http.post<Tour>(
+      `/api/frontend/tours/`,
+      this.cloneSubject.value
+    ).pipe(
+      catchError((error: HttpErrorResponse): Observable<Tour> => {
+        console.log(error.statusText, error.status);
+        return of ({id: 0} as Tour);
+      })
+    );
+  }
+
+  transformTourForCloning(tour: Tour): any {
+    delete tour.id;
+    delete tour.reference;
+    delete tour.tour.id;
+    delete tour.deadline.id;
+    if (tour.preliminary !== null) {
+      delete tour.preliminary.id;
+    }
+    return tour;
   }
 }
