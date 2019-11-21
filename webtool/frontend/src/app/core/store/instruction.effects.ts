@@ -57,7 +57,7 @@ export class InstructionEffects {
       return this.instructionService.cloneInstruction(payload.id).pipe(
         map(instruction => {
           if (instruction.id !== 0) {
-            return new AddInstruction({instruction: this.transformInstruction(instruction)});
+            return new InstructionCreateComplete();
           } else {
             return new InstructionNotModified();
           }
