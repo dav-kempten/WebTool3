@@ -1,4 +1,14 @@
-import {Component, ContentChild, forwardRef, Input, OnInit, ViewChild} from '@angular/core';
+import {
+  AfterContentInit,
+  AfterViewInit,
+  Component,
+  ContentChild,
+  forwardRef,
+  Input,
+  OnDestroy,
+  OnInit,
+  ViewChild
+} from '@angular/core';
 import {Store} from '@ngrx/store';
 import {AppState} from '../../app.state';
 import {Calendar, LocaleSettings} from 'primeng/primeng';
@@ -31,7 +41,7 @@ const german: LocaleSettings = {
   templateUrl: './time.component.html',
   styleUrls: ['./time.component.css']
 })
-export class TimeComponent implements OnInit {
+export class TimeComponent implements OnInit, AfterViewInit, OnDestroy, AfterContentInit {
 
   // id = 'time';
   label = 'Uhrzeit';
