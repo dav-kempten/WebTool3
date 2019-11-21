@@ -3,7 +3,7 @@ from rest_framework.reverse import reverse
 
 from server.models import (
     Tour, Guide, Category, Equipment, State, get_default_state, get_default_season, Event, Reference,
-    Skill)
+    Skill, Fitness, Qualification)
 from server.serializers.frontend.core import EventSerializer, MoneyField, create_event, update_event
 
 
@@ -61,7 +61,7 @@ class TourSerializer(serializers.ModelSerializer):
     )
 
     categoryId = serializers.PrimaryKeyRelatedField(
-        source='tour.reference.category', queryset=Tour.objects.all()
+        source='tour.reference.category', queryset=Category.objects.all()
     )
 
     categoryIds = serializers.PrimaryKeyRelatedField(
@@ -76,7 +76,7 @@ class TourSerializer(serializers.ModelSerializer):
     youthOnTour = serializers.BooleanField(source='youth_on_tour', default=False)
     miscCategory = serializers.CharField(source='misc_category', max_length=75, default='', allow_blank=True)
     qualificationIds = serializers.PrimaryKeyRelatedField(
-        source='qualifications', many=True, default=[], read_only=True
+        source='qualifications', many=True, default=[], queryset=Qualification.objects.all()
     )
     preconditions = serializers.CharField(default='', allow_blank=True)
 
@@ -90,7 +90,7 @@ class TourSerializer(serializers.ModelSerializer):
         source='skill', default=None, allow_null=True, queryset=Skill.objects.all()
     )
     fitnessId = serializers.PrimaryKeyRelatedField(
-        source='fitness', default=None, allow_null=True, queryset=Skill.objects.all()
+        source='fitness', default=None, allow_null=True, queryset=Fitness.objects.all()
     )
 
     admission = MoneyField()
@@ -168,6 +168,8 @@ class TourSerializer(serializers.ModelSerializer):
         if instance:
             return self.update(instance, validated_data)
         else:
+            print(validated_data)
+
             tour_data = validated_data.pop('tour')
             deadline_data = validated_data.pop('deadline')
             preliminary_data = validated_data.pop('preliminary')
@@ -176,6 +178,8 @@ class TourSerializer(serializers.ModelSerializer):
             qualifications = validated_data.pop('qualifications')
             equipments = validated_data.pop('equipments')
             state = validated_data.pop('state', get_default_state())
+            category = validated_data.pop('category')
+            # category = tour_data.category
             categories = validated_data.pop('categories')
             season = get_default_season()
             # season = category.seasons.get(current=True)
@@ -183,8 +187,8 @@ class TourSerializer(serializers.ModelSerializer):
             if not 'start_date' in tour_data:
                 raise serializers.ValidationError("Tour 'start_date' have to be defined")
 
-            if len(categories) > 0:
-                tour_event = create_event(tour_data, dict(category=categories[0], season=season, type=dict(tour=True)))
+            if category:
+                tour_event = create_event(tour_data, dict(category=category, season=season, type=dict(category=True)))
             else:
                 tour_event = create_event(tour_data, dict(season=season, type=dict(tour=True)))
 
