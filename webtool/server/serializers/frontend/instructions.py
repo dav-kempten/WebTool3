@@ -113,7 +113,7 @@ class InstructionSerializer(serializers.ModelSerializer):
             'equipmentIds', 'miscEquipment', 'equipmentService',
             'admission', 'advances', 'advancesInfo', 'extraCharges', 'extraChargesInfo',
             'minQuantity', 'maxQuantity', 'curQuantity',
-            'deprecated','stateId',
+            'deprecated', 'stateId',
         )
 
     def validate(self, data):
