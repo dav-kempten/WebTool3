@@ -118,7 +118,6 @@ export class InstructionService {
     this.getInstruction(id).pipe(
       takeUntil(this.destroySubject),
       tap(val => this.cloneSubject.next(this.tranformInstructionForCloning(val))),
-      tap(() => console.log(this.cloneSubject.value)),
     ).subscribe();
 
     return this.http.post<Instruction>(
