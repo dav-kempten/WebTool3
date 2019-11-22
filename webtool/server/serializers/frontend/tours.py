@@ -107,6 +107,7 @@ class TourSerializer(serializers.ModelSerializer):
     curQuantity = serializers.IntegerField(source='cur_quantity', read_only=True)
 
     portal = serializers.URLField(default='', allow_blank=True)
+    deprecated = serializers.BooleanField(default=False, required=False)
     stateId = serializers.PrimaryKeyRelatedField(source='state', required=False, queryset=State.objects.all())
 
     # Administrative Felder fehlen noch !
@@ -126,7 +127,7 @@ class TourSerializer(serializers.ModelSerializer):
             'skillId', 'fitnessId',
             'admission', 'advances', 'advancesInfo', 'extraCharges', 'extraChargesInfo',
             'minQuantity', 'maxQuantity', 'curQuantity',
-            'portal', 'stateId',
+            'portal', 'deprecated', 'stateId',
         )
 
     def validate(self, data):
@@ -249,6 +250,7 @@ class TourSerializer(serializers.ModelSerializer):
         instance.extra_charges_info = validated_data.get('extra_charges_info', instance.extra_charges_info)
         instance.min_quantity = validated_data.get('min_quantity', instance.min_quantity)
         instance.max_quantity = validated_data.get('max_quantity', instance.max_quantity)
+        instance.deprecated = validated_data.get('deprecated', instance.deprecated)
         instance.state = validated_data.get('state', instance.state)
         instance.save()
 

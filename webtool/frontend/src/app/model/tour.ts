@@ -45,5 +45,6 @@ export interface Tour {
   minQuantity: number;
   maxQuantity: number;
   curQuantity?: number;
+  deprecated: boolean;
   stateId: number;
 }
