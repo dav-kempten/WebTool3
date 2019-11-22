@@ -15,6 +15,11 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse} from '@angular/common/http';
 import {Tour, TourSummary} from '../../model/tour';
 
+interface TourExt extends Tour {
+  category: number;
+}
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -109,7 +114,7 @@ export class TourService {
 
     this.getTour(id).pipe(
       takeUntil(this.destroySubject),
-      tap(val => this.cloneSubject.next(this.transformTourForCloning(val))),
+      tap(val => this.cloneSubject.next(this.transformTourForCloning(val as TourExt))),
     ).subscribe();
 
     return this.http.post<Tour>(
@@ -123,7 +128,7 @@ export class TourService {
     );
   }
 
-  transformTourForCloning(tour: Tour): any {
+  transformTourForCloning(tour: TourExt): any {
     delete tour.id;
     delete tour.reference;
     delete tour.tour.id;
@@ -131,6 +136,8 @@ export class TourService {
     if (tour.preliminary !== null) {
       delete tour.preliminary.id;
     }
+    tour.category = tour.categoryId;
+    delete tour.categoryId;
     return tour;
   }
 }
