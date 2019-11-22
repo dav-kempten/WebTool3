@@ -128,6 +128,17 @@ export class TourService {
     );
   }
 
+  deleteTour(id: number): Observable<Tour> {
+    return this.http.delete<Tour>(
+      `/api/frontend/tours/${id}/`,
+    ).pipe(
+      catchError((error: HttpErrorResponse): Observable<Tour> => {
+        console.log(error.statusText, error.status);
+        return of ({id: 0} as Tour);
+      }),
+    );
+  }
+
   transformTourForCloning(tour: TourExt): any {
     delete tour.id;
     delete tour.reference;
