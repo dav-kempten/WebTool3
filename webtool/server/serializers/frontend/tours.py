@@ -60,8 +60,12 @@ class TourSerializer(serializers.ModelSerializer):
         source='team', many=True, default=[], queryset=Guide.objects.all()
     )
 
+    category = serializers.PrimaryKeyRelatedField(
+        default=None, allow_null=True, write_only=True, queryset=Category.objects.all()
+    )
+
     categoryId = serializers.PrimaryKeyRelatedField(
-        source='tour.reference.category', queryset=Category.objects.all()
+        default=None, allow_null=True, source='tour.reference.category', queryset=Category.objects.all()
     )
 
     categoryIds = serializers.PrimaryKeyRelatedField(
@@ -112,7 +116,7 @@ class TourSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'reference',
             'guideId', 'teamIds',
-            'categoryId', 'categoryIds',
+            'categoryId', 'category', 'categoryIds',
             'tour', 'deadline', 'preliminary',
             'info',
             'lowEmissionAdventure', 'ladiesOnly', 'youthOnTour',
@@ -179,16 +183,14 @@ class TourSerializer(serializers.ModelSerializer):
             equipments = validated_data.pop('equipments')
             state = validated_data.pop('state', get_default_state())
             category = validated_data.pop('category')
-            # category = tour_data.category
             categories = validated_data.pop('categories')
             season = get_default_season()
-            # season = category.seasons.get(current=True)
 
             if not 'start_date' in tour_data:
                 raise serializers.ValidationError("Tour 'start_date' have to be defined")
 
             if category:
-                tour_event = create_event(tour_data, dict(category=category, season=season, type=dict(category=True)))
+                tour_event = create_event(tour_data, dict(category=category, season=season, type=dict(tour=True)))
             else:
                 tour_event = create_event(tour_data, dict(season=season, type=dict(tour=True)))
 
