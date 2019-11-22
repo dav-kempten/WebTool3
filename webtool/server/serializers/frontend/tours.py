@@ -192,7 +192,7 @@ class TourSerializer(serializers.ModelSerializer):
             if category:
                 tour_event = create_event(tour_data, dict(category=category, season=season, type=dict(tour=True)))
             else:
-                tour_event = create_event(tour_data, dict(season=season, type=dict(tour=True)))
+                raise serializers.ValidationError("Tour needs a category for creation")
 
             if not deadline_data:
                 raise serializers.ValidationError("Deadline have to be defined")
@@ -207,6 +207,7 @@ class TourSerializer(serializers.ModelSerializer):
                 tour = Tour.objects.create(tour=tour_event, deadline=deadline_event, preliminary=preliminary_event,
                                         state=state, **validated_data)
 
+            tour.categories = categories
             tour.info = info
             tour.team = team
             tour.qualifications = qualifications
