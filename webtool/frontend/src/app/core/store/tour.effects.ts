@@ -9,9 +9,8 @@ import {
   CloneTour,
   TourActionTypes,
   TourNotModified,
-  RequestTour, TourCreateComplete, DeleteTour, TourDeleteComplete
+  RequestTour, TourCreateComplete, DeleteTour, TourDeleteComplete, DeactivateTour, TourDeactivateComplete
 } from './tour.actions';
-import {Event} from '../../model/event';
 import {AppState} from '../../app.state';
 import {AddEvent} from './event.actions';
 import {Tour} from './tour.model';
@@ -71,6 +70,23 @@ export class TourEffects {
         map(tour => {
           if (tour === null) {
             return new TourDeleteComplete();
+          } else {
+            return new TourNotModified();
+          }
+        })
+      );
+    })
+  );
+
+  @Effect()
+  deactivateTour$: Observable<Action> = this.actions$.pipe(
+    ofType<DeactivateTour>(TourActionTypes.DeactivateTour),
+    map((action: DeactivateTour) => action.payload),
+    switchMap(payload => {
+      return this.tourService.deactivateTour(payload.id).pipe(
+        map(tour => {
+          if (tour.id !== 0) {
+            return new TourDeactivateComplete();
           } else {
             return new TourNotModified();
           }

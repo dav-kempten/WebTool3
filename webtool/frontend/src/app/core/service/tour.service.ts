@@ -31,6 +31,7 @@ export class TourService {
 
   private destroySubject = new Subject<void>();
   private cloneSubject = new BehaviorSubject<Tour>(undefined);
+  private deactivateSubject = new BehaviorSubject<Tour>(undefined);
 
   getTourSummaries(): Observable<TourSummary[]> {
     const headers = {
@@ -131,6 +132,27 @@ export class TourService {
   deleteTour(id: number): Observable<Tour> {
     return this.http.delete<Tour>(
       `/api/frontend/tours/${id}/`,
+    ).pipe(
+      catchError((error: HttpErrorResponse): Observable<Tour> => {
+        console.log(error.statusText, error.status);
+        return of ({id: 0} as Tour);
+      }),
+    );
+  }
+
+  deactivateTour(id: number): Observable<Tour> {
+    this.getTour(id).pipe(
+      takeUntil(this.destroySubject),
+      tap(val => {
+        val.deprecated = true;
+        this.deactivateSubject.next(val);
+      }),
+      tap(() => console.log(this.deactivateSubject.value)),
+    ).subscribe();
+
+    return this.http.put<Tour>(
+      `/api/frontend/tours/${id}/`,
+      this.deactivateSubject.value
     ).pipe(
       catchError((error: HttpErrorResponse): Observable<Tour> => {
         console.log(error.statusText, error.status);

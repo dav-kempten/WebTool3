@@ -5,6 +5,7 @@ import { Tour } from './tour.model';
 export enum TourActionTypes {
   TourNotModified = '[Tour] Tour not modified',
   TourDeleteComplete = '[Tour] Tour delete complete',
+  TourDeactivateComplete = '[Tour] Tour deactivate complete',
   TourCreateComplete = '[Tour] Tour create complete',
   RequestTour = '[Tour] Request Tour',
   LoadTours = '[Tour] Load Tours',
@@ -34,6 +35,10 @@ export class TourNotModified implements Action {
 
 export class TourDeleteComplete implements Action {
   readonly type = TourActionTypes.TourDeleteComplete;
+}
+
+export class TourDeactivateComplete implements Action {
+  readonly type = TourActionTypes.TourDeactivateComplete;
 }
 
 export class TourCreateComplete implements Action {
@@ -120,6 +125,7 @@ export type TourActions =
   RequestTour
   | TourNotModified
   | TourDeleteComplete
+  | TourDeactivateComplete
   | LoadTours
   | AddTour
   | UpsertTour
