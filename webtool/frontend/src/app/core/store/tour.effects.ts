@@ -1,5 +1,5 @@
-import {Observable} from 'rxjs';
-import {map, switchMap} from 'rxjs/operators';
+import {Observable, Subject} from 'rxjs';
+import {map, switchMap, takeUntil, tap} from 'rxjs/operators';
 import {Action, Store} from '@ngrx/store';
 import {Actions, Effect, ofType} from '@ngrx/effects';
 import {Injectable} from '@angular/core';
@@ -9,12 +9,21 @@ import {
   CloneTour,
   TourActionTypes,
   TourNotModified,
-  RequestTour, TourCreateComplete, DeleteTour, TourDeleteComplete, DeactivateTour, TourDeactivateComplete
+  RequestTour,
+  TourCreateComplete,
+  DeleteTour,
+  TourDeleteComplete,
+  DeactivateTour,
+  TourDeactivateComplete,
+  UpsertTour,
+  TourUpdateComplete
 } from './tour.actions';
 import {AppState} from '../../app.state';
 import {AddEvent} from './event.actions';
 import {Tour} from './tour.model';
 import {Tour as RawTour} from '../../model/tour';
+import {getEventsByIds} from './event.selectors';
+import {Event} from '../../model/event';
 
 function convertDecimal(rawValue: string): number {
   return Number(rawValue.replace('.', ''));
