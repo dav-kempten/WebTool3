@@ -12,7 +12,7 @@ import {Event} from '../../model/event';
 import {User} from '../../core/service/auth.service';
 import {filter, flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {getTourById} from '../../core/store/tour.selectors';
-import {RequestTour, UpdateTour} from '../../core/store/tour.actions';
+import {RequestTour, UpdateTour, UpsertTour} from '../../core/store/tour.actions';
 import {getCategoryById, getTopicById} from '../../core/store/value.selectors';
 import {getEventsByIds} from '../../core/store/event.selectors';
 import {CreateEvent, UpdateEvent} from '../../core/store/event.actions';
@@ -196,6 +196,10 @@ export class TourDetailComponent implements OnInit, OnDestroy {
     this.store.dispatch(new CreateEvent({id: this.tourSubject.value.get('id').value}));
   }
 
+  saveTour(tour) {
+    this.store.dispatch(new UpsertTour({tour: tour as Tour}));
+  }
+
 }
 
 
@@ -208,9 +212,9 @@ export function tourGroupFactory(tour: Tour): FormGroup {
     teamIds: new FormControl(tour.teamIds),
     categoryId: new FormControl(tour.categoryId),
     categoryIds: new FormControl(tour.categoryIds),
-    tour: new FormControl(tour.tourId),
-    deadline: new FormControl(tour.deadlineId),
-    preliminary: new FormControl(tour.preliminaryId),
+    tourId: new FormControl(tour.tourId),
+    deadlineId: new FormControl(tour.deadlineId),
+    preliminaryId: new FormControl(tour.preliminaryId),
     youthOnTour: new FormControl(tour.youthOnTour),
     lowEmissionAdventure: new FormControl(tour.lowEmissionAdventure),
     ladiesOnly: new FormControl(tour.ladiesOnly),

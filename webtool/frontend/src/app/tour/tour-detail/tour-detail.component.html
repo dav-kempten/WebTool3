@@ -413,10 +413,20 @@
       ></textarea>
     </div>
   </div>
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-1 p-md-1 p-lg-1">
+      <p-button type="button" label="Speichern" class="ui-button-info"
+          (click)="saveTour(this.tourGroup.value)"></p-button>
+      </div>
+    <div class="p-col-12 p-sm-1 p-md-1 p-lg-1">
+      <a routerLink="../"><p-button label="Zurück"></p-button></a>
+    </div>
+  </div>
 </form>
 
 </ng-container>
 
-<ng-template #loading>Bitte kurz warten!</ng-template>
-
-<a routerLink="../"><p-button label="Zurück"></p-button></a>
+<ng-template #loading>
+  Bitte kurz warten!
+  <a routerLink="../"><p-button label="Zurück"></p-button></a>
+</ng-template>
