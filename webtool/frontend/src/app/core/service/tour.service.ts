@@ -32,6 +32,7 @@ export class TourService {
   private destroySubject = new Subject<void>();
   private cloneSubject = new BehaviorSubject<Tour>(undefined);
   private deactivateSubject = new BehaviorSubject<Tour>(undefined);
+  private updateSubject = new BehaviorSubject<Tour>(null);
 
   getTourSummaries(): Observable<TourSummary[]> {
     const headers = {
@@ -153,6 +154,20 @@ export class TourService {
     return this.http.put<Tour>(
       `/api/frontend/tours/${id}/`,
       this.deactivateSubject.value
+    ).pipe(
+      catchError((error: HttpErrorResponse): Observable<Tour> => {
+        console.log(error.statusText, error.status);
+        return of ({id: 0} as Tour);
+      }),
+    );
+  }
+
+  upsertTour(tour: Tour): Observable<Tour> {
+    this.updateSubject.next(tour);
+
+    return this.http.put<Tour>(
+      `/api/frontend/tours/${this.updateSubject.value.id}/`,
+      this.updateSubject.value
     ).pipe(
       catchError((error: HttpErrorResponse): Observable<Tour> => {
         console.log(error.statusText, error.status);
