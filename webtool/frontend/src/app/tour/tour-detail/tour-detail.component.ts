@@ -67,6 +67,11 @@ export class TourDetailComponent implements OnInit, OnDestroy {
           if (!tour) {
             this.store.dispatch(new RequestTour({id}));
           } else {
+            if (this.tourSubject.value === undefined) {
+              tour.admission = (tour.admission / 100);
+              tour.advances = (tour.advances / 100);
+              tour.extraCharges = (tour.extraCharges / 100);
+            }
             const tourGroup = tourGroupFactory(tour);
             tourGroup.valueChanges.pipe(
               takeUntil(this.destroySubject)
@@ -162,14 +167,12 @@ export class TourDetailComponent implements OnInit, OnDestroy {
       publishReplay(1),
       refCount(),
     ).subscribe(
-      tour => this.store.dispatch(
-        new UpdateTour({tour: {id: tour.id, changes: {
-          ...tour,
-              admission: (tour.admission * 100),
-              advances: (tour.advances * 100),
-              extraCharges: (tour.extraCharges * 100)
-        }}})
-      )
+      tour => {
+        this.store.dispatch(
+          new UpdateTour({tour: {id: tour.id, changes: {...tour}}}
+          )
+        );
+      }
     );
   }
 
@@ -202,10 +205,7 @@ export class TourDetailComponent implements OnInit, OnDestroy {
   saveTour(tour) {
     this.store.dispatch(new UpsertTour({tour: tour as Tour}));
   }
-
 }
-
-
 
 export function tourGroupFactory(tour: Tour): FormGroup {
   return new FormGroup({
@@ -228,10 +228,10 @@ export function tourGroupFactory(tour: Tour): FormGroup {
     equipmentService: new FormControl(tour.equipmentService),
     skillId: new FormControl(tour.skillId),
     fitnessId: new FormControl(tour.fitnessId),
-    admission: new FormControl((tour.admission / 100).toFixed(2)),
-    advances: new FormControl((tour.advances / 100).toFixed(2)),
+    admission: new FormControl(tour.admission),
+    advances: new FormControl(tour.advances),
     advancesInfo: new FormControl(tour.advancesInfo),
-    extraCharges: new FormControl((tour.extraCharges / 100).toFixed(2)),
+    extraCharges: new FormControl(tour.extraCharges),
     // extraChargesInfo: new FormControl(this.extraChargesInfo),
     minQuantity: new FormControl(tour.minQuantity),
     maxQuantity: new FormControl(tour.maxQuantity),
