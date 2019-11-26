@@ -12,7 +12,7 @@ import {Event} from '../../model/event';
 import {User} from '../../core/service/auth.service';
 import {filter, flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {getTourById} from '../../core/store/tour.selectors';
-import {RequestTour, UpdateTour, UpsertTour} from '../../core/store/tour.actions';
+import {ClearTours, RequestTour, UpdateTour, UpsertTour} from '../../core/store/tour.actions';
 import {getCategoryById, getTopicById} from '../../core/store/value.selectors';
 import {getEventsByIds} from '../../core/store/event.selectors';
 import {CreateEvent, UpdateEvent} from '../../core/store/event.actions';
@@ -179,6 +179,9 @@ export class TourDetailComponent implements OnInit, OnDestroy {
     this.tourSubject.complete();
     this.categorySubject.complete();
     this.eventsSubject.complete();
+
+    /* Clear tours after destroying component */
+    this.store.dispatch(new ClearTours());
   }
 
   selectEvent(index) {
