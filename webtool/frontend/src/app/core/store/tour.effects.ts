@@ -33,6 +33,8 @@ function convertDecimal(rawValue: string): number {
   providedIn: 'root'
 })
 export class TourEffects {
+  events$: Observable<Event[]>;
+  private destroySubject = new Subject<void>();
 
   constructor(private actions$: Actions, private tourService: TourService, private store: Store<AppState>) {}
 
@@ -104,6 +106,24 @@ export class TourEffects {
     })
   );
 
+  @Effect()
+  safeTour$: Observable<Action> = this.actions$.pipe(
+    ofType<UpsertTour>(TourActionTypes.UpsertTour),
+    map((action: UpsertTour) => action.payload),
+    switchMap(payload  => {
+      console.log(payload);
+      return this.tourService.upsertTour(this.tranformTourForSaving(payload.tour)).pipe(
+        map(tour => {
+          if (tour !== null) {
+            return new TourUpdateComplete();
+          } else {
+            return new TourNotModified();
+          }
+        })
+      );
+    })
+  );
+
   transformTour(tour: RawTour): Tour {
     const tourId = tour.id;
     const deadlineId = tour.deadline.id;
@@ -129,6 +149,40 @@ export class TourEffects {
       admission: convertDecimal(tour.admission),
       advances: convertDecimal(tour.advances),
       extraCharges: convertDecimal(tour.extraCharges)
+    };
+  }
+
+  tranformTourForSaving(tourInterface: Tour): RawTour {
+    let tour: any = {};
+    let deadline: any = {};
+    let preliminary: any = null;
+
+    this.events$ = this.store.select(getEventsByIds([tourInterface.tourId, tourInterface.deadlineId, tourInterface.preliminaryId])).pipe(
+      takeUntil(this.destroySubject),
+      tap(events => {
+        tour = events[0];
+        deadline = events[1];
+        if (events.length > 2) {
+          preliminary = events[2];
+        }
+      })
+    );
+    this.events$.subscribe();
+
+    delete tourInterface.tourId;
+    delete tourInterface.deadlineId;
+    delete tourInterface.preliminaryId;
+
+    this.destroySubject.complete();
+
+    return {
+      ... tourInterface,
+      tour,
+      deadline,
+      preliminary,
+      admission: String(tourInterface.admission),
+      advances: String(tourInterface.advances),
+      extraCharges: String(tourInterface.extraCharges)
     };
   }
 }
