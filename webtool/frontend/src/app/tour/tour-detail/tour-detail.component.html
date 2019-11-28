@@ -5,23 +5,23 @@
 <form [formGroup]="tourGroup">
   <!--Guide, Kosten, Einnahmen-->
   <div class="p-grid">
-      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
-        <avk-guide
-            formControlName="guideId"
-            id="g1"
-            label="Trainer"
-            [nameIdList]="tourGroup.get('teamIds').value"
-            required
-        ></avk-guide>
-      </div>
-      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-        <input id="costs" placeholder="Kosten" type="text" style='width:100%'
-               pInputText>
-      </div>
-      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-        <input id="revenue" placeholder="Einnahmen" type="text" style='width:100%'
-               pInputText>
-      </div>
+    <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+      <avk-guide
+          formControlName="guideId"
+          id="g1"
+          label="Trainer"
+          [nameIdList]="tourGroup.get('teamIds').value"
+          required
+      ></avk-guide>
+    </div>
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <input id="costs" placeholder="Kosten" type="text" style='width:100%'
+             pInputText>
+    </div>
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <input id="revenue" placeholder="Einnahmen" type="text" style='width:100%'
+             pInputText>
+    </div>
   </div>
 
   <!--Team, LadiesOnly, YouthOnTour, LEA-->
@@ -99,18 +99,18 @@
   <div class="p-grid">
     <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
       <textarea
-          [rows]="5"
+          [rows]="3"
           pInputTextarea
           formControlName="info"
           id="info"
-          placeholder="Beschreibung"
+          placeholder="Informationen, wenn z.B. keine Tourenbesprechung geplant ist."
           autoResize="autoResize"
           style='width:100%'
       ></textarea>
     </div>
   </div>
 
-  <!--Voraussetzung, Materialservice, Ausrüstung, Zusatzausrüstung-->
+  <!--Voraussetzung-->
   <div class="p-grid">
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
       <avk-qualificationselect
@@ -118,9 +118,9 @@
           label="Qualifikation"
       ></avk-qualificationselect>
     </div>
-    <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
+    <div class="p-col-12 p-sm-9 p-md-9 p-lg-9">
         <textarea
-            [rows]="2"
+            [rows]="1"
             pInputTextarea
             formControlName="preconditions"
             id="preconditions"
@@ -129,22 +129,19 @@
             style='width:100%'
         ></textarea>
     </div>
-    <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
-      <p-checkbox
-          [formControl]="tourGroup.get('equipmentService')"
-          label="Materialservice"
-          binary="true"
-      ></p-checkbox>
-    </div>
+  </div>
+
+  <!--Equipment-Fields-->
+  <div class="p-grid">
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
       <avk-multiselect
           formControlName="equipmentIds"
           label="Ausrüstung"
       ></avk-multiselect>
     </div>
-    <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
+    <div class="p-col-12 p-sm-7 p-md-7 p-lg-7">
       <textarea
-          [rows]="2"
+          [rows]="1"
           pInputTextarea
           formControlName="miscEquipment"
           id="miscEquipmentTopic"
@@ -152,6 +149,13 @@
           autoResize="autoResize"
           style='width:100%'
       ></textarea>
+    </div>
+    <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
+      <p-checkbox
+          [formControl]="tourGroup.get('equipmentService')"
+          label="Materialservice"
+          binary="true"
+      ></p-checkbox>
     </div>
   </div>
 
@@ -225,7 +229,7 @@
         <!--Zeitpunkt Event-->
         <div class="p-grid">
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
-            <avk-approxdropdown formControlName="approximateId" id="approx" [readOnly]="!(userValState >= 1)"
+            <avk-approxdropdown formControlName="approximateId" id="approx" [readOnly]="(userValState >= 1)"
                                 [disable]="!!currentEventGroup.get('startTime').value"></avk-approxdropdown>
           </div>
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
