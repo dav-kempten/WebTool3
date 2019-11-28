@@ -169,8 +169,7 @@ export class TourDetailComponent implements OnInit, OnDestroy {
     ).subscribe(
       tour => {
         this.store.dispatch(
-          new UpdateTour({tour: {id: tour.id, changes: {...tour}}}
-          )
+          new UpdateTour({tour: {id: tour.id, changes: {...tour}}})
         );
       }
     );
