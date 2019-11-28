@@ -1,5 +1,6 @@
 <ng-container *ngIf="tourGroup$ | async as tourGroup else loading">
-<h1>Tour #{{tourId$ | async}}</h1>
+<p-card header="Tour #{{tourId$ | async}}">
+<!--<h1>Tour #{{tourId$ | async}}</h1>-->
 <!--<p>{{tourGroup.value | json}}</p>-->
 
 <form [formGroup]="tourGroup">
@@ -446,7 +447,7 @@
   </div>
   </p-card>
 </form>
-
+</p-card>
 </ng-container>
 
 <ng-template #loading>
