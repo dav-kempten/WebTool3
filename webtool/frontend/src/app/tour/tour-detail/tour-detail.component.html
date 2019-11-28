@@ -148,7 +148,6 @@
           pInputTextarea
           formControlName="miscEquipment"
           id="miscEquipmentTopic"
-          readonly
           placeholder="Weitere Ausrüstung"
           autoResize="autoResize"
           style='width:100%'
@@ -363,7 +362,7 @@
     <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
       <div class="ui-inputgroup">
         <span class="ui-inputgroup-addon">Zusatz</span>
-        <input id="extraCharges" id="extraCharges" placeholder="Zusatzkosten" type="number" min="0"
+        <input formControlName="extraCharges" id="extraCharges" placeholder="Zusatzkosten" type="number" min="0"
              pInputText>
         <span class="ui-inputgroup-addon">.00</span>
         <span class="ui-inputgroup-addon">€</span>
