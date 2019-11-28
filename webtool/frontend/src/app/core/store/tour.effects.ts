@@ -16,7 +16,7 @@ import {
   DeactivateTour,
   TourDeactivateComplete,
   UpsertTour,
-  TourUpdateComplete
+  TourUpdateComplete, CreateTour
 } from './tour.actions';
 import {AppState} from '../../app.state';
 import {AddEvent} from './event.actions';
@@ -98,6 +98,23 @@ export class TourEffects {
         map(tour => {
           if (tour.id !== 0) {
             return new TourDeactivateComplete();
+          } else {
+            return new TourNotModified();
+          }
+        })
+      );
+    })
+  );
+
+  @Effect()
+  createTour$: Observable<Action> = this.actions$.pipe(
+    ofType<CreateTour>(TourActionTypes.CreateTour),
+    map((action: CreateTour) => action.payload),
+    switchMap(payload => {
+      return this.tourService.createTour(payload.categoryId, payload.startDate, payload.deadline).pipe(
+        map(tour => {
+          if (tour.id !== 0) {
+            return new TourCreateComplete();
           } else {
             return new TourNotModified();
           }

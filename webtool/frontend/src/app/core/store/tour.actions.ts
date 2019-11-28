@@ -111,7 +111,7 @@ export class ClearTours implements Action {
 export class CreateTour implements Action {
   readonly type = TourActionTypes.CreateTour;
 
-  constructor(public payload: { topicId: number, startDate: string}) {}
+  constructor(public payload: { categoryId: number, startDate: string, deadline: string}) {}
 }
 
 export class CloneTour implements Action {

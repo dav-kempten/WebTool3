@@ -91,10 +91,10 @@ class TourSerializer(serializers.ModelSerializer):
     equipmentService = serializers.BooleanField(source='equipment_service', default=False)
 
     skillId = serializers.PrimaryKeyRelatedField(
-        source='skill', default=None, allow_null=True, queryset=Skill.objects.all()
+        source='skill', default=None, allow_null=True, required=False, queryset=Skill.objects.all()
     )
     fitnessId = serializers.PrimaryKeyRelatedField(
-        source='fitness', default=None, allow_null=True, queryset=Fitness.objects.all()
+        source='fitness', default=None, allow_null=True, required=False, queryset=Fitness.objects.all()
     )
 
     admission = MoneyField()

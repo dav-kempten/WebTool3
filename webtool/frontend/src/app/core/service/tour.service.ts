@@ -14,6 +14,7 @@ import {
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse} from '@angular/common/http';
 import {Tour, TourSummary} from '../../model/tour';
+import {Event} from '../../model/event';
 
 interface TourExt extends Tour {
   category: number;
@@ -32,6 +33,7 @@ export class TourService {
   private destroySubject = new Subject<void>();
   private cloneSubject = new BehaviorSubject<Tour>(undefined);
   private deactivateSubject = new BehaviorSubject<Tour>(undefined);
+  private createSubject = new BehaviorSubject<any>(null);
   private updateSubject = new BehaviorSubject<Tour>(null);
 
   getTourSummaries(): Observable<TourSummary[]> {
@@ -154,6 +156,23 @@ export class TourService {
     return this.http.put<Tour>(
       `/api/frontend/tours/${id}/`,
       this.deactivateSubject.value
+    ).pipe(
+      catchError((error: HttpErrorResponse): Observable<Tour> => {
+        console.log(error.statusText, error.status);
+        return of ({id: 0} as Tour);
+      }),
+    );
+  }
+
+  createTour(categoryId: number, startdate: string, deadline: string): Observable<Tour> {
+    this.createSubject.next({category: categoryId, tour: {startDate: startdate} as Event,
+      deadline: {startDate: deadline} as Event, skillId: 1, fitnessId: 1});
+
+    console.log(this.createSubject.value);
+
+    return this.http.post<Tour>(
+      `/api/frontend/tours/`,
+      this.createSubject.value
     ).pipe(
       catchError((error: HttpErrorResponse): Observable<Tour> => {
         console.log(error.statusText, error.status);

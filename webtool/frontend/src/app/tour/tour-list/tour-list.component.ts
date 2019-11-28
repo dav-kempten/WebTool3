@@ -13,7 +13,7 @@ import {Router} from '@angular/router';
 import {flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {RequestTourSummaries} from '../../core/store/tour-summary.actions';
 import {getTourSummaries} from '../../core/store/tour-summary.selectors';
-import {CloneTour, DeactivateTour, DeleteTour} from '../../core/store/tour.actions';
+import {CloneTour, CreateTour, DeactivateTour, DeleteTour} from '../../core/store/tour.actions';
 
 @Component({
   selector: 'avk-tour-list',
@@ -38,10 +38,12 @@ export class TourListComponent implements OnInit, OnDestroy {
 
   categoryIds = new FormControl('');
   startDate = new FormControl('');
+  deadline = new FormControl('');
 
   createTour: FormGroup = new FormGroup({
     categoryIds: this.categoryIds,
-    startDate: this.startDate
+    startDate: this.startDate,
+    deadline: this.deadline
   });
 
   menuItems: MenuItem[] = [
@@ -141,9 +143,8 @@ export class TourListComponent implements OnInit, OnDestroy {
     this.display = true;
   }
 
-  confirmClick() {
-    // this.store.dispatch(new CreateTour({topicId: this.createTour.get('categoryIds').value,
-    //   startDate: this.createTour.get('startDate').value}));
+  create(category, startdate, enddate) {
+    this.store.dispatch(new CreateTour({categoryId: category, startDate: startdate, deadline: enddate}));
     this.display = false;
   }
 
