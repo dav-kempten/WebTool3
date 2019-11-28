@@ -21,6 +21,7 @@ import {MenuComponent} from './menu/menu.component';
 import {ScrollPanelModule} from 'primeng/scrollpanel';
 import {ToastModule} from 'primeng/toast';
 import {SplitButtonModule} from 'primeng/splitbutton';
+import {CardModule} from 'primeng/card';
 import {BreadcrumbComponent} from './breadcrumb/breadcrumb.component';
 import {RequiredDirective as DateRequiredDirective} from './date/required.directive';
 import {RequiredDirective as GuideRequiredDirective} from './guide/required.directive';
@@ -129,7 +130,7 @@ import { CollectiveselectComponent } from './collectiveselect/collectiveselect.c
     BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent, DropdownComponent,
     MultiselectComponent, ButtonModule, ToggleButtonModule, ApproxdropdownComponent, CategoryselectComponent,
     DialogModule, CheckboxModule, InputTextModule, InputTextareaModule, DatePipe, TimePipe, SkillselectComponent,
-    FitnessselectComponent, QualificationselectComponent, CollectiveselectComponent
+    FitnessselectComponent, QualificationselectComponent, CollectiveselectComponent, CardModule
   ]
 })
 export class CoreModule { }

@@ -1,9 +1,10 @@
 <ng-container *ngIf="tourGroup$ | async as tourGroup else loading">
 <h1>Tour #{{tourId$ | async}}</h1>
-<p>{{tourGroup.value | json}}</p>
+<!--<p>{{tourGroup.value | json}}</p>-->
 
 <form [formGroup]="tourGroup">
   <!--Guide, Kosten, Einnahmen-->
+  <p-card subheader="Trainer, Kosten & Einnahmen">
   <div class="p-grid">
     <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
       <avk-guide
@@ -23,8 +24,10 @@
              pInputText>
     </div>
   </div>
+  </p-card>
 
   <!--Team, LadiesOnly, YouthOnTour, LEA-->
+  <p-card subheader="Team, LadiesOnly, YouthOnTour & LEA">
   <div class="p-grid">
     <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
       <avk-team
@@ -56,8 +59,10 @@
       ></p-checkbox>
     </div>
   </div>
+  </p-card>
 
   <!--Buchungscode, Status, Hauptkategorie-->
+  <p-card subheader="Tour-Details">
   <div class="p-grid">
     <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
       <input formControlName="reference" id="reference" placeholder="Buchungsnummer" type="text" style='width:100%'
@@ -130,8 +135,10 @@
         ></textarea>
     </div>
   </div>
+  </p-card>
 
   <!--Equipment-Fields-->
+  <p-card subheader="Ausrüstung">
   <div class="p-grid">
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
       <avk-multiselect
@@ -158,8 +165,10 @@
       ></p-checkbox>
     </div>
   </div>
+  </p-card>
 
   <!--Teilnehmer, Besondere Vorraussetzungen-->
+  <p-card subheader="Teilnehmer">
   <div class="p-grid">
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
       <avk-membernumber
@@ -185,9 +194,11 @@
       ></avk-membernumber>
     </div>
   </div>
+  </p-card>
 
   <!--Liste mit Parametern (Tabelle)-->
   <ng-container *ngIf="(eventArray$ | async) as eventArray">
+    <p-card subheader="Tour-Termine">
     <div class="p-grid">
       <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
         <p-table [value]="eventArray.value" selectionMode="single"
@@ -209,6 +220,7 @@
         </p-table>
       </div>
     </div>
+    </p-card>
   </ng-container>
 
   <ng-container *ngIf="currentEventGroup">
@@ -352,7 +364,8 @@
     </p-dialog>
   </ng-container>
 
-  <!--Alpinshuttle, Strecke, Fahrtkosten, Zusatzkosten, Anzahlung-->
+  <!--Fahrtkosten, Zusatzkosten, Anzahlung-->
+  <p-card subheader="Teilnehmergebühr, Zusatzkosten, Anzahlung">
   <div class="p-grid">
     <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
       <div class="ui-inputgroup">
@@ -383,43 +396,45 @@
     </div>
   </div>
 
-    <!--Zusatzkosten & Advances Details-->
-    <div class="p-grid">
-      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-      </div>
-      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-      <textarea
-          [rows]="2"
-          pInputTextarea
-          placeholder="Zusatzkosten Details"
-          autoResize="autoResize"
-          style='width:100%'
-      ></textarea>
-      </div>
-      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-      <textarea
-          [rows]="2"
-          formControlName="advancesInfo"
-          placeholder="Anzahlung Details"
-          autoResize="autoResize"
-          style='width:100%'
-          pInputTextarea
-      ></textarea>
-      </div>
-    </div>
-
-  <!--Bemerkung-->
+  <!--Zusatzkosten & Advances Details-->
   <div class="p-grid">
-    <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+    </div>
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
       <textarea
-          [rows]="3"
-          pInputTextarea
-          placeholder="Bemerkungen"
-          autoResize="autoResize"
-          style='width:100%'
+        [rows]="2"
+        pInputTextarea
+        placeholder="Zusatzkosten Details"
+        autoResize="autoResize"
+        style='width:100%'
+      ></textarea>
+    </div>
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <textarea
+        [rows]="2"
+        formControlName="advancesInfo"
+        placeholder="Anzahlung Details"
+        autoResize="autoResize"
+        style='width:100%'
+        pInputTextarea
       ></textarea>
     </div>
   </div>
+  </p-card>
+
+  <!--Bemerkung-->
+<!--  <div class="p-grid">-->
+<!--    <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">-->
+<!--      <textarea-->
+<!--          [rows]="3"-->
+<!--          pInputTextarea-->
+<!--          placeholder="Bemerkungen"-->
+<!--          autoResize="autoResize"-->
+<!--          style='width:100%'-->
+<!--      ></textarea>-->
+<!--    </div>-->
+<!--  </div>-->
+  <p-card>
   <div class="p-grid">
     <div class="p-col-12 p-sm-1 p-md-1 p-lg-1">
       <p-button type="button" label="Speichern" class="ui-button-info"
@@ -429,6 +444,7 @@
       <a routerLink="../"><p-button label="Zurück"></p-button></a>
     </div>
   </div>
+  </p-card>
 </form>
 
 </ng-container>
