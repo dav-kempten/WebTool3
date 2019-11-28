@@ -7,7 +7,7 @@ import {NamesRequested} from '../../core/store/name.actions';
 import {ValuesRequested} from '../../core/store/value.actions';
 import {CalendarRequested} from '../../core/store/calendar.actions';
 import {
-  AddEventInstruction,
+  AddEventInstruction, ClearInstructions,
   RequestInstruction,
   UpdateInstruction,
   UpsertInstruction
@@ -93,6 +93,11 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
           if (!instruction) {
             this.store.dispatch(new RequestInstruction({id}));
           } else {
+            if (this.instructionSubject.value === undefined) {
+              instruction.admission = (instruction.admission / 100);
+              instruction.advances = (instruction.advances / 100);
+              instruction.extraCharges = (instruction.extraCharges / 100);
+            }
             const instructionGroup = instructionGroupFactory(instruction);
             instructionGroup.valueChanges.pipe(
               takeUntil(this.destroySubject)
@@ -208,12 +213,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
       refCount(),
     ).subscribe(
       instruction => this.store.dispatch(
-        new UpdateInstruction({instruction: {id: instruction.id, changes: {
-          ...instruction,
-              admission: (instruction.admission * 100),
-              advances: (instruction.advances * 100),
-              extraCharges: (instruction.extraCharges * 100)
-        }}})
+        new UpdateInstruction({instruction: {id: instruction.id, changes: {...instruction}}})
       )
     );
   }
@@ -225,6 +225,9 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     this.topicSubject.complete();
     this.categorySubject.complete();
     this.eventsSubject.complete();
+
+    /* Clear instructions after destroying component */
+    this.store.dispatch(new ClearInstructions());
   }
 
   selectEvent(index) {
@@ -269,10 +272,10 @@ function instructionGroupFactory(instruction: Instruction): FormGroup {
     equipmentIds: new FormControl(instruction.equipmentIds),
     miscEquipment: new FormControl(instruction.miscEquipment),
     equipmentService: new FormControl(instruction.equipmentService),
-    admission: new FormControl((instruction.admission / 100).toFixed(2)),
-    advances: new FormControl((instruction.advances / 100).toFixed(2)),
+    admission: new FormControl(instruction.admission),
+    advances: new FormControl(instruction.advances),
     advancesInfo: new FormControl(instruction.advancesInfo),
-    extraCharges: new FormControl((instruction.extraCharges / 100).toFixed(2)),
+    extraCharges: new FormControl(instruction.extraCharges),
     extraChargesInfo: new FormControl(instruction.extraChargesInfo),
     minQuantity: new FormControl(instruction.minQuantity),
     maxQuantity: new FormControl(instruction.maxQuantity),

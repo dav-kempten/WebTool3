@@ -50,7 +50,7 @@
       <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
         <p-checkbox
             [formControl]="instructionGroup.get('ladiesOnly')"
-            label="Frauen"
+            label="LadiesOnly"
             binary="true"
         ></p-checkbox>
       </div>
@@ -405,12 +405,14 @@
 
   <!--Teilnehmergebühr, Vorauszahlung & Zusatzkosten-->
   <form [formGroup]="instructionGroup">
-    <div class="p-grid" *ngIf="this.instructionCategory.value !== 'indoor'">
+  <!--*ngIf="this.instructionCategory.value !== 'indoor'"-->
+    <div class="p-grid">
     <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
       <div class="ui-inputgroup">
         <span class="ui-inputgroup-addon">TN-Gebühr</span>
         <input formControlName="admission" id="admission" placeholder="Teilnehmergebühr" type="number" min="0"
              pInputText>
+        <span class="ui-inputgroup-addon">.00</span>
         <span class="ui-inputgroup-addon">€</span>
       </div>
     </div>
@@ -419,6 +421,7 @@
         <span class="ui-inputgroup-addon">Vorauszahlung</span>
         <input formControlName="advances" id="advances" placeholder="Vorauszahlung" type="number" min="0"
              pInputText>
+        <span class="ui-inputgroup-addon">.00</span>
         <span class="ui-inputgroup-addon">€</span>
       </div>
     </div>
@@ -427,6 +430,7 @@
         <span class="ui-inputgroup-addon">Zusatzkosten</span>
         <input formControlName="extraCharges" id="extraCharges" placeholder="Zusatzkosten" type="number" min="0"
              pInputText>
+        <span class="ui-inputgroup-addon">.00</span>
         <span class="ui-inputgroup-addon">€</span>
       </div>
     </div>
