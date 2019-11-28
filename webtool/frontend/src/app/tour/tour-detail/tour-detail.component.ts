@@ -218,6 +218,7 @@ export function tourGroupFactory(tour: Tour): FormGroup {
     tourId: new FormControl(tour.tourId),
     deadlineId: new FormControl(tour.deadlineId),
     preliminaryId: new FormControl(tour.preliminaryId),
+    info: new FormControl(tour.info),
     youthOnTour: new FormControl(tour.youthOnTour),
     lowEmissionAdventure: new FormControl(tour.lowEmissionAdventure),
     ladiesOnly: new FormControl(tour.ladiesOnly),

@@ -8,6 +8,7 @@ export interface Tour {
   tourId: number;
   deadlineId: number;
   preliminaryId: number | null;
+  info: string;
   youthOnTour: boolean;
   lowEmissionAdventure: boolean;
   ladiesOnly: boolean;

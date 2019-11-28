@@ -233,6 +233,7 @@ class TourSerializer(serializers.ModelSerializer):
         if preliminary_data is not None:
             preliminary = Event.objects.get(pk=preliminary_data.get('pk'))
             update_event(preliminary, preliminary_data, self.context)
+        instance.info = validated_data.get('info', instance.info)
         instance.ladies_only = validated_data.get('ladies_only', instance.ladies_only)
         qualifications = validated_data.get('qualifications')
         if qualifications is not None:
