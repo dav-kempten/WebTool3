@@ -1,5 +1,5 @@
 import {Observable, Subject} from 'rxjs';
-import {filter, map, publishReplay, refCount, switchMap, takeUntil, tap} from 'rxjs/operators';
+import {map, switchMap, takeUntil, tap} from 'rxjs/operators';
 import {Action, Store} from '@ngrx/store';
 import {Actions, Effect, ofType} from '@ngrx/effects';
 import {Injectable} from '@angular/core';
@@ -17,7 +17,7 @@ import {AppState} from '../../app.state';
 import {AddEvent} from './event.actions';
 import {Instruction} from './instruction.model';
 import {Instruction as RawInstruction} from '../../model/instruction';
-import {getEventById, getEventsByIds} from './event.selectors';
+import {getEventsByIds} from './event.selectors';
 
 function convertDecimal(rawValue: string): number {
   return Number(rawValue.replace('.', ''));

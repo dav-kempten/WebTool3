@@ -5,7 +5,7 @@ import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {InstructionSummary} from '../../model/instruction';
 import {getInstructionSummaries} from '../../core/store/instruction-summary.selectors';
 import {RequestInstructionSummaries} from '../../core/store/instruction-summary.actions';
-import {filter, flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
+import {flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {Router} from '@angular/router';
 import {MenuItem} from 'primeng/api';
 import {NamesRequested} from '../../core/store/name.actions';
@@ -18,7 +18,6 @@ import {
   DeleteInstruction
 } from '../../core/store/instruction.actions';
 import {FormControl, FormGroup} from '@angular/forms';
-import {Category} from '../../model/value';
 import {CalendarRequested} from '../../core/store/calendar.actions';
 
 @Component({

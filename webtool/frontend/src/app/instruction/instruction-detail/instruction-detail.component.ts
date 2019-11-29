@@ -20,8 +20,7 @@ import {AuthService, User} from '../../core/service/auth.service';
 import {Event} from '../../model/event';
 import {Category, Topic} from '../../model/value';
 import {FormArray, FormControl, FormGroup} from '@angular/forms';
-import {AddEvent, CreateEvent, UpdateEvent} from '../../core/store/event.actions';
-import {Instruction as RawInstruction} from '../../model/instruction';
+import {UpdateEvent} from '../../core/store/event.actions';
 
 @Component({
   selector: 'avk-instruction-detail',
