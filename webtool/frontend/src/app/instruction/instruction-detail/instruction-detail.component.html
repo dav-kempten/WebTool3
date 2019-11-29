@@ -1,14 +1,15 @@
 <ng-container *ngIf="instructionGroup$ | async as instructionGroup else loading">
-
-  <p>InstructionGroup:<br/>{{instructionGroup.value | json}}</p>
+<p-card header="Instruction #{{instructionId$ | async}}">
+<!--  <p>InstructionGroup:<br/>{{instructionGroup.value | json}}</p>-->
 <!--  <p>TopicGroup:<br/>{{(topicGroup$ | async)?.value | json}}</p>-->
 <!--  <p>CategoryGroup:<br />{{(categoryGroup$ | async)?.value | json}}</p>-->
 <!--  <p>EventIds: {{instructionGroup.get('instructionId').value}},-->
 <!--    {{instructionGroup.get('meetingIds').value.join(', ')}}</p>-->
-  <p>EventArray:<br/>{{(eventArray$ | async)?.value | json}}</p>
+<!--  <p>EventArray:<br/>{{(eventArray$ | async)?.value | json}}</p>-->
 
   <form [formGroup]="instructionGroup">
     <!--GuideComponent // Kosten // Einnahmen-->
+    <p-card subheader="Trainer, Kosten & Einnahmen">
     <div class="p-grid">
       <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
         <avk-guide
@@ -29,7 +30,9 @@
                [readOnly]="!(userValState >= 1)" pInputText>
       </div>
     </div>
+    </p-card>
 
+    <p-card subheader="Team, LEA & LadiesOnly">
     <div class="p-grid">
       <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
         <avk-team
@@ -55,8 +58,10 @@
         ></p-checkbox>
       </div>
     </div>
+    </p-card>
 
     <!--Buchungscode, Status, Kurskonzept, InfoBox-->
+    <p-card subheader="Kurs-Details">
     <div class="p-grid">
       <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
         <input formControlName="reference" id="reference" placeholder="Buchungsnummer" type="text" style='width:100%'
@@ -84,7 +89,7 @@
         ></p-checkbox>
       </div>
     </div>
-  </form>
+  <!--</form>-->
 
   <!--Ausrüstung, Besondere Vorausssetzungen-->
   <ng-container *ngIf="(topicGroup$ | async) as topicGroup">
@@ -92,20 +97,14 @@
       <ng-container *ngIf="!instructionGroup.get('isSpecial').value">
         <div class="p-grid">
           <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-            <avk-multiselect
-                formControlName="equipmentIds"
-                readOnly="'true'"
-            ></avk-multiselect>
-          </div>
-          <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
             <avk-qualificationselect
                 formControlName="qualificationIds"
                 readOnly="'true'"
             ></avk-qualificationselect>
           </div>
-          <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-          <textarea
-              [rows]="2"
+          <div class="p-col-12 p-sm-9 p-md-9 p-lg-9">
+            <textarea
+              [rows]="1"
               pInputTextarea
               formControlName="preconditions"
               id="preconditionsTopic"
@@ -113,11 +112,19 @@
               placeholder="Weitere Anforderungen"
               autoResize="autoResize"
               style='width:100%'
-          ></textarea>
+            ></textarea>
           </div>
+        </div>
+        <div class="p-grid">
           <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-          <textarea
-              [rows]="2"
+            <avk-multiselect
+                formControlName="equipmentIds"
+                readOnly="'true'"
+            ></avk-multiselect>
+          </div>
+          <div class="p-col-12 p-sm-9 p-md-9 p-lg-9">
+            <textarea
+              [rows]="1"
               pInputTextarea
               formControlName="miscEquipment"
               id="miscEquipmentTopic"
@@ -125,9 +132,11 @@
               placeholder="Weitere Ausrüstung"
               autoResize="autoResize"
               style='width:100%'
-          ></textarea>
+            ></textarea>
           </div>
-          <!--Topic-->
+        </div>
+        <!--Topic-->
+        <div class="p-grid">
           <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
             <textarea
                 [rows]="5"
@@ -144,10 +153,11 @@
       </ng-container>
     </form>
   </ng-container>
+  </p-card>
 
-  <form [formGroup]="instructionGroup">
-    <ng-container *ngIf="this.instructionCategory.value !== 'indoor'">
-    <!--Zusatzausrüstung & -anforderungen-->
+  <ng-container *ngIf="this.instructionCategory.value !== 'indoor'">
+    <!--Zusatzausrüstung-->
+    <p-card subheader="Zusatzausrüstung">
     <div class="p-grid">
       <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
         <avk-multiselect
@@ -155,8 +165,29 @@
             [readOnly]="!(userValState >= 1)"
         ></avk-multiselect>
       </div>
-      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3" *ngIf="this.instructionCategory.value !== 'indoor'">
+        <p-checkbox
+          [formControl]="instructionGroup.get('equipmentService')"
+          label="Materialservice"
+          binary="true"
+        ></p-checkbox>
       </div>
+      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+        <textarea
+            [rows]="1"
+            pInputTextarea
+            formControlName="miscEquipment"
+            id="miscEquipment"
+            placeholder="Spezielle Ausrüstung"
+            autoResize="autoResize"
+            style='width:100%'
+        ></textarea>
+      </div>
+    </div>
+    </p-card>
+
+    <p-card subheader="Zusatzanforderungen, Spezialkategorie">
+    <div class="p-grid">
       <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
         <avk-qualificationselect
             formControlName="qualificationIds"
@@ -172,24 +203,9 @@
             [topicSpecific]="'instruction'"
         ></avk-categoryselect>
       </div>
-    </div>
-
-    <!--Zusätzliche Anforderungen-->
-    <div class="p-grid">
       <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
         <textarea
-            [rows]="3"
-            pInputTextarea
-            formControlName="miscEquipment"
-            id="miscEquipment"
-            placeholder="Spezielle Ausrüstung"
-            autoResize="autoResize"
-            style='width:100%'
-        ></textarea>
-      </div>
-      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
-        <textarea
-            [rows]="3"
+            [rows]="1"
             pInputTextarea
             formControlName="preconditions"
             id="preconditions"
@@ -199,10 +215,12 @@
         ></textarea>
       </div>
     </div>
-    </ng-container>
+    </p-card>
+  </ng-container>
   </form>
 
-  <!--Teilnehmeranzahl, Strecke, Materialservice-->
+  <!--Teilnehmeranzahl-->
+  <p-card subheader="Teilnehmer">
   <form class="p-grid" [formGroup]="instructionGroup">
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
       <avk-membernumber
@@ -221,21 +239,21 @@
           [minMember]="instructionGroup.get('minQuantity').value"
           [readOnly]="!(userValState >= 1)"
       ></avk-membernumber>
-      <label>Teilnehmer</label>
     </div>
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3"
-         *ngIf="this.instructionCategory.value !== 'indoor'">
-      <p-checkbox
-          [formControl]="instructionGroup.get('equipmentService')"
-          label="Materialservice"
-          binary="true"
-      ></p-checkbox>
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+      <avk-membernumber
+          formControlName="curQuantity"
+          label="Aktuell"
+          id="m3"
+          [readOnly]="!(userValState >= 1)"
+      ></avk-membernumber>
     </div>
   </form>
+  </p-card>
 
+  <p-card subheader="Termine">
   <!--Button für neues Event-->
   <p-button label="Event hinzufügen" (onClick)="addEvent(this.instructionGroup.value)"></p-button>
-
   <!--Liste mit Parametern (Tabelle)-->
   <ng-container *ngIf="(eventArray$ | async) as eventArray">
     <div class="p-grid">
@@ -260,6 +278,7 @@
       </div>
     </div>
   </ng-container>
+  </p-card>
 
   <ng-container *ngIf="currentEventGroup">
     <p-dialog header="EventDetail" [modal]="true" [(visible)]="display" [style]="{width: '60%', height: '60%'}">
@@ -406,6 +425,7 @@
   <!--Teilnehmergebühr, Vorauszahlung & Zusatzkosten-->
   <form [formGroup]="instructionGroup">
   <!--*ngIf="this.instructionCategory.value !== 'indoor'"-->
+    <p-card subheader="Teilnehmergebühr, Zusatzkosten, Anzahlung">
     <div class="p-grid">
     <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
       <div class="ui-inputgroup">
@@ -461,8 +481,10 @@
       ></textarea>
       </div>
     </div>
+    </p-card>
 
     <!--Bemerkung-->
+    <p-card subheader="Bemerkungen">
     <div class="p-grid">
       <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
       <textarea
@@ -474,6 +496,8 @@
       ></textarea>
       </div>
     </div>
+    </p-card>
+    <p-card>
     <div class="p-grid">
       <div class="p-col-12 p-sm-1 p-md-1 p-lg-1">
         <p-button type="button" label="Speichern" class="ui-button-info"
@@ -483,6 +507,8 @@
         <a routerLink="../"><p-button label="Zurück"></p-button></a>
       </div>
     </div>
+    </p-card>
   </form>
+</p-card>
 </ng-container>
 <ng-template #loading>Bitte kurz warten!</ng-template>
