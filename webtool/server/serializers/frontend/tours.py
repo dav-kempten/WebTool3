@@ -110,6 +110,9 @@ class TourSerializer(serializers.ModelSerializer):
     deprecated = serializers.BooleanField(default=False, required=False)
     stateId = serializers.PrimaryKeyRelatedField(source='state', required=False, queryset=State.objects.all())
 
+    message = serializers.CharField(default='', required=False)
+    comment = serializers.CharField(default='', required=False)
+
     # Administrative Felder fehlen noch !
 
     class Meta:
@@ -128,6 +131,7 @@ class TourSerializer(serializers.ModelSerializer):
             'admission', 'advances', 'advancesInfo', 'extraCharges', 'extraChargesInfo',
             'minQuantity', 'maxQuantity', 'curQuantity',
             'portal', 'deprecated', 'stateId',
+            'message', 'comment'
         )
 
     def validate(self, data):
@@ -253,6 +257,8 @@ class TourSerializer(serializers.ModelSerializer):
         instance.max_quantity = validated_data.get('max_quantity', instance.max_quantity)
         instance.deprecated = validated_data.get('deprecated', instance.deprecated)
         instance.state = validated_data.get('state', instance.state)
+        instance.message = validated_data.get('message', instance.message)
+        instance.comment = validated_data.get('comment', instance.comment)
         instance.save()
 
         return instance
