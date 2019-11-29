@@ -29,4 +29,6 @@ export interface Tour {
   curQuantity?: number;
   deprecated: boolean;
   stateId: number;
+  comment: string;
+  message: string;
 }
