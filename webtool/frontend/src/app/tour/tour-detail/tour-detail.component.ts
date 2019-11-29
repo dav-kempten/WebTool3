@@ -237,6 +237,8 @@ export function tourGroupFactory(tour: Tour): FormGroup {
     maxQuantity: new FormControl(tour.maxQuantity),
     curQuantity: new FormControl(tour.curQuantity),
     stateId: new FormControl(tour.stateId),
+    comment: new FormControl(tour.comment),
+    message: new FormControl(tour.message)
   });
 }
 

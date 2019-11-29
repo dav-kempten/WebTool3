@@ -280,7 +280,9 @@ function instructionGroupFactory(instruction: Instruction): FormGroup {
     minQuantity: new FormControl(instruction.minQuantity),
     maxQuantity: new FormControl(instruction.maxQuantity),
     curQuantity: new FormControl(instruction.curQuantity),
-    stateId: new FormControl(instruction.stateId)
+    stateId: new FormControl(instruction.stateId),
+    comment: new FormControl(instruction.comment),
+    message: new FormControl(instruction.message)
   });
 }
 
