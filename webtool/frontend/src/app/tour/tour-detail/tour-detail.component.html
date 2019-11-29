@@ -424,13 +424,30 @@
   </p-card>
 
   <!--Bemerkung für Interna-->
-  <p-card>
+  <p-card subheader="Bemerkungen">
   <div class="p-grid">
     <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
       <textarea
           [rows]="3"
+          formControlName="comment"
           pInputTextarea
           placeholder="Bemerkungen"
+          autoResize="autoResize"
+          style='width:100%'
+      ></textarea>
+    </div>
+  </div>
+  </p-card>
+
+  <!--Bemerkung für Interna-->
+  <p-card subheader="Nachricht an die Geschäftstelle">
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+      <textarea
+          [rows]="3"
+          formControlName="message"
+          pInputTextarea
+          placeholder="Nachricht an die Geschäftsstelle"
           autoResize="autoResize"
           style='width:100%'
       ></textarea>
