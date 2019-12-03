@@ -69,6 +69,10 @@ class SessionSerializer(serializers.ModelSerializer):
     miscEquipment = serializers.CharField(source='misc_equipment', max_length=75, default='', allow_blank=True,
                                           allow_null=True)
 
+    message = serializers.CharField(default='', required=False, allow_null=True, allow_blank=True)
+    comment = serializers.CharField(default='', required=False, allow_null=True, allow_blank=True)
+
+    deprecated = serializers.BooleanField(default=False, required=False)
     stateId = serializers.PrimaryKeyRelatedField(source='state', required=False, queryset=State.objects.all())
 
     class Meta:
@@ -82,6 +86,8 @@ class SessionSerializer(serializers.ModelSerializer):
             'ladiesOnly',
             'categoryIds', 'misc_category',
             'equipmentIds', 'miscEquipment',
+            'message', 'comment',
+            'deprecated',
             'stateId',
         )
 
@@ -143,6 +149,9 @@ class SessionSerializer(serializers.ModelSerializer):
         if equipments is not None:
             instance.equipments = equipments
         instance.misc_equipment = validated_data.get('misc_equipment', instance.misc_equipment)
+        instance.message = validated_data.get('message', instance.message)
+        instance.comment = validated_data.get('comment', instance.comment)
+        instance.deprecated = validated_data.get('deprecated', instance.deprecated)
         instance.state = validated_data.get('state', instance.state)
         instance.save()
         return instance

@@ -11,5 +11,8 @@ export interface Session {
   miscCategory: string;
   equipmentIds: number[];
   miscEquipment: string;
+  message: string;
+  comment: string;
+  deprecated: boolean;
   stateId: number;
 }
