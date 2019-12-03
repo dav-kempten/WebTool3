@@ -14,7 +14,7 @@ import {
   DeleteSession,
   SessionDeleteComplete,
   DeactivateSession,
-  SessionDeactivateComplete
+  SessionDeactivateComplete, CreateSession
 } from './session.actions';
 import {Event} from '../../model/event';
 import {AppState} from '../../app.state';
@@ -90,6 +90,24 @@ export class SessionEffects {
         map(session => {
           if (session.id !== 0) {
             return new SessionDeactivateComplete();
+          } else {
+            return new SessionNotModified();
+          }
+        })
+      );
+    })
+  );
+
+  @Effect()
+  createSession$: Observable<Action> = this.actions$.pipe(
+    ofType<CreateSession>(SessionActionTypes.CreateSession),
+    map((action: CreateSession) => action.payload),
+    switchMap(payload => {
+      console.log(payload);
+      return this.sessionService.createSession(payload.collectiveId, payload.startDate).pipe(
+        map(session => {
+          if (session.id !== 0) {
+            return new SessionCreateComplete();
           } else {
             return new SessionNotModified();
           }

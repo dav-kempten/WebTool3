@@ -14,6 +14,7 @@ import {
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse} from '@angular/common/http';
 import {Session, SessionSummary} from '../../model/session';
+import {Event} from '../../model/event';
 
 @Injectable({
   providedIn: 'root'
@@ -27,6 +28,7 @@ export class SessionService {
   private destroySubject = new Subject<void>();
   private cloneSubject = new BehaviorSubject<Session>(undefined);
   private deactivateSubject = new BehaviorSubject<Session>(undefined);
+  private createSubject = new BehaviorSubject<Session>(null);
 
   getSessionSummaries(): Observable<SessionSummary[]> {
     const headers = {
@@ -146,6 +148,20 @@ export class SessionService {
     return this.http.put<Session>(
       `/api/frontend/sessions/${id}/`,
       this.deactivateSubject.value
+    ).pipe(
+      catchError((error: HttpErrorResponse): Observable<Session> => {
+        console.log(error.statusText, error.status);
+        return of ({id: 0} as Session);
+      }),
+    );
+  }
+
+  createSession(collective: number, date: string): Observable<Session> {
+    this.createSubject.next({collectiveId: collective, session: {startDate: date} as Event} as Session);
+
+    return this.http.post<Session>(
+      `/api/frontend/sessions/`,
+      this.createSubject.value
     ).pipe(
       catchError((error: HttpErrorResponse): Observable<Session> => {
         console.log(error.statusText, error.status);

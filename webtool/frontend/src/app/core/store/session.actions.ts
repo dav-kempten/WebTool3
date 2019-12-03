@@ -106,7 +106,7 @@ export class ClearSessions implements Action {
 export class CreateSession implements Action {
   readonly type = SessionActionTypes.CreateSession;
 
-  constructor(public payload: { topicId: number, startDate: string}) {}
+  constructor(public payload: { collectiveId: number, startDate: string}) {}
 }
 
 export class CloneSession implements Action {
