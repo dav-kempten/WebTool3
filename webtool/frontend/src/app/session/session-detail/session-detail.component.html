@@ -1,9 +1,11 @@
 <ng-container *ngIf="sessionGroup$ | async as sessionGroup else loading">
-<h1>Tour #{{sessionId$ | async}}</h1>
+<p-card header="Session #{{sessionId$ | async}}">
+<!--<h1>Tour #{{sessionId$ | async}}</h1>-->
 <p>{{sessionGroup.value | json}}</p>
 
 <form [formGroup]="sessionGroup">
   <!--Guide-->
+  <p-card subheader="Guide & Team">
   <div class="p-grid">
       <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
         <avk-guide
@@ -14,66 +16,59 @@
             required
         ></avk-guide>
       </div>
-      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      </div>
-      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      </div>
-  </div>
-
-  <!--Team, LadiesOnly-->
-  <div class="p-grid">
-    <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
-      <avk-team
+      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+        <avk-team
           formControlName="teamIds"
           [nameId]="sessionGroup.get('guideId').value"
           id="g2"
           label="Team"
-      ></avk-team>
+        ></avk-team>
+      </div>
+  </div>
+  </p-card>
+
+  <!--Speaker, LadiesOnly-->
+  <p-card subheader="Sprecher & LadiesOnly">
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <input formControlName="speaker" id="speaker" placeholder="Sprecher" type="text" style='width:100%' pInputText>
     </div>
-    <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
       <p-checkbox
           [formControl]="sessionGroup.get('ladiesOnly')"
           label="LadiesOnly"
           binary="true"
       ></p-checkbox>
     </div>
-    <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
-    </div>
-    <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
-    </div>
   </div>
+  </p-card>
 
   <!--Buchungscode, Status, Gruppe-->
+  <p-card subheader="Buchungscode, Status & Gruppe">
   <div class="p-grid">
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
       <input formControlName="reference" id="reference" placeholder="Buchungsnummer" type="text" style='width:100%'
              readonly pInputText>
     </div>
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
       <avk-dropdown formControlName="stateId" id="stateId"></avk-dropdown>
     </div>
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <input formControlName="speaker" id="speaker" placeholder="Sprecher" type="text" style='width:100%'
-             pInputText>
-    </div>
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
       <avk-collectiveselect formControlName="collectiveId" id="collectiveId"></avk-collectiveselect>
     </div>
   </div>
+  </p-card>
 
   <!--Ausrüstung, Zusatzausrüstung-->
+  <p-card subheader="Ausrüstung">
   <div class="p-grid">
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-    </div>
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-    </div>
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
       <avk-multiselect
           formControlName="equipmentIds"
           label="Ausrüstung"
       ></avk-multiselect>
     </div>
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
       <textarea
           [rows]="2"
           pInputTextarea
@@ -84,7 +79,11 @@
           style='width:100%'
       ></textarea>
     </div>
-  </div><!--Liste mit Parametern (Tabelle)-->
+  </div>
+  </p-card>
+
+  <!--Liste mit Parametern (Tabelle)-->
+  <p-card subheader="Veranstaltungen">
   <ng-container *ngIf="(eventArray$ | async) as eventArray">
     <div class="p-grid">
       <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
@@ -108,6 +107,7 @@
       </div>
     </div>
   </ng-container>
+  </p-card>
 
   <ng-container *ngIf="currentEventGroup">
     <p-dialog header="EventDetail" [modal]="true" [(visible)]="display" [style]="{width: '60%', height: '60%'}">
@@ -250,10 +250,76 @@
     </p-dialog>
   </ng-container>
 
+  <!--Equipment-Fields-->
+  <p-card subheader="Ausrüstung">
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-5 p-md-5 p-lg-5">
+      <avk-multiselect
+          formControlName="equipmentIds"
+          label="Ausrüstung"
+      ></avk-multiselect>
+    </div>
+    <div class="p-col-12 p-sm-7 p-md-7 p-lg-7">
+      <textarea
+          [rows]="1"
+          pInputTextarea
+          formControlName="miscEquipment"
+          id="miscEquipmentTopic"
+          placeholder="Weitere Ausrüstung"
+          autoResize="autoResize"
+          style='width:100%'
+      ></textarea>
+    </div>
+  </div>
+  </p-card>
 
+  <!--Comment-->
+  <p-card subheader="Bemerkungen">
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+      <textarea
+          [rows]="3"
+          pInputTextarea
+          formControlName="comment"
+          placeholder="Bemerkungen"
+          autoResize="autoResize"
+          style='width:100%'
+      ></textarea>
+    </div>
+  </div>
+  </p-card>
+
+  <!--Message-->
+  <p-card subheader="Nachricht an die Geschäftsstelle">
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+      <textarea
+          [rows]="3"
+          pInputTextarea
+          formControlName="message"
+          placeholder="Nachricht an die Geschäftsstelle"
+          autoResize="autoResize"
+          style='width:100%'
+      ></textarea>
+    </div>
+  </div>
+  </p-card>
+
+  <p-card>
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-1 p-md-1 p-lg-1">
+      <p-button type="button" label="Speichern" class="ui-button-info"></p-button>
+      </div>
+    <div class="p-col-12 p-sm-1 p-md-1 p-lg-1">
+      <a routerLink="../"><p-button label="Zurück"></p-button></a>
+    </div>
+  </div>
+  </p-card>
 </form>
+</p-card>
 </ng-container>
 
-<ng-template #loading>Bitte kurz warten!</ng-template>
-
-<a routerLink="../"><p-button label="Zurück"></p-button></a>
+<ng-template #loading>
+  Bitte kurz warten!
+  <a routerLink="../"><p-button label="Zurück"></p-button></a>
+</ng-template>
