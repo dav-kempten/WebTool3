@@ -26,6 +26,7 @@ export class SessionService {
 
   private destroySubject = new Subject<void>();
   private cloneSubject = new BehaviorSubject<Session>(undefined);
+  private deactivateSubject = new BehaviorSubject<Session>(undefined);
 
   getSessionSummaries(): Observable<SessionSummary[]> {
     const headers = {
@@ -106,8 +107,6 @@ export class SessionService {
   }
 
   cloneSession(id: number): Observable<Session> {
-    console.log('Clone Session', id);
-
     this.getSession(id).pipe(
       takeUntil(this.destroySubject),
       tap(val => this.cloneSubject.next(this.transformSessionForCloning(val))),
@@ -127,6 +126,26 @@ export class SessionService {
   deleteSession(id: number): Observable<Session> {
     return this.http.delete<Session>(
       `/api/frontend/sessions/${id}/`,
+    ).pipe(
+      catchError((error: HttpErrorResponse): Observable<Session> => {
+        console.log(error.statusText, error.status);
+        return of ({id: 0} as Session);
+      }),
+    );
+  }
+
+  deactivateSession(id: number): Observable<Session> {
+    this.getSession(id).pipe(
+      takeUntil(this.destroySubject),
+      tap(val => {
+        val.deprecated = true;
+        this.deactivateSubject.next(val);
+      })
+    ).subscribe();
+
+    return this.http.put<Session>(
+      `/api/frontend/sessions/${id}/`,
+      this.deactivateSubject.value
     ).pipe(
       catchError((error: HttpErrorResponse): Observable<Session> => {
         console.log(error.statusText, error.status);

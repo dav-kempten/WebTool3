@@ -6,6 +6,7 @@ export enum SessionActionTypes {
   SessionNotModified = '[Session] Session not modified',
   SessionCreateComplete = '[Session] Session create Complete',
   SessionDeleteComplete = '[Session] Session delete Complete',
+  SessionDeactivateComplete = '[Session] Session deactivate Complete',
   RequestSession = '[Session] Request Session',
   LoadSessions = '[Session] Load Sessions',
   AddSession = '[Session] Add Session',
@@ -38,6 +39,10 @@ export class SessionCreateComplete implements Action {
 
 export class SessionDeleteComplete implements Action {
   readonly type = SessionActionTypes.SessionDeleteComplete;
+}
+
+export class SessionDeactivateComplete implements Action {
+  readonly type = SessionActionTypes.SessionDeactivateComplete;
 }
 
 export class LoadSessions implements Action {

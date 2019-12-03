@@ -9,7 +9,12 @@ import {
   CloneSession,
   SessionActionTypes,
   SessionNotModified,
-  RequestSession, SessionCreateComplete, DeleteSession, SessionDeleteComplete
+  RequestSession,
+  SessionCreateComplete,
+  DeleteSession,
+  SessionDeleteComplete,
+  DeactivateSession,
+  SessionDeactivateComplete
 } from './session.actions';
 import {Event} from '../../model/event';
 import {AppState} from '../../app.state';
@@ -68,6 +73,23 @@ export class SessionEffects {
         map(session => {
           if (session.id !== 0) {
             return new SessionDeleteComplete();
+          } else {
+            return new SessionNotModified();
+          }
+        })
+      );
+    })
+  );
+
+  @Effect()
+  deactivateSession$: Observable<Action> = this.actions$.pipe(
+    ofType<DeactivateSession>(SessionActionTypes.DeactivateSession),
+    map((action: DeactivateSession) => action.payload),
+    switchMap(payload => {
+      return this.sessionService.deactivateSession(payload.id).pipe(
+        map(session => {
+          if (session.id !== 0) {
+            return new SessionDeactivateComplete();
           } else {
             return new SessionNotModified();
           }
