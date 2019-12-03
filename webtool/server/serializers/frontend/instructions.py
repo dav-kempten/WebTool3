@@ -98,8 +98,8 @@ class InstructionSerializer(serializers.ModelSerializer):
     stateId = serializers.PrimaryKeyRelatedField(source='state', required=False, queryset=State.objects.all())
     deprecated = serializers.BooleanField(default=False, required=False)
 
-    message = serializers.CharField(default='', required=False)
-    comment = serializers.CharField(default='', required=False)
+    message = serializers.CharField(default='', required=False, allow_null=True, allow_blank=True)
+    comment = serializers.CharField(default='', required=False, allow_null=True, allow_blank=True)
 
     # Administrative Felder fehlen noch !
 
