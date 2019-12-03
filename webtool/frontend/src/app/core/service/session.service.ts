@@ -124,6 +124,17 @@ export class SessionService {
     );
   }
 
+  deleteSession(id: number): Observable<Session> {
+    return this.http.delete<Session>(
+      `/api/frontend/sessions/${id}/`,
+    ).pipe(
+      catchError((error: HttpErrorResponse): Observable<Session> => {
+        console.log(error.statusText, error.status);
+        return of ({id: 0} as Session);
+      }),
+    );
+  }
+
   transformSessionForCloning(session: Session): any {
     delete session.id;
     delete session.reference;
