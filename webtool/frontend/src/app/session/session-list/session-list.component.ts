@@ -13,6 +13,7 @@ import {CalendarRequested} from '../../core/store/calendar.actions';
 import {flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {RequestSessionSummaries} from '../../core/store/session-summary.actions';
 import {getSessionSummaries} from '../../core/store/session-summary.selectors';
+import {CloneSession} from '../../core/store/session.actions';
 
 
 @Component({
@@ -127,7 +128,7 @@ export class SessionListComponent implements OnInit, OnDestroy {
   }
 
   clone(sessionId) {
-    // this.store.dispatch(new CloneSession({id: sessionId}));
+    this.store.dispatch(new CloneSession({id: sessionId}));
   }
 
   delete(sessionId) {
