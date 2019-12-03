@@ -41,22 +41,15 @@
   <p-dialog header="Neuer Gruppentermin" [modal]="true" [(visible)]="display" [style]="{width: '600px'}">
     <div class="p-grid">
       <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
-<!--        <avk-categoryselect-->
-<!--            formControlName="categoryIds"-->
-<!--            id="categoryIds"-->
-<!--            [seasonSpecific]="this.partNewSession.value"-->
-<!--        >-->
-<!--        </avk-categoryselect>-->
+        <avk-collectiveselect formControlName="collectiveId" id="collectiveId"></avk-collectiveselect>
       </div>
     </div>
-      <div class="p-grid">
+    <div class="p-grid">
       <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
-        <avk-date formControlName="startDate"
-                  id="dbeginn" label="Start"
-        ></avk-date>
+        <avk-date formControlName="startDate" id="dbeginn" label="Start"></avk-date>
       </div>
     </div>
-    <p-button label="Bestätigen" (onClick)="confirmClick()"></p-button>
+    <p-button label="Bestätigen" (onClick)="create(createSession.get('collectiveId').value, createSession.get('startDate').value)"></p-button>
   </p-dialog>
   </form>
 </ng-container>

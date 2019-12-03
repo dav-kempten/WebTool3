@@ -13,7 +13,7 @@ import {CalendarRequested} from '../../core/store/calendar.actions';
 import {flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {RequestSessionSummaries} from '../../core/store/session-summary.actions';
 import {getSessionSummaries} from '../../core/store/session-summary.selectors';
-import {CloneSession, DeactivateSession, DeleteSession} from '../../core/store/session.actions';
+import {CloneSession, CreateSession, DeactivateSession, DeleteSession} from '../../core/store/session.actions';
 
 
 @Component({
@@ -41,7 +41,7 @@ export class SessionListComponent implements OnInit, OnDestroy {
   startDate = new FormControl('');
 
   createSession: FormGroup = new FormGroup({
-    collective: this.collectiveId,
+    collectiveId: this.collectiveId,
     startDate: this.startDate
   });
 
@@ -121,9 +121,8 @@ export class SessionListComponent implements OnInit, OnDestroy {
     this.display = true;
   }
 
-  confirmClick() {
-    // this.store.dispatch(new CreateSession({topicId: this.createSession.get('categoryIds').value,
-    //   startDate: this.createSession.get('startDate').value}));
+  create(collective, date) {
+    this.store.dispatch(new CreateSession({collectiveId: collective, startDate: date}));
     this.display = false;
   }
 
