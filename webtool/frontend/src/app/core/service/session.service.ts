@@ -1,5 +1,15 @@
-import {Observable, of} from 'rxjs';
-import {catchError, first, map, publishLast, publishReplay, refCount, shareReplay} from 'rxjs/operators';
+import {BehaviorSubject, Observable, of, Subject} from 'rxjs';
+import {
+  catchError,
+  first,
+  map,
+  publishLast,
+  publishReplay,
+  refCount,
+  shareReplay,
+  takeUntil,
+  tap
+} from 'rxjs/operators';
 
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse} from '@angular/common/http';
@@ -13,6 +23,9 @@ export class SessionService {
   etag: string;
 
   constructor(private http: HttpClient) { }
+
+  private destroySubject = new Subject<void>();
+  private cloneSubject = new BehaviorSubject<Session>(undefined);
 
   getSessionSummaries(): Observable<SessionSummary[]> {
     const headers = {
@@ -94,6 +107,27 @@ export class SessionService {
 
   cloneSession(id: number): Observable<Session> {
     console.log('Clone Session', id);
-    return of({id : 0} as Session);
+
+    this.getSession(id).pipe(
+      takeUntil(this.destroySubject),
+      tap(val => this.cloneSubject.next(this.transformSessionForCloning(val))),
+    ).subscribe();
+
+    return this.http.post<Session>(
+      `/api/frontend/sessions/`,
+      this.cloneSubject.value
+    ).pipe(
+      catchError((error: HttpErrorResponse): Observable<Session> => {
+        console.log(error.statusText, error.status);
+        return of ({id: 0} as Session);
+      }),
+    );
+  }
+
+  transformSessionForCloning(session: Session): any {
+    delete session.id;
+    delete session.reference;
+    delete session.session.id;
+    return session;
   }
 }

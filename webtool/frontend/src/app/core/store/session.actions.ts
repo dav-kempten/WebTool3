@@ -4,6 +4,7 @@ import { Session } from './session.model';
 
 export enum SessionActionTypes {
   SessionNotModified = '[Session] Session not modified',
+  SessionCreateComplete = '[Session] Session create Complete',
   RequestSession = '[Session] Request Session',
   LoadSessions = '[Session] Load Sessions',
   AddSession = '[Session] Add Session',
@@ -28,6 +29,10 @@ export class RequestSession implements Action {
 
 export class SessionNotModified implements Action {
   readonly type = SessionActionTypes.SessionNotModified;
+}
+
+export class SessionCreateComplete implements Action {
+  readonly type = SessionActionTypes.SessionCreateComplete;
 }
 
 export class LoadSessions implements Action {

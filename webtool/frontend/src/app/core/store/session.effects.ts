@@ -9,7 +9,7 @@ import {
   CloneSession,
   SessionActionTypes,
   SessionNotModified,
-  RequestSession
+  RequestSession, SessionCreateComplete
 } from './session.actions';
 import {Event} from '../../model/event';
 import {AppState} from '../../app.state';
@@ -50,7 +50,7 @@ export class SessionEffects {
       return this.sessionService.cloneSession(payload.id).pipe(
         map(session => {
           if (session.id !== 0) {
-            return new AddSession({session: this.transformSession(session)});
+            return new SessionCreateComplete();
           } else {
             return new SessionNotModified();
           }
