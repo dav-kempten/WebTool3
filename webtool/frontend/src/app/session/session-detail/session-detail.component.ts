@@ -200,6 +200,8 @@ export function sessionGroupFactory(session: Session): FormGroup {
     miscCategory: new FormControl(session.miscCategory),
     equipmentIds: new FormControl(session.equipmentIds),
     miscEquipment: new FormControl(session.miscEquipment),
+    message: new FormControl(session.message),
+    comment: new FormControl(session.comment),
     stateId: new FormControl(session.stateId),
   });
 }
