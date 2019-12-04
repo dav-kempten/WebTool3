@@ -1,7 +1,7 @@
 <ng-container *ngIf="sessionGroup$ | async as sessionGroup else loading">
 <p-card header="Session #{{sessionId$ | async}}">
 <!--<h1>Tour #{{sessionId$ | async}}</h1>-->
-<p>{{sessionGroup.value | json}}</p>
+<!--<p>{{sessionGroup.value | json}}</p>-->
 
 <form [formGroup]="sessionGroup">
   <!--Guide-->
@@ -60,21 +60,23 @@
   </p-card>
 
   <!--Ausrüstung, Zusatzausrüstung-->
-  <p-card subheader="Ausrüstung">
+  <p-card subheader="Kategorie">
   <div class="p-grid">
     <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-      <avk-multiselect
-          formControlName="equipmentIds"
-          label="Ausrüstung"
-      ></avk-multiselect>
+      <avk-categoryselect
+          formControlName="categoryIds"
+          id="categoryIds"
+          [readOnly]="false"
+          [topicSpecific]="'tour'">
+      </avk-categoryselect>
     </div>
-    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+    <div class="p-col-12 p-sm-8 p-md-8 p-lg-8">
       <textarea
-          [rows]="2"
+          [rows]="1"
           pInputTextarea
-          formControlName="miscEquipment"
-          id="miscEquipment"
-          placeholder="Weitere Ausrüstung"
+          formControlName="miscCategory"
+          id="miscCategory"
+          placeholder="spezielle Kategorie"
           autoResize="autoResize"
           style='width:100%'
       ></textarea>
@@ -253,13 +255,13 @@
   <!--Equipment-Fields-->
   <p-card subheader="Ausrüstung">
   <div class="p-grid">
-    <div class="p-col-12 p-sm-5 p-md-5 p-lg-5">
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
       <avk-multiselect
           formControlName="equipmentIds"
           label="Ausrüstung"
       ></avk-multiselect>
     </div>
-    <div class="p-col-12 p-sm-7 p-md-7 p-lg-7">
+    <div class="p-col-12 p-sm-8 p-md-8 p-lg-8">
       <textarea
           [rows]="1"
           pInputTextarea
