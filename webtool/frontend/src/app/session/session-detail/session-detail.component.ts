@@ -12,7 +12,7 @@ import {ValuesRequested} from '../../core/store/value.actions';
 import {CalendarRequested} from '../../core/store/calendar.actions';
 import {filter, flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {getSessionById} from '../../core/store/session.selectors';
-import {RequestSession} from '../../core/store/session.actions';
+import {RequestSession, UpsertSession} from '../../core/store/session.actions';
 import {getCollectiveById} from '../../core/store/value.selectors';
 import {getEventsByIds} from '../../core/store/event.selectors';
 import {CreateEvent, UpdateEvent} from '../../core/store/event.actions';
@@ -183,6 +183,10 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
     this.store.dispatch(new CreateEvent({id: this.sessionSubject.value.get('id').value}));
   }
 
+  saveSession(session) {
+    this.store.dispatch(new UpsertSession({session: session as Session}));
+  }
+
 }
 
 
@@ -194,7 +198,7 @@ export function sessionGroupFactory(session: Session): FormGroup {
     teamIds: new FormControl(session.teamIds),
     speaker: new FormControl(session.speaker),
     collectiveId: new FormControl(session.collectiveId),
-    session: new FormControl(session.sessionId),
+    sessionId: new FormControl(session.sessionId),
     ladiesOnly: new FormControl(session.ladiesOnly),
     categoryIds: new FormControl(session.categoryIds),
     miscCategory: new FormControl(session.miscCategory),

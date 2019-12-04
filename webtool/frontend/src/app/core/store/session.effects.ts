@@ -1,5 +1,5 @@
-import {Observable} from 'rxjs';
-import {map, switchMap} from 'rxjs/operators';
+import {Observable, Subject} from 'rxjs';
+import {map, switchMap, takeUntil, tap} from 'rxjs/operators';
 import {Action, Store} from '@ngrx/store';
 import {Actions, Effect, ofType} from '@ngrx/effects';
 import {Injectable} from '@angular/core';
@@ -14,19 +14,22 @@ import {
   DeleteSession,
   SessionDeleteComplete,
   DeactivateSession,
-  SessionDeactivateComplete, CreateSession
+  SessionDeactivateComplete, CreateSession, UpsertSession, SessionUpdateComplete
 } from './session.actions';
 import {Event} from '../../model/event';
 import {AppState} from '../../app.state';
 import {AddEvent} from './event.actions';
 import {Session} from './session.model';
 import {Session as RawSession} from '../../model/session';
+import {getEventById} from './event.selectors';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class SessionEffects {
+  event$: Observable<Event>;
+  private destroySubject = new Subject<void>();
 
   constructor(private actions$: Actions, private sessionService: SessionService, private store: Store<AppState>) {}
 
@@ -103,11 +106,27 @@ export class SessionEffects {
     ofType<CreateSession>(SessionActionTypes.CreateSession),
     map((action: CreateSession) => action.payload),
     switchMap(payload => {
-      console.log(payload);
       return this.sessionService.createSession(payload.collectiveId, payload.startDate).pipe(
         map(session => {
           if (session.id !== 0) {
             return new SessionCreateComplete();
+          } else {
+            return new SessionNotModified();
+          }
+        })
+      );
+    })
+  );
+
+  @Effect()
+  safeSession$: Observable<Action> = this.actions$.pipe(
+    ofType<UpsertSession>(SessionActionTypes.UpsertSession),
+    map((action: UpsertSession) => action.payload),
+    switchMap(payload => {
+      return this.sessionService.upsertSession(this.transformTourForSaving(payload.session)).pipe(
+        map(session => {
+          if (session.id !== null) {
+            return new SessionUpdateComplete();
           } else {
             return new SessionNotModified();
           }
@@ -126,6 +145,27 @@ export class SessionEffects {
     return {
       ... session,
       sessionId
+    };
+  }
+
+  transformTourForSaving(sessionInterface: Session): RawSession {
+    let session: any = {};
+
+    this.event$ = this.store.select(getEventById(sessionInterface.sessionId)).pipe(
+      takeUntil(this.destroySubject),
+      tap(event => {
+        session = event;
+      })
+    );
+    this.event$.subscribe();
+
+    delete sessionInterface.sessionId;
+
+    this.destroySubject.complete();
+
+    return {
+      ... sessionInterface,
+      session
     };
   }
 }

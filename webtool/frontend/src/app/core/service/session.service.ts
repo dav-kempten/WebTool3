@@ -29,6 +29,7 @@ export class SessionService {
   private cloneSubject = new BehaviorSubject<Session>(undefined);
   private deactivateSubject = new BehaviorSubject<Session>(undefined);
   private createSubject = new BehaviorSubject<Session>(null);
+  private updateSubject = new BehaviorSubject<Session>(null);
 
   getSessionSummaries(): Observable<SessionSummary[]> {
     const headers = {
@@ -162,6 +163,20 @@ export class SessionService {
     return this.http.post<Session>(
       `/api/frontend/sessions/`,
       this.createSubject.value
+    ).pipe(
+      catchError((error: HttpErrorResponse): Observable<Session> => {
+        console.log(error.statusText, error.status);
+        return of ({id: 0} as Session);
+      }),
+    );
+  }
+
+  upsertSession(session: Session): Observable<Session> {
+    this.updateSubject.next(session);
+
+    return this.http.put<Session>(
+      `/api/frontend/sessions/${this.updateSubject.value.id}/`,
+      this.updateSubject.value
     ).pipe(
       catchError((error: HttpErrorResponse): Observable<Session> => {
         console.log(error.statusText, error.status);
