@@ -61,7 +61,7 @@ class SessionSerializer(serializers.ModelSerializer):
     categoryIds = serializers.PrimaryKeyRelatedField(
         source='categories', many=True, default=[], queryset=Category.objects.all()
     )
-    misc_category = serializers.CharField(default=None, allow_null=True, allow_blank=True)
+    miscCategory = serializers.CharField(source='misc_category', default=None, allow_null=True, allow_blank=True)
 
     equipmentIds = serializers.PrimaryKeyRelatedField(
         source='equipments', many=True, default=[], queryset=Equipment.objects.all()
@@ -84,7 +84,7 @@ class SessionSerializer(serializers.ModelSerializer):
             'collectiveId',
             'session',
             'ladiesOnly',
-            'categoryIds', 'misc_category',
+            'categoryIds', 'miscCategory',
             'equipmentIds', 'miscEquipment',
             'message', 'comment',
             'deprecated',
@@ -144,12 +144,18 @@ class SessionSerializer(serializers.ModelSerializer):
             return session
 
     def update(self, instance, validated_data):
+        instance.guide = validated_data.get('guide', instance.guide)
+        instance.team = validated_data.get('team', instance.team)
         instance.speaker = validated_data.get('speaker', instance.speaker)
         session_data = validated_data.get('session')
         if session_data is not None:
             session = Event.objects.get(pk=session_data.get('pk'))
             update_event(session, session_data, self.context)
         instance.ladies_only = validated_data.get('ladies_only', instance.ladies_only)
+        categories = validated_data.get('categories')
+        if categories is not None:
+            instance.categories = categories
+        instance.misc_category = validated_data.get('misc_category', instance.misc_category)
         equipments = validated_data.get('equipments')
         if equipments is not None:
             instance.equipments = equipments
