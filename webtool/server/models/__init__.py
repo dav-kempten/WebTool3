@@ -23,4 +23,5 @@ from .calendar import Calendar, Anniversary, Vacation, OCCURRENCE_CHOICES, DAY_C
 from .tariff import Tariff
 from .chapter import Chapter
 from .booklet import Booklet
+from .misc import import_wt2_guides
 from .defaults import *

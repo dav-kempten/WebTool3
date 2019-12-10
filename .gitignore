@@ -30,6 +30,11 @@ ubuntu-xenial-16.04-cloudimg-console.log
 package-lock.json
 node_modules/
 Skripte/
+misc.py
+webtool/wt3_guide-data.json
 
 # Touren-Formulare (PDFs) #
 Formulare/
+
+# Personaldatenprototyp #
+personaldaten_json.py
