@@ -6,4 +6,5 @@ from .instructions import InstructionViewSet
 from .tours import TourViewSet
 from .talks import TalkViewSet
 from .sessions import SessionViewSet
+from .users import UserViewSet
 from .urls import router as frontend_router
