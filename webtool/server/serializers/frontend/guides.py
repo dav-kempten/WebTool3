@@ -13,7 +13,7 @@ class GuideListSerializer(serializers.ModelSerializer):
     emailUser = serializers.EmailField(source='user.email', read_only=True)
     profile = serializers.JSONField(read_only=True)
     qualifications = serializers.CharField(source='qualification_list', read_only=True)
-    retrainings = serializers.CharField(source='user.retraining.retraining_list', read_only=True)
+    retrainings = serializers.CharField(source='retraining_list', read_only=True)
     groups = serializers.PrimaryKeyRelatedField(
         source='user.groups', many=True, default=[], read_only=True
     )
