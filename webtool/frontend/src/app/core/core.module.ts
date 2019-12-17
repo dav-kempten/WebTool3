@@ -14,6 +14,7 @@ import {reducer as CalendarReducer} from './store/calendar.reducer';
 import {NameEffects} from './store/name.effects';
 import {ValueEffects} from './store/value.effects';
 import {NamePipe, NamesPipe} from './store/name.pipe';
+import {GuidePipe, GuidesPipe} from './store/guide.pipe';
 import {ButtonModule} from 'primeng/button';
 import {SidebarModule} from 'primeng/sidebar';
 import {TreeModule} from 'primeng/tree';
@@ -75,7 +76,7 @@ import { CollectiveselectComponent } from './collectiveselect/collectiveselect.c
     GuideComponent, TeamComponent, DateComponent, TimeComponent, NamePipe, NamesPipe, MenuComponent,
     BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent, DropdownComponent,
     MultiselectComponent, ApproxdropdownComponent, CategoryselectComponent, DatePipe, TimePipe, SkillselectComponent,
-    FitnessselectComponent, QualificationselectComponent, CollectiveselectComponent
+    FitnessselectComponent, QualificationselectComponent, CollectiveselectComponent, GuidePipe, GuidesPipe
   ],
   imports: [
     CommonModule,
@@ -130,7 +131,7 @@ import { CollectiveselectComponent } from './collectiveselect/collectiveselect.c
     BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent, DropdownComponent,
     MultiselectComponent, ButtonModule, ToggleButtonModule, ApproxdropdownComponent, CategoryselectComponent,
     DialogModule, CheckboxModule, InputTextModule, InputTextareaModule, DatePipe, TimePipe, SkillselectComponent,
-    FitnessselectComponent, QualificationselectComponent, CollectiveselectComponent, CardModule
+    FitnessselectComponent, QualificationselectComponent, CollectiveselectComponent, CardModule, GuidePipe, GuidesPipe,
   ]
 })
 export class CoreModule { }
