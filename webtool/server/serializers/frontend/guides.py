@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.contrib.auth.models import User, Group, Permission
-from django.urls import reverse
+from rest_framework.reverse import reverse
 from rest_framework import serializers
 from server.models import Guide, Profile, Retraining
 
@@ -11,6 +11,34 @@ class GuideListSerializer(serializers.ModelSerializer):
     firstName = serializers.CharField(source='user.first_name', read_only=True)
     lastName = serializers.CharField(source='user.last_name', read_only=True)
     emailUser = serializers.EmailField(source='user.email', read_only=True)
+    birthDate = serializers.DateField(source='user.profile.birth_date', read_only=True)
+    portrait = serializers.FileField(read_only=True)
+    url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Guide
+        fields = (
+            'id',
+            'username',
+            'firstName', 'lastName',
+            'emailUser',
+            'birthDate',
+            'portrait',
+            'url'
+        )
+
+    def get_url(self, obj):
+        request = self.context['request']
+        return reverse('guides-detail', args=[obj.pk], request=request)
+
+
+class GuideSerializer(serializers.ModelSerializer):
+
+    id = serializers.PrimaryKeyRelatedField(source='user.pk', read_only=True)
+    username = serializers.PrimaryKeyRelatedField(source='user.username', read_only=True)
+    firstName = serializers.CharField(source='user.first_name', read_only=True)
+    lastName = serializers.CharField(source='user.last_name', read_only=True)
+    email = serializers.EmailField(source='user.email', read_only=True)
     profile = serializers.JSONField(read_only=True)
     qualifications = serializers.CharField(source='qualification_list', read_only=True)
     retrainings = serializers.CharField(source='retraining_list', read_only=True)
@@ -24,7 +52,6 @@ class GuideListSerializer(serializers.ModelSerializer):
     isActive = serializers.BooleanField(source='user.is_active', read_only=True)
     phone = serializers.CharField(read_only=True)
     mobile = serializers.CharField(read_only=True)
-    portrait = serializers.FileField(read_only=True)
     dateJoined = serializers.DateTimeField(source='user.date_joined' ,read_only=True)
     memberId = serializers.CharField(source='user.profile.member_id', read_only=True)
     sex = serializers.IntegerField(source='user.profile.sex', read_only=True)
@@ -40,7 +67,7 @@ class GuideListSerializer(serializers.ModelSerializer):
             'id',
             'username',
             'firstName', 'lastName',
-            'emailUser',
+            'email',
             'profile',
             'qualifications',
             'retrainings',
@@ -49,32 +76,13 @@ class GuideListSerializer(serializers.ModelSerializer):
             'isStaff',
             'isActive',
             'phone', 'mobile',
-            'portrait',
             'dateJoined',
             'memberId', 'sex',
             'birthDate',
             'note',
             'memberYear',
             'integralMember',
-            'memberHome'
-        )
-
-
-class GuideSerializer(serializers.ModelSerializer):
-
-    id = serializers.PrimaryKeyRelatedField(source='user.pk', read_only=True)
-    username = serializers.PrimaryKeyRelatedField(source='user.username', read_only=True)
-    firstName = serializers.CharField(source='user.first_name')
-    lastName = serializers.CharField(source='user.last_name')
-    email = serializers.EmailField(source='user.email')
-
-    class Meta:
-        model = Guide
-        fields = (
-            'id',
-            'username',
-            'firstName', 'lastName',
-            'email',
+            'memberHome',
         )
 
     # def validate(self, data):

@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
-from django.db.models.aggregates import Count
 from django.http import Http404
 from django.template.defaultfilters import date
 from rest_framework import viewsets, permissions, status, mixins
 from rest_framework.response import Response
 
-from django.contrib.auth.models import User
 from server.models import Guide
 from server.serializers.frontend.guides import GuideListSerializer, GuideSerializer
 
@@ -27,11 +25,7 @@ class GuideViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
     permission_classes = (IsStaffOrReadOnly, )
 
-    queryset = Guide.objects\
-        .filter(seasons__current=True)\
-        .exclude(deprecated=True)\
-        .annotate(num_qualifications=Count('user__qualification_list'))\
-        .exclude(num_qualifications=0)
+    queryset = Guide.objects
 
     def get_serializer_class(self):
         if self.action == 'list':
