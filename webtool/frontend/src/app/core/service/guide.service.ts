@@ -2,7 +2,7 @@ import {Observable, of} from 'rxjs';
 import {catchError, first, map, publishReplay, refCount} from 'rxjs/operators';
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse} from '@angular/common/http';
-import {Guide} from '../../model/guide';
+import {Guide, GuideSummary} from '../../model/guide';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +13,7 @@ export class GuideService {
 
   constructor(private http: HttpClient) { }
 
-  getGuides(): Observable<Guide[]> {
+  getGuideSummaries(): Observable<GuideSummary[]> {
     const headers = {
         Accept: 'application/json',
         'Accept-Language': 'de',
@@ -25,15 +25,15 @@ export class GuideService {
       headers['If-None-Match'] = this.etag;
     }
 
-    return this.http.get<Guide[]>(
+    return this.http.get<GuideSummary[]>(
       '/api/frontend/guides/',
       {headers: new HttpHeaders(headers), observe: 'response'}
     ).pipe(
-      catchError((error: HttpErrorResponse): Observable<Guide[]> => {
+      catchError((error: HttpErrorResponse): Observable<GuideSummary[]> => {
         console.log(error.statusText, error.status);
-        return of([] as Guide[]);
+        return of([] as GuideSummary[]);
       }),
-      map((response: HttpResponse<Guide[]>): Guide[] => {
+      map((response: HttpResponse<GuideSummary[]>): GuideSummary[] => {
         const responseHeaders = response.headers;
         if (responseHeaders) {
           if (responseHeaders.keys().indexOf('etag') > -1) {
@@ -41,7 +41,7 @@ export class GuideService {
           }
           return response.body;
         } else {
-          return [] as Guide[];
+          return [] as GuideSummary[];
         }
       }),
       first(),

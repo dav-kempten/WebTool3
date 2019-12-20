@@ -3,11 +3,11 @@ import {select, Store} from '@ngrx/store';
 import {AppState, selectRouterFragment} from '../../app.state';
 import {Router} from '@angular/router';
 import {AuthService} from '../../core/service/auth.service';
-import {GuidesRequested} from '../../core/store/guide.actions';
+import {RequestGuideSummaries} from '../../core/store/guide-summary.actions';
 import {flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
-import {getGuides} from '../../core/store/guide.selectors';
-import {Guide} from '../../model/guide';
+import {getGuideSummaries} from '../../core/store/guide-summary.selectors';
+import {GuideSummary} from '../../model/guide';
 
 @Component({
   selector: 'avk-guide-list',
@@ -18,12 +18,12 @@ export class GuideListComponent implements OnInit, OnDestroy {
 
   private destroySubject = new Subject<void>();
   part$: Observable<string>;
-  guides$: Observable<Guide[]>;
+  guides$: Observable<GuideSummary[]>;
 
   partNewGuide = new BehaviorSubject<string>('');
 
   constructor(private store: Store<AppState>, private router: Router, private authService: AuthService) {
-    this.store.dispatch(new GuidesRequested());
+    this.store.dispatch(new RequestGuideSummaries());
   }
 
   ngOnInit() {
@@ -39,10 +39,10 @@ export class GuideListComponent implements OnInit, OnDestroy {
       takeUntil(this.destroySubject),
       flatMap( part =>
         this.store.pipe(
-          select(getGuides),
-          tap(guides => {
-            if (!guides || !guides.length) {
-              this.store.dispatch(new GuidesRequested());
+          select(getGuideSummaries),
+          tap(guidesSummaries => {
+            if (!guidesSummaries || !guidesSummaries.length) {
+              this.store.dispatch(new RequestGuideSummaries());
             }
           }),
           tap(() => this.partNewGuide.next(part)),

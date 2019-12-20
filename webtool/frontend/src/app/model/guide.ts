@@ -1,3 +1,13 @@
+export interface GuideSummary {
+  id: number;
+  firstName: string;
+  lastName: string;
+  emailUser: string;
+  memberId: string;
+  birthDate: string;
+  url: string;
+}
+
 export interface Guide {
   id: number;
   username: string;

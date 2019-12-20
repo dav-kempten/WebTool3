@@ -44,14 +44,14 @@ import {reducer as tourReducer} from './store/tour.reducer';
 import {reducer as tourSummaryReducer} from './store/tour-summary.reducer';
 import {reducer as sessionReducer} from './store/session.reducer';
 import {reducer as sessionSummaryReducer} from './store/session-summary.reducer';
-import {reducer as guideReducer} from './store/guide.reducer';
+import {reducer as guideSummaryReducer} from './store/guide-summary.reducer';
 import {InstructionSummaryEffects} from './store/instruction-summary.effects';
 import {InstructionEffects} from './store/instruction.effects';
 import {TourSummaryEffects} from './store/tour-summary.effects';
 import {TourEffects} from './store/tour.effects';
 import {SessionSummaryEffects} from './store/session-summary.effects';
 import {SessionEffects} from './store/session.effects';
-import {GuideEffects} from './store/guide.effects';
+import {GuideSummaryEffects} from './store/guide-summary.effects';
 import {reducer as stateReducer} from './store/state.reducer';
 import {reducer as categoryReducer} from './store/category.reducer';
 import {reducer as approximateReducer} from './store/approximate.reducer';
@@ -126,8 +126,8 @@ import { CollectiveselectComponent } from './collectiveselect/collectiveselect.c
     EffectsModule.forFeature([CalendarEffects]),
     StoreModule.forFeature('names', nameReducer),
     EffectsModule.forFeature([NameEffects]),
-    StoreModule.forFeature('guides', guideReducer),
-    EffectsModule.forFeature([GuideEffects])
+    StoreModule.forFeature('guideSummaries', guideSummaryReducer),
+    EffectsModule.forFeature([GuideSummaryEffects])
   ],
   exports: [
     GuideComponent, TeamComponent, DateComponent, TimeComponent, NamePipe, NamesPipe, MenuComponent,
