@@ -62,7 +62,7 @@ export class GuideListComponent implements OnInit, OnDestroy {
   }
 
   selectGuide(guide): void {
-    // this.router.navigate(['guides', guide.id]);
+    this.router.navigate(['guides', guide.id]);
   }
 
 }

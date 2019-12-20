@@ -14,7 +14,7 @@ function convertDecimal(rawValue: string): number {
 @Injectable({
   providedIn: 'root'
 })
-export class InstructionEffects {
+export class GuideEffects {
   events$: Observable<Event[]>;
 
   constructor(private actions$: Actions, private guideService: GuideService, private store: Store<AppState>) {

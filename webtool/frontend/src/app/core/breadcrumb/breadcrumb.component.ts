@@ -12,6 +12,9 @@ import {getTourById} from '../store/tour.selectors';
 import {RequestTour} from '../store/tour.actions';
 import {getSessionById} from '../store/session.selectors';
 import {RequestSession} from '../store/session.actions';
+import {getGuideById} from '../store/guide.selectors';
+import {RequestGuide} from '../store/guide.actions';
+import {Guide} from '../../model/guide';
 
 
 @Component({
@@ -147,6 +150,24 @@ export class BreadcrumbComponent implements OnInit {
                 });
               }
             );
+          }
+          if (part === 'Trainer') {
+            this.store.pipe(
+              select(getGuideById(id)),
+              tap(guide => {
+                if (!guide) {
+                  this.store.dispatch(new RequestGuide({id}));
+                }
+              }),
+              filter(guide => !!guide),
+              first()
+            ).subscribe( (trainer) => {
+              breadcrumbs[breadcrumbs.length - 1].url = '/trainers';
+              breadcrumbs.push({
+                url: `/trainers/${trainer.id}`,
+                label: trainer.username
+              });
+            });
           }
         }
         if (fragment) {
