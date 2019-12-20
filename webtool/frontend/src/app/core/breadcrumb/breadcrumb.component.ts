@@ -14,7 +14,6 @@ import {getSessionById} from '../store/session.selectors';
 import {RequestSession} from '../store/session.actions';
 import {getGuideById} from '../store/guide.selectors';
 import {RequestGuide} from '../store/guide.actions';
-import {Guide} from '../../model/guide';
 
 
 @Component({
@@ -37,7 +36,6 @@ export class BreadcrumbComponent implements OnInit {
         if (!fragment && discriminator.startsWith('#')) {
           const part = breadcrumbs[breadcrumbs.length - 2].label;
           const id = parseInt(discriminator.slice(1), 10);
-          console.log(breadcrumbs);
           if (part === 'Kurse') {
             this.store.pipe(
               select(getInstructionById(id)),
@@ -161,7 +159,7 @@ export class BreadcrumbComponent implements OnInit {
               }),
               filter(guide => !!guide),
               first()
-            ).subscribe( (trainer) => {
+            ).subscribe( trainer => {
               breadcrumbs[breadcrumbs.length - 1].url = '/trainers';
               breadcrumbs.push({
                 url: `/trainers/${trainer.id}`,
