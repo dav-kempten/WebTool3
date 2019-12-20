@@ -11,6 +11,7 @@ class GuideListSerializer(serializers.ModelSerializer):
     firstName = serializers.CharField(source='user.first_name', read_only=True)
     lastName = serializers.CharField(source='user.last_name', read_only=True)
     emailUser = serializers.EmailField(source='user.email', read_only=True)
+    memberId = serializers.CharField(source='user.profile.member_id', read_only=True)
     birthDate = serializers.DateField(source='user.profile.birth_date', read_only=True)
     portrait = serializers.FileField(read_only=True)
     url = serializers.SerializerMethodField()
@@ -22,6 +23,7 @@ class GuideListSerializer(serializers.ModelSerializer):
             'username',
             'firstName', 'lastName',
             'emailUser',
+            'memberId',
             'birthDate',
             'portrait',
             'url'
