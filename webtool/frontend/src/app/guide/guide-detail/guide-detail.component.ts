@@ -1,5 +1,5 @@
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
-import {Component, ElementRef, OnInit} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit} from '@angular/core';
 import {select, Store} from '@ngrx/store';
 import {FormControl, FormGroup} from '@angular/forms';
 import {AppState, selectRouterDetailId} from '../../app.state';
@@ -13,7 +13,7 @@ import {RequestGuide} from '../../core/store/guide.actions';
   templateUrl: './guide-detail.component.html',
   styleUrls: ['./guide-detail.component.css'],
 })
-export class GuideDetailComponent implements OnInit {
+export class GuideDetailComponent implements OnInit, OnDestroy {
 
   private destroySubject = new Subject<void>();
   private guideSubject = new BehaviorSubject<FormGroup>(undefined);
@@ -56,6 +56,12 @@ export class GuideDetailComponent implements OnInit {
 
     this.guideId$.subscribe();
     this.guide$.subscribe();
+  }
+
+  ngOnDestroy(): void {
+    this.destroySubject.next();
+    this.destroySubject.complete();
+    this.guideSubject.complete();
   }
 }
 

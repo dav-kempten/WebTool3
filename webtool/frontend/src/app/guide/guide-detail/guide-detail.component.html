@@ -1,7 +1,10 @@
-<ng-container *ngIf="!(guideGroup$ | async) as guideGroup else loading">
+<ng-container *ngIf="guideGroup$ | async as guideGroup else loading">
 <p-card header="Trainer #{{guideId$ | async}}">
-  <p>GuideGroup:<br/>{{guideGroup.value | json}}</p>
-</p-card>
-<p><a routerLink="../">Zurück</a></p>
+  <p-card subheader="JSON-Value">
+    <p>GuideGroup:<br/>{{guideGroup.value | json}}</p>
+  </p-card>
+  </p-card>
+    <p-card><a routerLink="../"><p-button label="Zurück"></p-button></a>
+  </p-card>
 </ng-container>
 <ng-template #loading>Einen kleinen Moment bitte...</ng-template>
