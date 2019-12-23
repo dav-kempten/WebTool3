@@ -40,7 +40,7 @@ class GuideSerializer(serializers.ModelSerializer):
     username = serializers.PrimaryKeyRelatedField(source='user.username', read_only=True)
     firstName = serializers.CharField(source='user.first_name', read_only=True)
     lastName = serializers.CharField(source='user.last_name', read_only=True)
-    email = serializers.EmailField(source='user.email', read_only=True)
+    emailUser = serializers.EmailField(source='user.email', read_only=True)
     profile = serializers.JSONField(read_only=True)
     qualifications = serializers.CharField(source='qualification_list', read_only=True)
     retrainings = serializers.CharField(source='retraining_list', read_only=True)
@@ -69,7 +69,7 @@ class GuideSerializer(serializers.ModelSerializer):
             'id',
             'username',
             'firstName', 'lastName',
-            'email',
+            'emailUser',
             'profile',
             'qualifications',
             'retrainings',
