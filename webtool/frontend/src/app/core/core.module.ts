@@ -73,13 +73,14 @@ import { SkillselectComponent } from './skillselect/skillselect.component';
 import { FitnessselectComponent } from './fitnessselect/fitnessselect.component';
 import { QualificationselectComponent } from './qualificationselect/qualificationselect.component';
 import { CollectiveselectComponent } from './collectiveselect/collectiveselect.component';
+import { SexdropdownComponent } from './sexdropdown/sexdropdown.component';
 
 @NgModule({
   declarations: [
     GuideComponent, TeamComponent, DateComponent, TimeComponent, NamePipe, NamesPipe, MenuComponent,
     BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent, DropdownComponent,
     MultiselectComponent, ApproxdropdownComponent, CategoryselectComponent, DatePipe, TimePipe, SkillselectComponent,
-    FitnessselectComponent, QualificationselectComponent, CollectiveselectComponent
+    FitnessselectComponent, QualificationselectComponent, CollectiveselectComponent, SexdropdownComponent
   ],
   imports: [
     CommonModule,
@@ -138,7 +139,7 @@ import { CollectiveselectComponent } from './collectiveselect/collectiveselect.c
     BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent, DropdownComponent,
     MultiselectComponent, ButtonModule, ToggleButtonModule, ApproxdropdownComponent, CategoryselectComponent,
     DialogModule, CheckboxModule, InputTextModule, InputTextareaModule, DatePipe, TimePipe, SkillselectComponent,
-    FitnessselectComponent, QualificationselectComponent, CollectiveselectComponent, CardModule
+    FitnessselectComponent, QualificationselectComponent, CollectiveselectComponent, CardModule, SexdropdownComponent
   ]
 })
 export class CoreModule { }
