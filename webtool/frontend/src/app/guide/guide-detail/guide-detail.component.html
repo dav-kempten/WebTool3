@@ -1,7 +1,7 @@
 <ng-container *ngIf="guideGroup$ | async as guideGroup else loading">
   <p-card header="Trainer #{{guideId$ | async}}">
     <!--JSON-Value of Guide-->
-<!--    <p-card subheader="JSON-Value"><p>GuideGroup:<br/>{{guideGroup.value | json}}</p></p-card>-->
+    <p-card subheader="JSON-Value"><p>GuideGroup:<br/>{{guideGroup.value | json}}</p></p-card>
 
     <form [formGroup]="guideGroup">
       <p-card subheader="Trainer-Daten">
@@ -151,7 +151,7 @@
                    pInputText>
           </div>
           <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
-            <input formControlName="sex" id="sex" placeholder="Geschlecht" type="number" style='width:100%' pInputText>
+            <avk-sexdropdown formControlName="sex" id="sex"></avk-sexdropdown>
           </div>
           <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
             <avk-date formControlName="birthDate" id="birthDate" label="Geburtsdatum"></avk-date>
