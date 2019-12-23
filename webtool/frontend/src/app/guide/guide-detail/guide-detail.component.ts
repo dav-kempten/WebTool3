@@ -7,6 +7,19 @@ import {Guide} from '../../model/guide';
 import {flatMap, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {getGuideById} from '../../core/store/guide.selectors';
 import {RequestGuide} from '../../core/store/guide.actions';
+import {LocaleSettings} from 'primeng/calendar';
+
+const german: LocaleSettings = {
+  firstDayOfWeek: 1,
+  dayNames: ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
+  dayNamesShort: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
+  dayNamesMin: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
+  monthNames: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+  monthNamesShort: ['Jan', 'Feb', 'Mrz', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
+  today: 'Heute',
+  clear: 'Löschen',
+  dateFormat: 'dd.mm.yy'
+};
 
 @Component({
   selector: 'avk-guide-detail',
@@ -23,6 +36,8 @@ export class GuideDetailComponent implements OnInit, OnDestroy {
 
   guideId$: Observable<number>;
   guide$: Observable<Guide>;
+
+  de = german;
 
   constructor(private store: Store<AppState>) {
     // this.store.dispatch(new GuidesRequested());
@@ -88,7 +103,7 @@ function guideGroupFactory(guide: Guide): FormGroup {
     phone: new FormControl(guide.phone),
     mobile: new FormControl(guide.mobile),
     portrait: new FormControl(guide.portrait),
-    dateJoined: new FormControl(guide.dateJoined),
+    dateJoined: new FormControl(guide.dateJoined.substring(0, 10)),
     memberId: new FormControl(guide.memberId),
     sex: new FormControl(guide.sex),
     birthDate: new FormControl(guide.birthDate),

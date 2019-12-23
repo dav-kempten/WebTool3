@@ -144,7 +144,8 @@
       <p-card subheader="Eintrittsdatum, Mitgliedsnummer, Geschlecht & Geburtsdatum">
         <div class="p-grid">
           <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-            <avk-date formControlName="dateJoined" id="dateJoined" label="Eintritt"></avk-date>
+            <p-calendar formControlName="dateJoined" id="dateJoined" [locale]="de"
+                        dataType="string" showIcon="true" dateFormat="yy-mm-dd" placeholder="jjjj-mm-tt"></p-calendar>
           </div>
           <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
             <input formControlName="memberId" id="memberId" placeholder="Mitgliedsnummer" type="text" style='width:100%'
@@ -154,7 +155,8 @@
             <avk-sexdropdown formControlName="sex" id="sex"></avk-sexdropdown>
           </div>
           <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-            <avk-date formControlName="birthDate" id="birthDate" label="Geburtsdatum"></avk-date>
+            <p-calendar formControlName="birthDate" id="birthDate" [locale]="de"
+                        dataType="string" showIcon="true" dateFormat="yy-mm-dd" placeholder="jjjj-mm-tt"></p-calendar>
           </div>
         </div>
       </p-card>
