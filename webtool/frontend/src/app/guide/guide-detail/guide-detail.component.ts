@@ -72,7 +72,13 @@ function guideGroupFactory(guide: Guide): FormGroup {
     firstName: new FormControl(guide.firstName),
     lastName: new FormControl(guide.lastName),
     emailUser: new FormControl(guide.emailUser),
-    profile: new FormControl(guide.profile),
+    profileCity: new FormControl(parseProfile(guide.profile, 'city')),
+    profileJob: new FormControl(parseProfile(guide.profile, 'job')),
+    profileName: new FormControl(parseProfile(guide.profile, 'name')),
+    profileQualification: new FormControl(parseProfile(guide.profile, 'qualification')),
+    profileReason: new FormControl(parseProfile(guide.profile, 'reason')),
+    profileHobby: new FormControl(parseProfile(guide.profile, 'hobby')),
+    profileTip: new FormControl(parseProfile(guide.profile, 'tip')),
     qualifications: new FormControl(guide.qualifications),
     retrainings: new FormControl(guide.retrainings),
     groups: new FormControl(guide.groups),
@@ -92,3 +98,35 @@ function guideGroupFactory(guide: Guide): FormGroup {
     memberHome: new FormControl(guide.memberHome)
   });
 }
+
+function parseProfile(profile: string, identifierString: string) {
+  let profileVal: string = null;
+  if (profile !== null && profile !== '') {
+    switch (identifierString) {
+      case 'city':
+        profileVal = JSON.parse(profile).city;
+        break;
+      case 'job':
+        profileVal = JSON.parse(profile).job;
+        break;
+      case 'name':
+        profileVal = JSON.parse(profile).name;
+        break;
+      case 'qualification':
+        profileVal = JSON.parse(profile).qualification;
+        break;
+      case 'reason':
+        profileVal = JSON.parse(profile).reason;
+        break;
+      case 'hobby':
+        profileVal = JSON.parse(profile).hobby;
+        break;
+      case 'tip':
+        profileVal = JSON.parse(profile).tip;
+        break;
+    }
+  }
+  return profileVal;
+}
+
+
