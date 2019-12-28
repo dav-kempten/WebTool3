@@ -27,7 +27,7 @@
     "@ngrx/store-devtools": "^7.2.0",
     "core-js": "^2.5.4",
     "fstream": "^1.0.12",
-    "handlebars": "^4.1.2",
+    "handlebars": "^4.3.0",
     "js-yaml": "^3.13.1",
     "node-sass": "^4.12.0",
     "primeflex": "^1.0.0-rc.1",
