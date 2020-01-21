@@ -193,9 +193,12 @@
         </div>
       </p-card>
     </form>
-    <p-card><a routerLink="../">
-      <p-button label="Zurück"></p-button>
-    </a></p-card>
+    <p-card>
+      <a routerLink="../"><p-button label="Zurück"></p-button></a>
+    </p-card>
   </p-card>
 </ng-container>
-<ng-template #loading>Einen kleinen Moment bitte...</ng-template>
+<ng-template #loading>
+  Einen kleinen Moment bitte...
+  <a routerLink="../"><p-button label="Zurück"></p-button></a>
+</ng-template>
