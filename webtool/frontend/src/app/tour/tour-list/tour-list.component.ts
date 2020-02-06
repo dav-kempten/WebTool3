@@ -137,7 +137,11 @@ export class TourListComponent implements OnInit, OnDestroy {
   }
 
   selectTour(tour): void {
-    this.router.navigate(['tours', tour.id]);
+    if (!!tour) {
+      if (this.loginObject.valState >= 2 || this.loginObject.id === tour.guideId) {
+        this.router.navigate(['tours', tour.id]);
+      }
+    }
   }
 
   handleClick() {
