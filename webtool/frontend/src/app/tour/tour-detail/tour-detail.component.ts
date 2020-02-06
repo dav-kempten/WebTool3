@@ -9,7 +9,7 @@ import {ValuesRequested} from '../../core/store/value.actions';
 import {CalendarRequested} from '../../core/store/calendar.actions';
 import {Category, Topic} from '../../model/value';
 import {Event} from '../../model/event';
-import {User} from '../../core/service/auth.service';
+import {AuthService, User} from '../../core/service/auth.service';
 import {filter, flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {getTourById} from '../../core/store/tour.selectors';
 import {ClearTours, RequestTour, UpdateTour, UpsertTour} from '../../core/store/tour.actions';
@@ -45,18 +45,35 @@ export class TourDetailComponent implements OnInit, OnDestroy {
   category$: Observable<Category>;
 
   authState$: Observable<User>;
-  userValState = 0;
+  loginObject = {id: undefined, firstName: '', lastName: '', role: undefined, valState: 0};
   display = false;
   currentEventGroup: FormGroup = undefined;
   eventNumber: number[];
 
-  constructor(private store: Store<AppState>) {
+  constructor(private store: Store<AppState>, private userService: AuthService) {
     this.store.dispatch(new NamesRequested());
     this.store.dispatch(new ValuesRequested());
     this.store.dispatch(new CalendarRequested());
   }
 
   ngOnInit(): void {
+
+    this.authState$ = this.userService.user$;
+    this.authState$.pipe(
+      tap(value => {
+        this.loginObject = { ...value, valState: 0 };
+        if (value.role === 'Administrator') {
+          this.loginObject.valState = 4;
+        } else if (value.role === 'Geschäftsstelle') {
+          this.loginObject.valState = 3;
+        } else if (value.role === 'Fachbereichssprecher') {
+          this.loginObject.valState = 2;
+        } else if (value.role === 'Trainer') {
+          this.loginObject.valState = 1;
+        } else { this.loginObject.valState = 0; }
+      }),
+    ).subscribe();
+
     this.tourId$ = this.store.select(selectRouterDetailId);
 
     this.tour$ = this.tourId$.pipe(
