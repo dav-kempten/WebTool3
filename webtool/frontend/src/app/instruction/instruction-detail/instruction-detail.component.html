@@ -40,7 +40,7 @@
             [nameId]="instructionGroup.get('guideId').value"
             id="g2"
             label="Team"
-            [readOnly]="!(userValState >= 1)"
+            [readOnly]="!(this.loginObject.valState >= 1)"
         ></avk-team>
       </div>
       <div class="p-col-12 p-sm-3 p-md-3 p-lg-3" *ngIf="this.instructionCategory.value !== 'indoor'">
@@ -68,7 +68,7 @@
                readonly pInputText>
       </div>
       <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-        <avk-dropdown formControlName="stateId" id="stateId" [readOnly]="!(userValState >= 3)">
+        <avk-dropdown formControlName="stateId" id="stateId" [readOnly]="!(this.loginObject.valState >= 3)">
         </avk-dropdown>
       </div>
       <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
@@ -162,7 +162,7 @@
       <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
         <avk-multiselect
             formControlName="equipmentIds"
-            [readOnly]="!(userValState >= 1)"
+            [readOnly]="!(this.loginObject.valState >= 1)"
         ></avk-multiselect>
       </div>
       <div class="p-col-12 p-sm-3 p-md-3 p-lg-3" *ngIf="this.instructionCategory.value !== 'indoor'">
@@ -191,14 +191,14 @@
       <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
         <avk-qualificationselect
             formControlName="qualificationIds"
-            [readOnly]="!(userValState >= 1)"
+            [readOnly]="!(this.loginObject.valState >= 1)"
         ></avk-qualificationselect>
       </div>
       <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
         <avk-categoryselect
             formControlName="categoryId"
             id="categoryId"
-            [readOnly]="!(userValState >= 1)"
+            [readOnly]="!(this.loginObject.valState >= 1)"
             [seasonSpecific]="this.instructionCategory.value"
             [topicSpecific]="'instruction'"
         ></avk-categoryselect>
@@ -228,7 +228,7 @@
           label="Mindestens"
           id="m1"
           [maxMember]="instructionGroup.get('maxQuantity').value"
-          [readOnly]="!(userValState >= 1)"
+          [readOnly]="!(this.loginObject.valState >= 1)"
       ></avk-membernumber>
     </div>
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
@@ -237,7 +237,7 @@
           label="Maximal"
           id="m2"
           [minMember]="instructionGroup.get('minQuantity').value"
-          [readOnly]="!(userValState >= 1)"
+          [readOnly]="!(this.loginObject.valState >= 1)"
       ></avk-membernumber>
     </div>
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
@@ -245,7 +245,7 @@
           formControlName="curQuantity"
           label="Aktuell"
           id="m3"
-          [readOnly]="!(userValState >= 1)"
+          [readOnly]="!(this.loginObject.valState >= 1)"
       ></avk-membernumber>
     </div>
   </form>
@@ -299,7 +299,7 @@
         <div class="p-grid">
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6"
                *ngIf="this.instructionCategory.value !== 'indoor'">
-            <avk-approxdropdown formControlName="approximateId" id="approx" [readOnly]="!(userValState >= 1)"
+            <avk-approxdropdown formControlName="approximateId" id="approx" [readOnly]="!(this.loginObject.valState >= 1)"
                                 [disable]="!!currentEventGroup.get('startTime').value"></avk-approxdropdown>
           </div>
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
