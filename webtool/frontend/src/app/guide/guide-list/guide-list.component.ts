@@ -43,7 +43,6 @@ export class GuideListComponent implements OnInit, OnDestroy {
         } else if (value.role === 'Trainer') {
           this.loginObject.valState = 1;
         } else { this.loginObject.valState = 0; }
-        console.log(this.loginObject);
       }),
     ).subscribe();
 
