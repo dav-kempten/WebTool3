@@ -1,6 +1,6 @@
 <ng-container *ngIf="(activeItem$ | async) as activeItem else loading">
   <p-tabMenu [model]="menuItems" [activeItem]="{}"></p-tabMenu>
-  <p-button label="Gruppentermin hinzufügen" (onClick)="handleClick()" *ngIf="this.userValState >= 3"></p-button>
+  <p-button label="Gruppentermin hinzufügen" (onClick)="handleClick()" *ngIf="this.loginObject.valState >= 3"></p-button>
   <ng-container *ngIf="(sessions$ | async) as sessions">
     <p-table [value]="sessions" selectionMode="single" (selectionChange)="selectSession($event)">
       <ng-template pTemplate="header">
@@ -24,12 +24,12 @@
           <td>{{session.speaker}}</td>
           <td>
             <button pButton type="button" label="Klonen" class="ui-button-success"
-                    (click)="clone(session.id)" *ngIf="this.userValState >= 3"></button>
+                    (click)="clone(session.id)" *ngIf="this.loginObject.valState >= 3"></button>
             <button pButton type="button" label="Löschen" class="ui-button-warning"
                     (click)="delete(session.id)"
-                    *ngIf="this.userValState >= 3 && this.finishedSessions.indexOf(session.stateId) === -1"></button>
+                    *ngIf="this.loginObject.valState >= 3 && this.finishedSessions.indexOf(session.stateId) === -1"></button>
             <button pButton type="button" label="Deaktivieren" class="ui-button-info"
-                    (click)="deactivate(session.id)" *ngIf="this.userValState >= 3"></button>
+                    (click)="deactivate(session.id)" *ngIf="this.loginObject.valState >= 3"></button>
           </td>
         </tr>
       </ng-template>
