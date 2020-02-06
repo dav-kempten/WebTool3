@@ -38,7 +38,7 @@ export class InstructionListComponent implements OnInit, OnDestroy {
 
   user$: Observable<User>;
   authState$: Observable<User>;
-  userValState = 0;
+  loginObject = {id: undefined, firstName: '', lastName: '', role: undefined, valState: 0};
 
   topicId = new FormControl('');
   startDate = new FormControl('');
@@ -65,15 +65,16 @@ export class InstructionListComponent implements OnInit, OnDestroy {
     this.authState$ = this.authService.user$;
     this.authState$.pipe(
       tap(value => {
+        this.loginObject = { ...value, valState: 0 };
         if (value.role === 'Administrator') {
-          this.userValState = 4;
+          this.loginObject.valState = 4;
         } else if (value.role === 'Geschäftsstelle') {
-          this.userValState = 3;
+          this.loginObject.valState = 3;
         } else if (value.role === 'Fachbereichssprecher') {
-          this.userValState = 2;
+          this.loginObject.valState = 2;
         } else if (value.role === 'Trainer') {
-          this.userValState = 1;
-        } else { this.userValState = 0; }
+          this.loginObject.valState = 1;
+        } else { this.loginObject.valState = 0; }
       }),
     ).subscribe();
 

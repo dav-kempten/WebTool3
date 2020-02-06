@@ -22,12 +22,12 @@
           <td>{{instruction.minQuantity}} | {{instruction.curQuantity}} | {{instruction.maxQuantity}}</td>
           <td>
             <button pButton type="button" label="Klonen" class="ui-button-success"
-                    (click)="clone(instruction.id)" *ngIf="this.userValState >= 3"></button>
+                    (click)="clone(instruction.id)" *ngIf="this.loginObject.valState >= 3"></button>
             <button pButton type="button" label="Löschen" class="ui-button-warning"
                     (click)="delete(instruction.id)"
-                    *ngIf="this.userValState >= 3 && this.finishedInstructions.indexOf(instruction.stateId) === -1"></button>
+                    *ngIf="this.loginObject.valState >= 3 && this.finishedInstructions.indexOf(instruction.stateId) === -1"></button>
             <button pButton type="button" label="Deaktivieren" class="ui-button-info"
-                    (click)="deactivate(instruction.id)" *ngIf="this.userValState >= 3"></button>
+                    (click)="deactivate(instruction.id)" *ngIf="this.loginObject.valState >= 3"></button>
           </td>
         </tr>
       </ng-template>
