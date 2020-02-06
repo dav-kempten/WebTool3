@@ -140,7 +140,11 @@ export class InstructionListComponent implements OnInit, OnDestroy {
   }
 
   selectInstruction(instruction): void {
-    this.router.navigate(['instructions', instruction.id]);
+    if (!!instruction) {
+      if (this.loginObject.valState >= 3) {
+        this.router.navigate(['instructions', instruction.id]);
+      }
+    }
   }
 
   handleClick() {
