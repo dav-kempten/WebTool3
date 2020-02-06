@@ -8,7 +8,7 @@
         <div class="p-grid">
           <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
             <input formControlName="username" id="username" placeholder="Username" type="text" style='width:100%'
-                   pInputText>
+                   pInputText [readOnly]="!(this.loginObject.valState >= 3)">
           </div>
           <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
             <input formControlName="firstName" id="firstName" placeholder="Vorname" type="text" style='width:100%'
@@ -85,7 +85,7 @@
         </div>
       </p-card>
 
-      <p-card subheader="Qualifikationen & Fortbildungen">
+      <p-card subheader="Qualifikationen & Fortbildungen" *ngIf="!!(this.loginObject.valState >= 3)">
         <div class="p-grid">
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
             <input formControlName="qualifications" id="qualifications" placeholder="Qualifikationen" type="text"
@@ -106,7 +106,7 @@
         </div>
       </p-card>
 
-      <p-card subheader="Staff, Aktivität, Gruppen & User-Permission">
+      <p-card subheader="Staff, Aktivität, Gruppen & User-Permission" *ngIf="!!(this.loginObject.valState >= 3)">
         <div class="p-grid">
           <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
             <p-checkbox
@@ -141,7 +141,7 @@
         </div>
       </p-card>
 
-      <p-card subheader="Eintrittsdatum, Mitgliedsnummer, Geschlecht & Geburtsdatum">
+      <p-card subheader="Eintrittsdatum, Mitgliedsnummer, Geschlecht & Geburtsdatum" *ngIf="!!(this.loginObject.valState >= 3)">
         <div class="p-grid">
           <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
             <p-calendar formControlName="dateJoined" id="dateJoined" [locale]="de"
@@ -161,7 +161,7 @@
         </div>
       </p-card>
 
-      <p-card subheader="Notiz, Eintrittsjahr, A-Mitglied, Heimatsektion">
+      <p-card subheader="Notiz, Eintrittsjahr, A-Mitglied, Heimatsektion" *ngIf="!!(this.loginObject.valState >= 3)">
         <div class="p-grid">
           <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
         <textarea

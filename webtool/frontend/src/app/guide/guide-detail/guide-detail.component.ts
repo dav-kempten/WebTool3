@@ -8,6 +8,7 @@ import {flatMap, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {getGuideById} from '../../core/store/guide.selectors';
 import {RequestGuide} from '../../core/store/guide.actions';
 import {LocaleSettings} from 'primeng/calendar';
+import {AuthService, User} from '../../core/service/auth.service';
 
 const german: LocaleSettings = {
   firstDayOfWeek: 1,
@@ -37,13 +38,32 @@ export class GuideDetailComponent implements OnInit, OnDestroy {
   guideId$: Observable<number>;
   guide$: Observable<Guide>;
 
+  authState$: Observable<User>;
+  loginObject = {id: undefined, firstName: '', lastName: '', role: undefined, valState: 0};
+
   de = german;
 
-  constructor(private store: Store<AppState>) {
+  constructor(private store: Store<AppState>, private userService: AuthService) {
     // this.store.dispatch(new GuidesRequested());
   }
 
   ngOnInit(): void {
+
+    this.authState$ = this.userService.user$;
+    this.authState$.pipe(
+      tap(value => {
+        this.loginObject = { ...value, valState: 0 };
+        if (value.role === 'Administrator') {
+          this.loginObject.valState = 4;
+        } else if (value.role === 'Geschäftsstelle') {
+          this.loginObject.valState = 3;
+        } else if (value.role === 'Fachbereichssprecher') {
+          this.loginObject.valState = 2;
+        } else if (value.role === 'Trainer') {
+          this.loginObject.valState = 1;
+        } else { this.loginObject.valState = 0; }
+      }),
+    ).subscribe();
 
     this.guideId$ = this.store.select(selectRouterDetailId);
 
