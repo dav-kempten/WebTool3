@@ -1,6 +1,6 @@
 <ng-container *ngIf="(activeItem$ | async) as activeItem else loading">
   <p-tabMenu [model]="menuItems" [activeItem]="{}"></p-tabMenu>
-  <p-button label="Tour hinzufügen" (onClick)="handleClick()" *ngIf="this.userValState >= 3"></p-button>
+  <p-button label="Tour hinzufügen" (onClick)="handleClick()" *ngIf="this.loginObject.valState >= 3"></p-button>
   <ng-container *ngIf="(tours$ | async) as tours">
     <p-table [value]="tours" selectionMode="single" (selectionChange)="selectTour($event)">
       <ng-template pTemplate="header">
@@ -22,12 +22,12 @@
           <td>{{tour.minQuantity}} | {{tour.curQuantity}} | {{tour.maxQuantity}}</td>
           <td>
             <button pButton type="button" label="Klonen" class="ui-button-success"
-                    (click)="clone(tour.id)" *ngIf="this.userValState >= 3"></button>
+                    (click)="clone(tour.id)" *ngIf="this.loginObject.valState >= 3"></button>
             <button pButton type="button" label="Löschen" class="ui-button-warning"
                     (click)="delete(tour.id)"
-                    *ngIf="this.userValState >= 3 && this.finishedTours.indexOf(tour.stateId) === -1"></button>
+                    *ngIf="this.loginObject.valState >= 3 && this.finishedTours.indexOf(tour.stateId) === -1"></button>
             <button pButton type="button" label="Deaktivieren" class="ui-button-info"
-                    (click)="deactivate(tour.id)" *ngIf="this.userValState >= 3"></button>
+                    (click)="deactivate(tour.id)" *ngIf="this.loginObject.valState >= 3"></button>
           </td>
         </tr>
       </ng-template>
