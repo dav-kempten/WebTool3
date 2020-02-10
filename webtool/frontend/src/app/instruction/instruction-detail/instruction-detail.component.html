@@ -17,7 +17,7 @@
             id="g1"
             label="Trainer"
             [nameIdList]="instructionGroup.get('teamIds').value"
-            [readOnly]="!(userValState >= 1)"
+            [readOnly]="!(this.loginObject.valState >= 1)"
             required
         ></avk-guide>
       </div>
@@ -27,7 +27,7 @@
       </div>
       <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
         <input id="revenue" placeholder="Einnahmen" type="text" style='width:100%'
-               [readOnly]="!(userValState >= 1)" pInputText>
+               [readOnly]="!(this.loginObject.valState >= 1)" pInputText>
       </div>
     </div>
     </p-card>
