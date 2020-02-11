@@ -176,9 +176,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
             const eventGroup = eventGroupFactory(event);
             eventGroup.valueChanges.pipe(
               takeUntil(this.destroySubject)
-            ).subscribe(
-              value => this.eventChangeSubject.next(value)
-            );
+            ).subscribe( value => this.eventChangeSubject.next(value));
             eventArray.push(eventGroup);
           });
           this.eventsSubject.next(eventArray);
@@ -241,11 +239,14 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     distal.disabled = !isDistal;
   }
 
+  /* Notizen: Bei der Erstellung eines zusätzlichen Events muss das Event erst serverseitig werden und der
+   * Cache aktualisiert werden. So wird sichergestellt das die Kurse konsistent parallel bearbeitet werden können. */
   addEvent(instruction) {
     this.store.dispatch(new AddEventInstruction({instruction: instruction as Instruction}));
     setTimeout(() => {
-      window.location.reload();
-    }, 200);
+      this.store.dispatch(new RequestInstruction({id: instruction.id}));
+      // this.store.select(getInstructionById(instruction.id));
+    }, 1000);
   }
 
   save(instruction) {
