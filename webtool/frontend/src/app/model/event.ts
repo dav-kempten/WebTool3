@@ -7,7 +7,7 @@ export interface Event {
   startTime: string | null; // time
   approximateId: number | null;
   endDate: string | null; // date
-  endTime: string| null; // time
+  endTime: string | null; // time
   rendezvous: string;
   location: string;
   reservationService: boolean;
