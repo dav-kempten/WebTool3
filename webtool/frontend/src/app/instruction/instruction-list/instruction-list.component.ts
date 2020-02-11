@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {select, Store} from '@ngrx/store';
 import {AppState, selectRouterFragment} from '../../app.state';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
@@ -25,7 +25,9 @@ import {CalendarRequested} from '../../core/store/calendar.actions';
   templateUrl: './instruction-list.component.html',
   styleUrls: ['./instruction-list.component.css']
 })
-export class InstructionListComponent implements OnInit, OnDestroy {
+export class InstructionListComponent implements OnInit, OnDestroy, AfterViewInit {
+
+  @ViewChild('dt') dt;
 
   private destroySubject = new Subject<void>();
   part$: Observable<string>;
@@ -33,6 +35,8 @@ export class InstructionListComponent implements OnInit, OnDestroy {
   activeItem$: Observable<MenuItem>;
   display = false;
   finishedInstructions = [6, 7, 8];
+  activeInstructions = [1, 2, 3, 4, 5, 9];
+  allInstructions = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
   partNewInstruction = new BehaviorSubject<string>('');
 
@@ -139,6 +143,10 @@ export class InstructionListComponent implements OnInit, OnDestroy {
     this.destroySubject.complete();
   }
 
+  ngAfterViewInit(): void {
+    this.dt.filter(this.activeInstructions, 'stateId', 'in');
+  }
+
   selectInstruction(instruction): void {
     if (!!instruction) {
       if (this.loginObject.valState >= 3) {
@@ -166,5 +174,13 @@ export class InstructionListComponent implements OnInit, OnDestroy {
 
   deactivate(instructionId) {
     this.store.dispatch(new DeactivateInstruction({id: instructionId}));
+  }
+
+  changeViewSet(event, dt) {
+    if (!event.checked) {
+      dt.filter(this.activeInstructions, 'stateId', 'in');
+    } else {
+      dt.filter(this.allInstructions, 'stateId', 'in');
+    }
   }
 }

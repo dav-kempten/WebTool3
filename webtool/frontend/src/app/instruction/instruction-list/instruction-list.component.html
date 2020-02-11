@@ -1,14 +1,20 @@
 <ng-container *ngIf="(activeItem$ | async) as activeItem else loading">
   <p-tabMenu [model]="menuItems" [activeItem]="{}"></p-tabMenu>
-  <p-button label="Kurs hinzufügen" (onClick)="handleClick()" *ngIf="this.userValState >= 3"></p-button>
+  <p-button label="Kurs hinzufügen" (onClick)="handleClick()" *ngIf="this.loginObject.valState >= 3"></p-button>
   <ng-container *ngIf="(instructions$ | async) as instructions">
-    <p-table [value]="instructions" selectionMode="single" (selectionChange)="selectInstruction($event)">
+    <p-table #dt [value]="instructions" selectionMode="single" (selectionChange)="selectInstruction($event)">
+    <ng-template pTemplate="caption">
+      <div style="text-align: right">
+        <p-toggleButton onLabel="Alle Kurse" offLabel="Aktive Kurse" (onChange)="changeViewSet($event, dt)"></p-toggleButton>
+      </div>
+    </ng-template>
       <ng-template pTemplate="header">
         <tr>
           <th>Buchungscode</th>
           <th>Datum</th>
           <th>Bezeichnung</th>
           <th>Trainer</th>
+          <th>Status</th>
           <th>Belegung (Min|Aktuell|Max)</th>
           <th>Kursaktionen</th>
         </tr>
@@ -19,6 +25,7 @@
           <td>{{instruction.startDate | date}}</td>
           <td>{{instruction.title}}</td>
           <td>{{instruction.guideId | name}}</td>
+          <td>{{instruction.stateId}}</td>
           <td>{{instruction.minQuantity}} | {{instruction.curQuantity}} | {{instruction.maxQuantity}}</td>
           <td>
             <button pButton type="button" label="Klonen" class="ui-button-success"
