@@ -265,6 +265,7 @@
               <th>Datum</th>
               <th>Uhrzeit</th>
               <th>Beschreibung</th>
+              <th></th>
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-event let-i="rowIndex">
@@ -272,6 +273,12 @@
               <td>{{event.startDate | date}}</td>
               <td>{{event.startTime | time: event.approximateId}}</td>
               <td>{{event.name}}</td>
+              <td>
+                <div style="text-align: center">
+                <button pButton type="button" label="Löschen" class="ui-button-warning"
+                    (click)="deleteEvent(this.instructionGroup.value, event.id)"></button>
+                </div>
+              </td>
             </tr>
           </ng-template>
         </p-table>

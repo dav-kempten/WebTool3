@@ -7,7 +7,7 @@ import {NamesRequested} from '../../core/store/name.actions';
 import {ValuesRequested} from '../../core/store/value.actions';
 import {CalendarRequested} from '../../core/store/calendar.actions';
 import {
-  AddEventInstruction, ClearInstructions,
+  AddEventInstruction, ClearInstructions, DeleteEventInstruction, DeleteInstruction,
   RequestInstruction,
   UpdateInstruction,
   UpsertInstruction
@@ -20,7 +20,7 @@ import {AuthService, User} from '../../core/service/auth.service';
 import {Event} from '../../model/event';
 import {Category, Topic} from '../../model/value';
 import {FormArray, FormControl, FormGroup} from '@angular/forms';
-import {UpdateEvent} from '../../core/store/event.actions';
+import {DeleteEvent, UpdateEvent} from '../../core/store/event.actions';
 
 @Component({
   selector: 'avk-instruction-detail',
@@ -245,12 +245,16 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     this.store.dispatch(new AddEventInstruction({instruction: instruction as Instruction}));
     setTimeout(() => {
       this.store.dispatch(new RequestInstruction({id: instruction.id}));
-      // this.store.select(getInstructionById(instruction.id));
     }, 1000);
   }
 
   save(instruction) {
     this.store.dispatch(new UpsertInstruction({instruction: instruction as Instruction}));
+  }
+
+  deleteEvent(instruction, eventId) {
+    this.store.dispatch(new DeleteEventInstruction({instruction, eventId}));
+    this.store.dispatch(new RequestInstruction({id: instruction.id}));
   }
 }
 
