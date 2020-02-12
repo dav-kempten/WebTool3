@@ -275,8 +275,8 @@
               <td>{{event.name}}</td>
               <td>
                 <div style="text-align: center">
-                <button pButton type="button" label="Löschen" class="ui-button-warning"
-                    (click)="deleteEvent(this.instructionGroup.value, event.id)"></button>
+                <p-button type="button" label="Löschen" styleClass="ui-button-danger"
+                    (click)="deleteEvent(this.instructionGroup.value, event.id)"></p-button>
                 </div>
               </td>
             </tr>
@@ -525,11 +525,15 @@
     <p-card>
     <div class="p-grid">
       <div class="p-col-12 p-sm-1 p-md-1 p-lg-1">
-        <p-button type="button" label="Speichern" class="ui-button-info"
+        <p-button type="button" label="Speichern"
             (click)="save(this.instructionGroup.value)"></p-button>
-        </div>
+      </div>
       <div class="p-col-12 p-sm-1 p-md-1 p-lg-1">
         <a routerLink="../"><p-button label="Zurück"></p-button></a>
+      </div>
+      <div class="p-col-12 p-sm-10 p-md-10 p-lg-10" style="text-align: right">
+        <a routerLink="../"><p-button type="button" label="Kurs löschen" styleClass="ui-button-danger"
+            (click)="deleteInstruction(this.instructionGroup.value.id)"></p-button></a>
       </div>
     </div>
     </p-card>

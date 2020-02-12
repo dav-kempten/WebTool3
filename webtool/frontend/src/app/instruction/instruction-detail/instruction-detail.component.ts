@@ -256,6 +256,10 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     this.store.dispatch(new DeleteEventInstruction({instruction, eventId}));
     this.store.dispatch(new RequestInstruction({id: instruction.id}));
   }
+
+  deleteInstruction(instructionId) {
+    this.store.dispatch(new DeleteInstruction({id: instructionId}));
+  }
 }
 
 
