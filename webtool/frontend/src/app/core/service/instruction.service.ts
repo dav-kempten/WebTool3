@@ -34,6 +34,7 @@ export class InstructionService {
   private createSubject = new BehaviorSubject<Instruction>(null);
   private updateSubject = new BehaviorSubject<Instruction>(null);
   private addEventSubject = new BehaviorSubject<Instruction>(null);
+  private deleteEventSubject = new BehaviorSubject<Instruction>(null);
 
   getInstructionSummaries(): Observable<InstructionSummary[]> {
     const headers = {
@@ -199,6 +200,22 @@ export class InstructionService {
     return this.http.put<Instruction>(
       `/api/frontend/instructions/${this.addEventSubject.value.id}/`,
       this.addEventSubject.value
+    ).pipe(
+      catchError((error: HttpErrorResponse): Observable<Instruction> => {
+        console.log(error.statusText, error.status);
+        return of ({id: 0} as Instruction);
+      }),
+    );
+  }
+
+  deleteEventInstruction(instruction: Instruction, eventId: number): Observable<Instruction> {
+    const index = instruction.meetings.map(item => item.id).indexOf(eventId);
+    instruction.meetings[index] = {...instruction.meetings[index], deprecated: true};
+    this.deleteEventSubject.next(instruction);
+
+    return this.http.put<Instruction>(
+      `/api/frontend/instructions/${this.deleteEventSubject.value.id}/`,
+      this.deleteEventSubject.value
     ).pipe(
       catchError((error: HttpErrorResponse): Observable<Instruction> => {
         console.log(error.statusText, error.status);
