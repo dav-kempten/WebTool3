@@ -275,7 +275,7 @@
               <td>{{event.name}}</td>
               <td>
                 <div style="text-align: center">
-                <p-button type="button" label="Löschen" styleClass="ui-button-danger"
+                <p-button type="button" label="Löschen" styleClass="ui-button-danger" *ngIf="!(this.instructionGroup.value.id === event.id)"
                     (click)="deleteEvent(this.instructionGroup.value, event.id)"></p-button>
                 </div>
               </td>
