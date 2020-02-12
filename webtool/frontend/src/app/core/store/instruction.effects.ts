@@ -7,14 +7,14 @@ import {InstructionService} from '../service/instruction.service';
 import {
   AddEventInstruction,
   AddInstruction,
-  CloneInstruction, CreateInstruction, DeactivateInstruction, DeleteInstruction,
+  CloneInstruction, CreateInstruction, DeactivateInstruction, DeleteEventInstruction, DeleteInstruction,
   InstructionActionTypes, InstructionCreateComplete, InstructionDeactivateComplete, InstructionDeleteComplete,
   InstructionNotModified, InstructionUpdateComplete,
   RequestInstruction, UpsertInstruction
 } from './instruction.actions';
 import {Event} from '../../model/event';
 import {AppState} from '../../app.state';
-import {AddEvent} from './event.actions';
+import {AddEvent, DeleteEvent, EventActionTypes} from './event.actions';
 import {Instruction} from './instruction.model';
 import {Instruction as RawInstruction} from '../../model/instruction';
 import {getEventsByIds} from './event.selectors';
@@ -140,6 +140,23 @@ export class InstructionEffects {
     map((action: AddEventInstruction) => action.payload),
     switchMap(payload  => {
       return this.instructionService.addEventInstruction(this.tranformInstructionForSaving(payload.instruction)).pipe(
+        map(instruction => {
+          if (instruction !== null) {
+            return new InstructionUpdateComplete();
+          } else {
+            return new InstructionNotModified();
+          }
+        })
+      );
+    })
+  );
+
+  @Effect()
+  deleteEventInstruction$: Observable<Action> = this.actions$.pipe(
+    ofType<DeleteEventInstruction>(InstructionActionTypes.DeleteEventInstruction),
+    map((action: DeleteEventInstruction) => action.payload),
+    switchMap(payload  => {
+      return this.instructionService.deleteEventInstruction(this.tranformInstructionForSaving(payload.instruction), payload.eventId).pipe(
         map(instruction => {
           if (instruction !== null) {
             return new InstructionUpdateComplete();
