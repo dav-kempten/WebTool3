@@ -20,7 +20,7 @@ import {AuthService, User} from '../../core/service/auth.service';
 import {Event} from '../../model/event';
 import {Category, Topic} from '../../model/value';
 import {FormArray, FormControl, FormGroup} from '@angular/forms';
-import {DeleteEvent, UpdateEvent} from '../../core/store/event.actions';
+import {UpdateEvent} from '../../core/store/event.actions';
 
 @Component({
   selector: 'avk-instruction-detail',
@@ -243,9 +243,6 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
    * Cache aktualisiert werden. So wird sichergestellt das die Kurse konsistent parallel bearbeitet werden können. */
   addEvent(instruction) {
     this.store.dispatch(new AddEventInstruction({instruction: instruction as Instruction}));
-    setTimeout(() => {
-      this.store.dispatch(new RequestInstruction({id: instruction.id}));
-    }, 1000);
   }
 
   save(instruction) {
@@ -254,7 +251,6 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
 
   deleteEvent(instruction, eventId) {
     this.store.dispatch(new DeleteEventInstruction({instruction, eventId}));
-    this.store.dispatch(new RequestInstruction({id: instruction.id}));
   }
 
   deleteInstruction(instructionId) {
