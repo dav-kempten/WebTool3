@@ -81,7 +81,11 @@ export function reducer(state = initialState, action: InstructionActions): State
     }
 
     case InstructionActionTypes.AddEventInstruction: {
-      return adapter.addOne(action.payload.instruction, state);
+      return adapter.upsertOne(action.payload.instruction, state);
+    }
+
+    case InstructionActionTypes.DeleteEventInstruction: {
+      return adapter.upsertOne(action.payload.instruction, state);
     }
 
     case InstructionActionTypes.AddInstructions: {

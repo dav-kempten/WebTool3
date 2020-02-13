@@ -10,7 +10,7 @@ import {
   CloneInstruction, CreateInstruction, DeactivateInstruction, DeleteEventInstruction, DeleteInstruction,
   InstructionActionTypes, InstructionCreateComplete, InstructionDeactivateComplete, InstructionDeleteComplete,
   InstructionNotModified, InstructionUpdateComplete,
-  RequestInstruction, UpsertInstruction
+  RequestInstruction, UpdateInstruction, UpsertInstruction
 } from './instruction.actions';
 import {Event} from '../../model/event';
 import {AppState} from '../../app.state';
@@ -142,7 +142,12 @@ export class InstructionEffects {
       return this.instructionService.addEventInstruction(this.tranformInstructionForSaving(payload.instruction)).pipe(
         map(instruction => {
           if (instruction !== null) {
-            return new InstructionUpdateComplete();
+            const instructionInterface = this.transformInstruction(instruction);
+            return new UpdateInstruction({instruction: {
+              id: instructionInterface.id,
+              changes: {...instructionInterface, admission: instructionInterface.admission / 100,
+                                                 advances: instructionInterface.advances / 100,
+                                                 extraCharges: instructionInterface.extraCharges / 100}}});
           } else {
             return new InstructionNotModified();
           }
@@ -156,10 +161,16 @@ export class InstructionEffects {
     ofType<DeleteEventInstruction>(InstructionActionTypes.DeleteEventInstruction),
     map((action: DeleteEventInstruction) => action.payload),
     switchMap(payload  => {
+      console.log('PayloadEffect ', payload);
       return this.instructionService.deleteEventInstruction(this.tranformInstructionForSaving(payload.instruction), payload.eventId).pipe(
         map(instruction => {
           if (instruction !== null) {
-            return new InstructionUpdateComplete();
+            const instructionInterface = this.transformInstruction(instruction);
+            return new UpdateInstruction({instruction: {
+              id: instructionInterface.id,
+              changes: {...instructionInterface, admission: instructionInterface.admission / 100,
+                                                 advances: instructionInterface.advances / 100,
+                                                 extraCharges: instructionInterface.extraCharges / 100}}});
           } else {
             return new InstructionNotModified();
           }
