@@ -141,7 +141,7 @@ export class InstructionEffects {
     switchMap(payload  => {
       return this.instructionService.addEventInstruction(this.tranformInstructionForSaving(payload.instruction)).pipe(
         map(instruction => {
-          if (instruction !== null) {
+          if (instruction.id !== 0) {
             const instructionInterface = this.transformInstruction(instruction);
             return new UpdateInstruction({instruction: {
               id: instructionInterface.id,
@@ -161,10 +161,9 @@ export class InstructionEffects {
     ofType<DeleteEventInstruction>(InstructionActionTypes.DeleteEventInstruction),
     map((action: DeleteEventInstruction) => action.payload),
     switchMap(payload  => {
-      console.log('PayloadEffect ', payload);
       return this.instructionService.deleteEventInstruction(this.tranformInstructionForSaving(payload.instruction), payload.eventId).pipe(
         map(instruction => {
-          if (instruction !== null) {
+          if (instruction.id !== 0) {
             const instructionInterface = this.transformInstruction(instruction);
             return new UpdateInstruction({instruction: {
               id: instructionInterface.id,
