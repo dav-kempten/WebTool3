@@ -9,6 +9,7 @@
           <th>Datum</th>
           <th>Bezeichnung</th>
           <th>Tourenleiter</th>
+          <th>Status</th>
           <th>Belegung (Min|Aktuell|Max)</th>
           <th>Kursaktionen</th>
         </tr>
@@ -19,6 +20,7 @@
           <td>{{tour.startDate | date}}</td>
           <td>{{tour.title}}</td>
           <td>{{tour.guideId | name}}</td>
+          <td>{{tour.stateId | state}}</td>
           <td>{{tour.minQuantity}} | {{tour.curQuantity}} | {{tour.maxQuantity}}</td>
           <td>
             <button pButton type="button" label="Klonen" class="ui-button-success"

@@ -24,6 +24,7 @@ import {Tour} from './tour.model';
 import {Tour as RawTour} from '../../model/tour';
 import {getEventsByIds} from './event.selectors';
 import {Event} from '../../model/event';
+import {RequestTourSummaries} from './tour-summary.actions';
 
 function convertDecimal(rawValue: string): number {
   return Number(rawValue.replace('.', ''));
@@ -63,7 +64,7 @@ export class TourEffects {
       return this.tourService.cloneTour(payload.id).pipe(
         map(tour => {
           if (tour.id !== 0) {
-            return new TourCreateComplete();
+            return new RequestTourSummaries();
           } else {
             return new TourNotModified();
           }
@@ -80,7 +81,7 @@ export class TourEffects {
       return this.tourService.deleteTour(payload.id).pipe(
         map(tour => {
           if (tour === null) {
-            return new TourDeleteComplete();
+            return new RequestTourSummaries();
           } else {
             return new TourNotModified();
           }
@@ -97,7 +98,7 @@ export class TourEffects {
       return this.tourService.deactivateTour(payload.id).pipe(
         map(tour => {
           if (tour.id !== 0) {
-            return new TourDeactivateComplete();
+            return new RequestTourSummaries();
           } else {
             return new TourNotModified();
           }
@@ -114,7 +115,7 @@ export class TourEffects {
       return this.tourService.createTour(payload.categoryId, payload.startDate, payload.deadline).pipe(
         map(tour => {
           if (tour.id !== 0) {
-            return new TourCreateComplete();
+            return new RequestTourSummaries();
           } else {
             return new TourNotModified();
           }
