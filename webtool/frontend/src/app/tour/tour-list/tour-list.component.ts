@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {select, Store} from '@ngrx/store';
 import {AppState, selectRouterFragment} from '../../app.state';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
@@ -20,7 +20,9 @@ import {CloneTour, CreateTour, DeactivateTour, DeleteTour} from '../../core/stor
   templateUrl: './tour-list.component.html',
   styleUrls: ['./tour-list.component.css']
 })
-export class TourListComponent implements OnInit, OnDestroy {
+export class TourListComponent implements OnInit, OnDestroy, AfterViewInit {
+
+  @ViewChild('dt') dt;
 
   private destroySubject = new Subject<void>();
   part$: Observable<string>;
@@ -29,6 +31,8 @@ export class TourListComponent implements OnInit, OnDestroy {
   display = false;
 
   finishedTours = [6, 7, 8];
+  activeTours = [1, 2, 3, 4, 5, 9];
+  allTours = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
   partNewTour = new BehaviorSubject<string>('');
 
@@ -136,6 +140,10 @@ export class TourListComponent implements OnInit, OnDestroy {
     this.destroySubject.complete();
   }
 
+  ngAfterViewInit(): void {
+    this.dt.filter(this.activeTours, 'stateId', 'in');
+  }
+
   selectTour(tour): void {
     if (!!tour) {
       if (this.loginObject.valState >= 2 || this.loginObject.id === tour.guideId) {
@@ -163,6 +171,14 @@ export class TourListComponent implements OnInit, OnDestroy {
 
   deactivate(tourId) {
     this.store.dispatch(new DeactivateTour({id: tourId}));
+  }
+
+  changeViewSet(event, dt) {
+    if (!event.checked) {
+      dt.filter(this.activeTours, 'stateId', 'in');
+    } else {
+      dt.filter(this.allTours, 'stateId', 'in');
+    }
   }
 
 }

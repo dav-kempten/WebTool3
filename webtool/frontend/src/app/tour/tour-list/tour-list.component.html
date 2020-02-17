@@ -2,7 +2,12 @@
   <p-tabMenu [model]="menuItems" [activeItem]="{}"></p-tabMenu>
   <p-button label="Tour hinzufügen" (onClick)="handleClick()" *ngIf="this.loginObject.valState >= 3"></p-button>
   <ng-container *ngIf="(tours$ | async) as tours">
-    <p-table [value]="tours" selectionMode="single" (selectionChange)="selectTour($event)">
+    <p-table #dt [value]="tours" selectionMode="single" (selectionChange)="selectTour($event)">
+    <ng-template pTemplate="caption">
+      <div style="text-align: right">
+        <p-toggleButton onLabel="Alle Touren" offLabel="Aktive Touren" (onChange)="changeViewSet($event, dt)"></p-toggleButton>
+      </div>
+    </ng-template>
       <ng-template pTemplate="header">
         <tr>
           <th>Buchungscode</th>
