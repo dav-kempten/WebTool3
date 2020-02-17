@@ -10,7 +10,7 @@ import {
   CloneInstruction, CreateInstruction, DeactivateInstruction, DeleteEventInstruction, DeleteInstruction,
   InstructionActionTypes, InstructionCreateComplete, InstructionDeactivateComplete, InstructionDeleteComplete,
   InstructionNotModified, InstructionUpdateComplete,
-  RequestInstruction, UpdateInstruction, UpsertInstruction
+  RequestInstruction, UpdateInstruction, UpdateInstructions, UpsertInstruction
 } from './instruction.actions';
 import {Event} from '../../model/event';
 import {AppState} from '../../app.state';
@@ -18,6 +18,7 @@ import {AddEvent, DeleteEvent, EventActionTypes} from './event.actions';
 import {Instruction} from './instruction.model';
 import {Instruction as RawInstruction} from '../../model/instruction';
 import {getEventsByIds} from './event.selectors';
+import {RequestInstructionSummaries} from './instruction-summary.actions';
 
 function convertDecimal(rawValue: string): number {
   return Number(rawValue.replace('.', ''));
@@ -57,7 +58,7 @@ export class InstructionEffects {
       return this.instructionService.cloneInstruction(payload.id).pipe(
         map(instruction => {
           if (instruction.id !== 0) {
-            return new InstructionCreateComplete();
+            return new RequestInstructionSummaries();
           } else {
             return new InstructionNotModified();
           }
@@ -74,7 +75,7 @@ export class InstructionEffects {
       return this.instructionService.deleteInstruction(payload.id).pipe(
         map(instruction => {
           if (instruction === null) {
-            return new InstructionDeleteComplete();
+            return new RequestInstructionSummaries();
           } else {
             return new InstructionNotModified();
           }
@@ -91,7 +92,7 @@ export class InstructionEffects {
       return this.instructionService.deactivateInstruction(payload.id).pipe(
         map(instruction => {
           if (instruction.id !== 0) {
-            return new InstructionDeactivateComplete();
+            return new RequestInstructionSummaries();
           } else {
             return new InstructionNotModified();
           }
@@ -108,7 +109,7 @@ export class InstructionEffects {
       return this.instructionService.createInstruction(payload.topicId, payload.startDate).pipe(
         map(instruction => {
           if (instruction.topicId !== 0) {
-            return new InstructionCreateComplete();
+            return new RequestInstructionSummaries();
           } else {
             return new InstructionNotModified();
           }
