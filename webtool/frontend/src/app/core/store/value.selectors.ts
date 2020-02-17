@@ -21,6 +21,8 @@ export const getFitnessState = createFeatureSelector<FitnessState>('fitness');
 export const getCategoryState = createFeatureSelector<CategoryState>('categories');
 export const getTopicState = createFeatureSelector<TopicState>('topics');
 export const getCollectiveState = createFeatureSelector<CollectiveState>('collectives');
+export const getStateState = createFeatureSelector<StatesState>('states');
+
 
 export const getValues = createSelector(
   getValueState,
@@ -68,4 +70,8 @@ export const getApproximateById = (approximateId: number) => createSelector(
 
 export const getCollectiveById = (collectiveId: number) => createSelector(
   getCollectiveState, collectiveState => collectiveState.entities[collectiveId]
+);
+
+export const getStateById = (stateId: number) => createSelector(
+  getStateState, stateState => stateState.entities[stateId]
 );

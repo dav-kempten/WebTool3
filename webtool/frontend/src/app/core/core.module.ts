@@ -14,6 +14,7 @@ import {reducer as CalendarReducer} from './store/calendar.reducer';
 import {NameEffects} from './store/name.effects';
 import {ValueEffects} from './store/value.effects';
 import {NamePipe, NamesPipe} from './store/name.pipe';
+import {StatePipe} from './store/state.pipe';
 import {ButtonModule} from 'primeng/button';
 import {SidebarModule} from 'primeng/sidebar';
 import {TreeModule} from 'primeng/tree';
@@ -80,7 +81,7 @@ import { SexdropdownComponent } from './sexdropdown/sexdropdown.component';
     GuideComponent, TeamComponent, DateComponent, TimeComponent, NamePipe, NamesPipe, MenuComponent,
     BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent, DropdownComponent,
     MultiselectComponent, ApproxdropdownComponent, CategoryselectComponent, DatePipe, TimePipe, SkillselectComponent,
-    FitnessselectComponent, QualificationselectComponent, CollectiveselectComponent, SexdropdownComponent
+    FitnessselectComponent, QualificationselectComponent, CollectiveselectComponent, SexdropdownComponent, StatePipe
   ],
   imports: [
     CommonModule,
@@ -139,7 +140,8 @@ import { SexdropdownComponent } from './sexdropdown/sexdropdown.component';
     BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent, DropdownComponent,
     MultiselectComponent, ButtonModule, ToggleButtonModule, ApproxdropdownComponent, CategoryselectComponent,
     DialogModule, CheckboxModule, InputTextModule, InputTextareaModule, DatePipe, TimePipe, SkillselectComponent,
-    FitnessselectComponent, QualificationselectComponent, CollectiveselectComponent, CardModule, SexdropdownComponent
+    FitnessselectComponent, QualificationselectComponent, CollectiveselectComponent, CardModule, SexdropdownComponent,
+    StatePipe
   ]
 })
 export class CoreModule { }
