@@ -464,6 +464,10 @@
     <div class="p-col-12 p-sm-1 p-md-1 p-lg-1">
       <a routerLink="../"><p-button label="Zurück"></p-button></a>
     </div>
+    <div class="p-col-12 p-sm-10 p-md-10 p-lg-10" style="text-align: right">
+      <a routerLink="../"><p-button type="button" label="Kurs löschen" styleClass="ui-button-danger"
+            (click)="deleteTour(this.tourGroup.value.id)"></p-button></a>
+    </div>
   </div>
   </p-card>
 </form>

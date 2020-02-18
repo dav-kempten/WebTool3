@@ -12,10 +12,11 @@ import {Event} from '../../model/event';
 import {AuthService, User} from '../../core/service/auth.service';
 import {filter, flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {getTourById} from '../../core/store/tour.selectors';
-import {ClearTours, RequestTour, UpdateTour, UpsertTour} from '../../core/store/tour.actions';
+import {ClearTours, DeleteTour, RequestTour, UpdateTour, UpsertTour} from '../../core/store/tour.actions';
 import {getCategoryById} from '../../core/store/value.selectors';
 import {getEventsByIds} from '../../core/store/event.selectors';
 import {CreateEvent, UpdateEvent} from '../../core/store/event.actions';
+import {DeleteEventInstruction, DeleteInstruction} from '../../core/store/instruction.actions';
 
 @Component({
   selector: 'avk-tour-detail',
@@ -220,6 +221,10 @@ export class TourDetailComponent implements OnInit, OnDestroy {
 
   saveTour(tour) {
     this.store.dispatch(new UpsertTour({tour: tour as Tour}));
+  }
+
+  deleteTour(tourId) {
+    this.store.dispatch(new DeleteTour({id: tourId}));
   }
 }
 
