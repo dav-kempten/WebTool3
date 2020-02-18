@@ -112,7 +112,9 @@ export class TourEffects {
     ofType<CreateTour>(TourActionTypes.CreateTour),
     map((action: CreateTour) => action.payload),
     switchMap(payload => {
-      return this.tourService.createTour(payload.categoryId, payload.startDate, payload.deadline).pipe(
+      return this.tourService.createTour(
+        payload.categoryId, payload.startDate, payload.deadline, payload.preliminary, payload.guideId
+      ).pipe(
         map(tour => {
           if (tour.id !== 0) {
             return new RequestTourSummaries();

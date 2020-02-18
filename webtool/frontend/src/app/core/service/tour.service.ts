@@ -164,9 +164,15 @@ export class TourService {
     );
   }
 
-  createTour(categoryId: number, startdate: string, deadline: string): Observable<Tour> {
-    this.createSubject.next({category: categoryId, tour: {startDate: startdate} as Event,
-      deadline: {startDate: deadline} as Event, skillId: 1, fitnessId: 1});
+  createTour(categoryId: number, startdate: string, deadline: string, preliminary: string, guideId: number): Observable<Tour> {
+    if (preliminary !== null) {
+      this.createSubject.next({category: categoryId, tour: {startDate: startdate} as Event,
+        deadline: {startDate: deadline} as Event, preliminary: {startDate: preliminary} as Event,
+        guideId, skillId: 1, fitnessId: 1});
+    } else {
+      this.createSubject.next({category: categoryId, tour: {startDate: startdate} as Event,
+        deadline: {startDate: deadline} as Event, guideId, skillId: 1, fitnessId: 1});
+    }
 
     console.log(this.createSubject.value);
 

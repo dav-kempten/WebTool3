@@ -1,6 +1,6 @@
 <ng-container *ngIf="(activeItem$ | async) as activeItem else loading">
   <p-tabMenu [model]="menuItems" [activeItem]="{}"></p-tabMenu>
-  <p-button label="Tour hinzufügen" (onClick)="handleClick()" *ngIf="this.loginObject.valState >= 3"></p-button>
+  <p-button label="Tour hinzufügen" (onClick)="handleClick()" *ngIf="this.loginObject.valState >= 1"></p-button>
   <ng-container *ngIf="(tours$ | async) as tours">
     <p-table #dt [value]="tours" selectionMode="single" (selectionChange)="selectTour($event)">
     <ng-template pTemplate="caption">
@@ -56,16 +56,22 @@
     </div>
     <div class="p-grid">
       <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
-        <avk-date formControlName="startDate" id="dbeginn" label="Start"></avk-date>
+        <avk-date formControlName="startDate" id="dbeginn" label="Start" [min]="createTour.get('deadline').value"></avk-date>
       </div>
     </div>
     <div class="p-grid">
       <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
-        <avk-date formControlName="deadline" id="dend" label="Deadline"></avk-date>
+        <avk-date formControlName="deadline" id="dend" label="Deadline" [max]="createTour.get('startDate').value"></avk-date>
+      </div>
+    </div>
+    <div class="p-grid">
+      <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+        <avk-date formControlName="preliminary" id="preliminary" label="Vorbesprechung (optional)"
+                  [min]="createTour.get('deadline').value" [max]="createTour.get('startDate').value"></avk-date>
       </div>
     </div>
     <p-button label="Bestätigen" (onClick)="create(createTour.get('categoryIds').value, createTour.get('startDate').value,
-              createTour.get('deadline').value)"></p-button>
+              createTour.get('deadline').value, createTour.get('preliminary').value)"></p-button>
   </p-dialog>
   </form>
 </ng-container>

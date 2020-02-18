@@ -43,11 +43,13 @@ export class TourListComponent implements OnInit, OnDestroy, AfterViewInit {
   categoryIds = new FormControl('');
   startDate = new FormControl('');
   deadline = new FormControl('');
+  preliminary = new FormControl(null);
 
   createTour: FormGroup = new FormGroup({
     categoryIds: this.categoryIds,
     startDate: this.startDate,
-    deadline: this.deadline
+    deadline: this.deadline,
+    preliminary: this.preliminary
   });
 
   menuItems: MenuItem[] = [
@@ -156,8 +158,16 @@ export class TourListComponent implements OnInit, OnDestroy, AfterViewInit {
     this.display = true;
   }
 
-  create(category, startdate, enddate) {
-    this.store.dispatch(new CreateTour({categoryId: category, startDate: startdate, deadline: enddate}));
+  create(category, startdate, enddate, preliminary) {
+    let guideId: number;
+    if (this.loginObject.valState === 1) {
+      guideId = this.loginObject.id;
+    } else {
+      guideId = null;
+    }
+    this.store.dispatch(new CreateTour({
+      categoryId: category, startDate: startdate, deadline: enddate, preliminary, guideId
+    }));
     this.display = false;
   }
 
