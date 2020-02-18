@@ -56,17 +56,22 @@
     </div>
     <div class="p-grid">
       <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
-        <avk-date formControlName="startDate" id="dbeginn" label="Start" [min]="createTour.get('deadline').value"></avk-date>
+        <avk-date formControlName="startDate" id="dbeginn" label="Startdatum" [min]="createTour.get('deadline').value"></avk-date>
       </div>
     </div>
     <div class="p-grid">
       <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
-        <avk-date formControlName="deadline" id="dend" label="Deadline" [max]="createTour.get('startDate').value"></avk-date>
+        <avk-date formControlName="deadline" id="dend" label="Deadline Anmeldung" [max]="createTour.get('startDate').value"></avk-date>
       </div>
     </div>
     <div class="p-grid">
       <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
-        <avk-date formControlName="preliminary" id="preliminary" label="Vorbesprechung (optional)"
+        <p-toggleButton offLabel="Vorbesprechung hinzufügen" onLabel="Vorbesprechung entfernen" class="ui-button-success" (click)="selectPreliminary()"></p-toggleButton>
+      </div>
+    </div>
+    <div class="p-grid" *ngIf="preliminarySelect">
+      <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+        <avk-date formControlName="preliminary" id="preliminary" label="Vorbesprechung"
                   [min]="createTour.get('deadline').value" [max]="createTour.get('startDate').value"></avk-date>
       </div>
     </div>

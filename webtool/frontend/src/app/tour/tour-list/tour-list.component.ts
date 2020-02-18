@@ -29,6 +29,7 @@ export class TourListComponent implements OnInit, OnDestroy, AfterViewInit {
   tours$: Observable<TourSummary[]>;
   activeItem$: Observable<MenuItem>;
   display = false;
+  preliminarySelect = false;
 
   finishedTours = [6, 7, 8];
   activeTours = [1, 2, 3, 4, 5, 9];
@@ -156,6 +157,13 @@ export class TourListComponent implements OnInit, OnDestroy, AfterViewInit {
 
   handleClick() {
     this.display = true;
+  }
+
+  selectPreliminary() {
+    this.preliminarySelect = !this.preliminarySelect;
+    if (this.preliminarySelect === false) {
+      this.preliminary.setValue(null);
+    }
   }
 
   create(category, startdate, enddate, preliminary) {
