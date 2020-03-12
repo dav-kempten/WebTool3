@@ -125,8 +125,13 @@ export class InstructionEffects {
     switchMap(payload  => {
       return this.instructionService.upsertInstruction(this.tranformInstructionForSaving(payload.instruction)).pipe(
         map(instruction => {
-          if (instruction !== null) {
-            return new InstructionUpdateComplete();
+          if (instruction.id !== 0) {
+            const instructionInterface = this.transformInstruction(instruction);
+            return new UpdateInstruction({instruction: {
+              id: instructionInterface.id,
+              changes: {...instructionInterface, admission: instructionInterface.admission / 100,
+                                                 advances: instructionInterface.advances / 100,
+                                                 extraCharges: instructionInterface.extraCharges / 100}}});
           } else {
             return new InstructionNotModified();
           }
