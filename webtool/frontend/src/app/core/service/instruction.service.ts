@@ -187,6 +187,7 @@ export class InstructionService {
     ).pipe(
       catchError((error: HttpErrorResponse): Observable<Instruction> => {
         console.log(error.statusText, error.status);
+        alert('Kurs speichern gescheitert, nocheinmal versuchen oder Seite neuladen.');
         return of ({id: 0} as Instruction);
       }),
     );
@@ -203,6 +204,7 @@ export class InstructionService {
     ).pipe(
       catchError((error: HttpErrorResponse): Observable<Instruction> => {
         console.log(error.statusText, error.status);
+        alert('Event hinzufügen gescheitert, bitte Seite neuladen.');
         return of ({id: 0} as Instruction);
       }),
     );
