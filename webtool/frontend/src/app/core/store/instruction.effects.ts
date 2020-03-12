@@ -25,6 +25,7 @@ import {Instruction} from './instruction.model';
 import {Instruction as RawInstruction} from '../../model/instruction';
 import {getEventsByIds} from './event.selectors';
 import {RequestInstructionSummaries} from './instruction-summary.actions';
+import {Router} from '@angular/router';
 
 function convertDecimal(rawValue: string): number {
   return Number(rawValue.replace('.', ''));
@@ -37,7 +38,8 @@ export class InstructionEffects {
   events$: Observable<Event[]>;
   private destroySubject = new Subject<void>();
 
-  constructor(private actions$: Actions, private instructionService: InstructionService, private store: Store<AppState>) {}
+  constructor(private actions$: Actions, private instructionService: InstructionService, private store: Store<AppState>,
+              private router: Router) {}
 
   @Effect()
   loadInstruction$: Observable<Action> = this.actions$.pipe(
@@ -115,6 +117,7 @@ export class InstructionEffects {
       return this.instructionService.createInstruction(payload.topicId, payload.startDate).pipe(
         map(instruction => {
           if (instruction.topicId !== 0) {
+            this.router.navigate(['instructions', instruction.id]);
             return new RequestInstructionSummaries();
           } else {
             return new InstructionNotModified();
