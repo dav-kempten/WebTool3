@@ -7,14 +7,20 @@ import {InstructionService} from '../service/instruction.service';
 import {
   AddEventInstruction,
   AddInstruction,
-  CloneInstruction, CreateInstruction, DeactivateInstruction, DeleteEventInstruction, DeleteInstruction,
-  InstructionActionTypes, InstructionCreateComplete, InstructionDeactivateComplete, InstructionDeleteComplete,
-  InstructionNotModified, InstructionUpdateComplete,
-  RequestInstruction, UpdateInstruction, UpdateInstructions, UpsertInstruction
+  CloneInstruction,
+  CreateInstruction,
+  DeactivateInstruction,
+  DeleteEventInstruction,
+  DeleteInstruction,
+  InstructionActionTypes,
+  InstructionNotModified,
+  RequestInstruction,
+  UpdateInstruction,
+  UpsertInstruction
 } from './instruction.actions';
 import {Event} from '../../model/event';
 import {AppState} from '../../app.state';
-import {AddEvent, DeleteEvent, EventActionTypes} from './event.actions';
+import {AddEvent} from './event.actions';
 import {Instruction} from './instruction.model';
 import {Instruction as RawInstruction} from '../../model/instruction';
 import {getEventsByIds} from './event.selectors';
