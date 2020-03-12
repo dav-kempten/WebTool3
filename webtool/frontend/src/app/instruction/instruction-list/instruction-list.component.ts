@@ -144,6 +144,7 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
   }
 
   ngAfterViewInit(): void {
+    this.store.dispatch(new RequestInstructionSummaries());
     this.dt.filter(this.activeInstructions, 'stateId', 'in');
   }
 

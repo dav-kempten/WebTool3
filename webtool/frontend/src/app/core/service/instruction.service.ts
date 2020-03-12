@@ -148,6 +148,7 @@ export class InstructionService {
       takeUntil(this.destroySubject),
       tap(val => {
         val.deprecated = true;
+        val.stateId = 7;
         this.deactivateSubject.next(val);
       }),
       tap(() => console.log(this.deactivateSubject.value)),
