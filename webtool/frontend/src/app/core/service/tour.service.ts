@@ -174,8 +174,6 @@ export class TourService {
         deadline: {startDate: deadline} as Event, guideId, skillId: 1, fitnessId: 1});
     }
 
-    console.log(this.createSubject.value);
-
     return this.http.post<Tour>(
       `/api/frontend/tours/`,
       this.createSubject.value
