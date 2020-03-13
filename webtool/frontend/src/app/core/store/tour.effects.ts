@@ -16,7 +16,7 @@ import {
   DeactivateTour,
   TourDeactivateComplete,
   UpsertTour,
-  TourUpdateComplete, CreateTour
+  TourUpdateComplete, CreateTour, UpdateTour
 } from './tour.actions';
 import {AppState} from '../../app.state';
 import {AddEvent} from './event.actions';
@@ -25,6 +25,7 @@ import {Tour as RawTour} from '../../model/tour';
 import {getEventsByIds} from './event.selectors';
 import {Event} from '../../model/event';
 import {RequestTourSummaries} from './tour-summary.actions';
+import {Router} from '@angular/router';
 
 function convertDecimal(rawValue: string): number {
   return Number(rawValue.replace('.', ''));
@@ -37,7 +38,7 @@ export class TourEffects {
   events$: Observable<Event[]>;
   private destroySubject = new Subject<void>();
 
-  constructor(private actions$: Actions, private tourService: TourService, private store: Store<AppState>) {}
+  constructor(private actions$: Actions, private tourService: TourService, private store: Store<AppState>, private router: Router) {}
 
   @Effect()
   loadTour$: Observable<Action> = this.actions$.pipe(
@@ -81,7 +82,7 @@ export class TourEffects {
     switchMap((payload) => {
       return this.tourService.deleteTour(payload.id).pipe(
         map(tour => {
-          if (tour === null) {
+          if (tour.id === 0) {
             return new RequestTourSummaries();
           } else {
             return new TourNotModified();
@@ -133,12 +134,18 @@ export class TourEffects {
     ofType<UpsertTour>(TourActionTypes.UpsertTour),
     map((action: UpsertTour) => action.payload),
     switchMap(payload  => {
-      console.log(payload);
       return this.tourService.upsertTour(this.tranformTourForSaving(payload.tour)).pipe(
         map(tour => {
-          if (tour !== null) {
-            return new TourUpdateComplete();
+          if (tour.id !== 0) {
+            alert('Tour erfolgreich gespeichert.');
+            const tourInterface = this.transformTour(tour);
+            return new UpdateTour({tour: {
+              id: tourInterface.id,
+              changes: {...tourInterface, admission: tourInterface.admission / 100,
+                                          advances: tourInterface.advances / 100,
+                                          extraCharges: tourInterface.extraCharges / 100}}});
           } else {
+            alert('Tour speichern gescheitert, nocheinmal versuchen oder Seite neuladen.');
             return new TourNotModified();
           }
         })
