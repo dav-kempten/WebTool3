@@ -230,6 +230,7 @@ export class InstructionService {
     delete instruction.reference;
     delete instruction.instruction.id;
     instruction.meetings.forEach((meeting) => delete meeting.id);
+    instruction.stateId = 1;
     return instruction;
   }
 }

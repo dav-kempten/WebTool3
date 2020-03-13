@@ -64,6 +64,7 @@ export class TourEffects {
       return this.tourService.cloneTour(payload.id).pipe(
         map(tour => {
           if (tour.id !== 0) {
+            this.router.navigate(['tours', tour.id]);
             return new RequestTourSummaries();
           } else {
             return new TourNotModified();
@@ -117,6 +118,7 @@ export class TourEffects {
       ).pipe(
         map(tour => {
           if (tour.id !== 0) {
+            this.router.navigate(['tours', tour.id]);
             return new RequestTourSummaries();
           } else {
             return new TourNotModified();

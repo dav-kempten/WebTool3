@@ -66,6 +66,7 @@ export class InstructionEffects {
       return this.instructionService.cloneInstruction(payload.id).pipe(
         map(instruction => {
           if (instruction.id !== 0) {
+            this.router.navigate(['instructions', instruction.id]);
             return new RequestInstructionSummaries();
           } else {
             return new InstructionNotModified();

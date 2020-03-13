@@ -211,6 +211,7 @@ export class TourService {
     }
     tour.category = tour.categoryId;
     delete tour.categoryId;
+    tour.stateId = 1;
     return tour;
   }
 }
