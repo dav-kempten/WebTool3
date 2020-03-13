@@ -247,7 +247,6 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
 
   save(instruction) {
     this.store.dispatch(new UpsertInstruction({instruction: instruction as Instruction}));
-    alert('Kurs erfolgreich gespeichert.');
   }
 
   deleteEvent(instruction, eventId) {

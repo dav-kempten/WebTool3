@@ -135,6 +135,7 @@ export class InstructionEffects {
       return this.instructionService.upsertInstruction(this.tranformInstructionForSaving(payload.instruction)).pipe(
         map(instruction => {
           if (instruction.id !== 0) {
+            alert('Kurs erfolgreich gespeichert.');
             const instructionInterface = this.transformInstruction(instruction);
             return new UpdateInstruction({instruction: {
               id: instructionInterface.id,
@@ -142,6 +143,7 @@ export class InstructionEffects {
                                                  advances: instructionInterface.advances / 100,
                                                  extraCharges: instructionInterface.extraCharges / 100}}});
           } else {
+            alert('Kurs speichern gescheitert, nocheinmal versuchen oder Seite neuladen.');
             return new InstructionNotModified();
           }
         })
@@ -164,6 +166,7 @@ export class InstructionEffects {
                                                  advances: instructionInterface.advances / 100,
                                                  extraCharges: instructionInterface.extraCharges / 100}}});
           } else {
+            alert('Event hinzufügen gescheitert, bitte Seite neuladen.');
             return new InstructionNotModified();
           }
         })
