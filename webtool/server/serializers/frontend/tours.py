@@ -3,7 +3,7 @@ from rest_framework.reverse import reverse
 
 from server.models import (
     Tour, Guide, Category, Equipment, State, get_default_state, get_default_season, Event, Reference,
-    Skill, Fitness, Qualification)
+    Skill, Fitness, Qualification, Topic)
 from server.serializers.frontend.core import EventSerializer, MoneyField, create_event, update_event
 
 
@@ -80,7 +80,7 @@ class TourSerializer(serializers.ModelSerializer):
     youthOnTour = serializers.BooleanField(source='youth_on_tour', default=False)
     miscCategory = serializers.CharField(source='misc_category', max_length=75, default='', allow_blank=True)
     qualificationIds = serializers.PrimaryKeyRelatedField(
-        source='qualifications', many=True, default=[], queryset=Qualification.objects.all()
+        source='qualifications', many=True, default=[], queryset=Topic.objects.all()
     )
     preconditions = serializers.CharField(default='', allow_blank=True)
 
