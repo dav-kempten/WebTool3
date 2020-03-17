@@ -250,6 +250,8 @@ class TourSerializer(serializers.ModelSerializer):
             instance.equipments = equipments
         instance.misc_equipment = validated_data.get('misc_equipment', instance.misc_equipment)
         instance.equipment_service = validated_data.get('equipment_service', instance.equipment_service)
+        instance.skill = validated_data.get('skill', instance.skill)
+        instance.fitness = validated_data.get('fitness', instance.fitness)
         instance.admission = validated_data.get('admission', instance.admission)
         instance.advances = validated_data.get('advances', instance.advances)
         instance.advances_info = validated_data.get('advances_info', instance.advances_info)
