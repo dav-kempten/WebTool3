@@ -239,6 +239,8 @@ class TourSerializer(serializers.ModelSerializer):
             update_event(preliminary, preliminary_data, self.context)
         instance.info = validated_data.get('info', instance.info)
         instance.ladies_only = validated_data.get('ladies_only', instance.ladies_only)
+        instance.tour.lea = tour_data.get('lea', instance.tour.lea)
+        instance.youth_on_tour = validated_data.get('youth_on_tour', instance.youth_on_tour)
         qualifications = validated_data.get('qualifications')
         if qualifications is not None:
             instance.qualifications = qualifications
