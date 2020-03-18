@@ -75,7 +75,6 @@ class TourSerializer(serializers.ModelSerializer):
     deadline = EventSerializer(default={})
     preliminary = EventSerializer(default={}, allow_null=True)
     info = serializers.CharField(default='', allow_blank=True)
-    lowEmissionAdventure = serializers.BooleanField(source='tour.lea', default=False)
     ladiesOnly = serializers.BooleanField(source='ladies_only', default=False)
     youthOnTour = serializers.BooleanField(source='youth_on_tour', default=False)
     miscCategory = serializers.CharField(source='misc_category', max_length=75, default='', allow_blank=True)
@@ -104,7 +103,7 @@ class TourSerializer(serializers.ModelSerializer):
     extraChargesInfo = serializers.CharField(source='extra_charges_info', max_length=75, default='', allow_blank=True)
     minQuantity = serializers.IntegerField(source='min_quantity', default=0)
     maxQuantity = serializers.IntegerField(source='max_quantity', default=0)
-    curQuantity = serializers.IntegerField(source='cur_quantity', read_only=True)
+    curQuantity = serializers.IntegerField(source='cur_quantity', default=0)
 
     portal = serializers.URLField(default='', allow_blank=True)
     deprecated = serializers.BooleanField(default=False, required=False)
@@ -123,7 +122,7 @@ class TourSerializer(serializers.ModelSerializer):
             'categoryId', 'category', 'categoryIds',
             'tour', 'deadline', 'preliminary',
             'info',
-            'lowEmissionAdventure', 'ladiesOnly', 'youthOnTour',
+            'ladiesOnly', 'youthOnTour',
             'miscCategory',
             'qualificationIds', 'preconditions',
             'equipmentIds', 'miscEquipment', 'equipmentService',
@@ -239,7 +238,6 @@ class TourSerializer(serializers.ModelSerializer):
             update_event(preliminary, preliminary_data, self.context)
         instance.info = validated_data.get('info', instance.info)
         instance.ladies_only = validated_data.get('ladies_only', instance.ladies_only)
-        instance.tour.lea = tour_data.get('lea', instance.tour.lea)
         instance.youth_on_tour = validated_data.get('youth_on_tour', instance.youth_on_tour)
         qualifications = validated_data.get('qualifications')
         if qualifications is not None:
@@ -259,6 +257,7 @@ class TourSerializer(serializers.ModelSerializer):
         instance.extra_charges_info = validated_data.get('extra_charges_info', instance.extra_charges_info)
         instance.min_quantity = validated_data.get('min_quantity', instance.min_quantity)
         instance.max_quantity = validated_data.get('max_quantity', instance.max_quantity)
+        instance.cur_quantity = validated_data.get('cur_quantity', instance.cur_quantity)
         instance.deprecated = validated_data.get('deprecated', instance.deprecated)
         instance.state = validated_data.get('state', instance.state)
         instance.message = validated_data.get('message', instance.message)

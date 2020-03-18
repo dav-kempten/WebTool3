@@ -29,7 +29,6 @@ export interface Tour {
   preliminary: Event | null;
   info: string;
   youthOnTour: boolean;
-  lowEmissionAdventure: boolean;
   ladiesOnly: boolean;
   qualificationIds: number[];
   preconditions: string;

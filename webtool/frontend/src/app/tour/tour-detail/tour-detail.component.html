@@ -38,24 +38,17 @@
           label="Team"
       ></avk-team>
     </div>
-    <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
       <p-checkbox
           [formControl]="tourGroup.get('ladiesOnly')"
           label="LadiesOnly"
           binary="true"
       ></p-checkbox>
     </div>
-    <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
       <p-checkbox
           [formControl]="tourGroup.get('youthOnTour')"
           label="YouthOnTour"
-          binary="true"
-      ></p-checkbox>
-    </div>
-    <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
-      <p-checkbox
-          [formControl]="tourGroup.get('lowEmissionAdventure')"
-          label="LEA"
           binary="true"
       ></p-checkbox>
     </div>
@@ -306,6 +299,11 @@
             ></p-checkbox>
           </div>
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+            <p-checkbox
+                [formControl]="currentEventGroup.get('lowEmissionAdventure')"
+                label="LowEmissionAdventure"
+                binary="true"
+            ></p-checkbox>
           </div>
         </div>
 

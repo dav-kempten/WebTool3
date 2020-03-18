@@ -16,7 +16,6 @@ import {ClearTours, DeleteTour, RequestTour, UpdateTour, UpsertTour} from '../..
 import {getCategoryById} from '../../core/store/value.selectors';
 import {getEventsByIds} from '../../core/store/event.selectors';
 import {CreateEvent, UpdateEvent} from '../../core/store/event.actions';
-import {DeleteEventInstruction, DeleteInstruction} from '../../core/store/instruction.actions';
 
 @Component({
   selector: 'avk-tour-detail',
@@ -241,7 +240,6 @@ export function tourGroupFactory(tour: Tour): FormGroup {
     preliminaryId: new FormControl(tour.preliminaryId),
     info: new FormControl(tour.info),
     youthOnTour: new FormControl(tour.youthOnTour),
-    lowEmissionAdventure: new FormControl(tour.lowEmissionAdventure),
     ladiesOnly: new FormControl(tour.ladiesOnly),
     qualificationIds: new FormControl(tour.qualificationIds),
     preconditions: new FormControl(tour.preconditions),
@@ -292,6 +290,7 @@ function eventGroupFactory(event: Event): FormGroup {
     rendezvous: new FormControl(event.rendezvous),
     location: new FormControl(event.location),
     reservationService: new FormControl(event.reservationService),
+    lowEmissionAdventure: new FormControl(event.lowEmissionAdventure),
     source: new FormControl(event.source),
     link: new FormControl(event.link),
     map: new FormControl(event.map),
