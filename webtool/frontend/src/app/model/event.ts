@@ -11,7 +11,7 @@ export interface Event {
   rendezvous: string;
   location: string;
   reservationService: boolean;
-  lowEmissionAdventure: boolean;
+  lea: boolean;
   source: string;
   link: string;
   map: string;

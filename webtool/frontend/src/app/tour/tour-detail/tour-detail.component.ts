@@ -290,7 +290,7 @@ function eventGroupFactory(event: Event): FormGroup {
     rendezvous: new FormControl(event.rendezvous),
     location: new FormControl(event.location),
     reservationService: new FormControl(event.reservationService),
-    lowEmissionAdventure: new FormControl(event.lowEmissionAdventure),
+    lea: new FormControl(event.lea),
     source: new FormControl(event.source),
     link: new FormControl(event.link),
     map: new FormControl(event.map),
