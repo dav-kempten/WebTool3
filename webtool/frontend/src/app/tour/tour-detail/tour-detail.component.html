@@ -69,7 +69,7 @@
         <avk-categoryselect
             formControlName="categoryId"
             id="categoryId"
-            [readOnly]="false"
+            [readOnly]="true"
             [topicSpecific]="'tour'">
         </avk-categoryselect>
     </div>
@@ -463,7 +463,7 @@
       <a routerLink="../"><p-button label="Zurück"></p-button></a>
     </div>
     <div class="p-col-12 p-sm-10 p-md-10 p-lg-10" style="text-align: right">
-      <a routerLink="../"><p-button type="button" label="Kurs löschen" styleClass="ui-button-danger"
+      <a routerLink="../"><p-button type="button" label="Tour löschen" styleClass="ui-button-danger"
             (click)="deleteTour(this.tourGroup.value.id)"></p-button></a>
     </div>
   </div>
