@@ -223,6 +223,7 @@ class InstructionSerializer(serializers.ModelSerializer):
         instance.extra_charges_info = validated_data.get('extra_charges_info', instance.extra_charges_info)
         instance.min_quantity = validated_data.get('min_quantity', instance.min_quantity)
         instance.max_quantity = validated_data.get('max_quantity', instance.max_quantity)
+        instance.cur_quantity = validated_data.get('cur_quantity', instance.cur_quantity)
         instance.deprecated = validated_data.get('deprecated', instance.deprecated)
         instance.state = validated_data.get('state', instance.state)
         instance.comment = validated_data.get('comment', instance.comment)
