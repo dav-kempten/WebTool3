@@ -25,7 +25,6 @@ export interface Instruction {
   topicId: number;
   instruction: Event;
   meetings: Event[];
-  lowEmissionAdventure: boolean;
   ladiesOnly: boolean;
   isSpecial: boolean;
   categoryId: number | null;

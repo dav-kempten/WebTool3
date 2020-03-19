@@ -43,13 +43,6 @@
             [readOnly]="!(this.loginObject.valState >= 1)"
         ></avk-team>
       </div>
-      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3" *ngIf="this.instructionCategory.value !== 'indoor'">
-        <p-checkbox
-            [formControl]="instructionGroup.get('lowEmissionAdventure')"
-            label="LEA"
-            binary="true"
-        ></p-checkbox>
-      </div>
       <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
         <p-checkbox
             [formControl]="instructionGroup.get('ladiesOnly')"
@@ -369,7 +362,12 @@
                 binary="true"
             ></p-checkbox>
           </div>
-          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6" *ngIf="this.instructionCategory.value !== 'indoor'">
+            <p-checkbox
+              [formControl]="currentEventGroup.get('lea')"
+              label="LowEmissionAdventure"
+              binary="true"
+            ></p-checkbox>
           </div>
         </div>
 

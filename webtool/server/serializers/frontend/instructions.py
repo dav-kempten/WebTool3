@@ -68,7 +68,6 @@ class InstructionSerializer(serializers.ModelSerializer):
     topicId = serializers.PrimaryKeyRelatedField(source='topic', queryset=Topic.objects.all())
     instruction = EventSerializer(default={})
     meetings = EventSerializer(source='meeting_list', many=True, default=[])
-    lowEmissionAdventure = serializers.BooleanField(source='instruction.lea', default=False)
     ladiesOnly = serializers.BooleanField(source='ladies_only', default=False)
     isSpecial = serializers.BooleanField(source='is_special', default=False)
     categoryId = serializers.PrimaryKeyRelatedField(
@@ -110,7 +109,7 @@ class InstructionSerializer(serializers.ModelSerializer):
             'guideId', 'teamIds',
             'topicId',
             'instruction', 'meetings',
-            'lowEmissionAdventure', 'ladiesOnly',
+            'ladiesOnly',
             'isSpecial', 'categoryId',
             'qualificationIds', 'preconditions',
             'equipmentIds', 'miscEquipment', 'equipmentService',
