@@ -252,7 +252,7 @@ export function tourGroupFactory(tour: Tour): FormGroup {
     advances: new FormControl(tour.advances),
     advancesInfo: new FormControl(tour.advancesInfo),
     extraCharges: new FormControl(tour.extraCharges),
-    // extraChargesInfo: new FormControl(this.extraChargesInfo),
+    extraChargesInfo: new FormControl(tour.extraChargesInfo),
     minQuantity: new FormControl(tour.minQuantity),
     maxQuantity: new FormControl(tour.maxQuantity),
     curQuantity: new FormControl(tour.curQuantity),
