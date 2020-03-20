@@ -80,9 +80,9 @@ export class MultiselectComponent implements OnInit, AfterViewInit, OnDestroy, A
       this.formControl.setValue(choiceNew);
       this.choiceValueControl.setValue(choiceNew);
       const choiceNewId: number[] = [];
-      for (const el in choiceNew) {
-        choiceNewId.push(choiceNew[el].id);
-      }
+      choiceNew.forEach(value => {
+        choiceNewId.push(value.id);
+      });
       onChange(choiceNewId);
     });
   }
@@ -103,13 +103,13 @@ export class MultiselectComponent implements OnInit, AfterViewInit, OnDestroy, A
     if (choice.length > 0) {
       const pushArray = new Array(0);
       if (typeof(choice[0]) === 'number') {
-        for (const el in choice) {
-          pushArray.push(this.statusEquipment[choice[el]]);
-        }
+        choice.forEach(value => {
+          pushArray.push(this.statusEquipment[value]);
+        });
       } else {
-        for (const el in choice) {
-          pushArray.push(choice[el]);
-        }
+        choice.forEach(value => {
+          pushArray.push(value);
+        });
       }
       choice = pushArray;
     }
@@ -123,7 +123,7 @@ export class MultiselectComponent implements OnInit, AfterViewInit, OnDestroy, A
     this.formEquipState$.pipe(
       takeUntil(this.destroySubject),
       tap((state) => {
-        for (const key in state.entities) {
+        Object.keys(state.entities).forEach(key => {
           const stateEquip: RawEquipment = {
             id: state.entities[key].id,
             code: state.entities[key].code,
@@ -131,7 +131,7 @@ export class MultiselectComponent implements OnInit, AfterViewInit, OnDestroy, A
             description: state.entities[key].description,
           };
           this.statusEquipment.push(stateEquip);
-        }
+        });
       })
     ).subscribe();
   }
