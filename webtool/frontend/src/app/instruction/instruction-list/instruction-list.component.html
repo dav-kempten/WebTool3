@@ -1,11 +1,15 @@
 <ng-container *ngIf="(activeItem$ | async) as activeItem else loading">
   <p-tabMenu [model]="menuItems" [activeItem]="{}"></p-tabMenu>
-  <p-button label="Kurs hinzufügen" (onClick)="handleClick()" *ngIf="this.loginObject.valState >= 3"></p-button>
   <ng-container *ngIf="(instructions$ | async) as instructions">
     <p-table #dt [value]="instructions" selectionMode="single" (selectionChange)="selectInstruction($event)">
     <ng-template pTemplate="caption">
-      <div style="text-align: right">
-        <p-toggleButton onLabel="Alle Kurse" offLabel="Aktive Kurse" (onChange)="changeViewSet($event, dt)"></p-toggleButton>
+      <div class="p-grid">
+        <div class="p-col-12 p-sm-6 p-md-6 p-lg-6" style="text-align: left">
+          <p-button label="Kurs hinzufügen" (onClick)="handleClick()" *ngIf="this.loginObject.valState >= 3" styleClass="ui-button-secondary"></p-button>
+        </div>
+        <div class="p-col-12 p-sm-6 p-md-6 p-lg-6" style="text-align: right">
+          <p-toggleButton onLabel="Alle Kurse" offLabel="Aktive Kurse" (onChange)="changeViewSet($event, dt)"></p-toggleButton>
+        </div>
       </div>
     </ng-template>
       <ng-template pTemplate="header">
