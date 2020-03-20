@@ -30,7 +30,7 @@ def update_event(instance, validated_data, context):
         instance.description = validated_data.get('description', instance.description)
         instance.start_date = validated_data.get('start_date', instance.start_date)
         instance.start_time = validated_data.get('start_time', instance.start_time)
-        instance.approximate_id = validated_data.get('approximate_id', instance.approximate_id)
+        instance.approximate_id = validated_data.get('approximate', instance.approximate_id)
         instance.end_date = validated_data.get('end_date', instance.end_date)
         instance.end_time = validated_data.get('end_time', instance.end_time)
         instance.rendezvous = validated_data.get('rendezvous', instance.rendezvous)
