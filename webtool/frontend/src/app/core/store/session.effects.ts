@@ -14,7 +14,7 @@ import {
   DeleteSession,
   SessionDeleteComplete,
   DeactivateSession,
-  SessionDeactivateComplete, CreateSession, UpsertSession, SessionUpdateComplete
+  SessionDeactivateComplete, CreateSession, UpsertSession, SessionUpdateComplete, UpdateSession
 } from './session.actions';
 import {Event} from '../../model/event';
 import {AppState} from '../../app.state';
@@ -22,6 +22,8 @@ import {AddEvent} from './event.actions';
 import {Session} from './session.model';
 import {Session as RawSession} from '../../model/session';
 import {getEventById} from './event.selectors';
+import {RequestSessionSummaries} from './session-summary.actions';
+import {Router} from '@angular/router';
 
 
 @Injectable({
@@ -31,7 +33,7 @@ export class SessionEffects {
   event$: Observable<Event>;
   private destroySubject = new Subject<void>();
 
-  constructor(private actions$: Actions, private sessionService: SessionService, private store: Store<AppState>) {}
+  constructor(private actions$: Actions, private sessionService: SessionService, private store: Store<AppState>, private router: Router) {}
 
   @Effect()
   loadSession$: Observable<Action> = this.actions$.pipe(
@@ -58,7 +60,8 @@ export class SessionEffects {
       return this.sessionService.cloneSession(payload.id).pipe(
         map(session => {
           if (session.id !== 0) {
-            return new SessionCreateComplete();
+            this.router.navigate(['session', session.id]);
+            return new RequestSessionSummaries();
           } else {
             return new SessionNotModified();
           }
@@ -75,7 +78,7 @@ export class SessionEffects {
       return this.sessionService.deleteSession(payload.id).pipe(
         map(session => {
           if (session.id !== 0) {
-            return new SessionDeleteComplete();
+            return new RequestSessionSummaries();
           } else {
             return new SessionNotModified();
           }
@@ -92,7 +95,7 @@ export class SessionEffects {
       return this.sessionService.deactivateSession(payload.id).pipe(
         map(session => {
           if (session.id !== 0) {
-            return new SessionDeactivateComplete();
+            return new RequestSessionSummaries();
           } else {
             return new SessionNotModified();
           }
@@ -109,7 +112,8 @@ export class SessionEffects {
       return this.sessionService.createSession(payload.collectiveId, payload.startDate).pipe(
         map(session => {
           if (session.id !== 0) {
-            return new SessionCreateComplete();
+            this.router.navigate(['sessions', session.id]);
+            return new RequestSessionSummaries();
           } else {
             return new SessionNotModified();
           }
@@ -123,11 +127,17 @@ export class SessionEffects {
     ofType<UpsertSession>(SessionActionTypes.UpsertSession),
     map((action: UpsertSession) => action.payload),
     switchMap(payload => {
-      return this.sessionService.upsertSession(this.transformTourForSaving(payload.session)).pipe(
+      console.log(payload)
+      return this.sessionService.upsertSession(this.transformSessionForSaving(payload.session)).pipe(
         map(session => {
-          if (session.id !== null) {
-            return new SessionUpdateComplete();
+          if (session.id !== 0) {
+            alert('Gruppentermin erfolgreich gespreichert.');
+            const sessionInterface = this.transformSession(session);
+            return new UpdateSession({session: {
+              id: sessionInterface.id,
+              changes: {...sessionInterface}}});
           } else {
+            alert('Gruppentermin speichern gescheitert, nocheinmal versuchen oder Seite neuladen.');
             return new SessionNotModified();
           }
         })
@@ -148,7 +158,7 @@ export class SessionEffects {
     };
   }
 
-  transformTourForSaving(sessionInterface: Session): RawSession {
+  transformSessionForSaving(sessionInterface: Session): RawSession {
     let session: any = {};
 
     this.event$ = this.store.select(getEventById(sessionInterface.sessionId)).pipe(
