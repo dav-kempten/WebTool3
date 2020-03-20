@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {select, Store} from '@ngrx/store';
 import {AppState, selectRouterFragment} from '../../app.state';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
@@ -21,7 +21,9 @@ import {CloneSession, CreateSession, DeactivateSession, DeleteSession} from '../
   templateUrl: './session-list.component.html',
   styleUrls: ['./session-list.component.css']
 })
-export class SessionListComponent implements OnInit, OnDestroy {
+export class SessionListComponent implements OnInit, OnDestroy, AfterViewInit {
+
+  @ViewChild('dt') dt;
 
   private destroySubject = new Subject<void>();
   part$: Observable<string>;
@@ -30,6 +32,8 @@ export class SessionListComponent implements OnInit, OnDestroy {
   display = false;
 
   finishedSessions = [6, 7, 8];
+  activeSessions = [1, 2, 3, 4, 5, 9];
+  allSessions = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
   partNewSession = new BehaviorSubject<string>('');
 
@@ -114,9 +118,14 @@ export class SessionListComponent implements OnInit, OnDestroy {
     this.destroySubject.complete();
   }
 
+  ngAfterViewInit(): void {
+    this.store.dispatch(new RequestSessionSummaries());
+    this.dt.filter(this.activeSessions, 'stateId', 'in');
+  }
+
   selectSession(session): void {
     if (!!session) {
-      if (this.loginObject.valState >= 1) {
+      if (this.loginObject.valState >= 2) {
         this.router.navigate(['sessions', session.id]);
       }
     }
@@ -141,6 +150,14 @@ export class SessionListComponent implements OnInit, OnDestroy {
 
   deactivate(sessionId) {
     this.store.dispatch(new DeactivateSession({id: sessionId}));
+  }
+
+  changeViewSet(event, dt) {
+    if (!event.checked) {
+      dt.filter(this.activeSessions, 'stateId', 'in');
+    } else {
+      dt.filter(this.allSessions, 'stateId', 'in');
+    }
   }
 
 }

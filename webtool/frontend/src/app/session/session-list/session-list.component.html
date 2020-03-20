@@ -2,7 +2,12 @@
   <p-tabMenu [model]="menuItems" [activeItem]="{}"></p-tabMenu>
   <p-button label="Gruppentermin hinzufügen" (onClick)="handleClick()" *ngIf="this.loginObject.valState >= 3"></p-button>
   <ng-container *ngIf="(sessions$ | async) as sessions">
-    <p-table [value]="sessions" selectionMode="single" (selectionChange)="selectSession($event)">
+    <p-table #dt [value]="sessions" selectionMode="single" (selectionChange)="selectSession($event)">
+      <ng-template pTemplate="caption">
+        <div style="text-align: right">
+          <p-toggleButton onLabel="Alle Gruppentermine" offLabel="Aktive Gruppentermine" (onChange)="changeViewSet($event, dt)"></p-toggleButton>
+        </div>
+      </ng-template>
       <ng-template pTemplate="header">
         <tr>
           <th>Buchungscode</th>
