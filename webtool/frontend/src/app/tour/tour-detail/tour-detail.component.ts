@@ -287,6 +287,7 @@ function eventGroupFactory(event: Event): FormGroup {
     startTime: new FormControl(event.startTime),
     approximateId: new FormControl(event.approximateId),
     endDate: new FormControl(event.endDate),
+    endTime: new FormControl(event.endTime),
     rendezvous: new FormControl(event.rendezvous),
     location: new FormControl(event.location),
     reservationService: new FormControl(event.reservationService),

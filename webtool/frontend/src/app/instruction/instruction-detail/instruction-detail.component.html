@@ -297,13 +297,17 @@
 
         <!--Zeitpunkt Event-->
         <div class="p-grid">
-          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6"
-               *ngIf="this.instructionCategory.value !== 'indoor'">
+          <div class="p-col-12 p-sm-4 p-md-4 p-lg-4" *ngIf="this.instructionCategory.value !== 'indoor'">
             <avk-approxdropdown formControlName="approximateId" id="approx" [readOnly]="!(this.loginObject.valState >= 1)"
-                                [disable]="!!currentEventGroup.get('startTime').value"></avk-approxdropdown>
+                                [disable]="(!!currentEventGroup.get('startTime').value)||(!!currentEventGroup.get('endTime').value)">
+            </avk-approxdropdown>
           </div>
-          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
-            <avk-time formControlName="startTime" id="time" [disable]="!!currentEventGroup.get('approximateId').value"
+          <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+            <avk-time formControlName="startTime" id="startTime" [disable]="!!currentEventGroup.get('approximateId').value"
+            ></avk-time>
+          </div>
+          <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+            <avk-time formControlName="endTime" id="endTime" [disable]="!!currentEventGroup.get('approximateId').value"
             ></avk-time>
           </div>
         </div>
