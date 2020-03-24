@@ -12,7 +12,7 @@ import {ValuesRequested} from '../../core/store/value.actions';
 import {CalendarRequested} from '../../core/store/calendar.actions';
 import {filter, flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {getSessionById} from '../../core/store/session.selectors';
-import {RequestSession, UpsertSession} from '../../core/store/session.actions';
+import {DeleteSession, RequestSession, UpsertSession} from '../../core/store/session.actions';
 import {getCollectiveById} from '../../core/store/value.selectors';
 import {getEventsByIds} from '../../core/store/event.selectors';
 import {CreateEvent, UpdateEvent} from '../../core/store/event.actions';
@@ -201,6 +201,10 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
 
   saveSession(session) {
     this.store.dispatch(new UpsertSession({session: session as Session}));
+  }
+
+  deleteSession(sessionId) {
+    this.store.dispatch(new DeleteSession({id: sessionId}));
   }
 
 }
