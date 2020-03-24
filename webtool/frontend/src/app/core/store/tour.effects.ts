@@ -82,7 +82,7 @@ export class TourEffects {
     switchMap((payload) => {
       return this.tourService.deleteTour(payload.id).pipe(
         map(tour => {
-          if (tour.id === 0) {
+          if (tour === null) {
             return new RequestTourSummaries();
           } else {
             return new TourNotModified();

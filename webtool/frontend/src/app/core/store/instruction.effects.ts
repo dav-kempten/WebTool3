@@ -83,7 +83,7 @@ export class InstructionEffects {
     switchMap((payload) => {
       return this.instructionService.deleteInstruction(payload.id).pipe(
         map(instruction => {
-          if (instruction.id === 0) {
+          if (instruction === null) {
             return new RequestInstructionSummaries();
           } else {
             return new InstructionNotModified();

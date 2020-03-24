@@ -77,7 +77,7 @@ export class SessionEffects {
     switchMap(payload => {
       return this.sessionService.deleteSession(payload.id).pipe(
         map(session => {
-          if (session.id !== 0) {
+          if (session === null) {
             return new RequestSessionSummaries();
           } else {
             return new SessionNotModified();
