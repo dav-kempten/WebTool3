@@ -81,9 +81,9 @@ export class QualificationselectComponent implements OnInit, AfterViewInit, OnDe
       this.formControl.setValue(choiceNew);
       this.choiceValueControl.setValue(choiceNew);
       const choiceNewId: number[] = [];
-      for (const el in choiceNew) {
-        choiceNewId.push(choiceNew[el].id);
-      }
+      choiceNew.forEach(value => {
+        choiceNewId.push(value.id);
+      });
       onChange(choiceNewId);
     });
   }
@@ -103,19 +103,19 @@ export class QualificationselectComponent implements OnInit, AfterViewInit, OnDe
   writeValue(choice): void {
     if (choice.length > 0) {
       const pushArray = new Array(0);
-      for (const el in choice) {
-        if (typeof(choice[el]) === 'number') {
-          for (const ele in this.statusTopic) {
-            if (choice[el] === this.statusTopic[ele].id) {
-              pushArray.push(this.statusTopic[ele]);
+      choice.forEach(value => {
+        if (typeof(value) === 'number') {
+          this.statusTopic.forEach(valueNumber => {
+            if (value === valueNumber.id) {
+              pushArray.push(valueNumber);
             }
-          }
+          });
         } else {
-          for (const elem in choice) {
-            pushArray.push(choice[elem]);
-          }
+          choice.forEach(valueObject => {
+            pushArray.push(valueObject);
+          });
         }
-      }
+      });
       choice = pushArray;
     }
     this.delegatedMethodCalls.next(accessor => accessor.writeValue(choice));
@@ -128,7 +128,7 @@ export class QualificationselectComponent implements OnInit, AfterViewInit, OnDe
     this.formTopicState$.pipe(
       takeUntil(this.destroySubject),
       tap((state) => {
-        for (const key in state.entities) {
+        Object.keys(state.entities).forEach(key => {
           const stateTopic: RawTopic = {
             id: state.entities[key].id,
             code: state.entities[key].code,
@@ -141,7 +141,7 @@ export class QualificationselectComponent implements OnInit, AfterViewInit, OnDe
             miscEquipment: state.entities[key].miscEquipment,
           };
           this.statusTopic.push(stateTopic);
-        }
+        });
       })
     ).subscribe();
   }
