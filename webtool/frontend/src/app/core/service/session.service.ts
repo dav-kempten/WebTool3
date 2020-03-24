@@ -189,6 +189,7 @@ export class SessionService {
     delete session.id;
     delete session.reference;
     delete session.session.id;
+    session.stateId = 1;
     return session;
   }
 }

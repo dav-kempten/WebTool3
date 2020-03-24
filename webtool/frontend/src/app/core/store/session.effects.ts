@@ -60,7 +60,7 @@ export class SessionEffects {
       return this.sessionService.cloneSession(payload.id).pipe(
         map(session => {
           if (session.id !== 0) {
-            this.router.navigate(['session', session.id]);
+            this.router.navigate(['sessions', session.id]);
             return new RequestSessionSummaries();
           } else {
             return new SessionNotModified();
@@ -127,7 +127,6 @@ export class SessionEffects {
     ofType<UpsertSession>(SessionActionTypes.UpsertSession),
     map((action: UpsertSession) => action.payload),
     switchMap(payload => {
-      console.log(payload)
       return this.sessionService.upsertSession(this.transformSessionForSaving(payload.session)).pipe(
         map(session => {
           if (session.id !== 0) {

@@ -125,6 +125,7 @@ class SessionSerializer(serializers.ModelSerializer):
             state = validated_data.pop('state', get_default_state())
             collective = validated_data.get('collective')
             misc_category = validated_data.pop('misc_category')
+            categories = validated_data.pop('categories')
             category = collective.category
             season = get_default_season()
             event = create_event(session_data, dict(category=category, season=season, type=dict(collective=True)))
@@ -140,6 +141,7 @@ class SessionSerializer(serializers.ModelSerializer):
 
             session = Session.objects.create(session=event, state=state, speaker=speaker, misc_category=misc_category,
                                              **validated_data)
+            session.categories = categories
             session.equipments = equipments
             return session
 
