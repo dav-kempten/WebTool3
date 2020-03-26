@@ -112,7 +112,9 @@ export class SessionService {
   cloneSession(id: number): Observable<Session> {
     this.getSession(id).pipe(
       takeUntil(this.destroySubject),
-      tap(val => this.cloneSubject.next(this.transformSessionForCloning(val))),
+      tap(val => {
+        this.cloneSubject.next(this.transformSessionForCloning(val));
+      }),
     ).subscribe();
 
     return this.http.post<Session>(

@@ -13,7 +13,12 @@ import {CalendarRequested} from '../../core/store/calendar.actions';
 import {flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {RequestSessionSummaries} from '../../core/store/session-summary.actions';
 import {getSessionSummaries} from '../../core/store/session-summary.selectors';
-import {CloneSession, CreateSession, DeactivateSession, DeleteSession} from '../../core/store/session.actions';
+import {
+  CloneSession,
+  CreateSession,
+  DeactivateSession,
+  DeleteSession,
+} from '../../core/store/session.actions';
 
 
 @Component({
