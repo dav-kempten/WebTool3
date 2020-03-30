@@ -8,23 +8,7 @@ export interface GuideSummary {
   url: string;
 }
 
-export interface Guide {
-  id: number;
-  username: string;
-  firstName: string;
-  lastName: string;
-  emailUser: string;
-  profile: string;
-  qualifications: string;
-  retrainings: string;
-  groups: number[];
-  userPermissions: number[];
-  isStaff: boolean;
-  isActive: boolean;
-  phone: string;
-  mobile: string;
-  portrait: string;
-  dateJoined: string;
+export interface Profile {
   memberId: string;
   sex: number;
   birthDate: string;
@@ -32,4 +16,28 @@ export interface Guide {
   memberYear: number;
   integralMember: boolean;
   memberHome: string | null;
+  portrait: string;
+}
+
+export interface User {
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  profile: Profile;
+  groups: any[];
+  permissions: any[];
+  isStaff: boolean;
+  isActive: boolean;
+  dateJoined: string;
+}
+
+export interface Guide {
+  id: number;
+  qualifications: string;
+  retrainings: string;
+  phone: string;
+  mobile: string;
+  user: User;
+  profile: string;
 }

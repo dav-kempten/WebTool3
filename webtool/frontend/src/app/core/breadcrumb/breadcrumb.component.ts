@@ -163,7 +163,7 @@ export class BreadcrumbComponent implements OnInit {
               breadcrumbs[breadcrumbs.length - 1].url = '/trainers';
               breadcrumbs.push({
                 url: `/trainers/${trainer.id}`,
-                label: trainer.username
+                label: trainer.user.username
               });
             });
           }
