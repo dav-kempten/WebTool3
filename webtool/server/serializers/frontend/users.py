@@ -1,5 +1,6 @@
 from django.contrib.auth.models import Group, Permission, User
 from rest_framework import serializers
+from rest_framework.reverse import reverse
 
 from server.models import Profile
 
@@ -47,6 +48,31 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     # def update(self, instance, validated_data):
 
+class UserListSerializer(serializers.ModelSerializer):
+    id = serializers.PrimaryKeyRelatedField(source='pk', read_only=True)
+    username = serializers.CharField(read_only=True)
+    firstName = serializers.CharField(source='first_name', read_only=True)
+    lastName = serializers.CharField(source='last_name', read_only=True)
+    emailUser = serializers.EmailField(source='email', read_only=True)
+    memberId = serializers.CharField(source='profile.member_id', read_only=True)
+    birthDate = serializers.DateField(source='profile.birth_date', read_only=True)
+    url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = (
+            'id',
+            'username',
+            'firstName', 'lastName',
+            'emailUser',
+            'memberId',
+            'birthDate',
+            'url'
+            )
+
+    def get_url(self, obj):
+        request = self.context['request']
+        return reverse('users-detail', args=[obj.pk], request=request)
 
 
 class UserSerializer(serializers.ModelSerializer):
