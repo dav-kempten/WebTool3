@@ -8,6 +8,7 @@ from . import TourViewSet
 from . import TalkViewSet
 from . import SessionViewSet
 from . import GuideViewSet
+from . import UserViewSet
 
 router = DefaultRouter()
 router.register(r'names', NamesViewSet, base_name='names')
@@ -18,3 +19,4 @@ router.register(r'tours', TourViewSet, base_name='tours')
 router.register(r'talks', TalkViewSet, base_name='talks')
 router.register(r'sessions', SessionViewSet, base_name='sessions')
 router.register(r'guides', GuideViewSet, base_name='guides')
+router.register(r'users', UserViewSet, base_name='users')
