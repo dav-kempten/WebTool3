@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-from django.contrib.auth.models import User, Group, Permission
+from django.contrib.auth.models import User
 from rest_framework.reverse import reverse
 from rest_framework import serializers
-from server.models import Guide, Profile, Retraining
+from server.models import Guide
+from server.serializers.frontend.users import UserSerializer
 
 
 class GuideListSerializer(serializers.ModelSerializer):
@@ -33,81 +34,53 @@ class GuideListSerializer(serializers.ModelSerializer):
         request = self.context['request']
         return reverse('guides-detail', args=[obj.pk], request=request)
 
-class GroupSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Group
-        fields = ('name',)
-
-class PermissionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Permission
-        fields = ('name',)
-
-class ProfileSerializer(serializers.ModelSerializer):
-    memberId = serializers.CharField(source='member_id', read_only=True)
-    sex = serializers.IntegerField(read_only=True)
-    birthDate = serializers.DateField(source='birth_date', read_only=True)
-    note = serializers.CharField(read_only=True)
-    memberYear = serializers.IntegerField(source='member_year', read_only=True)
-    integralMember = serializers.BooleanField(source='integral_member', read_only=True)
-    memberHome = serializers.CharField(source='member_home', read_only=True)
-
-    class Meta:
-        model = Profile
-        fields = ('memberId', 'sex',
-                  'birthDate',
-                  'note',
-                  'memberYear',
-                  'integralMember',
-                  'memberHome',)
-
-
-class UserSerializer(serializers.ModelSerializer):
-    username = serializers.PrimaryKeyRelatedField(read_only=True)
-    firstName = serializers.CharField(source='first_name', read_only=True)
-    lastName = serializers.CharField(source='last_name', read_only=True)
-    email = serializers.EmailField(read_only=True)
-    groups = GroupSerializer()
-    permissions = PermissionSerializer(source='user_permissions')
-    isStaff = serializers.BooleanField(source='is_staff', read_only=True)
-    isActive = serializers.BooleanField(source='is_active', read_only=True)
-    dateJoined = serializers.DateTimeField(source='date_joined', read_only=True)
-    profile = ProfileSerializer()
-
-    class Meta:
-        model = User
-        fields = ('username',
-                  'firstName',
-                  'lastName',
-                  'email',
-                  'groups',
-                  'permissions',
-                  'isStaff',
-                  'isActive',
-                  'dateJoined',
-                  'profile')
-
 class GuideSerializer(serializers.ModelSerializer):
-
-    id = serializers.PrimaryKeyRelatedField(source='user.pk', read_only=True)
+    id = serializers.PrimaryKeyRelatedField(
+        source='pk', queryset=User.objects.all(), default=None, allow_null=True
+    )
     user = UserSerializer()
-    profile = serializers.JSONField(read_only=True)
-    qualifications = serializers.CharField(source='qualification_list', read_only=True)
-    retrainings = serializers.CharField(source='retraining_list', read_only=True)
-    phone = serializers.CharField(read_only=True)
-    mobile = serializers.CharField(read_only=True)
+    profile = serializers.JSONField(allow_null=True)
+    qualifications = serializers.CharField(source='qualification_list', allow_blank=True)
+    retrainings = serializers.CharField(source='retraining_list', allow_blank=True)
+    phone = serializers.CharField(allow_blank=True)
+    mobile = serializers.CharField(allow_blank=True)
 
     class Meta:
         model = Guide
-        fields = (
-            'id',
-            'user',
-            'profile',
-            'qualifications',
-            'retrainings',
-            'phone', 'mobile'
-        )
+        fields = ('id',
+                  'user',
+                  'profile',
+                  'qualifications',
+                  'retrainings',
+                  'phone', 'mobile')
 
-    # def validate(self, data):
+    def validate(self, data):
+        if self.instance is not None:
+            # This is the Update case
+            guide = self.instance
+
+            instance_data = data.get('pk')
+
+            if instance_data is None:
+                raise serializers.ValidationError("instance Id is missing")
+            elif instance_data.pk != guide.pk:
+                raise serializers.ValidationError("Wrong instance Id")
+
+        return data
+
     # def create(self, validated_data):
-    # def update(self, instance, validated_data):
+    def update(self, instance, validated_data):
+
+        if validated_data.get('user'):
+            user_data = validated_data.get('user')
+            UserSerializer().update(instance=instance.user, validated_data=user_data)
+
+        instance.profile = validated_data.get('profile', instance.profile)
+        instance.qualification_list = validated_data.get('qualification_list', instance.qualification_list)
+        instance.retraining_list = validated_data.get('retraining_list', instance.retraining_list)
+        instance.phone = validated_data.get('phone', instance.phone)
+        instance.mobile = validated_data.get('mobile', instance.mobile)
+
+        instance.save()
+
+        return instance
