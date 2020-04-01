@@ -2,7 +2,7 @@ from django.contrib.auth.models import Group, Permission, User
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 
-from server.models import Profile
+from server.serializers.frontend.profiles import ProfileSerializer
 
 
 def update_user(instance, validated_data, context):
@@ -28,25 +28,6 @@ class PermissionSerializer(serializers.ModelSerializer):
         model = Permission
         fields = ('name',)
 
-class ProfileSerializer(serializers.ModelSerializer):
-    memberId = serializers.CharField(source='member_id', read_only=True)
-    sex = serializers.IntegerField(read_only=True)
-    birthDate = serializers.DateField(source='birth_date', read_only=True)
-    note = serializers.CharField(read_only=True)
-    memberYear = serializers.IntegerField(source='member_year', read_only=True)
-    integralMember = serializers.BooleanField(source='integral_member', read_only=True)
-    memberHome = serializers.CharField(source='member_home', read_only=True)
-
-    class Meta:
-        model = Profile
-        fields = ('memberId', 'sex',
-                  'birthDate',
-                  'note',
-                  'memberYear',
-                  'integralMember',
-                  'memberHome',)
-
-    # def update(self, instance, validated_data):
 
 class UserListSerializer(serializers.ModelSerializer):
     id = serializers.PrimaryKeyRelatedField(source='pk', read_only=True)
@@ -109,7 +90,6 @@ class UserSerializer(serializers.ModelSerializer):
         instance_data = data.get('pk')
         if (instance_data is not None) or (self.instance is not None):
             # This is the Update case
-            print('doof1')
             if instance_data is None:
                 raise serializers.ValidationError("instance Id is missing")
 

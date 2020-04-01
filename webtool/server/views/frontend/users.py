@@ -37,8 +37,7 @@ class UserViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         serializer = self.get_serializer(queryset, many=True, context=dict(request=request))
 
         response = Response(serializer.data)
-        # response['Cache-Control'] = "public, max-age=86400"
-        response['Cache-Control'] = "public, no-cache"
+        response['Cache-Control'] = "public, max-age=86400"
         if queryset.exists():
             first = queryset.first()
             # response['ETag'] = '"{}"'.format(first.get_etag())
@@ -56,8 +55,7 @@ class UserViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
         response = Response(serializer.data)
-        # response['Cache-Control'] = "public, max-age=86400"
-        response['Cache-Control'] = "public, no-cache"
+        response['Cache-Control'] = "public, max-age=86400"
         # if queryset.exists():
             # response['ETag'] = '"{}"'.format(instance.get_etag())
             # response['Last-Modified'] = "{} GMT".format(date(instance.updated, "D, d M Y H:i:s"))
