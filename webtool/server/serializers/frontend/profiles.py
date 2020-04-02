@@ -65,4 +65,16 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     # def create(self, validated_data):
 
-    # def update(self, instance, validated_data):
+    def update(self, instance, validated_data):
+
+        instance.member_id = validated_data.get('member_id', instance.member_id)
+        instance.sex = validated_data.get('sex', instance.sex)
+        instance.birth_date = validated_data.get('birth_date', instance.birth_date)
+        instance.note = validated_data.get('note', instance.note)
+        instance.member_year = validated_data.get('member_year', instance.member_year)
+        instance.integral_member = validated_data.get('integral_member', instance.integral_member)
+        instance.member_home = validated_data.get('member_home', instance.member_home)
+
+        instance.save()
+
+        return instance
