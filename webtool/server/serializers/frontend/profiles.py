@@ -30,13 +30,13 @@ class ProfileSerializer(serializers.ModelSerializer):
     id = serializers.PrimaryKeyRelatedField(
         source='pk', queryset=User.objects.all(), default=None, allow_null=True
     )
-    memberId = serializers.CharField(source='member_id', read_only=True)
-    sex = serializers.IntegerField(read_only=True)
-    birthDate = serializers.DateField(source='birth_date', read_only=True)
-    note = serializers.CharField(read_only=True)
-    memberYear = serializers.IntegerField(source='member_year', read_only=True)
-    integralMember = serializers.BooleanField(source='integral_member', read_only=True)
-    memberHome = serializers.CharField(source='member_home', read_only=True)
+    memberId = serializers.CharField(source='member_id')
+    sex = serializers.IntegerField()
+    birthDate = serializers.DateField(source='birth_date')
+    note = serializers.CharField(allow_blank=True)
+    memberYear = serializers.IntegerField(source='member_year')
+    integralMember = serializers.BooleanField(source='integral_member')
+    memberHome = serializers.CharField(source='member_home', allow_blank=True)
 
     class Meta:
         model = Profile
