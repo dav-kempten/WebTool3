@@ -21,7 +21,7 @@ export class GuideEffects {
   }
 
   @Effect()
-  loadInstruction$: Observable<Action> = this.actions$.pipe(
+  loadGuide$: Observable<Action> = this.actions$.pipe(
     ofType<RequestGuide>(GuideActionTypes.RequestGuide),
     map((action: RequestGuide) => action.payload),
     switchMap(payload => {
