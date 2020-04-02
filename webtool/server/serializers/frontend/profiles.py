@@ -50,16 +50,27 @@ class ProfileSerializer(serializers.ModelSerializer):
             'memberHome',)
 
     def validate(self, data):
-        instance_data = data.get('pk')
-        if instance_data is not None:
+        if self.instance is not None:
             # This is the Update case
             profile = self.instance
 
             instance_data = data.get('pk')
 
-            if self.instance is not None:
-                if instance_data.pk != self.instance.pk:
-                    raise serializers.ValidationError("Wrong instance Id")
+            if instance_data is None:
+                raise serializers.ValidationError("instance Id is missing")
+            if instance_data.pk != profile.pk:
+                raise serializers.ValidationError("Wrong instance Id")
+
+            # member_home and integral_member is true and vice versa
+            instance_integralmember = data.get('integral_member')
+            instance_memberhome = data.get('member_home')
+
+            if instance_integralmember:
+                if instance_memberhome:
+                    raise serializers.ValidationError("memberHome must be empty if integralMember is true")
+            else:
+                if not instance_memberhome:
+                    raise serializers.ValidationError("memberHome must be set if integralMember is false")
 
         return data
 
@@ -78,3 +89,4 @@ class ProfileSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
+
