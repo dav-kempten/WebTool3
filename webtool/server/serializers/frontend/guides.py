@@ -42,7 +42,7 @@ class GuideSerializer(serializers.ModelSerializer):
     class Meta:
         model = Guide
         fields = ('id',
-                  'unknown'
+                  'unknown',
                   'profile',
                   'qualifications',
                   'retrainings',
@@ -72,7 +72,7 @@ class GuideSerializer(serializers.ModelSerializer):
         instance.profile = validated_data.get('profile', instance.profile)
         instance.qualification_list = validated_data.get('qualification_list', instance.qualification_list)
         instance.retraining_list = validated_data.get('retraining_list', instance.retraining_list)
-        instance.email = validated_data('email', instance.email)
+        instance.email = validated_data.get('email', instance.email)
         instance.phone = validated_data.get('phone', instance.phone)
         instance.mobile = validated_data.get('mobile', instance.mobile)
 
