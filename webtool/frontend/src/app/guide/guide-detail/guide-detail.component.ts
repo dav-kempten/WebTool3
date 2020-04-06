@@ -1,9 +1,9 @@
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
-import {Component, ElementRef, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {select, Store} from '@ngrx/store';
 import {FormControl, FormGroup} from '@angular/forms';
 import {AppState, selectRouterDetailId} from '../../app.state';
-import {Guide} from '../../model/guide';
+import {Guide, Profile} from '../../model/guide';
 import {flatMap, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {getGuideById} from '../../core/store/guide.selectors';
 import {RequestGuide} from '../../core/store/guide.actions';
@@ -43,9 +43,7 @@ export class GuideDetailComponent implements OnInit, OnDestroy {
 
   de = german;
 
-  constructor(private store: Store<AppState>, private userService: AuthService) {
-    // this.store.dispatch(new GuidesRequested());
-  }
+  constructor(private store: Store<AppState>, private userService: AuthService) {}
 
   ngOnInit(): void {
 
@@ -87,7 +85,8 @@ export class GuideDetailComponent implements OnInit, OnDestroy {
       )),
       // shareReplay(),
       publishReplay(1),
-      refCount());
+      refCount()
+    );
 
     this.guideId$.subscribe();
     this.guide$.subscribe();
@@ -103,10 +102,6 @@ export class GuideDetailComponent implements OnInit, OnDestroy {
 function guideGroupFactory(guide: Guide): FormGroup {
   return new FormGroup({
     id: new FormControl(guide.id),
-    username: new FormControl(guide.user.username),
-    firstName: new FormControl(guide.user.firstName),
-    lastName: new FormControl(guide.user.lastName),
-    emailUser: new FormControl(guide.user.email),
     profileCity: new FormControl(parseProfile(guide.profile, 'city')),
     profileJob: new FormControl(parseProfile(guide.profile, 'job')),
     profileName: new FormControl(parseProfile(guide.profile, 'name')),
@@ -116,21 +111,23 @@ function guideGroupFactory(guide: Guide): FormGroup {
     profileTip: new FormControl(parseProfile(guide.profile, 'tip')),
     qualifications: new FormControl(guide.qualifications),
     retrainings: new FormControl(guide.retrainings),
-    groups: new FormControl(guide.user.groups),
-    userPermissions: new FormControl(guide.user.permissions),
-    isStaff: new FormControl(guide.user.isStaff),
-    isActive: new FormControl(guide.user.isActive),
     phone: new FormControl(guide.phone),
     mobile: new FormControl(guide.mobile),
-    portrait: new FormControl(guide.user.profile.portrait),
-    dateJoined: new FormControl(guide.user.dateJoined.substring(0, 10)),
-    memberId: new FormControl(guide.user.profile.memberId),
-    sex: new FormControl(guide.user.profile.sex),
-    birthDate: new FormControl(guide.user.profile.birthDate),
-    note: new FormControl(guide.user.profile.note),
-    memberYear: new FormControl(guide.user.profile.memberYear),
-    integralMember: new FormControl(guide.user.profile.integralMember),
-    memberHome: new FormControl(guide.user.profile.memberHome)
+    userProfile: profileGroupFactory(guide.userProfile),
+  });
+}
+
+function profileGroupFactory(profile: Profile): FormGroup {
+  return new FormGroup({
+    id: new FormControl(profile.id),
+    memberId: new FormControl(profile.memberId),
+    sex: new FormControl(profile.sex),
+    birthDate: new FormControl(profile.birthDate),
+    note: new FormControl(profile.note),
+    memberYear: new FormControl(profile.memberYear),
+    integralMember: new FormControl(profile.integralMember),
+    memberHome: new FormControl(profile.memberHome),
+    portrait: new FormControl(profile.portrait),
   });
 }
 
