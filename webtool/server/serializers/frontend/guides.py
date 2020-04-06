@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from rest_framework.reverse import reverse
 from rest_framework import serializers
 from server.models import Guide
+from server.serializers.frontend.profiles import ProfileSerializer
 
 
 class GuideListSerializer(serializers.ModelSerializer):
@@ -31,6 +32,7 @@ class GuideSerializer(serializers.ModelSerializer):
     id = serializers.PrimaryKeyRelatedField(
         source='pk', queryset=User.objects.all(), default=None, allow_null=True
     )
+    username = serializers.CharField(source='user.username',read_only=True)
     unknown = serializers.BooleanField(default=False)
     profile = serializers.JSONField(allow_null=True)
     qualifications = serializers.CharField(source='qualification_list', allow_blank=True)
@@ -38,16 +40,20 @@ class GuideSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(allow_blank=True)
     phone = serializers.CharField(allow_blank=True)
     mobile = serializers.CharField(allow_blank=True)
+    userProfile = ProfileSerializer(source = 'user.profile')
 
     class Meta:
         model = Guide
         fields = ('id',
+                  'username',
                   'unknown',
                   'profile',
                   'qualifications',
                   'retrainings',
                   'email',
-                  'phone', 'mobile')
+                  'phone', 'mobile',
+                  'userProfile'
+                  )
 
     def validate(self, data):
         if self.instance is not None:
