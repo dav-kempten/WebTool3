@@ -2,20 +2,16 @@
   <p-table [value]="guides" selectionMode="single" (selectionChange)="selectGuide($event)">
     <ng-template pTemplate="header">
       <tr>
-        <th>Vorname</th>
         <th>Nachname</th>
-        <th>E-Mail</th>
-        <th>MemberId</th>
-        <th>Geburtsdatum</th>
+        <th>Vorname</th>
+        <th>Username</th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-guide>
       <tr [pSelectableRow]="guide">
-        <td>{{guide.firstName}}</td>
         <td>{{guide.lastName}}</td>
-        <td>{{guide.emailUser}}</td>
-        <td>{{guide.memberId}}</td>
-        <td>{{guide.birthDate}}</td>
+        <td>{{guide.firstName}}</td>
+        <td>{{guide.username}}</td>
       </tr>
     </ng-template>
   </p-table>
