@@ -2,8 +2,8 @@
 from django.contrib.auth.models import User
 from rest_framework.reverse import reverse
 from rest_framework import serializers
-from server.models import Guide
-from server.serializers.frontend.profiles import ProfileSerializer
+from server.models import Guide, Profile
+from server.serializers.frontend.profiles import ProfileSerializer, update_profile
 
 
 class GuideListSerializer(serializers.ModelSerializer):
@@ -40,7 +40,7 @@ class GuideSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(allow_blank=True)
     phone = serializers.CharField(allow_blank=True)
     mobile = serializers.CharField(allow_blank=True)
-    userProfile = ProfileSerializer(source = 'user.profile')
+    userProfile = ProfileSerializer(source = 'user.profile', allow_null=True)
 
     class Meta:
         model = Guide
@@ -81,6 +81,13 @@ class GuideSerializer(serializers.ModelSerializer):
         instance.email = validated_data.get('email', instance.email)
         instance.phone = validated_data.get('phone', instance.phone)
         instance.mobile = validated_data.get('mobile', instance.mobile)
+
+        user_data = validated_data.get('user')
+
+        profile_data = user_data.get('profile')
+        if profile_data is not None:
+            profile = Profile.objects.get(pk=profile_data.get('pk'))
+            update_profile(profile, profile_data, self.context)
 
         instance.save()
 
