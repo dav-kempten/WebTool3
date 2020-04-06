@@ -9,6 +9,7 @@ export interface GuideSummary {
 }
 
 export interface Profile {
+  id: number;
   memberId: string;
   sex: number;
   birthDate: string;
@@ -34,10 +35,12 @@ export interface User {
 
 export interface Guide {
   id: number;
+  username: string;
   qualifications: string;
   retrainings: string;
   phone: string;
   mobile: string;
-  user: User;
+  // user: User;
   profile: string;
+  userProfile: Profile;
 }

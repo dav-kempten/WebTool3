@@ -14,6 +14,7 @@ import {getSessionById} from '../store/session.selectors';
 import {RequestSession} from '../store/session.actions';
 import {getGuideById} from '../store/guide.selectors';
 import {RequestGuide} from '../store/guide.actions';
+import {RequestProfile} from '../store/profile.actions';
 
 
 @Component({
@@ -163,7 +164,7 @@ export class BreadcrumbComponent implements OnInit {
               breadcrumbs[breadcrumbs.length - 1].url = '/trainers';
               breadcrumbs.push({
                 url: `/trainers/${trainer.id}`,
-                label: trainer.user.username
+                label: trainer.username
               });
             });
           }
