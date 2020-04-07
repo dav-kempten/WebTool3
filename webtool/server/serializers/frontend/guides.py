@@ -67,6 +67,20 @@ class GuideSerializer(serializers.ModelSerializer):
             elif instance_data.pk != guide.pk:
                 raise serializers.ValidationError("Wrong instance Id")
 
+            instance_user = data.get('user')
+            instance_profile = instance_user.get('profile')
+
+            # member_home and integral_member is true and vice versa
+            instance_integralmember = instance_profile.get('integral_member')
+            instance_memberhome = instance_profile.get('member_home')
+
+            if instance_integralmember:
+                if instance_memberhome:
+                    raise serializers.ValidationError("memberHome must be empty if integralMember is true")
+            else:
+                if not instance_memberhome:
+                    raise serializers.ValidationError("memberHome must be set if integralMember is false")
+
         return data
 
     # def create(self, validated_data):
@@ -83,11 +97,11 @@ class GuideSerializer(serializers.ModelSerializer):
         instance.mobile = validated_data.get('mobile', instance.mobile)
 
         user_data = validated_data.get('user')
-
-        profile_data = user_data.get('profile')
-        if profile_data is not None:
-            profile = Profile.objects.get(pk=profile_data.get('pk'))
-            update_profile(profile, profile_data, self.context)
+        if user_data is not None:
+            profile_data = user_data.get('profile')
+            if profile_data is not None:
+                profile = Profile.objects.get(pk=profile_data.get('pk'))
+                update_profile(profile, profile_data, self.context)
 
         instance.save()
 
