@@ -1,6 +1,6 @@
 import { Action } from '@ngrx/store';
 import { Update } from '@ngrx/entity';
-import {Guide} from '../../model/guide';
+import { Guide } from './guide.model';
 
 export enum GuideActionTypes {
   GuideNotModified = '[Guide] Guide not modified',

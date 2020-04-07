@@ -1,6 +1,6 @@
 import {createEntityAdapter, EntityAdapter, EntityState} from '@ngrx/entity';
 import {GuideActions, GuideActionTypes} from './guide.actions';
-import {Guide} from '../../model/guide';
+import {Guide} from './guide.model';
 
 export interface State extends EntityState<Guide> {
   isLoading: boolean;
