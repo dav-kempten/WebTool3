@@ -40,7 +40,7 @@ export interface Guide {
   retrainings: string;
   phone: string;
   mobile: string;
-  // user: User;
+  email: string;
   profile: string;
   userProfile: Profile;
 }
