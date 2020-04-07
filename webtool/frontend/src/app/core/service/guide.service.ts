@@ -1,4 +1,4 @@
-import {Observable, of} from 'rxjs';
+import {BehaviorSubject, Observable, of} from 'rxjs';
 import {catchError, first, map, publishReplay, refCount} from 'rxjs/operators';
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse} from '@angular/common/http';
@@ -12,6 +12,8 @@ export class GuideService {
   etag: string;
 
   constructor(private http: HttpClient) { }
+
+  private updateSubject = new BehaviorSubject<Guide>(null);
 
   getGuideSummaries(): Observable<GuideSummary[]> {
     const headers = {
@@ -88,6 +90,20 @@ export class GuideService {
       first(),
       publishReplay(1),
       refCount()
+    );
+  }
+
+  upsertGuide(guide: Guide): Observable<Guide> {
+    this.updateSubject.next(guide);
+
+    return this.http.put<Guide>(
+      `/api/frontend/guides/${this.updateSubject.value.id}/`,
+      this.updateSubject.value
+    ).pipe(
+      catchError((error: HttpErrorResponse): Observable<Guide> => {
+        console.log(error.statusText, error.status);
+        return of ({id: 0} as Guide);
+      })
     );
   }
 }
