@@ -4,6 +4,8 @@ from rest_framework.reverse import reverse
 from rest_framework import serializers
 from server.models import Guide, Profile
 from server.serializers.frontend.profiles import ProfileSerializer, update_profile
+from server.serializers.frontend.qualifications import UserQualificationSerializer
+from server.serializers.frontend.retrainings import RetrainingSerializer
 
 
 class GuideListSerializer(serializers.ModelSerializer):
@@ -35,8 +37,8 @@ class GuideSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username',read_only=True)
     unknown = serializers.BooleanField(default=False)
     profile = serializers.JSONField(allow_null=True)
-    qualifications = serializers.CharField(source='qualification_list', allow_blank=True)
-    retrainings = serializers.CharField(source='retraining_list', allow_blank=True)
+    qualifications = UserQualificationSerializer(source='user.qualification_list', many=True, default=[])
+    retrainings = RetrainingSerializer(source='user.retraining_list', many=True, default=[])
     email = serializers.EmailField(allow_blank=True)
     phone = serializers.CharField(allow_blank=True)
     mobile = serializers.CharField(allow_blank=True)
