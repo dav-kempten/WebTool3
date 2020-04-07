@@ -67,7 +67,7 @@ export class GuideEffects {
     let profileHobby = '';
     let profileTip = '';
 
-    if (guide.profile !== null) {
+    if (guide.profile !== null && guide.profile !== '') {
       profileCity = JSON.parse(guide.profile).city;
       profileJob = JSON.parse(guide.profile).job;
       profileName = JSON.parse(guide.profile).name;
