@@ -1,7 +1,7 @@
 <ng-container *ngIf="guideGroup$ | async as guideGroup else loading">
   <p-card header="Trainer #{{guideId$ | async}}">
     <!--JSON-Value of Guide-->
-    <p-card subheader="JSON-Value"><p>GuideGroup:<br/>{{guideGroup.value | json}}</p></p-card>
+<!--    <p-card subheader="JSON-Value"><p>GuideGroup:<br/>{{guideGroup.value | json}}</p></p-card>-->
 
     <form [formGroup]="guideGroup">
 
@@ -86,13 +86,17 @@
         </div>
       </p-card>
 
-      <p-card subheader="Telefonnummern">
+      <p-card subheader="Telefonnummern & E-Mail">
         <div class="p-grid">
-          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+          <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
             <input formControlName="phone" id="phone" placeholder="Telefon" type="text" style='width:100%' pInputText>
           </div>
-          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+          <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
             <input formControlName="mobile" id="mobile" placeholder="Handynummer" type="text" style='width:100%'
+                   pInputText>
+          </div>
+          <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+            <input formControlName="email" id="email" placeholder="E-Mail" type="text" style='width:100%'
                    pInputText>
           </div>
         </div>
@@ -153,7 +157,15 @@
       </div>
     </form>
     <p-card>
-      <a routerLink="../"><p-button label="Zurück"></p-button></a>
+      <div class="p-grid">
+      <div class="p-col-12 p-sm-1 p-md-1 p-lg-1" *ngIf="!!(this.loginObject.valState >= 3)">
+        <p-button type="button" label="Speichern"
+            (click)="save(this.guideGroup.value)"></p-button>
+      </div>
+      <div class="p-col-12 p-sm-1 p-md-1 p-lg-1">
+        <a routerLink="../"><p-button label="Zurück"></p-button></a>
+      </div>
+    </div>
     </p-card>
   </p-card>
 </ng-container>

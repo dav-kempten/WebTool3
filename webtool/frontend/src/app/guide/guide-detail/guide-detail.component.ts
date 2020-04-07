@@ -3,12 +3,13 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {select, Store} from '@ngrx/store';
 import {FormControl, FormGroup} from '@angular/forms';
 import {AppState, selectRouterDetailId} from '../../app.state';
-import {Guide, Profile} from '../../model/guide';
+import {Profile} from '../../model/guide';
 import {flatMap, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {getGuideById} from '../../core/store/guide.selectors';
-import {RequestGuide} from '../../core/store/guide.actions';
+import {RequestGuide, UpsertGuide} from '../../core/store/guide.actions';
 import {LocaleSettings} from 'primeng/calendar';
 import {AuthService, User} from '../../core/service/auth.service';
+import {Guide} from '../../core/store/guide.model';
 
 const german: LocaleSettings = {
   firstDayOfWeek: 1,
@@ -97,22 +98,27 @@ export class GuideDetailComponent implements OnInit, OnDestroy {
     this.destroySubject.complete();
     this.guideSubject.complete();
   }
+
+  save(guide) {
+    this.store.dispatch(new UpsertGuide({guide: guide as Guide}));
+  }
 }
 
 function guideGroupFactory(guide: Guide): FormGroup {
   return new FormGroup({
     id: new FormControl(guide.id),
-    profileCity: new FormControl(parseProfile(guide.profile, 'city')),
-    profileJob: new FormControl(parseProfile(guide.profile, 'job')),
-    profileName: new FormControl(parseProfile(guide.profile, 'name')),
-    profileQualification: new FormControl(parseProfile(guide.profile, 'qualification')),
-    profileReason: new FormControl(parseProfile(guide.profile, 'reason')),
-    profileHobby: new FormControl(parseProfile(guide.profile, 'hobby')),
-    profileTip: new FormControl(parseProfile(guide.profile, 'tip')),
+    profileCity: new FormControl(guide.profileCity),
+    profileJob: new FormControl(guide.profileJob),
+    profileName: new FormControl(guide.profileName),
+    profileQualification: new FormControl(guide.profileQualification),
+    profileReason: new FormControl(guide.profileReason),
+    profileHobby: new FormControl(guide.profileHobby),
+    profileTip: new FormControl(guide.profileTip),
     qualifications: new FormControl(guide.qualifications),
     retrainings: new FormControl(guide.retrainings),
     phone: new FormControl(guide.phone),
     mobile: new FormControl(guide.mobile),
+    email: new FormControl(guide.email),
     userProfile: profileGroupFactory(guide.userProfile),
   });
 }
@@ -129,36 +135,5 @@ function profileGroupFactory(profile: Profile): FormGroup {
     memberHome: new FormControl(profile.memberHome),
     portrait: new FormControl(profile.portrait),
   });
+
 }
-
-function parseProfile(profile: string, identifierString: string) {
-  let profileVal: string = null;
-  if (profile !== null && profile !== '') {
-    switch (identifierString) {
-      case 'city':
-        profileVal = JSON.parse(profile).city;
-        break;
-      case 'job':
-        profileVal = JSON.parse(profile).job;
-        break;
-      case 'name':
-        profileVal = JSON.parse(profile).name;
-        break;
-      case 'qualification':
-        profileVal = JSON.parse(profile).qualification;
-        break;
-      case 'reason':
-        profileVal = JSON.parse(profile).reason;
-        break;
-      case 'hobby':
-        profileVal = JSON.parse(profile).hobby;
-        break;
-      case 'tip':
-        profileVal = JSON.parse(profile).tip;
-        break;
-    }
-  }
-  return profileVal;
-}
-
-
