@@ -116,12 +116,12 @@ function guideGroupFactory(guide: Guide): FormGroup {
     profileReason: new FormControl(guide.profileReason),
     profileHobby: new FormControl(guide.profileHobby),
     profileTip: new FormControl(guide.profileTip),
-    qualifications: new FormControl(guide.qualifications),
-    retrainings: new FormControl(guide.retrainings),
+    qualifications: new FormControl(guide.qualificationIds),
+    retrainings: new FormControl(guide.retrainingIds),
     phone: new FormControl(guide.phone),
     mobile: new FormControl(guide.mobile),
     email: new FormControl(guide.email),
-    userProfile: profileGroupFactory(guide.userProfile),
+    userProfile: new FormControl(guide.userProfileId),
   });
 }
 
