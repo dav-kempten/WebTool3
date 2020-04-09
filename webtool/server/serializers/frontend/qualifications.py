@@ -19,10 +19,10 @@ class QualificationSerializer(serializers.ModelSerializer):
     )
     code = serializers.CharField()
     name = serializers.CharField()
-    # group = serializers.PrimaryKeyRelatedField(
-    #     queryset=QualificationGroup.objects.all(), default=None, allow_null=True
-    # )
-    group = QualificationGroupSerializer(default={})
+    group = serializers.PrimaryKeyRelatedField(
+        queryset=QualificationGroup.objects.all(), default=None, allow_null=True
+    )
+    # group = QualificationGroupSerializer(default={})
 
     class Meta:
         model = Qualification
@@ -35,10 +35,10 @@ class UserQualificationSerializer(serializers.ModelSerializer):
     id = serializers.PrimaryKeyRelatedField(
         source='pk', queryset=UserQualification.objects.all(), default=None, allow_null=True
     )
-    qualification = serializers.PrimaryKeyRelatedField(
-        queryset=Qualification.objects.all(), default=None, allow_null=True
-    )
-    # qualification = QualificationSerializer(default={})
+    # qualification = serializers.PrimaryKeyRelatedField(
+    #     queryset=Qualification.objects.all(), default=None, allow_null=True
+    # )
+    qualification = QualificationSerializer(default={})
     aspirant = serializers.BooleanField(default=False)
     year = serializers.IntegerField()
     inactive = serializers.BooleanField(default=False)
