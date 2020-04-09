@@ -1,7 +1,7 @@
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {select, Store} from '@ngrx/store';
-import {FormControl, FormGroup} from '@angular/forms';
+import {FormArray, FormControl, FormGroup} from '@angular/forms';
 import {AppState, selectRouterDetailId} from '../../app.state';
 import {Profile} from '../../model/guide';
 import {flatMap, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
@@ -10,6 +10,8 @@ import {RequestGuide, UpsertGuide} from '../../core/store/guide.actions';
 import {LocaleSettings} from 'primeng/calendar';
 import {AuthService, User} from '../../core/service/auth.service';
 import {Guide} from '../../core/store/guide.model';
+import {Qualification, UserQualification} from '../../model/qualification';
+import {Retraining} from '../../model/retraining';
 
 const german: LocaleSettings = {
   firstDayOfWeek: 1,
@@ -135,5 +137,34 @@ function profileGroupFactory(profile: Profile): FormGroup {
     memberHome: new FormControl(profile.memberHome),
     portrait: new FormControl(profile.portrait),
   });
+}
 
+function userQualficationGroupFactory(userQualification: UserQualification): FormGroup {
+  return new FormGroup({
+    id: new FormControl(userQualification.id),
+    qualification: qualificationGroupFactory(userQualification.qualification),
+    aspirant: new FormControl(userQualification.aspirant),
+    year: new FormControl(userQualification.year),
+    note: new FormControl(userQualification.note),
+  });
+}
+
+function qualificationGroupFactory(qualification: Qualification): FormGroup {
+  return new FormGroup({
+    id: new FormControl(qualification.id),
+    code: new FormControl(qualification.code),
+    name: new FormControl(qualification.name),
+    group: new FormControl(qualification.group),
+  });
+}
+
+function retrainingGroupFactory(retraining: Retraining): FormGroup {
+  return new FormGroup({
+    id: new FormControl(retraining.id),
+    qualification: new FormControl(retraining.qualification),
+    year: new FormControl(retraining.year),
+    specific: new FormControl(retraining.specific),
+    description: new FormControl(retraining.description),
+    note: new FormControl(retraining.note),
+  });
 }
