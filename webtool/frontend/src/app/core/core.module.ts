@@ -47,7 +47,9 @@ import {reducer as sessionReducer} from './store/session.reducer';
 import {reducer as sessionSummaryReducer} from './store/session-summary.reducer';
 import {reducer as guideReducer} from './store/guide.reducer';
 import {reducer as guideSummaryReducer} from './store/guide-summary.reducer';
-import {reducer as profileReducer} from './store/guide.reducer';
+import {reducer as profileReducer} from './store/profile.reducer';
+import {reducer as userQualificationReducer} from './store/userqualification.reducer';
+import {reducer as retrainingReducer} from './store/retraining.reducer';
 import {InstructionSummaryEffects} from './store/instruction-summary.effects';
 import {InstructionEffects} from './store/instruction.effects';
 import {TourSummaryEffects} from './store/tour-summary.effects';
@@ -56,7 +58,6 @@ import {SessionSummaryEffects} from './store/session-summary.effects';
 import {SessionEffects} from './store/session.effects';
 import {GuideSummaryEffects} from './store/guide-summary.effects';
 import {GuideEffects} from './store/guide.effects';
-import {ProfileEffects} from './store/profile.effects';
 import {reducer as stateReducer} from './store/state.reducer';
 import {reducer as categoryReducer} from './store/category.reducer';
 import {reducer as approximateReducer} from './store/approximate.reducer';
@@ -139,7 +140,8 @@ import { CategoryMultiselectComponent } from './categorymultiselect/categorymult
     StoreModule.forFeature('guides', guideReducer),
     EffectsModule.forFeature([GuideEffects]),
     StoreModule.forFeature('profiles', profileReducer),
-    EffectsModule.forFeature([ProfileEffects]),
+    StoreModule.forFeature('userQualifications', userQualificationReducer),
+    StoreModule.forFeature('retrainings', retrainingReducer),
   ],
   exports: [
     GuideComponent, TeamComponent, DateComponent, TimeComponent, NamePipe, NamesPipe, MenuComponent,

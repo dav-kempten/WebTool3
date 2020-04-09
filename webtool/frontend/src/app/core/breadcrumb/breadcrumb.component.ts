@@ -14,7 +14,6 @@ import {getSessionById} from '../store/session.selectors';
 import {RequestSession} from '../store/session.actions';
 import {getGuideById} from '../store/guide.selectors';
 import {RequestGuide} from '../store/guide.actions';
-import {RequestProfile} from '../store/profile.actions';
 
 
 @Component({
