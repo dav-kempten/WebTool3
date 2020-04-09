@@ -1,3 +1,6 @@
+import {UserQualification} from './qualification';
+import {Retraining} from './retraining';
+
 export interface GuideSummary {
   id: number;
   firstName: string;
@@ -36,8 +39,8 @@ export interface User {
 export interface Guide {
   id: number;
   username: string;
-  qualifications: string;
-  retrainings: string;
+  qualifications: UserQualification[];
+  retrainings: Retraining[];
   phone: string;
   mobile: string;
   email: string;

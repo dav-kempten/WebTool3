@@ -1,10 +1,8 @@
-import {Profile} from '../../model/guide';
-
 export interface Guide {
   id: number;
   username: string;
-  qualifications: string;
-  retrainings: string;
+  qualificationIds: number[];
+  retrainingIds: number[];
   phone: string;
   mobile: string;
   email: string;
@@ -15,5 +13,5 @@ export interface Guide {
   profileQualification: string;
   profileReason: string;
   profileTip: string;
-  userProfile: Profile;
+  userProfileId: number;
 }
