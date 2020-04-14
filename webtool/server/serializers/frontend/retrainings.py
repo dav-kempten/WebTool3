@@ -14,6 +14,15 @@ def update_retraining(instance, validated_data, context):
 
     return instance
 
+def create_retraining(validated_data, context):
+    instance = validated_data.pop('pk')
+    if instance:
+        return update_retraining(instance, validated_data, context)
+    else:
+        user = context.get('user')
+        year = validated_data.pop('year')
+        return Retraining.objects.create(user=user, year=year, **validated_data)
+
 
 class RetrainingSerializer(serializers.ModelSerializer):
     id = serializers.PrimaryKeyRelatedField(
@@ -52,6 +61,9 @@ class RetrainingSerializer(serializers.ModelSerializer):
                     raise serializers.ValidationError("Wrong instance Id")
 
             return data
+
+        def create(self, validated_data):
+            return create_retraining(validated_data, self.context)
 
         def update(self, instance, validated_data):
             update_retraining(instance, validated_data, self.context)
