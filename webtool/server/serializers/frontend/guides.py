@@ -2,10 +2,10 @@
 from django.contrib.auth.models import User
 from rest_framework.reverse import reverse
 from rest_framework import serializers
-from server.models import Guide, Profile
+from server.models import Guide, Profile, UserQualification, Retraining
 from server.serializers.frontend.profiles import ProfileSerializer, update_profile
-from server.serializers.frontend.qualifications import UserQualificationSerializer
-from server.serializers.frontend.retrainings import RetrainingSerializer
+from server.serializers.frontend.qualifications import UserQualificationSerializer, update_qualification
+from server.serializers.frontend.retrainings import RetrainingSerializer, update_retraining
 
 
 class GuideListSerializer(serializers.ModelSerializer):
@@ -104,6 +104,18 @@ class GuideSerializer(serializers.ModelSerializer):
             if profile_data is not None:
                 profile = Profile.objects.get(pk=profile_data.get('pk'))
                 update_profile(profile, profile_data, self.context)
+
+            qualification_list = user_data.get('qualification_list')
+            if qualification_list is not None:
+                for qualification_data in qualification_list:
+                    qualification = UserQualification.objects.get(pk=qualification_data.get('pk').id)
+                    update_qualification(qualification, qualification_data, self.context)
+
+            retraining_list = user_data.get('retraining_list')
+            if retraining_list is not None:
+                for retraining_data in retraining_list:
+                    retraining = Retraining.objects.get(pk=retraining_data.get('pk').id)
+                    update_retraining(retraining, retraining_data, self.context)
 
         instance.save()
 
