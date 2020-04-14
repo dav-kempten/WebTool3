@@ -81,5 +81,8 @@ class UserQualificationSerializer(serializers.ModelSerializer):
 
         return data
 
+    def create(self, validated_data):
+        return create_qualification(validated_data, self.context)
+
     def update(self, instance, validated_data):
         return update_qualification(instance, validated_data, self.context)
