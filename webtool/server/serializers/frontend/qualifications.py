@@ -1,6 +1,18 @@
 from rest_framework import serializers
 from server.models import Qualification, UserQualification, QualificationGroup
 
+def update_qualification(instance, validated_data, context):
+    instance.qualification = validated_data.get('qualification', instance.qualification)
+    instance.aspirant = validated_data.get('aspirant', instance.aspirant)
+    instance.year = validated_data.get('year', instance.year)
+    instance.inactive = validated_data.get('inactive', instance.inactive)
+    instance.note = validated_data.get('note', instance.note)
+
+    instance.save()
+
+    return instance
+
+
 class QualificationGroupSerializer(serializers.ModelSerializer):
     id = serializers.PrimaryKeyRelatedField(
         source='pk', queryset=QualificationGroup.objects.all(), default=None, allow_null=True
@@ -35,10 +47,10 @@ class UserQualificationSerializer(serializers.ModelSerializer):
     id = serializers.PrimaryKeyRelatedField(
         source='pk', queryset=UserQualification.objects.all(), default=None, allow_null=True
     )
-    # qualification = serializers.PrimaryKeyRelatedField(
-    #     queryset=Qualification.objects.all(), default=None, allow_null=True
-    # )
-    qualification = QualificationSerializer(default={})
+    qualification = serializers.PrimaryKeyRelatedField(
+        queryset=Qualification.objects.all(), default=None, allow_null=True
+    )
+    # qualification = QualificationSerializer(default={})
     aspirant = serializers.BooleanField(default=False)
     year = serializers.IntegerField()
     inactive = serializers.BooleanField(default=False)
@@ -54,3 +66,20 @@ class UserQualificationSerializer(serializers.ModelSerializer):
                   'inactive',
                   'note'
                   )
+
+    def validate(self, data):
+        if self.instance is not None:
+            # This is the update case
+            user_qualification = self.instance
+
+            instance_data = data.get('pk')
+
+            if instance_data is None:
+                raise serializers.ValidationError("instance Id is missing")
+            elif instance_data.pk != user_qualification.pk:
+                raise serializers.ValidationError("Wrong instance Id")
+
+        return data
+
+    def update(self, instance, validated_data):
+        return update_qualification(instance, validated_data, self.context)
