@@ -83,6 +83,24 @@ class GuideSerializer(serializers.ModelSerializer):
                 if not instance_memberhome:
                     raise serializers.ValidationError("memberHome must be set if integralMember is false")
 
+            retraining_list = instance_user.get('retraining_list')
+            if retraining_list is not None:
+                retraining_ids = set(guide.user.retraining_list.values_list('pk', flat=True))
+                for retraining_data in retraining_list:
+                    retraining_instance = retraining_data.get('pk')
+                    if retraining_instance is None:
+                        # retraining will be new created
+                        continue
+                    elif retraining_instance.pk not in retraining_ids:
+                        raise serializers.ValidationError(
+                            f"meeting Id {retraining_instance.pk} is not member of instruction with id {guide.pk}"
+                        )
+                    retraining_ids.remove(retraining_instance.pk)
+                if len(retraining_ids) > 0:
+                    raise serializers.ValidationError(
+                        "retraining_list is not complete"
+                    )
+
         return data
 
     # def create(self, validated_data):
