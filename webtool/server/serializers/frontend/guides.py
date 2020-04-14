@@ -91,7 +91,6 @@ class GuideSerializer(serializers.ModelSerializer):
 
         instance.profile = validated_data.get('profile', instance.profile)
         instance.unknown = validated_data.get('unknown', instance.unknown)
-        instance.profile = validated_data.get('profile', instance.profile)
         instance.qualification_list = validated_data.get('qualification_list', instance.qualification_list)
         instance.retraining_list = validated_data.get('retraining_list', instance.retraining_list)
         instance.email = validated_data.get('email', instance.email)
