@@ -2,10 +2,10 @@
 from django.contrib.auth.models import User
 from rest_framework.reverse import reverse
 from rest_framework import serializers
-from server.models import Guide, Profile, UserQualification, Retraining
+from server.models import Guide, Profile
 from server.serializers.frontend.profiles import ProfileSerializer, update_profile
-from server.serializers.frontend.qualifications import UserQualificationSerializer, update_qualification
-from server.serializers.frontend.retrainings import RetrainingSerializer, update_retraining, create_retraining
+from server.serializers.frontend.qualifications import UserQualificationSerializer, create_qualification
+from server.serializers.frontend.retrainings import RetrainingSerializer, create_retraining
 
 
 class GuideListSerializer(serializers.ModelSerializer):
@@ -93,7 +93,7 @@ class GuideSerializer(serializers.ModelSerializer):
                         continue
                     elif retraining_instance.pk not in retraining_ids:
                         raise serializers.ValidationError(
-                            f"meeting Id {retraining_instance.pk} is not member of instruction with id {guide.pk}"
+                            f"meeting Id {retraining_instance.pk} is not member of guide with id {guide.pk}"
                         )
                     retraining_ids.remove(retraining_instance.pk)
                 if len(retraining_ids) > 0:
@@ -143,8 +143,12 @@ class GuideSerializer(serializers.ModelSerializer):
             qualification_list = user_data.get('qualification_list')
             if qualification_list is not None:
                 for qualification_data in qualification_list:
-                    qualification = UserQualification.objects.get(pk=qualification_data.get('pk').id)
-                    update_qualification(qualification, qualification_data, self.context)
+                    new_qualification = qualification_data.get('pk') is None
+                    user = validated_data.get('pk')
+                    qualification = create_qualification(qualification_data, dict(user=user))
+                    if new_qualification:
+                        qualification.user = instance.user
+                        qualification.save()
 
             retraining_list = user_data.get('retraining_list')
             if retraining_list is not None:
