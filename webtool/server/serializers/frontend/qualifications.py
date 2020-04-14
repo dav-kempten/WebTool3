@@ -1,14 +1,20 @@
 from rest_framework import serializers
 from server.models import Qualification, UserQualification, QualificationGroup, datetime
 
-def update_qualification(instance, validated_data, context):
-    instance.qualification = validated_data.get('qualification', instance.qualification)
-    instance.aspirant = validated_data.get('aspirant', instance.aspirant)
-    instance.year = validated_data.get('year', instance.year)
-    instance.inactive = validated_data.get('inactive', instance.inactive)
-    instance.note = validated_data.get('note', instance.note)
 
-    instance.save()
+def update_qualification(instance, validated_data, context):
+    delete_request = validated_data.pop('deprecated', False)
+    if not delete_request:
+        instance.qualification = validated_data.get('qualification', instance.qualification)
+        instance.aspirant = validated_data.get('aspirant', instance.aspirant)
+        instance.year = validated_data.get('year', instance.year)
+        instance.inactive = validated_data.get('inactive', instance.inactive)
+        instance.note = validated_data.get('note', instance.note)
+        instance.deprecated = False
+        instance.save()
+    else:
+        instance.deprecated = True
+        instance.save()
 
     return instance
 
