@@ -101,6 +101,24 @@ class GuideSerializer(serializers.ModelSerializer):
                         "retraining_list is not complete"
                     )
 
+            qualification_list = instance_user.get('qualification_list')
+            if qualification_list is not None:
+                qualification_ids = set(guide.user.qualification_list.values_list('pk', flat=True))
+                for qualification_data in qualification_list:
+                    qualification_instance = qualification_data.get('pk')
+                    if qualification_instance is None:
+                        # qualification will be new created
+                        continue
+                    elif qualification_instance.pk not in qualification_ids:
+                        raise serializers.ValidationError(
+                            f"meeting Id {qualification_instance.pk} is not member of guide with id {guide.pk}"
+                        )
+                    qualification_ids.remove(qualification_instance.pk)
+                if len(qualification_ids) > 0:
+                    raise serializers.ValidationError(
+                        "qualification_list is not complete"
+                    )
+
         return data
 
     # def create(self, validated_data):
