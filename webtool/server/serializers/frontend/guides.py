@@ -5,7 +5,7 @@ from rest_framework import serializers
 from server.models import Guide, Profile, UserQualification, Retraining
 from server.serializers.frontend.profiles import ProfileSerializer, update_profile
 from server.serializers.frontend.qualifications import UserQualificationSerializer, update_qualification
-from server.serializers.frontend.retrainings import RetrainingSerializer, update_retraining
+from server.serializers.frontend.retrainings import RetrainingSerializer, update_retraining, create_retraining
 
 
 class GuideListSerializer(serializers.ModelSerializer):
@@ -131,8 +131,12 @@ class GuideSerializer(serializers.ModelSerializer):
             retraining_list = user_data.get('retraining_list')
             if retraining_list is not None:
                 for retraining_data in retraining_list:
-                    retraining = Retraining.objects.get(pk=retraining_data.get('pk').id)
-                    update_retraining(retraining, retraining_data, self.context)
+                    new_retraining = retraining_data.get('pk') is None
+                    user = validated_data.get('pk')
+                    retraining = create_retraining(retraining_data, dict(user=user))
+                    if new_retraining:
+                        retraining.user = instance.user
+                        retraining.save()
 
         instance.save()
 
