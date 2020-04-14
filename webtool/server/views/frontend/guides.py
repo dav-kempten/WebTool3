@@ -25,7 +25,10 @@ class GuideViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
     permission_classes = (IsStaffOrReadOnly, )
 
-    queryset = Guide.objects
+    queryset = (
+        Guide.objects
+        .filter(deprecated=False)
+    )
 
     def get_serializer_class(self):
         if self.action == 'list':
