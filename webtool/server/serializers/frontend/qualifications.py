@@ -18,6 +18,16 @@ def update_qualification(instance, validated_data, context):
 
     return instance
 
+def create_qualification(validated_data, context):
+    instance = validated_data.pop('pk')
+    if instance:
+        return update_qualification(instance, validated_data, context)
+    else:
+        user = context.get('user')
+        qualification = validated_data.pop('qualification')
+        year = validated_data.pop('year')
+        return UserQualification.objects.create(user=user, qualification=qualification, year=year, **validated_data)
+
 
 class QualificationGroupSerializer(serializers.ModelSerializer):
     id = serializers.PrimaryKeyRelatedField(
