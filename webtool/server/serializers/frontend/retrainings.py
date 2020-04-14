@@ -4,13 +4,18 @@ from rest_framework import serializers
 from server.models import Retraining, UserQualification
 
 def update_retraining(instance, validated_data, context):
-    instance.qualification = validated_data.get('qualification', instance.qualification)
-    instance.year = validated_data.get('year', instance.year)
-    instance.specific = validated_data.get('specific', instance.specific)
-    instance.description = validated_data.get('description', instance.description)
-    instance.note = validated_data.get('note', instance.note)
-
-    instance.save()
+    delete_request = validated_data.pop('deprecated', False)
+    if not delete_request:
+        instance.qualification = validated_data.get('qualification', instance.qualification)
+        instance.year = validated_data.get('year', instance.year)
+        instance.specific = validated_data.get('specific', instance.specific)
+        instance.description = validated_data.get('description', instance.description)
+        instance.note = validated_data.get('note', instance.note)
+        instance.deprecated = False
+        instance.save()
+    else:
+        instance.deprecated = True
+        instance.save()
 
     return instance
 
