@@ -40,7 +40,7 @@ class RetrainingSerializer(serializers.ModelSerializer):
     specific = serializers.BooleanField(default=False)
     description = serializers.CharField(default='', allow_blank=True)
     note = serializers.CharField(allow_blank=True, allow_null=True)
-    deprecated = serializers.BooleanField(allow_null=True, default=False, write_only=True)
+    deprecated = serializers.BooleanField(allow_null=True, default=False)
 
     class Meta:
         model = Retraining

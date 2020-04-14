@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from server.models import Qualification, UserQualification, QualificationGroup
+from server.models import Qualification, UserQualification, QualificationGroup, datetime
 
 def update_qualification(instance, validated_data, context):
     instance.qualification = validated_data.get('qualification', instance.qualification)
@@ -51,10 +51,11 @@ class UserQualificationSerializer(serializers.ModelSerializer):
         queryset=Qualification.objects.all(), default=None, allow_null=True
     )
     # qualification = QualificationSerializer(default={})
-    aspirant = serializers.BooleanField(default=False)
-    year = serializers.IntegerField()
-    inactive = serializers.BooleanField(default=False)
+    aspirant = serializers.BooleanField(default=False, allow_null=True)
+    year = serializers.IntegerField(default=datetime.now().year, allow_null=True)
+    inactive = serializers.BooleanField(default=False, allow_null=True)
     note = serializers.CharField(allow_blank=True)
+    deprecated = serializers.BooleanField(allow_null=True, default=False)
 
 
     class Meta:
@@ -64,7 +65,8 @@ class UserQualificationSerializer(serializers.ModelSerializer):
                   'aspirant',
                   'year',
                   'inactive',
-                  'note'
+                  'note',
+                  'deprecated'
                   )
 
     def validate(self, data):
