@@ -68,6 +68,10 @@ export class GuideDetailComponent implements OnInit, OnDestroy {
 
   authState$: Observable<User>;
   loginObject = {id: undefined, firstName: '', lastName: '', role: undefined, valState: 0};
+  displayQualification = false;
+  displayRetraining = false;
+  currentQualificationGroup: FormGroup = undefined;
+  currentRetrainingGroup: FormGroup = undefined;
 
   userProfileNumber: number;
   qualificationNumbers: number[];
@@ -264,6 +268,36 @@ export class GuideDetailComponent implements OnInit, OnDestroy {
 
   save(guide) {
     this.store.dispatch(new UpsertGuide({guide: guide as Guide}));
+  }
+
+  selectQualification(index) {
+    this.userQualificationArray$.subscribe(
+      userQualificationArray => this.currentQualificationGroup = (userQualificationArray.at(index)) as FormGroup
+    );
+    this.displayQualification = true;
+  }
+
+  deleteQualification(qualificationId) {
+    console.log(qualificationId);
+  }
+
+  addQualification(guide) {
+    console.log(guide);
+  }
+
+  selectRetraining(index) {
+    this.retrainingArray$.subscribe(
+      retrainingArray => this.currentRetrainingGroup = (retrainingArray.at(index)) as FormGroup
+    );
+    this.displayRetraining = true;
+  }
+
+  deleteRetraining(retrainingId) {
+    console.log(retrainingId);
+  }
+
+  addRetraining(guide) {
+    console.log(guide);
   }
 }
 

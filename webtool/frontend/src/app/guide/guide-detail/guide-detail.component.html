@@ -67,25 +67,74 @@
         </div>
       </p-card>
 
-      <p-card subheader="Qualifikationen & Fortbildungen" *ngIf="!!(this.loginObject.valState >= 3)">
+      <p-card subheader="Qualifikationen">
+      <!--Button für neue Qualifikation-->
+      <p-button label="Qualifikation hinzufügen" (onClick)="addQualification(this.guideGroup.value)"></p-button>
+      <!--Liste mit Parametern (Tabelle)-->
+      <ng-container *ngIf="(userQualificationArray$ | async) as userQualificationArray">
         <div class="p-grid">
-          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
-            <input formControlName="qualifications" id="qualifications" placeholder="Qualifikationen" type="text"
-                   style='width:100%' pInputText>
-          </div>
-          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
-        <textarea
-          [rows]="3"
-          pInputTextarea
-          formControlName="retrainings"
-          id="retrainings"
-          readonly
-          placeholder="Fortbildungen"
-          autoResize="autoResize"
-          style='width:100%'
-        ></textarea>
+          <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+            <p-table [value]="userQualificationArray.value" selectionMode="single"
+                 (selectionChange)="selectQualification($event)">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Qualifikation</th>
+                <th>Jahr</th>
+                <th></th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-qualification let-i="rowIndex">
+              <tr [pSelectableRow]="i">
+                <td>{{qualification.qualification}}</td>
+                <td>{{qualification.year}}</td>
+                <td>
+                  <div style="text-align: center">
+                    <p-button type="button" label="Löschen" styleClass="ui-button-danger"
+                      (click)="deleteQualification(qualification.id)"></p-button>
+                  </div>
+                </td>
+              </tr>
+            </ng-template>
+            </p-table>
           </div>
         </div>
+      </ng-container>
+      </p-card>
+
+      <p-card subheader="Fortbildungen">
+      <!--Button für neue Fortbildung-->
+      <p-button label="Fortbildung hinzufügen" (onClick)="addRetraining(this.guideGroup.value)"></p-button>
+      <!--Liste mit Parametern (Tabelle)-->
+      <ng-container *ngIf="(retrainingArray$| async) as retrainingArray">
+        <div class="p-grid">
+          <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+            <p-table [value]="retrainingArray.value" selectionMode="single"
+                 (selectionChange)="selectRetraining($event)">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Fortbildung</th>
+                <th>Qualifikation</th>
+                <th>Jahr</th>
+                <th></th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-retraining let-i="rowIndex">
+              <tr [pSelectableRow]="i">
+                <td>{{retraining.id}}</td>
+                <td>{{retraining.qualification}}</td>
+                <td>{{retraining.year}}</td>
+                <td>
+                  <div style="text-align: center">
+                    <p-button type="button" label="Löschen" styleClass="ui-button-danger"
+                      (click)="deleteRetraining(retraining.id)"></p-button>
+                  </div>
+                </td>
+              </tr>
+            </ng-template>
+            </p-table>
+          </div>
+        </div>
+      </ng-container>
       </p-card>
 
       <p-card subheader="Telefonnummern & E-Mail">
