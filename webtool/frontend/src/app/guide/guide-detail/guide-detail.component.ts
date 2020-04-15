@@ -50,8 +50,8 @@ export class GuideDetailComponent implements OnInit, OnDestroy {
 
   guideGroup$: Observable<FormGroup> = this.guideSubject.asObservable();
   profileGroup$: Observable<FormGroup> = this.profileSubject.asObservable();
-  userQualificationGroup$: Observable<FormArray> = this.qualificationsSubject.asObservable();
-  retrainingGroup$: Observable<FormArray> = this.retrainingsSubject.asObservable();
+  userQualificationArray$: Observable<FormArray> = this.qualificationsSubject.asObservable();
+  retrainingArray$: Observable<FormArray> = this.retrainingsSubject.asObservable();
   guideChange$: Observable<Guide> = this.guideChangeSubject.asObservable();
   profileChange$: Observable<Profile> = this.profileChangeSubject.asObservable();
   qualificationChange$: Observable<UserQualification> = this.qualificationChangeSubject.asObservable();

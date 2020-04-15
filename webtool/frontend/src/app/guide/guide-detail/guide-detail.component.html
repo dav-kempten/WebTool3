@@ -4,8 +4,8 @@
     <p-card subheader="JSON-Value">
 <!--      <p>GuideGroup:<br/>{{guideGroup.value | json}}</p>-->
 <!--      <p>ProfileGroup:<br/>{{(profileGroup$ | async)?.value | json}}</p>-->
-      <p>userQualificationGroup:<br/>{{(userQualificationGroup$ | async)?.value | json}}</p>
-      <p>retrainingGroup:<br/>{{(retrainingGroup$ | async)?.value | json}}</p>
+      <p>userQualificationArray:<br/>{{(userQualificationArray$ | async)?.value | json}}</p>
+      <p>retrainingArray:<br/>{{(retrainingArray$ | async)?.value | json}}</p>
     </p-card>
 
     <form [formGroup]="guideGroup">
@@ -146,7 +146,7 @@
           </div>
           <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
             <p-checkbox
-              [formControl]="profileGroup.get('userProfile.integralMember')"
+              [formControl]="profileGroup.get('integralMember')"
               label="A-Mitglied"
               binary="true"
             ></p-checkbox>
