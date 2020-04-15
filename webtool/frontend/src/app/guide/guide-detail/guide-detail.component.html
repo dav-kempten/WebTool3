@@ -101,6 +101,49 @@
       </ng-container>
       </p-card>
 
+      <ng-container *ngIf="currentQualificationGroup">
+        <p-dialog header="QualificationDetail" [modal]="true" [(visible)]="displayQualification" [blockScroll]="true"
+                  [style]="{width: '60%', height: '60%'}">
+          <form [formGroup]="currentQualificationGroup">
+            <!-- ID, Qualifikationsart, Aspirant & Jahr-->
+            <div class="p-grid">
+              <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
+                <input formControlName="id" id="qualificationId" placeholder="Qualifikations-ID" type="text" style='width:100%'
+                       readonly pInputText>
+              </div>
+              <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+              </div>
+              <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
+                <p-checkbox
+                  [formControl]="currentQualificationGroup.get('aspirant')"
+                  label="Aspirant"
+                  binary="true"
+                ></p-checkbox>
+              </div>
+              <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
+                <input formControlName="year" id="qualificationYear" placeholder="Jahr" type="text" style='width:100%'
+                       pInputText>
+              </div>
+            </div>
+
+            <!-- Notizen -->
+            <div class="p-grid">
+              <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+                <textarea
+                  [rows]="5"
+                  pInputTextarea
+                  formControlName="note"
+                  id="qualificationNote"
+                  placeholder="Notizen zur Qualifikation"
+                  autoResize="autoResize"
+                  style='width:100%'
+                ></textarea>
+              </div>
+            </div>
+          </form>
+        </p-dialog>
+      </ng-container>
+
       <p-card subheader="Fortbildungen">
       <!--Button für neue Fortbildung-->
       <p-button label="Fortbildung hinzufügen" (onClick)="addRetraining(this.guideGroup.value)"></p-button>
@@ -136,6 +179,65 @@
         </div>
       </ng-container>
       </p-card>
+
+      <!--Dialog-Box für Fortbildungen -->
+      <ng-container *ngIf="currentRetrainingGroup">
+        <p-dialog header="RetrainingDetail" [modal]="true" [(visible)]="displayRetraining" [blockScroll]="true"
+                  [style]="{width: '60%', height: '60%'}">
+          <form [formGroup]="currentRetrainingGroup">
+            <!-- ID, zugehörige Qualifikation, Aspirant & Jahr-->
+            <div class="p-grid">
+              <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
+                <input formControlName="id" id="retrainingId" placeholder="Fortbildungs-ID" type="text" style='width:100%'
+                       readonly pInputText>
+              </div>
+              <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+              </div>
+              <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
+                <input formControlName="year" id="retrainingYear" placeholder="Jahr" type="text" style='width:100%'
+                       pInputText>
+              </div>
+              <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
+                <p-checkbox
+                  [formControl]="currentRetrainingGroup.get('specific')"
+                  label="spezifisch"
+                  binary="true"
+                ></p-checkbox>
+              </div>
+            </div>
+
+            <!-- Notizen -->
+            <div class="p-grid">
+              <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+                <textarea
+                  [rows]="3"
+                  pInputTextarea
+                  formControlName="description"
+                  id="retrainingDescription"
+                  placeholder="Beschreibung der Fortbildung"
+                  autoResize="autoResize"
+                  style='width:100%'
+                ></textarea>
+              </div>
+            </div>
+
+            <!-- Notizen -->
+            <div class="p-grid">
+              <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+                <textarea
+                  [rows]="3"
+                  pInputTextarea
+                  formControlName="note"
+                  id="retrainingNote"
+                  placeholder="Notizen zur Fortbildung"
+                  autoResize="autoResize"
+                  style='width:100%'
+                ></textarea>
+              </div>
+            </div>
+          </form>
+        </p-dialog>
+      </ng-container>
 
       <p-card subheader="Telefonnummern & E-Mail">
         <div class="p-grid">
