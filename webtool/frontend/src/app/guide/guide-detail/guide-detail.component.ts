@@ -337,7 +337,8 @@ function profileGroupFactory(profile: Profile): FormGroup {
 function userQualficationGroupFactory(userQualification: UserQualification): FormGroup {
   return new FormGroup({
     id: new FormControl(userQualification.id),
-    qualification: qualificationGroupFactory(userQualification.qualification),
+    // qualification: qualificationGroupFactory(userQualification.qualification),
+    qualification: new FormControl(userQualification.qualification),
     aspirant: new FormControl(userQualification.aspirant),
     year: new FormControl(userQualification.year),
     note: new FormControl(userQualification.note),

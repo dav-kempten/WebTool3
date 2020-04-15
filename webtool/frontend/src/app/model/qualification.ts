@@ -7,7 +7,7 @@ export interface Qualification {
 
 export interface UserQualification {
   id: number;
-  qualification: Qualification;
+  qualification: string;
   aspirant: false;
   year: number;
   note: string;
