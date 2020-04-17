@@ -68,6 +68,13 @@ export interface Collective {
   description: string;
 }
 
+export interface Qualification {
+  id: number;
+  code: string;
+  name: string;
+  group: string;
+}
+
 export interface TourCalculation {
   halfDay: string; // Decimal
   wholeDay: string; // Decimal
@@ -98,6 +105,7 @@ export interface Values {
   fitness: Fitness[];
   topics: Topic[];
   collectives: Collective[];
+  qualifications: Qualification[];
   travelCostFactor: string; // Decimal
   accommodationCostMaximum: string; // Decimal
   accommodationCostDefault: string; // Decimal
