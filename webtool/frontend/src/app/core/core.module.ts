@@ -67,6 +67,7 @@ import {reducer as fitnessReducer} from './store/fitness.reducer';
 import {reducer as topicReducer} from './store/topic.reducer';
 import {reducer as collectiveReducer} from './store/collective.reducer';
 import {reducer as nameReducer} from './store/name.reducer';
+import {reducer as qualificationReducer} from './store/qualification.reducer';
 import {ToggleButtonModule} from 'primeng/togglebutton';
 import {CalendarEffects} from './store/calendar.effects';
 import {ApproxdropdownComponent} from './approxdropdown/approxdropdown.component';
@@ -131,6 +132,7 @@ import { CategoryMultiselectComponent } from './categorymultiselect/categorymult
     StoreModule.forFeature('fitness', fitnessReducer),
     StoreModule.forFeature('topics', topicReducer),
     StoreModule.forFeature('collectives', collectiveReducer),
+    StoreModule.forFeature('qualifications', qualificationReducer),
     StoreModule.forFeature('calendar', CalendarReducer),
     EffectsModule.forFeature([CalendarEffects]),
     StoreModule.forFeature('names', nameReducer),

@@ -15,6 +15,7 @@ import {AddSkills} from './skill.actions';
 import {AddFitness} from './fitness.actions';
 import {AddTopics} from './topic.actions';
 import {AddCollectives} from './collective.actions';
+import {AddQualifications} from './qualification.actions';
 
 @Injectable({
   providedIn: 'root'
@@ -38,6 +39,7 @@ export class ValueEffects {
             this.store.dispatch(new AddFitness({fitness: values.fitness}));
             this.store.dispatch(new AddTopics({topics: values.topics}));
             this.store.dispatch(new AddCollectives({collectives: values.collectives}));
+            this.store.dispatch(new AddQualifications({qualifications: values.qualifications}));
             return new ValuesLoaded(values);
           } else {
             return new ValuesNotModified();

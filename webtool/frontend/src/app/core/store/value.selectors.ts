@@ -1,7 +1,7 @@
 import {createFeatureSelector, createSelector} from '@ngrx/store';
 import {ValueState} from './value.reducer';
 import {TourCalculation, Values} from './value.model';
-import {OpeningHours, State as RawState} from '../../model/value';
+import {OpeningHours, Qualification, State as RawState} from '../../model/value';
 import {State as StatesState} from './state.reducer';
 import {State as ApproxState} from './approximate.reducer';
 import {State as EquipState} from './equipment.reducer';
@@ -10,6 +10,7 @@ import {State as CategoryState} from './category.reducer';
 import {State as TopicState} from './topic.reducer';
 import {State as FitnessState} from './fitness.reducer';
 import {State as CollectiveState} from './collective.reducer';
+import {State as QualificationState} from './qualification.reducer';
 import {Dictionary} from '@ngrx/entity';
 
 export const getValueState = createFeatureSelector<ValueState>('values');
@@ -22,6 +23,7 @@ export const getCategoryState = createFeatureSelector<CategoryState>('categories
 export const getTopicState = createFeatureSelector<TopicState>('topics');
 export const getCollectiveState = createFeatureSelector<CollectiveState>('collectives');
 export const getStateState = createFeatureSelector<StatesState>('states');
+export const getQualificationState = createFeatureSelector<QualificationState>('qualifications');
 
 
 export const getValues = createSelector(
@@ -74,4 +76,8 @@ export const getCollectiveById = (collectiveId: number) => createSelector(
 
 export const getStateById = (stateId: number) => createSelector(
   getStateState, stateState => stateState.entities[stateId]
+);
+
+export const getQualifications = createSelector(
+  getQualificationState, qualificationState => qualificationState.entities
 );
