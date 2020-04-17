@@ -76,6 +76,12 @@ class InstructionCostListField(serializers.ListField):
     duration = serializers.IntegerField(read_only=True)
     compensation = MoneyField(read_only=True)
 
+class QualificationListSerializer(serializers.ListField):
+    id = serializers.PrimaryKeyRelatedField(source='pk', read_only=True)
+    code = serializers.CharField(read_only=True)
+    name = serializers.CharField(read_only=True)
+    group = serializers.CharField(source='group.name', read_only=True)
+
 
 class TourCostSerializer(serializers.Serializer):
     halfDay = MoneyField(source='half_day', read_only=True)
@@ -108,6 +114,7 @@ class ValueSerializer(serializers.Serializer):
     fitness = FitnessListField()
     topics = TopicListField()
     collectives = CollectiveListField()
+    qualifications = QualificationListSerializer()
     travelCostFactor = MoneyField(source='travel_cost_factor')
     accommodationCostMaximum = MoneyField(source='max_accommodation')
     accommodationCostDefault = MoneyField(source='accommodation')

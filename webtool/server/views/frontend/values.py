@@ -13,7 +13,7 @@ from server.models import (
     Skill, SkillDescription,
     Fitness, FitnessDescription,
     Topic,
-    Collective
+    Collective, Qualification
 )
 
 from server.serializers.frontend.values import ValueSerializer
@@ -33,6 +33,7 @@ class _Values(object):
         self.fitness = self._get_fitness()
         self.topics = self._get_topics()
         self.collectives = self._get_collectives()
+        self.qualifications = self._get_qualification()
         self.travel_cost_factor = Decimal('0.07')
         self.max_accommodation = Decimal('40.00')
         self.accommodation = Decimal('20.00')
@@ -149,6 +150,15 @@ class _Values(object):
             .filter(seasons=self._season)
             .values_list('pk', 'category__code', 'title', 'name', 'description')
         ]
+
+    def _get_qualification(self):
+        return [
+            dict(id=a, code=b, name=c, group=d)
+            for(a, b, c, d) in Qualification.objects
+            .exclude(deprecated=True)
+            .values_list('pk', 'code', 'name', 'group__name')
+        ]
+
 
     def _get_tour_data(self):
         return dict(
