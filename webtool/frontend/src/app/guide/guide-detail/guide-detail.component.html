@@ -112,6 +112,8 @@
                        readonly pInputText>
               </div>
               <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+                <avk-userqualificationselect formControlName="qualification" id="qualification" [readOnly]="!(this.loginObject.valState >= 3)">
+                </avk-userqualificationselect>
               </div>
               <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
                 <p-checkbox

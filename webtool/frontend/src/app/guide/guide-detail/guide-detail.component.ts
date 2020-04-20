@@ -18,6 +18,7 @@ import {getUserQualificationByIds} from '../../core/store/userqualification.sele
 import {getRetrainingByIds} from '../../core/store/retraining.selectors';
 import {UpdateUserQualification} from '../../core/store/userqualification.actions';
 import {UpdateRetraining} from '../../core/store/retraining.actions';
+import {ValuesRequested} from '../../core/store/value.actions';
 
 const german: LocaleSettings = {
   firstDayOfWeek: 1,
@@ -79,7 +80,9 @@ export class GuideDetailComponent implements OnInit, OnDestroy {
 
   de = german;
 
-  constructor(private store: Store<AppState>, private userService: AuthService) {}
+  constructor(private store: Store<AppState>, private userService: AuthService) {
+    this.store.dispatch(new ValuesRequested());
+  }
 
   ngOnInit(): void {
 
