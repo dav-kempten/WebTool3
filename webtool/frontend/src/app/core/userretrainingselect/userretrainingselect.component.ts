@@ -67,7 +67,6 @@ export class UserretrainingselectComponent implements OnInit, OnDestroy, AfterVi
   @Input()
   set userQualifications(values: number[]) {
     values.forEach(value => this.userqualification.push(value));
-    console.log(this.userqualification);
   }
 
   group = new FormGroup(
@@ -78,7 +77,8 @@ export class UserretrainingselectComponent implements OnInit, OnDestroy, AfterVi
     [stateValidator]
   );
 
-  status: UserQualification[] = new Array(1).fill({id: 0, qualification: '---', aspirant: false, year: 0, note: ''});
+  status: any[] = new Array(1).fill({id: 0, qualification: '---', aspirant: false, year: 0, note: '',
+    qualificationYear: '---'});
 
   OnChangeWrapper(onChange: (stateIn) => void): (stateOut: RawQualification) => void {
     return ((state: RawQualification): void => {
@@ -116,6 +116,7 @@ export class UserretrainingselectComponent implements OnInit, OnDestroy, AfterVi
       takeUntil(this.destroySubject),
       tap( (state) => {
         Object.keys(state).forEach( key => {
+          state[key].qualificationYear = state[key].qualification.concat(' - ', state[key].year);
           this.status.push(state[key]);
         });
         this.userQualificationSubject.next(this.status);
