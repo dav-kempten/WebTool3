@@ -69,7 +69,7 @@ export interface Collective {
 }
 
 export interface Qualification {
-  id: number;
+  id: string;
   code: string;
   name: string;
   group: string;
