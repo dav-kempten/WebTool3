@@ -313,12 +313,12 @@ function guideGroupFactory(guide: Guide): FormGroup {
     profileReason: new FormControl(guide.profileReason),
     profileHobby: new FormControl(guide.profileHobby),
     profileTip: new FormControl(guide.profileTip),
-    qualifications: new FormControl(guide.qualificationIds),
-    retrainings: new FormControl(guide.retrainingIds),
+    qualificationIds: new FormControl(guide.qualificationIds),
+    retrainingIds: new FormControl(guide.retrainingIds),
     phone: new FormControl(guide.phone),
     mobile: new FormControl(guide.mobile),
     email: new FormControl(guide.email),
-    userProfile: new FormControl(guide.userProfileId),
+    userProfileId: new FormControl(guide.userProfileId),
   });
 }
 
