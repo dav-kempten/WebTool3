@@ -222,21 +222,26 @@ export class GuideDetailComponent implements OnInit, OnDestroy {
       filter(qualification => !!qualification),
       publishReplay(1),
       refCount()
-    ).subscribe(
-      qualification => this.store.dispatch(
-        new UpdateUserQualification({userQualification: {id: qualification.id, changes: {...qualification}}})
-      )
-    );
+    ).subscribe( qualification => {
+      if (typeof qualification.qualification === 'string') {
+        this.store.dispatch(
+          new UpdateUserQualification({userQualification: {id: qualification.id, changes: {...qualification}}})
+        );
+      }
+    });
 
     this.retrainingChange$.pipe(
       takeUntil(this.destroySubject),
       filter(retraining => !!retraining),
       publishReplay(1),
       refCount()
-    ).subscribe(
-      retraining => this.store.dispatch(
-        new UpdateRetraining({retraining: {id: retraining.id, changes: {...retraining}}})
-      )
+    ).subscribe( retraining => {
+        if (typeof retraining.qualification === 'number') {
+          this.store.dispatch(
+            new UpdateRetraining({retraining: {id: retraining.id, changes: {...retraining}}})
+          );
+        }
+      }
     );
 
     this.guideChange$.pipe(
