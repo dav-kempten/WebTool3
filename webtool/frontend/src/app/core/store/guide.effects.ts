@@ -38,7 +38,6 @@ export class GuideEffects {
     switchMap(payload => {
       return this.guideService.getGuide(payload.id).pipe(
         map(guide => {
-          console.log('guide', guide);
           if (guide.id !== 0) {
             return new AddGuide({guide: this.transformGuide(guide)});
           } else {
