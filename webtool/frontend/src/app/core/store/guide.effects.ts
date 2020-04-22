@@ -83,7 +83,6 @@ export class GuideEffects {
     let retrainingIds: number[];
     const userProfileId = guide.userProfile.id;
 
-    console.log(guide.userProfile);
     this.store.dispatch(new AddProfile({profile: guide.userProfile}));
 
     if (guide.profile !== null && guide.profile !== '') {

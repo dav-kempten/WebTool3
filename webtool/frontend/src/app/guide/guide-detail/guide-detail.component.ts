@@ -141,7 +141,6 @@ export class GuideDetailComponent implements OnInit, OnDestroy {
       filter(userprofileId => !!userprofileId),
       flatMap(userprofileId => this.store.select(getProfileById(userprofileId)).pipe(
         tap(profile => {
-          console.log(profile);
           this.profileSubject.next(profileGroupFactory(profile));
         })
       )),
