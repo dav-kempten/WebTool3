@@ -151,6 +151,7 @@ export class GuideEffects {
       takeUntil(this.destroySubject),
       tap(profileInstance => userProfile = profileInstance)
     );
+    this.userProfile$.subscribe();
 
     const profile = JSON.stringify({city: guide.profileCity, hobby: guide.profileHobby, job: guide.profileJob,
       name: guide.profileName, qualification: guide.profileQualification, reason: guide.profileReason, tip: guide.profileTip
@@ -167,6 +168,8 @@ export class GuideEffects {
     delete guide.qualificationIds;
     delete guide.retrainingIds;
     delete guide.userProfileId;
+
+    this.destroySubject.complete();
 
     return {
       ... guide,
