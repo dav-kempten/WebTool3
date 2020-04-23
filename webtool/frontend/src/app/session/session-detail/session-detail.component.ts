@@ -187,7 +187,7 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
   selectEvent(index) {
     this.eventArray$.subscribe(
       eventArray => this.currentEventGroup = (eventArray.at(index)) as FormGroup
-    );
+    ).unsubscribe();
     this.display = true;
   }
 
@@ -205,6 +205,10 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
 
   deleteSession(sessionId) {
     this.store.dispatch(new DeleteSession({id: sessionId}));
+  }
+
+  closeEvent() {
+    this.currentEventGroup = undefined;
   }
 
 }

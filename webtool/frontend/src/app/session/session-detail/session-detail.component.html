@@ -90,7 +90,7 @@
     <div class="p-grid">
       <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
         <p-table [value]="eventArray.value" selectionMode="single"
-                 (selectionChange)="selectEvent($event)">
+                 (onRowSelect)="selectEvent($event)">
           <ng-template pTemplate="header">
             <tr>
               <th>Datum</th>
@@ -112,7 +112,8 @@
   </p-card>
 
   <ng-container *ngIf="currentEventGroup">
-    <p-dialog header="EventDetail" [modal]="true" [(visible)]="display" [style]="{width: '60%', height: '60%'}">
+    <p-dialog header="EventDetail" [modal]="true" [(visible)]="display" [style]="{width: '60%', height: '60%'}"
+              (onHide)="closeEvent()">
       <form [formGroup]="currentEventGroup">
         <!--Kurztitel, Langtitel-->
         <div class="p-grid">
