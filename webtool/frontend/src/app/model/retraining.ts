@@ -5,4 +5,5 @@ export interface Retraining {
   specific: boolean;
   description: string;
   note: string;
+  deprecated: boolean;
 }

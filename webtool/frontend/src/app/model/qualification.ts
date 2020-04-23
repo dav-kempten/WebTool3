@@ -10,5 +10,7 @@ export interface UserQualification {
   qualification: string;
   aspirant: false;
   year: number;
+  inactive: boolean;
   note: string;
+  deprecated: boolean;
 }
