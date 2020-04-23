@@ -1,12 +1,12 @@
 <ng-container *ngIf="guideGroup$ | async as guideGroup else loading">
   <p-card header="Trainer #{{guideId$ | async}}">
     <!--JSON-Value of Guide-->
-    <p-card subheader="JSON-Value">
+<!--    <p-card subheader="JSON-Value">-->
 <!--      <p>GuideGroup:<br/>{{guideGroup.value | json}}</p>-->
 <!--      <p>ProfileGroup:<br/>{{(profileGroup$ | async)?.value | json}}</p>-->
-      <p>userQualificationArray:<br/>{{(userQualificationArray$ | async)?.value | json}}</p>
-      <p>retrainingArray:<br/>{{(retrainingArray$ | async)?.value | json}}</p>
-    </p-card>
+<!--      <p>userQualificationArray:<br/>{{(userQualificationArray$ | async)?.value | json}}</p>-->
+<!--      <p>retrainingArray:<br/>{{(retrainingArray$ | async)?.value | json}}</p>-->
+<!--    </p-card>-->
 
     <form [formGroup]="guideGroup">
 
@@ -103,7 +103,7 @@
 
       <ng-container *ngIf="currentQualificationGroup">
         <p-dialog header="QualificationDetail" [modal]="true" [(visible)]="displayQualification" [blockScroll]="true"
-                  [style]="{width: '60%', height: '60%'}">
+                  [style]="{width: '60%', height: '60%'}" (onHide)="closeQualification()">
           <form [formGroup]="currentQualificationGroup">
             <!-- ID, Qualifikationsart, Aspirant & Jahr-->
             <div class="p-grid">
@@ -112,7 +112,7 @@
                        readonly pInputText>
               </div>
               <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
-                <avk-userqualificationselect formControlName="qualification" id="qualification" [readOnly]="!(this.loginObject.valState >= 3)">
+                <avk-userqualificationselect formControlName="qualification" id="qualification">
                 </avk-userqualificationselect>
               </div>
               <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
@@ -185,7 +185,7 @@
       <!--Dialog-Box für Fortbildungen -->
       <ng-container *ngIf="currentRetrainingGroup">
         <p-dialog header="RetrainingDetail" [modal]="true" [(visible)]="displayRetraining" [blockScroll]="true"
-                  [style]="{width: '60%', height: '60%'}">
+                  [style]="{width: '60%', height: '60%'}" (onHide)="closeRetraining()">
           <form [formGroup]="currentRetrainingGroup">
             <!-- ID, zugehörige Qualifikation, Aspirant & Jahr-->
             <div class="p-grid">

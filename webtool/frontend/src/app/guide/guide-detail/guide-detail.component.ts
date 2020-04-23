@@ -223,11 +223,9 @@ export class GuideDetailComponent implements OnInit, OnDestroy {
       publishReplay(1),
       refCount()
     ).subscribe( qualification => {
-      if (typeof qualification.qualification === 'string') {
-        this.store.dispatch(
-          new UpdateUserQualification({userQualification: {id: qualification.id, changes: {...qualification}}})
-        );
-      }
+      this.store.dispatch(
+        new UpdateUserQualification({userQualification: {id: qualification.id, changes: {...qualification}}})
+      );
     });
 
     this.retrainingChange$.pipe(
@@ -236,13 +234,10 @@ export class GuideDetailComponent implements OnInit, OnDestroy {
       publishReplay(1),
       refCount()
     ).subscribe( retraining => {
-        if (typeof retraining.qualification === 'number') {
-          this.store.dispatch(
-            new UpdateRetraining({retraining: {id: retraining.id, changes: {...retraining}}})
-          );
-        }
-      }
-    );
+      this.store.dispatch(
+        new UpdateRetraining({retraining: {id: retraining.id, changes: {...retraining}}})
+      );
+    });
 
     this.guideChange$.pipe(
       takeUntil(this.destroySubject),
@@ -305,6 +300,14 @@ export class GuideDetailComponent implements OnInit, OnDestroy {
 
   addRetraining(guide) {
     console.log(guide);
+  }
+
+  closeQualification() {
+    this.currentQualificationGroup = undefined;
+  }
+
+  closeRetraining() {
+    this.currentRetrainingGroup = undefined;
   }
 }
 
