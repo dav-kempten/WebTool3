@@ -25,6 +25,7 @@ __pycache__/
 
 # ubuntu vm log #
 ubuntu-xenial-16.04-cloudimg-console.log
+*.log
 
 # packages for node.js #
 package-lock.json
