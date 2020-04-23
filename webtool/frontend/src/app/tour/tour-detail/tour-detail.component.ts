@@ -206,7 +206,7 @@ export class TourDetailComponent implements OnInit, OnDestroy {
   selectEvent(index) {
     this.eventArray$.subscribe(
       eventArray => this.currentEventGroup = (eventArray.at(index)) as FormGroup
-    );
+    ).unsubscribe();
     this.display = true;
   }
 
@@ -224,6 +224,10 @@ export class TourDetailComponent implements OnInit, OnDestroy {
 
   deleteTour(tourId) {
     this.store.dispatch(new DeleteTour({id: tourId}));
+  }
+
+  closeEvent() {
+    this.currentEventGroup = undefined;
   }
 }
 
