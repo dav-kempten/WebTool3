@@ -5,10 +5,18 @@ import {Actions, Effect, ofType} from '@ngrx/effects';
 import {Injectable} from '@angular/core';
 import {GuideService} from '../service/guide.service';
 import {AppState} from '../../app.state';
-import {AddGuide, GuideActionTypes, GuideNotModified, RequestGuide, UpdateGuide, UpsertGuide} from './guide.actions';
+import {
+  AddGuide,
+  AddQualificationGuide, AddRetrainingGuide,
+  GuideActionTypes,
+  GuideNotModified,
+  RequestGuide,
+  UpdateGuide,
+  UpsertGuide
+} from './guide.actions';
 import {Guide as RawGuide, Profile} from '../../model/guide';
 import {Guide} from './guide.model';
-import {AddUserQualification, AddUserQualifications} from './userqualification.actions';
+import {AddUserQualification} from './userqualification.actions';
 import {UserQualification} from '../../model/qualification';
 import {Retraining} from '../../model/retraining';
 import {AddRetraining} from './retraining.actions';
@@ -62,6 +70,48 @@ export class GuideEffects {
               changes: {...guide}}});
           } else {
             alert('Trainer speichern gescheitert, nocheinmal versuchen oder Seite neuladen.');
+            return new GuideNotModified();
+          }
+        })
+      );
+    })
+  );
+
+  @Effect()
+  addQualificationGuide$: Observable<Action> = this.actions$.pipe(
+    ofType<AddQualificationGuide>(GuideActionTypes.AddQualificationGuide),
+    map((action: AddQualificationGuide) => action.payload),
+    switchMap(payload  => {
+      return this.guideService.addQualificationGuide(this.transformGuideForSaving(payload.guide)).pipe(
+        map(guide => {
+          if (guide.id !== 0) {
+            const guideInterface = this.transformGuide(guide);
+            return new UpdateGuide({guide: {
+              id: guideInterface.id,
+              changes: {...guideInterface}}});
+          } else {
+            alert('Event hinzufügen gescheitert, bitte Seite neuladen.');
+            return new GuideNotModified();
+          }
+        })
+      );
+    })
+  );
+
+  @Effect()
+  addRetrainingGuide$: Observable<Action> = this.actions$.pipe(
+    ofType<AddRetrainingGuide>(GuideActionTypes.AddRetrainingGuide),
+    map((action: AddRetrainingGuide) => action.payload),
+    switchMap(payload  => {
+      return this.guideService.addRetrainingGuide(this.transformGuideForSaving(payload.guide)).pipe(
+        map(guide => {
+          if (guide.id !== 0) {
+            const guideInterface = this.transformGuide(guide);
+            return new UpdateGuide({guide: {
+              id: guideInterface.id,
+              changes: {...guideInterface}}});
+          } else {
+            alert('Event hinzufügen gescheitert, bitte Seite neuladen.');
             return new GuideNotModified();
           }
         })
