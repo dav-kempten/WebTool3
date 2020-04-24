@@ -3,6 +3,8 @@ import {catchError, first, map, publishReplay, refCount} from 'rxjs/operators';
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse} from '@angular/common/http';
 import {Guide, GuideSummary} from '../../model/guide';
+import {UserQualification} from '../../model/qualification';
+import {Retraining} from '../../model/retraining';
 
 @Injectable({
   providedIn: 'root'
@@ -14,6 +16,8 @@ export class GuideService {
   constructor(private http: HttpClient) { }
 
   private updateSubject = new BehaviorSubject<Guide>(null);
+  private addQualificationSubject = new BehaviorSubject<Guide>(null);
+  private addRetrainingSubject = new BehaviorSubject<Guide>(null);
 
   getGuideSummaries(): Observable<GuideSummary[]> {
     const headers = {
@@ -104,6 +108,44 @@ export class GuideService {
         console.log(error.statusText, error.status);
         return of ({id: 0} as Guide);
       })
+    );
+  }
+
+  addQualificationGuide(guide: Guide): Observable<Guide> {
+    const newUserQualification: UserQualification = {
+      id: null, qualification: 'AW', aspirant: false, year: (new Date().getFullYear()), inactive: false, note: '',
+      deprecated: false
+    };
+    guide.qualifications.push(newUserQualification);
+    this.addQualificationSubject.next(guide);
+
+    return this.http.put<Guide>(
+      `/api/frontend/guides/${this.addQualificationSubject.value.id}/`,
+      this.addQualificationSubject.value
+    ).pipe(
+      catchError((error: HttpErrorResponse): Observable<Guide> => {
+        console.log(error.statusText, error.status);
+        return of ({id: 0} as Guide);
+      }),
+    );
+  }
+
+  addRetrainingGuide(guide: Guide): Observable<Guide> {
+    const newRetraining: Retraining = {
+      id: null, qualification: null, year: (new Date().getFullYear()), specific: false, description: '',
+      note: '', deprecated: false
+    };
+    guide.retrainings.push(newRetraining);
+    this.addRetrainingSubject.next(guide);
+
+    return this.http.put<Guide>(
+      `/api/frontend/guides/${this.addRetrainingSubject.value.id}/`,
+      this.addRetrainingSubject.value
+    ).pipe(
+      catchError((error: HttpErrorResponse): Observable<Guide> => {
+        console.log(error.statusText, error.status);
+        return of ({id: 0} as Guide);
+      }),
     );
   }
 }
