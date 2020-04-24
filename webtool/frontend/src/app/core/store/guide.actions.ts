@@ -12,7 +12,8 @@ export enum GuideActionTypes {
   LoadGuides = '[Guide] Load Guides',
   AddGuide = '[Guide] Add Guide',
   UpsertGuide = '[Guide] Upsert Guide',
-  AddEventGuide = '[Guide] AddEvent Guide',
+  AddQualificationGuide = '[Guide] AddQualification Guide',
+  AddRetrainingGuide = '[Guide] AddRetraining Guide',
   AddGuides = '[Guide] Add Guides',
   UpsertGuides = '[Guide] Upsert Guides',
   UpdateGuide = '[Guide] Update Guide',
@@ -69,8 +70,14 @@ export class UpsertGuide implements Action {
   constructor(public payload: { guide: Guide }) {}
 }
 
-export class AddEventGuide implements Action {
-  readonly type = GuideActionTypes.AddEventGuide;
+export class AddQualificationGuide implements Action {
+  readonly type = GuideActionTypes.AddQualificationGuide;
+
+  constructor(public payload: { guide: Guide }) {}
+}
+
+export class AddRetrainingGuide implements Action {
+  readonly type = GuideActionTypes.AddRetrainingGuide;
 
   constructor(public payload: { guide: Guide }) {}
 }
@@ -143,7 +150,8 @@ export type GuideActions =
   | LoadGuides
   | AddGuide
   | UpsertGuide
-  | AddEventGuide
+  | AddQualificationGuide
+  | AddRetrainingGuide
   | AddGuides
   | UpsertGuides
   | UpdateGuide
