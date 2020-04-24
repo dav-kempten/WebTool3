@@ -80,8 +80,12 @@ export function reducer(state = initialState, action: GuideActions): State {
       return adapter.upsertOne(action.payload.guide, state);
     }
 
-    case GuideActionTypes.AddEventGuide: {
-      return adapter.addOne(action.payload.guide, state);
+    case GuideActionTypes.AddQualificationGuide: {
+      return adapter.upsertOne(action.payload.guide, state);
+    }
+
+    case GuideActionTypes.AddRetrainingGuide: {
+      return adapter.upsertOne(action.payload.guide, state);
     }
 
     case GuideActionTypes.AddGuides: {
