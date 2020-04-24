@@ -6,7 +6,13 @@ import {AppState, selectRouterDetailId} from '../../app.state';
 import {Profile} from '../../model/guide';
 import {filter, flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {getGuideById} from '../../core/store/guide.selectors';
-import {RequestGuide, UpdateGuide, UpsertGuide} from '../../core/store/guide.actions';
+import {
+  AddQualificationGuide,
+  AddRetrainingGuide,
+  RequestGuide,
+  UpdateGuide,
+  UpsertGuide
+} from '../../core/store/guide.actions';
 import {LocaleSettings} from 'primeng/calendar';
 import {AuthService, User} from '../../core/service/auth.service';
 import {Guide} from '../../core/store/guide.model';
@@ -284,7 +290,7 @@ export class GuideDetailComponent implements OnInit, OnDestroy {
   }
 
   addQualification(guide) {
-    console.log(guide);
+    this.store.dispatch(new AddQualificationGuide({guide: guide as Guide}));
   }
 
   selectRetraining(index) {
@@ -299,7 +305,7 @@ export class GuideDetailComponent implements OnInit, OnDestroy {
   }
 
   addRetraining(guide) {
-    console.log(guide);
+    this.store.dispatch(new AddRetrainingGuide({guide: guide as Guide}));
   }
 
   closeQualification() {
