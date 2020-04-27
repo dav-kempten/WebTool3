@@ -7,7 +7,7 @@ import {GuideService} from '../service/guide.service';
 import {AppState} from '../../app.state';
 import {
   AddGuide,
-  AddQualificationGuide, AddRetrainingGuide,
+  AddQualificationGuide, AddRetrainingGuide, DeleteQualificationGuide, DeleteRetrainingGuide,
   GuideActionTypes,
   GuideNotModified,
   RequestGuide,
@@ -104,6 +104,48 @@ export class GuideEffects {
     map((action: AddRetrainingGuide) => action.payload),
     switchMap(payload  => {
       return this.guideService.addRetrainingGuide(this.transformGuideForSaving(payload.guide)).pipe(
+        map(guide => {
+          if (guide.id !== 0) {
+            const guideInterface = this.transformGuide(guide);
+            return new UpdateGuide({guide: {
+              id: guideInterface.id,
+              changes: {...guideInterface}}});
+          } else {
+            alert('Event hinzufügen gescheitert, bitte Seite neuladen.');
+            return new GuideNotModified();
+          }
+        })
+      );
+    })
+  );
+
+  @Effect()
+  deleteQualificationGuide$: Observable<Action> = this.actions$.pipe(
+    ofType<DeleteQualificationGuide>(GuideActionTypes.DeleteQualificationGuide),
+    map((action: DeleteQualificationGuide) => action.payload),
+    switchMap(payload  => {
+      return this.guideService.deleteQualificationGuide(this.transformGuideForSaving(payload.guide), payload.qualificationId).pipe(
+        map(guide => {
+          if (guide.id !== 0) {
+            const guideInterface = this.transformGuide(guide);
+            return new UpdateGuide({guide: {
+              id: guideInterface.id,
+              changes: {...guideInterface}}});
+          } else {
+            alert('Event hinzufügen gescheitert, bitte Seite neuladen.');
+            return new GuideNotModified();
+          }
+        })
+      );
+    })
+  );
+
+  @Effect()
+  deleteRetrainingGuide$: Observable<Action> = this.actions$.pipe(
+    ofType<DeleteRetrainingGuide>(GuideActionTypes.DeleteRetrainingGuide),
+    map((action: DeleteRetrainingGuide) => action.payload),
+    switchMap(payload  => {
+      return this.guideService.deleteRetrainingGuide(this.transformGuideForSaving(payload.guide), payload.retrainingId).pipe(
         map(guide => {
           if (guide.id !== 0) {
             const guideInterface = this.transformGuide(guide);
