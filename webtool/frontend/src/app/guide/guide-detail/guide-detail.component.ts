@@ -359,6 +359,7 @@ function userQualficationGroupFactory(userQualification: UserQualification): For
     id: new FormControl(userQualification.id),
     // qualification: qualificationGroupFactory(userQualification.qualification),
     qualification: new FormControl(userQualification.qualification),
+    inactive: new FormControl(userQualification.inactive),
     aspirant: new FormControl(userQualification.aspirant),
     year: new FormControl(userQualification.year),
     note: new FormControl(userQualification.note),

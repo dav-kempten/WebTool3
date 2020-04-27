@@ -107,13 +107,20 @@
           <form [formGroup]="currentQualificationGroup">
             <!-- ID, Qualifikationsart, Aspirant & Jahr-->
             <div class="p-grid">
-              <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
+              <div class="p-col-12 p-sm-1 p-md-1 p-lg-1">
                 <input formControlName="id" id="qualificationId" placeholder="Qualifikations-ID" type="text" style='width:100%'
                        readonly pInputText>
               </div>
-              <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+              <div class="p-col-12 p-sm-5 p-md-5 p-lg-5">
                 <avk-userqualificationselect formControlName="qualification" id="qualification">
                 </avk-userqualificationselect>
+              </div>
+              <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+                <p-checkbox
+                  [formControl]="currentQualificationGroup.get('inactive')"
+                  label="Fortbildung notwendig"
+                  binary="true"
+                ></p-checkbox>
               </div>
               <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
                 <p-checkbox
@@ -122,7 +129,7 @@
                   binary="true"
                 ></p-checkbox>
               </div>
-              <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
+              <div class="p-col-12 p-sm-1 p-md-1 p-lg-1">
                 <input formControlName="year" id="qualificationYear" placeholder="Jahr" type="text" style='width:100%'
                        pInputText>
               </div>
