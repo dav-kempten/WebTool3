@@ -172,11 +172,13 @@ export class GuideDetailComponent implements OnInit, OnDestroy {
         tap(qualifications => {
           const qualificationArray = new FormArray([]);
           qualifications.forEach((qualification: UserQualification) => {
-            const qualificationGroup = userQualficationGroupFactory(qualification);
-            qualificationGroup.valueChanges.pipe(
-              takeUntil(this.destroySubject)
-            ).subscribe(value => this.qualificationChangeSubject.next(value));
-            qualificationArray.push(qualificationGroup);
+            if (qualification.deprecated === false) {
+              const qualificationGroup = userQualficationGroupFactory(qualification);
+              qualificationGroup.valueChanges.pipe(
+                takeUntil(this.destroySubject)
+              ).subscribe(value => this.qualificationChangeSubject.next(value));
+              qualificationArray.push(qualificationGroup);
+            }
           });
           this.qualificationsSubject.next(qualificationArray);
         })
