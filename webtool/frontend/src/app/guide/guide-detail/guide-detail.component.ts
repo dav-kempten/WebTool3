@@ -204,11 +204,13 @@ export class GuideDetailComponent implements OnInit, OnDestroy {
         tap(retrainings => {
           const retrainingArray = new FormArray([]);
           retrainings.forEach((retraining: Retraining) => {
-            const retrainingGroup = retrainingGroupFactory(retraining);
-            retrainingGroup.valueChanges.pipe(
-              takeUntil(this.destroySubject)
-            ).subscribe(value => this.retrainingChangeSubject.next(value));
-            retrainingArray.push(retrainingGroup);
+            if (retraining.deprecated === false) {
+              const retrainingGroup = retrainingGroupFactory(retraining);
+              retrainingGroup.valueChanges.pipe(
+                takeUntil(this.destroySubject)
+              ).subscribe(value => this.retrainingChangeSubject.next(value));
+              retrainingArray.push(retrainingGroup);
+            }
           });
           this.retrainingsSubject.next(retrainingArray);
         })
