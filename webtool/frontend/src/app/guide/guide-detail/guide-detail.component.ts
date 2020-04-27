@@ -8,7 +8,7 @@ import {filter, flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxj
 import {getGuideById} from '../../core/store/guide.selectors';
 import {
   AddQualificationGuide,
-  AddRetrainingGuide,
+  AddRetrainingGuide, DeleteQualificationGuide, DeleteRetrainingGuide,
   RequestGuide,
   UpdateGuide,
   UpsertGuide
@@ -289,8 +289,8 @@ export class GuideDetailComponent implements OnInit, OnDestroy {
     this.displayQualification = true;
   }
 
-  deleteQualification(qualificationId) {
-    console.log(qualificationId);
+  deleteQualification(guide, qualificationId) {
+    this.store.dispatch(new DeleteQualificationGuide({guide, qualificationId}));
   }
 
   addQualification(guide) {
@@ -304,8 +304,8 @@ export class GuideDetailComponent implements OnInit, OnDestroy {
     this.displayRetraining = true;
   }
 
-  deleteRetraining(retrainingId) {
-    console.log(retrainingId);
+  deleteRetraining(guide, retrainingId) {
+    this.store.dispatch(new DeleteRetrainingGuide({guide, retrainingId}));
   }
 
   addRetraining(guide) {

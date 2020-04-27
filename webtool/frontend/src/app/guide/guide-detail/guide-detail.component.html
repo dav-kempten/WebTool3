@@ -90,7 +90,7 @@
                 <td>
                   <div style="text-align: center">
                     <p-button type="button" label="Löschen" styleClass="ui-button-danger"
-                      (click)="deleteQualification(qualification.id)"></p-button>
+                      (click)="deleteQualification(this.guideGroup.value,qualification.id)"></p-button>
                   </div>
                 </td>
               </tr>
@@ -171,7 +171,7 @@
                 <td>
                   <div style="text-align: center">
                     <p-button type="button" label="Löschen" styleClass="ui-button-danger"
-                      (click)="deleteRetraining(retraining.id)"></p-button>
+                      (click)="deleteRetraining(this.guideGroup.value, retraining.id)"></p-button>
                   </div>
                 </td>
               </tr>
