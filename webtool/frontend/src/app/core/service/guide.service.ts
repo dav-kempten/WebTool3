@@ -18,6 +18,8 @@ export class GuideService {
   private updateSubject = new BehaviorSubject<Guide>(null);
   private addQualificationSubject = new BehaviorSubject<Guide>(null);
   private addRetrainingSubject = new BehaviorSubject<Guide>(null);
+  private deleteQualificationSubject = new BehaviorSubject<Guide>(null);
+  private deleteRetrainingSubject = new BehaviorSubject<Guide>(null);
 
   getGuideSummaries(): Observable<GuideSummary[]> {
     const headers = {
@@ -141,6 +143,38 @@ export class GuideService {
     return this.http.put<Guide>(
       `/api/frontend/guides/${this.addRetrainingSubject.value.id}/`,
       this.addRetrainingSubject.value
+    ).pipe(
+      catchError((error: HttpErrorResponse): Observable<Guide> => {
+        console.log(error.statusText, error.status);
+        return of ({id: 0} as Guide);
+      }),
+    );
+  }
+
+  deleteQualificationGuide(guide: Guide, qualificationId: number): Observable<Guide> {
+    const index = guide.qualifications.map(item => item.id).indexOf(qualificationId);
+    guide.qualifications[index] = {...guide.qualifications[index], deprecated: true};
+    this.deleteQualificationSubject.next(guide);
+
+    return this.http.put<Guide>(
+      `/api/frontend/guides/${this.deleteQualificationSubject.value.id}/`,
+      this.deleteQualificationSubject.value
+    ).pipe(
+      catchError((error: HttpErrorResponse): Observable<Guide> => {
+        console.log(error.statusText, error.status);
+        return of ({id: 0} as Guide);
+      }),
+    );
+  }
+
+  deleteRetrainingGuide(guide: Guide, retrainingId: number): Observable<Guide> {
+    const index = guide.retrainings.map(item => item.id).indexOf(retrainingId);
+    guide.retrainings[index] = {...guide.retrainings[index], deprecated: true};
+    this.deleteRetrainingSubject.next(guide);
+
+    return this.http.put<Guide>(
+      `/api/frontend/guides/${this.deleteRetrainingSubject.value.id}/`,
+      this.deleteRetrainingSubject.value
     ).pipe(
       catchError((error: HttpErrorResponse): Observable<Guide> => {
         console.log(error.statusText, error.status);
