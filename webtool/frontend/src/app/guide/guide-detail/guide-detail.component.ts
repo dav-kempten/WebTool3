@@ -147,7 +147,13 @@ export class GuideDetailComponent implements OnInit, OnDestroy {
       filter(userprofileId => !!userprofileId),
       flatMap(userprofileId => this.store.select(getProfileById(userprofileId)).pipe(
         tap(profile => {
-          this.profileSubject.next(profileGroupFactory(profile));
+          const profileGroup = profileGroupFactory(profile);
+          profileGroup.valueChanges.pipe(
+            takeUntil(this.destroySubject)
+          ).subscribe(
+            value => this.profileChangeSubject.next(value)
+          );
+          this.profileSubject.next(profileGroup);
         })
       )),
       // shareReplay(),
