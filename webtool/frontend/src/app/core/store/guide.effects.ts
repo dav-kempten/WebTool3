@@ -90,7 +90,7 @@ export class GuideEffects {
               id: guideInterface.id,
               changes: {...guideInterface}}});
           } else {
-            alert('Event hinzufügen gescheitert, bitte Seite neuladen.');
+            alert('Qualifikation hinzufügen gescheitert, bitte Seite neuladen.');
             return new GuideNotModified();
           }
         })
@@ -111,7 +111,7 @@ export class GuideEffects {
               id: guideInterface.id,
               changes: {...guideInterface}}});
           } else {
-            alert('Event hinzufügen gescheitert, bitte Seite neuladen.');
+            alert('Fortbildung hinzufügen gescheitert, bitte Seite neuladen.');
             return new GuideNotModified();
           }
         })
@@ -132,7 +132,7 @@ export class GuideEffects {
               id: guideInterface.id,
               changes: {...guideInterface}}});
           } else {
-            alert('Event hinzufügen gescheitert, bitte Seite neuladen.');
+            alert('Qualifikation entfernen gescheitert, bitte Seite neuladen.');
             return new GuideNotModified();
           }
         })
@@ -153,7 +153,7 @@ export class GuideEffects {
               id: guideInterface.id,
               changes: {...guideInterface}}});
           } else {
-            alert('Event hinzufügen gescheitert, bitte Seite neuladen.');
+            alert('Fortbildung entfernen gescheitert, bitte Seite neuladen.');
             return new GuideNotModified();
           }
         })
