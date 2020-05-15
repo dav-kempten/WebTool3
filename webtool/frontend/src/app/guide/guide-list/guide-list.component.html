@@ -1,10 +1,19 @@
 <ng-container *ngIf="(guides$ | async) as guides else loading">
-  <p-table [value]="guides" selectionMode="single" (selectionChange)="selectGuide($event)">
+  <p-table #dt [value]="guides" selectionMode="single" (selectionChange)="selectGuide($event)">
     <ng-template pTemplate="header">
       <tr>
         <th>Nachname</th>
         <th>Vorname</th>
         <th>Username</th>
+      </tr>
+      <tr>
+        <th>
+          <input pInputText type="text" (input)="dt.filter($event.target.value, 'lastName', 'contains')">
+        </th>
+        <th>
+          <input pInputText type="text" (input)="dt.filter($event.target.value, 'firstName', 'contains')">
+        </th>
+        <th></th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-guide>

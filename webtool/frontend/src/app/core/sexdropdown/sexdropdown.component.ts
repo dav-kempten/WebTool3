@@ -51,11 +51,10 @@ export class SexdropdownComponent implements OnInit, OnDestroy, AfterViewInit, A
   sexchoice = [{id: 0, name: 'unbekannt', detail: 'Geschlecht ist unbekannt'},
     {id: 1, name: 'männlich', detail: 'Geschlecht ist männlich'},
     {id: 2, name: 'weiblich', detail: 'Geschlecht ist weiblich'},
-    {id: 9, name: 'unbekannt', detail: 'Geschlecht nicht anwendbar'}];
+    {id: 9, name: 'divers', detail: 'Geschlecht nicht anwendbar'}];
 
   OnChangeWrapper(onChange: (stateIn) => void): (stateOut) => void {
     return ((state): void => {
-      console.log(state);
       this.formControl.setValue(state);
       this.choiceControl.setValue(state);
       onChange(state.id);
