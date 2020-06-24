@@ -18,6 +18,8 @@ WebTool3
 
    code/code
 
+   modules/rocket_chat
+
 Verzeichnisse und Tabellen
 ==========================
 
