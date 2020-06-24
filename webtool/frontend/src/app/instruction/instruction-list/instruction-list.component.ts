@@ -150,7 +150,7 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
 
   selectInstruction(instruction): void {
     if (!!instruction) {
-      if (this.loginObject.valState >= 3) {
+      if (this.loginObject.valState >= 3 || this.loginObject.id === instruction.guideId) {
         this.router.navigate(['instructions', instruction.id]);
       }
     }

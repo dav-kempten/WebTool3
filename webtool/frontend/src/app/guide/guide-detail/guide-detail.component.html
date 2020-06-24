@@ -67,7 +67,7 @@
         </div>
       </p-card>
 
-      <p-card subheader="Qualifikationen">
+      <p-card subheader="Qualifikationen" *ngIf="this.loginObject.valState >= 3">
       <!--Button für neue Qualifikation-->
       <p-button label="Qualifikation hinzufügen" (onClick)="addQualification(this.guideGroup.value)"></p-button>
       <!--Liste mit Parametern (Tabelle)-->
@@ -153,7 +153,7 @@
         </p-dialog>
       </ng-container>
 
-      <p-card subheader="Fortbildungen">
+      <p-card subheader="Fortbildungen" *ngIf="this.loginObject.valState >= 3">
       <!--Button für neue Fortbildung-->
       <p-button label="Fortbildung hinzufügen" (onClick)="addRetraining(this.guideGroup.value)"></p-button>
       <!--Liste mit Parametern (Tabelle)-->
@@ -269,7 +269,7 @@
       <ng-container *ngIf="(profileGroup$ | async) as profileGroup">
       <form [formGroup]="profileGroup">
       <p-card subheader="Eintrittsdatum, Mitgliedsnummer, Geschlecht & Geburtsdatum"
-              *ngIf="!!(this.loginObject.valState >= 3)">
+              *ngIf="this.loginObject.valState >= 3">
         <div class="p-grid">
           <div class="p-col-12 p-sm-3 p-md-2 p-lg-3">
             <input formControlName="memberId" id="memberId" placeholder="Mitgliedsnummer" type="text"
@@ -288,7 +288,7 @@
       </p-card>
 
       <p-card subheader="Notiz, Eintrittsjahr, A-Mitglied, Heimatsektion"
-              *ngIf="!!(this.loginObject.valState >= 3)">
+              *ngIf="this.loginObject.valState >= 3">
         <div class="p-grid">
           <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
         <textarea
@@ -323,7 +323,7 @@
     </form>
     <p-card>
       <div class="p-grid">
-      <div class="p-col-12 p-sm-1 p-md-1 p-lg-1" *ngIf="!!(this.loginObject.valState >= 3)">
+      <div class="p-col-12 p-sm-1 p-md-1 p-lg-1" *ngIf="this.loginObject.valState >= 1">
         <p-button type="button" label="Speichern"
             (click)="save(this.guideGroup.value)"></p-button>
       </div>

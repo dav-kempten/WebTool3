@@ -2,7 +2,7 @@
 from django.contrib.auth.models import User
 from rest_framework.reverse import reverse
 from rest_framework import serializers
-from server.models import Guide, Profile
+from server.models import Guide, Profile, UserQualification
 from server.serializers.frontend.profiles import ProfileSerializer, update_profile
 from server.serializers.frontend.qualifications import UserQualificationSerializer, create_qualification
 from server.serializers.frontend.retrainings import RetrainingSerializer, create_retraining
