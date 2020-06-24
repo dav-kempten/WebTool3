@@ -47,7 +47,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'WebTool3'
-copyright = '2017, DAV Sektion Allgäu Kempten'
+copyright = '2020, DAV Sektion Allgäu Kempten'
 author = 'Wolfgang Doll'
 
 # The version info for the project you're documenting, acts as replacement for
