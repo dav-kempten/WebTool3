@@ -39,3 +39,6 @@ Formulare/
 
 # Personaldatenprototyp #
 personaldaten_json.py
+
+# CSV-Dateien #
+*.csv
