@@ -112,8 +112,8 @@
   </p-card>
 
   <ng-container *ngIf="currentEventGroup">
-    <p-dialog header="EventDetail" [modal]="true" [(visible)]="display" [style]="{width: '60%', height: '60%'}"
-              (onHide)="closeEvent()">
+    <p-dialog header="EventDetail" [modal]="true" [(visible)]="display" [blockScroll]="true"
+              (onHide)="closeEvent()" [style]="{width: '60%', height: '60%'}">
       <form [formGroup]="currentEventGroup">
         <!--Kurztitel, Langtitel-->
         <div class="p-grid">

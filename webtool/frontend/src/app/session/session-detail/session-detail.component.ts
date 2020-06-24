@@ -186,7 +186,7 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
 
   selectEvent(index) {
     this.eventArray$.subscribe(
-      eventArray => this.currentEventGroup = (eventArray.at(index)) as FormGroup
+      eventArray => this.currentEventGroup = (eventArray.at(index.data)) as FormGroup
     ).unsubscribe();
     this.display = true;
   }
