@@ -80,4 +80,4 @@ Zusätzlich zu nginx brauchen wir noch ein Echtzeit-Messaging-Modul. Hierzu nehm
 
     > sudo apt-get install libnginx-mod-rtmp
 
-Das Pakte wird benötigt um das Streamen von Audio-, Foto- und Videodaten zu unterstützen.
+Das Pakte wird benötigt um das Streaming von Audio-, Foto- und Videodaten zu unterstützen.
