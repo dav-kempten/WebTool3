@@ -80,7 +80,24 @@ Zusätzlich zu nginx brauchen wir noch ein Echtzeit-Messaging-Modul. Hierzu nehm
 
     > sudo apt-get install libnginx-mod-rtmp
 
-Das Pakte wird benötigt um das Streaming von Audio-, Foto- und Videodaten zu unterstützen.
+Das Paket wird benötigt um das Streaming von Audio-, Foto- und Videodaten zu unterstützen.
+
+Der nächste Punkt widmet sich mit dem Backup der MongoDB. Damit bei einem Verlust der Datenbank keine Chat-Daten verloren gehen
+müssen wir regelmäßig ein Update erstellen. Dies funkioniert mittels:
+
+.. code-block:: none
+
+    > mongodump --db=<db_dump>
+
+Mit ``mongodump`` können wir ein Backup einer kompletten MongoDB erstellen und müssen nicht einzelne Collections auswählen.
+
+Möchten wir die Daten im Gegenzug wiederherstellen, gibt es für die MongoDB einen entsprechenden Befehl:
+
+.. code-block:: none
+
+    > mongorestore <folder_dump>
+
+Zudem müssen die Konfigurations-Dateien gesichert werden...
 
 Let's encrypt
 ==============
