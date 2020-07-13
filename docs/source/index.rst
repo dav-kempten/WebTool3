@@ -19,6 +19,7 @@ WebTool3
    code/code
 
    modules/rocket_chat
+   modules/lets_encrypt
 
 Verzeichnisse und Tabellen
 ==========================
