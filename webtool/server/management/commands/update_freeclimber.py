@@ -28,11 +28,8 @@ class Command(BaseCommand):
             print(reference_code)
 
             cur_quantity = int(row["Ist Teilnehmer"])
-            print(cur_quantity)
 
             event = reference.event
-            # print(hasattr(event, 'instruction'))
-            print(event.meeting)
             if hasattr(event, 'meeting') and event.meeting:
                 instruction = event.meeting
                 cq = instruction.cur_quantity
