@@ -20,6 +20,7 @@ WebTool3
 
    modules/rocket_chat
    modules/lets_encrypt
+   modules/nextcloud
 
 Verzeichnisse und Tabellen
 ==========================
