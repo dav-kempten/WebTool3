@@ -1,4 +1,4 @@
-.. _letsencrypt:
+.. _lets_encrypt:
 
 Let's encrypt
 ==============
