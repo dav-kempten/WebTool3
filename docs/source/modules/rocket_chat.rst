@@ -202,4 +202,4 @@ Möchten wir die Daten im Gegenzug wiederherstellen, gibt es für die MongoDB ei
 
     > mongorestore --drop --dir <folder_dump>
 
-Zudem müssen die Konfigurations-Dateien gesichert werden...
+Zudem müssen die Konfigurations-Dateien gesichert werden.
