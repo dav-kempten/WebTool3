@@ -13,7 +13,6 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse} from '@angular/common/http';
 import {Instruction, InstructionSummary} from '../../model/instruction';
 import {Event} from '../../model/event';
-import {Instruction as InstructionInterface} from '../../core/store/instruction.model';
 
 function convertDecimal(rawValue: string): number {
   return Number(rawValue.replace('.', ''));
@@ -231,6 +230,7 @@ export class InstructionService {
     delete instruction.instruction.id;
     instruction.meetings.forEach((meeting) => delete meeting.id);
     instruction.stateId = 1;
+    instruction.curQuantity = 0;
     return instruction;
   }
 }
