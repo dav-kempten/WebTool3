@@ -10,10 +10,11 @@ import {NamesRequested} from '../../core/store/name.actions';
 import {ValuesRequested} from '../../core/store/value.actions';
 import {CalendarRequested} from '../../core/store/calendar.actions';
 import {Router} from '@angular/router';
-import {flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
+import {filter, first, flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {RequestTourSummaries} from '../../core/store/tour-summary.actions';
 import {getTourSummaries} from '../../core/store/tour-summary.selectors';
-import {CloneTour, CreateTour, DeactivateTour, DeleteTour} from '../../core/store/tour.actions';
+import {CloneTour, CreateTour, DeactivateTour, DeleteTour, RequestTour} from '../../core/store/tour.actions';
+import {getTourById} from '../../core/store/tour.selectors';
 
 @Component({
   selector: 'avk-tour-list',
@@ -181,7 +182,20 @@ export class TourListComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   clone(tourId) {
-    this.store.dispatch(new CloneTour({id: tourId}));
+    this.store.pipe(
+      select(getTourById(tourId)),
+      tap(tour => {
+        if (!tour) {
+          this.store.dispatch(new RequestTour({id: tourId}));
+        }
+      }),
+      filter(tour => !!tour),
+      first(),
+    ).subscribe(
+      tour => {
+        this.store.dispatch(new CloneTour({tour}));
+      }
+    );
   }
 
   delete(tourId) {

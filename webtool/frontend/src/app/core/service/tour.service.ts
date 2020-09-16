@@ -114,12 +114,8 @@ export class TourService {
     );
   }
 
-  cloneTour(id: number): Observable<Tour> {
-
-    this.getTour(id).pipe(
-      takeUntil(this.destroySubject),
-      tap(val => this.cloneSubject.next(this.transformTourForCloning(val as TourExt))),
-    ).subscribe();
+  cloneTour(tour: Tour): Observable<Tour> {
+    this.cloneSubject.next(this.transformTourForCloning(tour));
 
     return this.http.post<Tour>(
       `/api/frontend/tours/`,
@@ -199,7 +195,7 @@ export class TourService {
     );
   }
 
-  transformTourForCloning(tour: TourExt): any {
+  transformTourForCloning(tour: Tour): any {
     delete tour.id;
     delete tour.reference;
     delete tour.tour.id;
@@ -207,9 +203,15 @@ export class TourService {
     if (tour.preliminary !== null) {
       delete tour.preliminary.id;
     }
-    tour.category = tour.categoryId;
-    delete tour.categoryId;
     tour.stateId = 1;
-    return tour;
+    tour.curQuantity = 0;
+
+    const category = tour.categoryId;
+    delete tour.categoryId;
+
+    return {
+      ... tour,
+      category,
+    };
   }
 }

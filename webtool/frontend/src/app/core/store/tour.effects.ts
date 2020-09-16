@@ -62,7 +62,7 @@ export class TourEffects {
     ofType<CloneTour>(TourActionTypes.CloneTour),
     map((action: CloneTour) => action.payload),
     switchMap(payload => {
-      return this.tourService.cloneTour(payload.id).pipe(
+      return this.tourService.cloneTour(this.tranformTourForCloning(payload.tour)).pipe(
         map(tour => {
           if (tour.id !== 0) {
             this.router.navigate(['tours', tour.id]);
@@ -212,6 +212,40 @@ export class TourEffects {
       admission: String(tourInterface.admission),
       advances: String(tourInterface.advances),
       extraCharges: String(tourInterface.extraCharges)
+    };
+  }
+
+  tranformTourForCloning(tourInterface: Tour): RawTour {
+    let tour: any = {};
+    let deadline: any = {};
+    let preliminary: any = null;
+
+    this.events$ = this.store.select(getEventsByIds([tourInterface.tourId, tourInterface.deadlineId, tourInterface.preliminaryId])).pipe(
+      takeUntil(this.destroySubject),
+      tap(events => {
+        tour = events[0];
+        deadline = events[1];
+        if (events.length > 2) {
+          preliminary = events[2];
+        }
+      })
+    );
+    this.events$.subscribe();
+
+    delete tourInterface.tourId;
+    delete tourInterface.deadlineId;
+    delete tourInterface.preliminaryId;
+
+    this.destroySubject.complete();
+
+    return {
+      ... tourInterface,
+      tour,
+      deadline,
+      preliminary,
+      admission: String(tourInterface.admission / 100),
+      advances: String(tourInterface.advances / 100),
+      extraCharges: String(tourInterface.extraCharges / 100)
     };
   }
 }
