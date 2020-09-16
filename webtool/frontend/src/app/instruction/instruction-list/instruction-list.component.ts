@@ -5,7 +5,7 @@ import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {InstructionSummary} from '../../model/instruction';
 import {getInstructionSummaries} from '../../core/store/instruction-summary.selectors';
 import {RequestInstructionSummaries} from '../../core/store/instruction-summary.actions';
-import {flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
+import {filter, first, flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {Router} from '@angular/router';
 import {MenuItem} from 'primeng/api';
 import {NamesRequested} from '../../core/store/name.actions';
@@ -15,10 +15,11 @@ import {
   CloneInstruction,
   CreateInstruction,
   DeactivateInstruction,
-  DeleteInstruction
+  DeleteInstruction, RequestInstruction
 } from '../../core/store/instruction.actions';
 import {FormControl, FormGroup} from '@angular/forms';
 import {CalendarRequested} from '../../core/store/calendar.actions';
+import {getInstructionById} from '../../core/store/instruction.selectors';
 
 @Component({
   selector: 'avk-instruction-list',
@@ -166,7 +167,20 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
   }
 
   clone(instructionId) {
-    this.store.dispatch(new CloneInstruction({id: instructionId}));
+    this.store.pipe(
+      select(getInstructionById(instructionId)),
+      tap(instruction => {
+        if (!instruction) {
+          this.store.dispatch(new RequestInstruction({id: instructionId}));
+        }
+      }),
+      filter(instruction => !!instruction),
+      first(),
+    ).subscribe(
+      instruction => {
+        this.store.dispatch(new CloneInstruction({instruction}));
+      }
+    );
   }
 
   delete(instructionId) {

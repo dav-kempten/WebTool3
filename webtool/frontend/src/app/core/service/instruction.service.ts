@@ -113,12 +113,8 @@ export class InstructionService {
     );
   }
 
-  cloneInstruction(id: number): Observable<Instruction> {
-    /* TODO: zu langsam --> Bug beim ersten Mal ausführen, die Befehle überholen sich */
-    this.getInstruction(id).pipe(
-      takeUntil(this.destroySubject),
-      tap(val => this.cloneSubject.next(this.tranformInstructionForCloning(val))),
-    ).subscribe();
+  cloneInstruction(instruction: Instruction): Observable<Instruction> {
+    this.cloneSubject.next(this.tranformInstructionForCloning(instruction));
 
     return this.http.post<Instruction>(
       `/api/frontend/instructions/`,

@@ -63,7 +63,7 @@ export class InstructionEffects {
     ofType<CloneInstruction>(InstructionActionTypes.CloneInstruction),
     map((action: CloneInstruction) => action.payload),
     switchMap(payload => {
-      return this.instructionService.cloneInstruction(payload.id).pipe(
+      return this.instructionService.cloneInstruction(this.tranformInstructionForSaving(payload.instruction)).pipe(
         map(instruction => {
           if (instruction.id !== 0) {
             this.router.navigate(['instructions', instruction.id]);
