@@ -34,8 +34,8 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
   instructions$: Observable<InstructionSummary[]>;
   activeItem$: Observable<MenuItem>;
   display = false;
-  finishedInstructions = [6, 7, 8];
-  activeInstructions = [1, 2, 3, 4, 5, 9];
+  finishedInstructions = [6, 7];
+  activeInstructions = [1, 2, 3, 4, 5, 8, 9];
   allInstructions = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
   partNewInstruction = new BehaviorSubject<string>('');

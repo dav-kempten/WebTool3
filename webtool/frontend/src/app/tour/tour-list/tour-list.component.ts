@@ -31,8 +31,8 @@ export class TourListComponent implements OnInit, OnDestroy, AfterViewInit {
   display = false;
   preliminarySelect = false;
 
-  finishedTours = [6, 7, 8];
-  activeTours = [1, 2, 3, 4, 5, 9];
+  finishedTours = [6, 7];
+  activeTours = [1, 2, 3, 4, 5, 8, 9];
   allTours = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
   partNewTour = new BehaviorSubject<string>('');
