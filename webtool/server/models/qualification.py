@@ -135,5 +135,6 @@ class UserQualification(TimeMixin, models.Model):
         return "{}'s {} von {}".format(self.user.get_full_name(), self.qualification.name, self.year)
 
     class Meta:
+        get_latest_by = "updated"
         unique_together = ('user', 'qualification', 'year')
         ordering = ('year', 'qualification__order')
