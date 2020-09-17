@@ -1,3 +1,4 @@
+<ng-container *ngIf="(userIsStaff$ | async) || (userIsAdmin$ | async) else usernotvarified">
 <ng-container *ngIf="instructionGroup$ | async as instructionGroup else loading">
 <p-card header="Instruction #{{instructionId$ | async}}">
 <!--  <p>InstructionGroup:<br/>{{instructionGroup.value | json}}</p>-->
@@ -17,7 +18,7 @@
             id="g1"
             label="Trainer"
             [nameIdList]="instructionGroup.get('teamIds').value"
-            [readOnly]="!(this.loginObject.valState >= 1)"
+            [readOnly]=""
             required
         ></avk-guide>
       </div>
@@ -27,7 +28,7 @@
       </div>
       <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
         <input id="revenue" placeholder="Einnahmen" type="text" style='width:100%'
-               [readOnly]="!(this.loginObject.valState >= 1)" pInputText>
+               pInputText>
       </div>
     </div>
     </p-card>
@@ -40,7 +41,6 @@
             [nameId]="instructionGroup.get('guideId').value"
             id="g2"
             label="Team"
-            [readOnly]="!(this.loginObject.valState >= 1)"
         ></avk-team>
       </div>
       <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
@@ -61,7 +61,7 @@
                readonly pInputText>
       </div>
       <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-        <avk-dropdown formControlName="stateId" id="stateId" [readOnly]="!(this.loginObject.valState >= 3)">
+        <avk-dropdown formControlName="stateId" id="stateId" >
         </avk-dropdown>
       </div>
       <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
@@ -155,7 +155,6 @@
       <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
         <avk-multiselect
             formControlName="equipmentIds"
-            [readOnly]="!(this.loginObject.valState >= 1)"
         ></avk-multiselect>
       </div>
       <div class="p-col-12 p-sm-3 p-md-3 p-lg-3" *ngIf="this.instructionCategory.value !== 'indoor'">
@@ -184,14 +183,12 @@
       <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
         <avk-qualificationselect
             formControlName="qualificationIds"
-            [readOnly]="!(this.loginObject.valState >= 1)"
         ></avk-qualificationselect>
       </div>
       <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
         <avk-categoryselect
             formControlName="categoryId"
             id="categoryId"
-            [readOnly]="!(this.loginObject.valState >= 1)"
             [seasonSpecific]="this.instructionCategory.value"
             [topicSpecific]="'instruction'"
         ></avk-categoryselect>
@@ -221,7 +218,6 @@
           label="Mindestens"
           id="m1"
           [maxMember]="instructionGroup.get('maxQuantity').value"
-          [readOnly]="!(this.loginObject.valState >= 1)"
       ></avk-membernumber>
     </div>
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
@@ -230,7 +226,6 @@
           label="Maximal"
           id="m2"
           [minMember]="instructionGroup.get('minQuantity').value"
-          [readOnly]="!(this.loginObject.valState >= 1)"
       ></avk-membernumber>
     </div>
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
@@ -238,7 +233,6 @@
           formControlName="curQuantity"
           label="Aktuell"
           id="m3"
-          [readOnly]="!(this.loginObject.valState >= 1)"
       ></avk-membernumber>
     </div>
   </form>
@@ -299,7 +293,7 @@
         <!--Zeitpunkt Event-->
         <div class="p-grid">
           <div class="p-col-12 p-sm-4 p-md-4 p-lg-4" *ngIf="this.instructionCategory.value !== 'indoor'">
-            <avk-approxdropdown formControlName="approximateId" id="approx" [readOnly]="!(this.loginObject.valState >= 1)"
+            <avk-approxdropdown formControlName="approximateId" id="approx"
                                 [disable]="(!!currentEventGroup.get('startTime').value)||(!!currentEventGroup.get('endTime').value)">
             </avk-approxdropdown>
           </div>
@@ -509,9 +503,9 @@
     </div>
     </p-card>
 
-    <!--Bemerkung-->
-    <p-card subheader="Nachricht an die Geschäftsstelle">
-    <div class="p-grid">
+    <!-- Nachricht an die Geschäftsstelle -->
+    <p-card subheader="Nachricht an die Geschäftsstelle" >
+    <div class="p-grid" >
       <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
       <textarea
           [rows]="3"
@@ -527,14 +521,14 @@
 
     <p-card>
     <div class="p-grid">
-      <div class="p-col-12 p-sm-1 p-md-1 p-lg-1" *ngIf="!!(this.loginObject.valState >= 3)">
+      <div class="p-col-12 p-sm-1 p-md-1 p-lg-1">
         <p-button type="button" label="Speichern"
             (click)="save(this.instructionGroup.value)"></p-button>
       </div>
       <div class="p-col-12 p-sm-1 p-md-1 p-lg-1">
         <a routerLink="../"><p-button label="Zurück"></p-button></a>
       </div>
-      <div class="p-col-12 p-sm-10 p-md-10 p-lg-10" style="text-align: right" *ngIf="!!(this.loginObject.valState >= 3)">
+      <div class="p-col-12 p-sm-10 p-md-10 p-lg-10" style="text-align: right">
         <a routerLink="../"><p-button type="button" label="Kurs löschen" styleClass="ui-button-danger"
             (click)="deleteInstruction(this.instructionGroup.value.id)"></p-button></a>
       </div>
@@ -543,4 +537,6 @@
   </form>
 </p-card>
 </ng-container>
+</ng-container>
 <ng-template #loading>Bitte kurz warten!</ng-template>
+<ng-template #usernotvarified></ng-template>
