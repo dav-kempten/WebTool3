@@ -3,7 +3,7 @@ import { Update } from '@ngrx/entity';
 import { InstructionSummary } from '../../model/instruction';
 
 export enum InstructionSummaryActionTypes {
-  InstructionSummariesNotModified = '[InstructionSummary] nstructionSummaries not modified',
+  InstructionSummariesNotModified = '[InstructionSummary] InstructionSummaries not modified',
   RequestInstructionSummaries = '[InstructionSummary] Request InstructionSummaries',
   LoadInstructionSummaries = '[InstructionSummary] Load InstructionSummaries',
   AddInstructionSummary = '[InstructionSummary] Add InstructionSummary',

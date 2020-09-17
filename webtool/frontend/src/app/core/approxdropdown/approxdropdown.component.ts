@@ -77,7 +77,7 @@ export class ApproxdropdownComponent implements OnInit, OnDestroy, AfterViewInit
       }
       this.formControl.setValue(state);
       this.choiceControl.setValue(state);
-      onChange(state.id);
+      state !== null ? onChange(state.id) : onChange(state);
     });
   }
 
@@ -110,14 +110,14 @@ export class ApproxdropdownComponent implements OnInit, OnDestroy, AfterViewInit
 
     this.formState$.pipe(
       tap((state) => {
-        for (const key in state.entities) {
+        Object.keys(state.entities).forEach(key => {
           const statePush: RawApprox = {
             id: state.entities[key].id,
             name: state.entities[key].name,
             description: state.entities[key].description,
             startTime: state.entities[key].startTime};
           this.status.push(statePush);
-        }
+        });
       })
     ).subscribe().unsubscribe();
   }

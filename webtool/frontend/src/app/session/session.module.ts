@@ -4,6 +4,9 @@ import {RouterModule, Routes} from '@angular/router';
 import {SessionListComponent} from './session-list/session-list.component';
 import {SessionDetailComponent} from './session-detail/session-detail.component';
 import {CoreModule} from '../core/core.module';
+import {ReactiveFormsModule} from '@angular/forms';
+import {TableModule} from 'primeng/table';
+import {TabMenuModule} from 'primeng/primeng';
 
 const routes: Routes = [
   {path: ':id', component: SessionDetailComponent},
@@ -16,6 +19,9 @@ const routes: Routes = [
     CommonModule,
     CoreModule,
     RouterModule.forChild(routes),
+    ReactiveFormsModule,
+    TableModule,
+    TabMenuModule
   ],
 })
 export class SessionModule {

@@ -17,11 +17,55 @@ export const initialState: State = adapter.getInitialState({
 export function reducer(state = initialState, action: InstructionActions): State {
   switch (action.type) {
 
+    case InstructionActionTypes.InstructionNotModified: {
+      return {
+        ... state,
+        isLoading: false,
+        timestamp: new Date().getTime()
+      };
+    }
+
+    case InstructionActionTypes.InstructionDeleteComplete: {
+      return {
+        ... state,
+        isLoading: false,
+        timestamp: new Date().getTime()
+      };
+    }
+
+    case InstructionActionTypes.InstructionDeactivateComplete: {
+      return {
+        ... state,
+        isLoading: false,
+        timestamp: new Date().getTime()
+      };
+    }
+
+    case InstructionActionTypes.InstructionCreateComplete: {
+      return {
+        ... state,
+        isLoading: false,
+        timestamp: new Date().getTime()
+      };
+    }
+
+    case InstructionActionTypes.InstructionUpdateComplete: {
+      return {
+        ... state,
+        isLoading: false,
+        timestamp: new Date().getTime()
+      };
+    }
+
     case InstructionActionTypes.RequestInstruction: {
       return {
         ... state,
         isLoading: true
       };
+    }
+
+    case InstructionActionTypes.LoadInstructions: {
+      return adapter.addAll(action.payload.instructions, state);
     }
 
     case InstructionActionTypes.AddInstruction: {
@@ -32,15 +76,15 @@ export function reducer(state = initialState, action: InstructionActions): State
       });
     }
 
-    case InstructionActionTypes.InstructionNotModified: {
-      return {
-        ... state,
-        isLoading: false,
-        timestamp: new Date().getTime()
-      };
+    case InstructionActionTypes.UpsertInstruction: {
+      return adapter.upsertOne(action.payload.instruction, state);
     }
 
-    case InstructionActionTypes.UpsertInstruction: {
+    case InstructionActionTypes.AddEventInstruction: {
+      return adapter.upsertOne(action.payload.instruction, state);
+    }
+
+    case InstructionActionTypes.DeleteEventInstruction: {
       return adapter.upsertOne(action.payload.instruction, state);
     }
 
@@ -66,10 +110,6 @@ export function reducer(state = initialState, action: InstructionActions): State
 
     case InstructionActionTypes.DeleteInstructions: {
       return adapter.removeMany(action.payload.ids, state);
-    }
-
-    case InstructionActionTypes.LoadInstructions: {
-      return adapter.addAll(action.payload.instructions, state);
     }
 
     case InstructionActionTypes.ClearInstructions: {

@@ -25,7 +25,6 @@ export interface Instruction {
   topicId: number;
   instruction: Event;
   meetings: Event[];
-  lowEmissionAdventure: boolean;
   ladiesOnly: boolean;
   isSpecial: boolean;
   categoryId: number | null;
@@ -42,5 +41,8 @@ export interface Instruction {
   minQuantity: number;
   maxQuantity: number;
   curQuantity?: number;
+  deprecated: boolean;
   stateId: number;
+  comment: string;
+  message: string;
 }

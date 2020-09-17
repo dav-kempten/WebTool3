@@ -1,11 +1,11 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {select, Store} from '@ngrx/store';
 import {AppState, selectRouterFragment} from '../../app.state';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {InstructionSummary} from '../../model/instruction';
 import {getInstructionSummaries} from '../../core/store/instruction-summary.selectors';
 import {RequestInstructionSummaries} from '../../core/store/instruction-summary.actions';
-import {filter, flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
+import {filter, first, flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {Router} from '@angular/router';
 import {MenuItem} from 'primeng/api';
 import {NamesRequested} from '../../core/store/name.actions';
@@ -15,31 +15,35 @@ import {
   CloneInstruction,
   CreateInstruction,
   DeactivateInstruction,
-  DeleteInstruction
+  DeleteInstruction, RequestInstruction
 } from '../../core/store/instruction.actions';
 import {FormControl, FormGroup} from '@angular/forms';
-import {Category} from '../../model/value';
 import {CalendarRequested} from '../../core/store/calendar.actions';
+import {getInstructionById} from '../../core/store/instruction.selectors';
 
 @Component({
   selector: 'avk-instruction-list',
   templateUrl: './instruction-list.component.html',
   styleUrls: ['./instruction-list.component.css']
 })
-export class InstructionListComponent implements OnInit, OnDestroy {
+export class InstructionListComponent implements OnInit, OnDestroy, AfterViewInit {
+
+  @ViewChild('dt') dt;
 
   private destroySubject = new Subject<void>();
   part$: Observable<string>;
   instructions$: Observable<InstructionSummary[]>;
   activeItem$: Observable<MenuItem>;
   display = false;
-  finishedInstructions = [6, 7, 8];
+  finishedInstructions = [6, 7];
+  activeInstructions = [1, 2, 3, 4, 5, 8, 9];
+  allInstructions = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
   partNewInstruction = new BehaviorSubject<string>('');
 
   user$: Observable<User>;
   authState$: Observable<User>;
-  userValState = 0;
+  loginObject = {id: undefined, firstName: '', lastName: '', role: undefined, valState: 0};
 
   topicId = new FormControl('');
   startDate = new FormControl('');
@@ -66,15 +70,16 @@ export class InstructionListComponent implements OnInit, OnDestroy {
     this.authState$ = this.authService.user$;
     this.authState$.pipe(
       tap(value => {
+        this.loginObject = { ...value, valState: 0 };
         if (value.role === 'Administrator') {
-          this.userValState = 4;
+          this.loginObject.valState = 4;
         } else if (value.role === 'Geschäftsstelle') {
-          this.userValState = 3;
+          this.loginObject.valState = 3;
         } else if (value.role === 'Fachbereichssprecher') {
-          this.userValState = 2;
+          this.loginObject.valState = 2;
         } else if (value.role === 'Trainer') {
-          this.userValState = 1;
-        } else { this.userValState = 0; }
+          this.loginObject.valState = 1;
+        } else { this.loginObject.valState = 0; }
       }),
     ).subscribe();
 
@@ -132,29 +137,50 @@ export class InstructionListComponent implements OnInit, OnDestroy {
     this.activeItem$.subscribe();
     this.instructions$.subscribe();
 
-    }
+  }
 
   ngOnDestroy(): void {
     this.destroySubject.next();
     this.destroySubject.complete();
   }
 
+  ngAfterViewInit(): void {
+    this.store.dispatch(new RequestInstructionSummaries());
+    this.dt.filter(this.activeInstructions, 'stateId', 'in');
+  }
+
   selectInstruction(instruction): void {
-    this.router.navigate(['instructions', instruction.id]);
+    if (!!instruction) {
+      if (this.loginObject.valState >= 3) {
+        this.router.navigate(['instructions', instruction.id]);
+      }
+    }
   }
 
   handleClick() {
     this.display = true;
   }
 
-  confirmClick() {
-    this.store.dispatch(new CreateInstruction({topicId: this.createInstruction.get('topicId').value,
-      startDate: this.createInstruction.get('startDate').value}));
+  create(topic, date) {
+    this.store.dispatch(new CreateInstruction({topicId: topic, startDate: date}));
     this.display = false;
   }
 
   clone(instructionId) {
-    this.store.dispatch(new CloneInstruction({id: instructionId}));
+    this.store.pipe(
+      select(getInstructionById(instructionId)),
+      tap(instruction => {
+        if (!instruction) {
+          this.store.dispatch(new RequestInstruction({id: instructionId}));
+        }
+      }),
+      filter(instruction => !!instruction),
+      first(),
+    ).subscribe(
+      instruction => {
+        this.store.dispatch(new CloneInstruction({instruction}));
+      }
+    );
   }
 
   delete(instructionId) {
@@ -163,5 +189,13 @@ export class InstructionListComponent implements OnInit, OnDestroy {
 
   deactivate(instructionId) {
     this.store.dispatch(new DeactivateInstruction({id: instructionId}));
+  }
+
+  changeViewSet(event, dt) {
+    if (!event.checked) {
+      dt.filter(this.activeInstructions, 'stateId', 'in');
+    } else {
+      dt.filter(this.allInstructions, 'stateId', 'in');
+    }
   }
 }

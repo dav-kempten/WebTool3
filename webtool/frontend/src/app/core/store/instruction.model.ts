@@ -6,7 +6,6 @@ export interface Instruction {
   topicId: number; // TopicId
   instructionId: number; // EventId
   meetingIds: number[]; // EventId
-  lowEmissionAdventure: boolean;
   ladiesOnly: boolean;
   isSpecial: boolean;
   categoryId: number | null;
@@ -23,5 +22,8 @@ export interface Instruction {
   minQuantity: number;
   maxQuantity: number;
   curQuantity?: number;
+  deprecated: boolean;
   stateId: number;
+  comment: string;
+  message: string;
 }

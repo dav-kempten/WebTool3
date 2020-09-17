@@ -131,7 +131,7 @@ export const memberValidator: ValidatorFn = (group: FormGroup): ValidationErrors
   const max: string = group.get('maxMember').value;
   const originalControl: FormControl = group.get('original').value;
 
-  const checkMembersNull: boolean = !(member == 0);
+  const checkMembersNull: boolean = !(member === 0);
   const checkMinMembers: boolean = !!(min) ? min <= member : false;
   const checkMaxMembers: boolean = !!(max) ? member <= max : false;
 

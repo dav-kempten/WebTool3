@@ -29,7 +29,7 @@ class Retraining(TimeMixin, models.Model):
         'UserQualification',
         db_index=True,
         blank=True, null=True,
-        related_name='retraining_list',
+        related_name='qualification_list',
         verbose_name='Qualifikation',
         help_text="Für fachspezifische Fortbildungen, die dazugehörige Qualifikation",
         on_delete=models.PROTECT,

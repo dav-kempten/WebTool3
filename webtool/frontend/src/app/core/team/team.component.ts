@@ -102,7 +102,13 @@ export class TeamComponent implements OnInit, OnDestroy, AfterViewInit, AfterCon
 
   OnChangeWrapper(onChange: (nameIds: number[]) => void): (names: Name[]) => void {
     return ((names: Name[]): void => {
-      const nameIds = names ? names.map((name: Name) => name.id) : [];
+      const nameIds = names ? names.map((name) => {
+        if (typeof name === 'number') {
+          return name;
+        } else {
+          return name.id;
+        }
+      }) : [];
       this.formControl.setValue(nameIds);
       this.team.setValue(nameIds);
       onChange(nameIds);

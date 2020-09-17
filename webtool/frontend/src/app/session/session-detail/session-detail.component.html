@@ -1,1 +1,337 @@
-<h1>Session #{{sessionId$ | async}}</h1>
+<ng-container *ngIf="sessionGroup$ | async as sessionGroup else loading">
+<p-card header="Session #{{sessionId$ | async}}">
+<!--<h1>Tour #{{sessionId$ | async}}</h1>-->
+<!--<p>{{sessionGroup.value | json}}</p>-->
+
+<form [formGroup]="sessionGroup">
+  <!--Guide-->
+  <p-card subheader="Guide & Team">
+  <div class="p-grid">
+      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+        <avk-guide
+            formControlName="guideId"
+            id="g1"
+            label="Trainer"
+            [nameIdList]="sessionGroup.get('teamIds').value"
+            required
+        ></avk-guide>
+      </div>
+      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+        <avk-team
+          formControlName="teamIds"
+          [nameId]="sessionGroup.get('guideId').value"
+          id="g2"
+          label="Team"
+        ></avk-team>
+      </div>
+  </div>
+  </p-card>
+
+  <!--Speaker, LadiesOnly-->
+  <p-card subheader="Sprecher & LadiesOnly">
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <input formControlName="speaker" id="speaker" placeholder="Sprecher" type="text" style='width:100%' pInputText>
+    </div>
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <p-checkbox
+          [formControl]="sessionGroup.get('ladiesOnly')"
+          label="LadiesOnly"
+          binary="true"
+      ></p-checkbox>
+    </div>
+  </div>
+  </p-card>
+
+  <!--Buchungscode, Status, Gruppe-->
+  <p-card subheader="Buchungscode, Status & Gruppe">
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <input formControlName="reference" id="reference" placeholder="Buchungsnummer" type="text" style='width:100%'
+             readonly pInputText>
+    </div>
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <avk-dropdown formControlName="stateId" id="stateId"></avk-dropdown>
+    </div>
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <avk-collectiveselect formControlName="collectiveId" id="collectiveId" [readOnly]="true" ></avk-collectiveselect>
+    </div>
+  </div>
+  </p-card>
+
+  <!--Ausrüstung, Zusatzausrüstung-->
+  <p-card subheader="Kategorie">
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <avk-categorymultiselect
+          formControlName="categoryIds"
+          id="categoryIds"
+          [readOnly]="false"
+          [topicSpecific]="'tour'">
+      </avk-categorymultiselect>
+    </div>
+    <div class="p-col-12 p-sm-8 p-md-8 p-lg-8">
+      <textarea
+          [rows]="1"
+          pInputTextarea
+          formControlName="miscCategory"
+          id="miscCategory"
+          placeholder="spezielle Kategorie"
+          autoResize="autoResize"
+          style='width:100%'
+      ></textarea>
+    </div>
+  </div>
+  </p-card>
+
+  <!--Liste mit Parametern (Tabelle)-->
+  <p-card subheader="Veranstaltungen">
+  <ng-container *ngIf="(eventArray$ | async) as eventArray">
+    <div class="p-grid">
+      <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+        <p-table [value]="eventArray.value" selectionMode="single"
+                 (onRowSelect)="selectEvent($event)">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Datum</th>
+              <th>Uhrzeit</th>
+              <th>Beschreibung</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-event let-i="rowIndex">
+            <tr [pSelectableRow]="i">
+              <td>{{event.startDate | date}}</td>
+              <td>{{event.startTime | time: event.approximateId}}</td>
+              <td>{{event.name}}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </ng-container>
+  </p-card>
+
+  <ng-container *ngIf="currentEventGroup">
+    <p-dialog header="EventDetail" [modal]="true" [(visible)]="display" [blockScroll]="true"
+              (onHide)="closeEvent()" [style]="{width: '60%', height: '60%'}">
+      <form [formGroup]="currentEventGroup">
+        <!--Kurztitel, Langtitel-->
+        <div class="p-grid">
+          <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+            <input formControlName="title" id="title" placeholder="Kurztitel" type="text" style='width:100%'
+                   pInputText>
+          </div>
+          <div class="p-col-12 p-sm-8 p-md-8 p-lg-8">
+            <input formControlName="name" id="name" placeholder="Langtitel" type="text" style='width:100%'
+                   pInputText>
+          </div>
+        </div>
+
+        <!--Zeitpunkt Event-->
+        <div class="p-grid">
+          <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+            <avk-approxdropdown formControlName="approximateId" id="approx"
+                                [disable]="(!!currentEventGroup.get('startTime').value)||(!!currentEventGroup.get('endTime').value)">
+            </avk-approxdropdown>
+          </div>
+          <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+            <avk-time formControlName="startTime" id="time" [disable]="!!currentEventGroup.get('approximateId').value"
+            ></avk-time>
+          </div>
+          <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+            <avk-time formControlName="endTime" id="endTime" [disable]="!!currentEventGroup.get('approximateId').value"
+            ></avk-time>
+          </div>
+        </div>
+
+        <!--Zusatz: Datumseingabe (Anfang + Ende + Art)-->
+        <div class="p-grid">
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+            <avk-date formControlName="startDate"
+                      id="dbeginn" label="Start"
+                      [maxInclude]="true"
+                      [max]="currentEventGroup.get('endDate').value"
+            ></avk-date>
+          </div>
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+            <avk-date formControlName="endDate"
+                      id="dend" label="Ende"
+                      [minInclude]="true"
+                      [min]="currentEventGroup.get('startDate').value"
+            ></avk-date>
+          </div>
+        </div>
+        <div class="p-grid">
+          <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+            <textarea
+                [rows]="3"
+                pInputTextarea
+                formControlName="description"
+                id="description"
+                placeholder="Beschreibung"
+                autoResize="autoResize"
+                style='width:100%'
+            ></textarea>
+          </div>
+        </div>
+
+        <!--Ziel und Treffpunkt-->
+        <div class="p-grid">
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+            <input formControlName="location" id="location" placeholder="Ziel/Unterkunft (Hütte, Gipfel etc.)"
+                   type="text" style="width:100%"
+                   pInputText>
+          </div>
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+            <input formControlName="rendezvous" id="rendezvous" placeholder="Treffpunkt"
+                   type="text" style="width:100%"
+                   pInputText>
+          </div>
+        </div>
+
+        <!--ReservierungsService-->
+        <div class="p-grid">
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+            <p-checkbox
+                [formControl]="currentEventGroup.get('reservationService')"
+                label="Reservierungsservice"
+                binary="true"
+            ></p-checkbox>
+          </div>
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+          </div>
+        </div>
+
+        <!--Distal & Distance-->
+        <div class="p-grid">
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+            <p-checkbox
+                [formControl]="currentEventGroup.get('distal')"
+                label="Gemeinschaftsanreise"
+                binary="true"
+                (onChange)="switchDistal($event, distal)"
+            ></p-checkbox>
+          </div>
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+            <input #distal formControlName="distance" id="distance" placeholder="Entfernung"
+                   type="text" style="width:100%"
+                   pInputText>
+          </div>
+        </div>
+        <!--ShuttleService & PublicTransport-->
+        <div class="p-grid">
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+            <p-checkbox
+                [formControl]="currentEventGroup.get('publicTransport')"
+                label="Öffentliche Anreise"
+                binary="true"
+            ></p-checkbox>
+          </div>
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+            <p-checkbox
+                [formControl]="currentEventGroup.get('shuttleService')"
+                label="ShuttleSerivce"
+                binary="true"
+            ></p-checkbox>
+          </div>
+        </div>
+
+        <!--Source, Link & Map-->
+        <div class="p-grid">
+          <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+            <input formControlName="source" id="source" placeholder="Source"
+                   type="text" style="width:100%"
+                   pInputText>
+          </div>
+          <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+            <input formControlName="link" id="link" placeholder="Link"
+                   type="text" style="width:100%"
+                   pInputText>
+          </div>
+          <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+            <input formControlName="map" id="map" placeholder="Map"
+                   type="text" style="width:100%"
+                   pInputText>
+          </div>
+        </div>
+      </form>
+    </p-dialog>
+  </ng-container>
+
+  <!--Equipment-Fields-->
+  <p-card subheader="Ausrüstung">
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <avk-multiselect
+          formControlName="equipmentIds"
+          label="Ausrüstung"
+      ></avk-multiselect>
+    </div>
+    <div class="p-col-12 p-sm-8 p-md-8 p-lg-8">
+      <textarea
+          [rows]="1"
+          pInputTextarea
+          formControlName="miscEquipment"
+          id="miscEquipmentTopic"
+          placeholder="Weitere Ausrüstung"
+          autoResize="autoResize"
+          style='width:100%'
+      ></textarea>
+    </div>
+  </div>
+  </p-card>
+
+  <!--Comment-->
+  <p-card subheader="Bemerkungen">
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+      <textarea
+          [rows]="3"
+          pInputTextarea
+          formControlName="comment"
+          placeholder="Bemerkungen"
+          autoResize="autoResize"
+          style='width:100%'
+      ></textarea>
+    </div>
+  </div>
+  </p-card>
+
+  <!--Message-->
+  <p-card subheader="Nachricht an die Geschäftsstelle">
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+      <textarea
+          [rows]="3"
+          pInputTextarea
+          formControlName="message"
+          placeholder="Nachricht an die Geschäftsstelle"
+          autoResize="autoResize"
+          style='width:100%'
+      ></textarea>
+    </div>
+  </div>
+  </p-card>
+
+  <p-card>
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-1 p-md-1 p-lg-1" *ngIf="!!(this.loginObject.valState >= 1)">
+      <p-button type="button" label="Speichern" class="ui-button-info" (click)="saveSession(this.sessionGroup.value)"></p-button>
+      </div>
+    <div class="p-col-12 p-sm-1 p-md-1 p-lg-1">
+      <a routerLink="../"><p-button label="Zurück"></p-button></a>
+    </div>
+    <div class="p-col-12 p-sm-10 p-md-10 p-lg-10" style="text-align: right" *ngIf="!!(this.loginObject.valState >= 1)">
+      <a routerLink="../"><p-button type="button" label="Gruppentermin löschen" styleClass="ui-button-danger"
+            (click)="deleteSession(this.sessionGroup.value.id)"></p-button></a>
+    </div>
+  </div>
+  </p-card>
+</form>
+</p-card>
+</ng-container>
+
+<ng-template #loading>
+  Bitte kurz warten!
+  <a routerLink="../"><p-button label="Zurück"></p-button></a>
+</ng-template>

@@ -68,7 +68,6 @@ class InstructionSerializer(serializers.ModelSerializer):
     topicId = serializers.PrimaryKeyRelatedField(source='topic', queryset=Topic.objects.all())
     instruction = EventSerializer(default={})
     meetings = EventSerializer(source='meeting_list', many=True, default=[])
-    lowEmissionAdventure = serializers.BooleanField(source='instruction.lea', default=False)
     ladiesOnly = serializers.BooleanField(source='ladies_only', default=False)
     isSpecial = serializers.BooleanField(source='is_special', default=False)
     categoryId = serializers.PrimaryKeyRelatedField(
@@ -93,9 +92,13 @@ class InstructionSerializer(serializers.ModelSerializer):
     extraChargesInfo = serializers.CharField(source='extra_charges_info', max_length=75, default='', allow_blank=True)
     minQuantity = serializers.IntegerField(source='min_quantity', default=0)
     maxQuantity = serializers.IntegerField(source='max_quantity', default=0)
-    curQuantity = serializers.IntegerField(source='cur_quantity', read_only=True)
+    curQuantity = serializers.IntegerField(source='cur_quantity', default=0)
 
     stateId = serializers.PrimaryKeyRelatedField(source='state', required=False, queryset=State.objects.all())
+    deprecated = serializers.BooleanField(default=False, required=False)
+
+    message = serializers.CharField(default='', required=False, allow_null=True, allow_blank=True)
+    comment = serializers.CharField(default='', required=False, allow_null=True, allow_blank=True)
 
     # Administrative Felder fehlen noch !
 
@@ -106,13 +109,14 @@ class InstructionSerializer(serializers.ModelSerializer):
             'guideId', 'teamIds',
             'topicId',
             'instruction', 'meetings',
-            'lowEmissionAdventure', 'ladiesOnly',
+            'ladiesOnly',
             'isSpecial', 'categoryId',
             'qualificationIds', 'preconditions',
             'equipmentIds', 'miscEquipment', 'equipmentService',
             'admission', 'advances', 'advancesInfo', 'extraCharges', 'extraChargesInfo',
             'minQuantity', 'maxQuantity', 'curQuantity',
-            'stateId',
+            'deprecated', 'stateId',
+            'message', 'comment'
         )
 
     def validate(self, data):
@@ -218,6 +222,10 @@ class InstructionSerializer(serializers.ModelSerializer):
         instance.extra_charges_info = validated_data.get('extra_charges_info', instance.extra_charges_info)
         instance.min_quantity = validated_data.get('min_quantity', instance.min_quantity)
         instance.max_quantity = validated_data.get('max_quantity', instance.max_quantity)
+        instance.cur_quantity = validated_data.get('cur_quantity', instance.cur_quantity)
+        instance.deprecated = validated_data.get('deprecated', instance.deprecated)
         instance.state = validated_data.get('state', instance.state)
+        instance.comment = validated_data.get('comment', instance.comment)
+        instance.message = validated_data.get('message', instance.message)
         instance.save()
         return instance

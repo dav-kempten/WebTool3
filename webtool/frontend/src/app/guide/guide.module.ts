@@ -6,6 +6,8 @@ import {GuideDetailComponent} from './guide-detail/guide-detail.component';
 import {CoreModule} from '../core/core.module';
 import {NameListResolver} from '../core/store/name.resolver';
 import {ReactiveFormsModule} from '@angular/forms';
+import {TableModule} from 'primeng/table';
+import {CalendarModule} from 'primeng/calendar';
 
 const routes: Routes = [
   {path: ':id', component: GuideDetailComponent /* , resolve: {nameList: NameListResolver}*/ },
@@ -17,7 +19,9 @@ const routes: Routes = [
     CommonModule,
     CoreModule,
     RouterModule.forChild(routes),
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    TableModule,
+    CalendarModule,
   ],
   declarations: [GuideListComponent, GuideDetailComponent],
   exports: [],

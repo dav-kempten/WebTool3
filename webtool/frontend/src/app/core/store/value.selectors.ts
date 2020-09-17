@@ -8,6 +8,8 @@ import {State as EquipState} from './equipment.reducer';
 import {State as SkillState} from './skill.reducer';
 import {State as CategoryState} from './category.reducer';
 import {State as TopicState} from './topic.reducer';
+import {State as FitnessState} from './fitness.reducer';
+import {State as CollectiveState} from './collective.reducer';
 import {Dictionary} from '@ngrx/entity';
 
 export const getValueState = createFeatureSelector<ValueState>('values');
@@ -15,8 +17,12 @@ export const selectStatesState = createFeatureSelector<StatesState>('states');
 export const getApproxState = createFeatureSelector<ApproxState>('approximates');
 export const getEquipState = createFeatureSelector<EquipState>('equipments');
 export const getSkillState = createFeatureSelector<SkillState>('skills');
+export const getFitnessState = createFeatureSelector<FitnessState>('fitness');
 export const getCategoryState = createFeatureSelector<CategoryState>('categories');
 export const getTopicState = createFeatureSelector<TopicState>('topics');
+export const getCollectiveState = createFeatureSelector<CollectiveState>('collectives');
+export const getStateState = createFeatureSelector<StatesState>('states');
+
 
 export const getValues = createSelector(
   getValueState,
@@ -60,4 +66,12 @@ export const getCategoryById = (categoryId: number) => createSelector(
 
 export const getApproximateById = (approximateId: number) => createSelector(
   getApproxState, approximateState => approximateState.entities[approximateId]
+);
+
+export const getCollectiveById = (collectiveId: number) => createSelector(
+  getCollectiveState, collectiveState => collectiveState.entities[collectiveId]
+);
+
+export const getStateById = (stateId: number) => createSelector(
+  getStateState, stateState => stateState.entities[stateId]
 );

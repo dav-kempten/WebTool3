@@ -4,10 +4,16 @@ import { Instruction } from './instruction.model';
 
 export enum InstructionActionTypes {
   InstructionNotModified = '[Instruction] Instruction not modified',
+  InstructionDeleteComplete = '[Instruction] Instruction delete complete',
+  InstructionDeactivateComplete = '[Instruction] Instruction deactivate complete',
+  InstructionCreateComplete = '[Instruction] Instruction create complete',
+  InstructionUpdateComplete = '[Instruction] Instruction update complete',
   RequestInstruction = '[Instruction] Request Instruction',
   LoadInstructions = '[Instruction] Load Instructions',
   AddInstruction = '[Instruction] Add Instruction',
   UpsertInstruction = '[Instruction] Upsert Instruction',
+  AddEventInstruction = '[Instruction] AddEvent Instruction',
+  DeleteEventInstruction = '[Instruction] DeleteEvent Instruction',
   AddInstructions = '[Instruction] Add Instructions',
   UpsertInstructions = '[Instruction] Upsert Instructions',
   UpdateInstruction = '[Instruction] Update Instruction',
@@ -30,6 +36,22 @@ export class InstructionNotModified implements Action {
   readonly type = InstructionActionTypes.InstructionNotModified;
 }
 
+export class InstructionDeleteComplete implements Action {
+  readonly type = InstructionActionTypes.InstructionDeleteComplete;
+}
+
+export class InstructionDeactivateComplete implements Action {
+  readonly type = InstructionActionTypes.InstructionDeactivateComplete;
+}
+
+export class InstructionCreateComplete implements Action {
+  readonly type = InstructionActionTypes.InstructionCreateComplete;
+}
+
+export class InstructionUpdateComplete implements Action {
+  readonly type = InstructionActionTypes.InstructionUpdateComplete;
+}
+
 export class LoadInstructions implements Action {
   readonly type = InstructionActionTypes.LoadInstructions;
 
@@ -46,6 +68,18 @@ export class UpsertInstruction implements Action {
   readonly type = InstructionActionTypes.UpsertInstruction;
 
   constructor(public payload: { instruction: Instruction }) {}
+}
+
+export class AddEventInstruction implements Action {
+  readonly type = InstructionActionTypes.AddEventInstruction;
+
+  constructor(public payload: { instruction: Instruction }) {}
+}
+
+export class DeleteEventInstruction implements Action {
+  readonly type = InstructionActionTypes.DeleteEventInstruction;
+
+  constructor(public payload: { instruction: Instruction, eventId: number }) {}
 }
 
 export class AddInstructions implements Action {
@@ -97,7 +131,7 @@ export class CreateInstruction implements Action {
 export class CloneInstruction implements Action {
   readonly type = InstructionActionTypes.CloneInstruction;
 
-  constructor(public payload: { id: number }) {}
+  constructor(public payload: { instruction: Instruction }) {}
 }
 
 export class DeactivateInstruction implements Action {
@@ -109,9 +143,15 @@ export class DeactivateInstruction implements Action {
 export type InstructionActions =
   RequestInstruction
   | InstructionNotModified
+  | InstructionDeleteComplete
+  | InstructionDeactivateComplete
+  | InstructionCreateComplete
+  | InstructionUpdateComplete
   | LoadInstructions
   | AddInstruction
   | UpsertInstruction
+  | AddEventInstruction
+  | DeleteEventInstruction
   | AddInstructions
   | UpsertInstructions
   | UpdateInstruction

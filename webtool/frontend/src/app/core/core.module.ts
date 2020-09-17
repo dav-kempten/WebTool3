@@ -14,6 +14,7 @@ import {reducer as CalendarReducer} from './store/calendar.reducer';
 import {NameEffects} from './store/name.effects';
 import {ValueEffects} from './store/value.effects';
 import {NamePipe, NamesPipe} from './store/name.pipe';
+import {StatePipe} from './store/state.pipe';
 import {ButtonModule} from 'primeng/button';
 import {SidebarModule} from 'primeng/sidebar';
 import {TreeModule} from 'primeng/tree';
@@ -21,6 +22,7 @@ import {MenuComponent} from './menu/menu.component';
 import {ScrollPanelModule} from 'primeng/scrollpanel';
 import {ToastModule} from 'primeng/toast';
 import {SplitButtonModule} from 'primeng/splitbutton';
+import {CardModule} from 'primeng/card';
 import {BreadcrumbComponent} from './breadcrumb/breadcrumb.component';
 import {RequiredDirective as DateRequiredDirective} from './date/required.directive';
 import {RequiredDirective as GuideRequiredDirective} from './guide/required.directive';
@@ -39,8 +41,20 @@ import {DropdownComponent} from './dropdown/dropdown.component';
 import {reducer as eventReducer} from './store/event.reducer';
 import {reducer as instructionReducer} from './store/instruction.reducer';
 import {reducer as instructionSummaryReducer} from './store/instruction-summary.reducer';
+import {reducer as tourReducer} from './store/tour.reducer';
+import {reducer as tourSummaryReducer} from './store/tour-summary.reducer';
+import {reducer as sessionReducer} from './store/session.reducer';
+import {reducer as sessionSummaryReducer} from './store/session-summary.reducer';
+import {reducer as guideReducer} from './store/guide.reducer';
+import {reducer as guideSummaryReducer} from './store/guide-summary.reducer';
 import {InstructionSummaryEffects} from './store/instruction-summary.effects';
 import {InstructionEffects} from './store/instruction.effects';
+import {TourSummaryEffects} from './store/tour-summary.effects';
+import {TourEffects} from './store/tour.effects';
+import {SessionSummaryEffects} from './store/session-summary.effects';
+import {SessionEffects} from './store/session.effects';
+import {GuideSummaryEffects} from './store/guide-summary.effects';
+import {GuideEffects} from './store/guide.effects';
 import {reducer as stateReducer} from './store/state.reducer';
 import {reducer as categoryReducer} from './store/category.reducer';
 import {reducer as approximateReducer} from './store/approximate.reducer';
@@ -56,12 +70,20 @@ import {ApproxdropdownComponent} from './approxdropdown/approxdropdown.component
 import {CategoryselectComponent} from './categoryselect/categoryselect.component';
 import {DatePipe} from './date/date.pipe';
 import {TimePipe} from './time/time.pipe';
+import { SkillselectComponent } from './skillselect/skillselect.component';
+import { FitnessselectComponent } from './fitnessselect/fitnessselect.component';
+import { QualificationselectComponent } from './qualificationselect/qualificationselect.component';
+import { CollectiveselectComponent } from './collectiveselect/collectiveselect.component';
+import { SexdropdownComponent } from './sexdropdown/sexdropdown.component';
+import { CategoryMultiselectComponent } from './categorymultiselect/categorymultiselect.component';
 
 @NgModule({
   declarations: [
     GuideComponent, TeamComponent, DateComponent, TimeComponent, NamePipe, NamesPipe, MenuComponent,
     BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent, DropdownComponent,
-    MultiselectComponent, ApproxdropdownComponent, CategoryselectComponent, DatePipe, TimePipe
+    MultiselectComponent, ApproxdropdownComponent, CategoryselectComponent, DatePipe, TimePipe, SkillselectComponent,
+    FitnessselectComponent, QualificationselectComponent, CollectiveselectComponent, SexdropdownComponent, StatePipe,
+    CategoryMultiselectComponent
   ],
   imports: [
     CommonModule,
@@ -90,6 +112,14 @@ import {TimePipe} from './time/time.pipe';
     EffectsModule.forFeature([InstructionEffects]),
     StoreModule.forFeature('instructionSummaries', instructionSummaryReducer),
     EffectsModule.forFeature([InstructionSummaryEffects]),
+    StoreModule.forFeature('tours', tourReducer),
+    EffectsModule.forFeature([TourEffects]),
+    StoreModule.forFeature('tourSummaries', tourSummaryReducer),
+    EffectsModule.forFeature([TourSummaryEffects]),
+    StoreModule.forFeature('sessions', sessionReducer),
+    EffectsModule.forFeature([SessionEffects]),
+    StoreModule.forFeature('sessionSummaries', sessionSummaryReducer),
+    EffectsModule.forFeature([SessionSummaryEffects]),
     StoreModule.forFeature('states', stateReducer),
     StoreModule.forFeature('categories', categoryReducer),
     StoreModule.forFeature('approximates', approximateReducer),
@@ -101,13 +131,19 @@ import {TimePipe} from './time/time.pipe';
     StoreModule.forFeature('calendar', CalendarReducer),
     EffectsModule.forFeature([CalendarEffects]),
     StoreModule.forFeature('names', nameReducer),
-    EffectsModule.forFeature([NameEffects])
+    EffectsModule.forFeature([NameEffects]),
+    StoreModule.forFeature('guideSummaries', guideSummaryReducer),
+    EffectsModule.forFeature([GuideSummaryEffects]),
+    StoreModule.forFeature('guides', guideReducer),
+    EffectsModule.forFeature([GuideEffects]),
   ],
   exports: [
     GuideComponent, TeamComponent, DateComponent, TimeComponent, NamePipe, NamesPipe, MenuComponent,
     BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent, DropdownComponent,
     MultiselectComponent, ButtonModule, ToggleButtonModule, ApproxdropdownComponent, CategoryselectComponent,
-    DialogModule, CheckboxModule, InputTextModule, InputTextareaModule, DatePipe, TimePipe
+    DialogModule, CheckboxModule, InputTextModule, InputTextareaModule, DatePipe, TimePipe, SkillselectComponent,
+    FitnessselectComponent, QualificationselectComponent, CollectiveselectComponent, CardModule, SexdropdownComponent,
+    StatePipe, CategoryMultiselectComponent
   ]
 })
 export class CoreModule { }

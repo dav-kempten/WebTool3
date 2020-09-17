@@ -8,4 +8,5 @@ from .talks import TalkViewSet
 from .sessions import SessionViewSet
 from .retrainings import RetrainingViewSet
 from .qualifications import UserQualificationViewSet
+from .guides import GuideViewSet
 from .urls import router as frontend_router

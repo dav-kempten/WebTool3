@@ -1,8 +1,23 @@
-<h1>Trainer</h1>
-<ul>
-  <li><a routerLink="/trainers/1">Trainer #1</a></li>
-  <li><a routerLink="/trainers/2">Trainer #2</a></li>
-  <li><a routerLink="/trainers/3">Trainer #3</a></li>
-  <li><a routerLink="/trainers/4">Trainer #4</a></li>
-  <li><a routerLink="/trainers/5">Trainer #5</a></li>
-</ul>
+<ng-container *ngIf="(guides$ | async) as guides else loading">
+  <p-table [value]="guides" selectionMode="single" (selectionChange)="selectGuide($event)">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Vorname</th>
+        <th>Nachname</th>
+        <th>E-Mail</th>
+        <th>MemberId</th>
+        <th>Geburtsdatum</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-guide>
+      <tr [pSelectableRow]="guide">
+        <td>{{guide.firstName}}</td>
+        <td>{{guide.lastName}}</td>
+        <td>{{guide.emailUser}}</td>
+        <td>{{guide.memberId}}</td>
+        <td>{{guide.birthDate}}</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</ng-container>
+<ng-template #loading>Bitte kurz warten!</ng-template>

@@ -91,6 +91,11 @@ class Guide(SeasonsMixin, TimeMixin, models.Model):
                 .replace('JDAV-', '')
         ) if qualification else None
 
+    def retraining_list(self):
+        retraining_list = (self.user.retraining_list.values_list('description', flat=True))
+        retraining = ', '.join(filter(None, retraining_list))
+        return retraining
+
     class Meta():
         get_latest_by = "updated"
         verbose_name = "Touren/Kurs/Gruppenleiter"
