@@ -1,3 +1,4 @@
+<ng-container  *ngIf="(userIsStaff$ | async) || (userIsAdmin$ | async) else usernotvarified">
 <ng-container *ngIf="(guides$ | async) as guides else loading">
   <p-table [value]="guides" selectionMode="single" (selectionChange)="selectGuide($event)">
     <ng-template pTemplate="header">
@@ -21,3 +22,4 @@
   </p-table>
 </ng-container>
 <ng-template #loading>Bitte kurz warten!</ng-template>
+<ng-template #usernotvarified></ng-template>
