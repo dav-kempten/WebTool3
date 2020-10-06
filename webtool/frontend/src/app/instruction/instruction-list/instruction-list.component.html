@@ -1,3 +1,4 @@
+<ng-container *ngIf="(userIsStaff$ | async) || (userIsAdmin$ | async) else usernotvarified">
 <ng-container *ngIf="(activeItem$ | async) as activeItem else loading">
   <p-tabMenu [model]="menuItems" [activeItem]="{}"></p-tabMenu>
   <ng-container *ngIf="(instructions$ | async) as instructions">
@@ -5,7 +6,7 @@
     <ng-template pTemplate="caption">
       <div class="p-grid">
         <div class="p-col-12 p-sm-6 p-md-6 p-lg-6" style="text-align: left">
-          <p-button label="Kurs hinzufügen" (onClick)="handleClick()" *ngIf="this.loginObject.valState >= 3" styleClass="ui-button-secondary"></p-button>
+          <p-button label="Kurs hinzufügen" (onClick)="handleClick()" styleClass="ui-button-secondary"></p-button>
         </div>
         <div class="p-col-12 p-sm-6 p-md-6 p-lg-6" style="text-align: right">
           <p-toggleButton onLabel="Alle Kurse" offLabel="Aktive Kurse" (onChange)="changeViewSet($event, dt)"></p-toggleButton>
@@ -33,12 +34,12 @@
           <td>{{instruction.minQuantity}} | {{instruction.curQuantity}} | {{instruction.maxQuantity}}</td>
           <td>
             <button pButton type="button" label="Klonen" class="ui-button-success"
-                    (click)="clone(instruction.id)" *ngIf="this.loginObject.valState >= 3"></button>
+                    (click)="clone(instruction.id)" ></button>
             <button pButton type="button" label="Löschen" class="ui-button-warning"
                     (click)="delete(instruction.id)"
-                    *ngIf="this.loginObject.valState >= 3 && this.finishedInstructions.indexOf(instruction.stateId) === -1"></button>
+                    *ngIf="this.finishedInstructions.indexOf(instruction.stateId) === -1"></button>
             <button pButton type="button" label="Deaktivieren" class="ui-button-info"
-                    (click)="deactivate(instruction.id)" *ngIf="this.loginObject.valState >= 3"></button>
+                    (click)="deactivate(instruction.id)" ></button>
           </td>
         </tr>
       </ng-template>
@@ -69,4 +70,6 @@
   </p-dialog>
   </form>
 </ng-container>
+</ng-container>
 <ng-template #loading>Bitte kurz warten!</ng-template>
+<ng-template #usernotvarified></ng-template>
