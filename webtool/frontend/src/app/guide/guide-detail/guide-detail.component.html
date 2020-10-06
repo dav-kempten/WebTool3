@@ -1,3 +1,4 @@
+<ng-container  *ngIf="(userIsStaff$ | async) || (userIsAdmin$ | async) else usernotvarified">
 <ng-container *ngIf="guideGroup$ | async as guideGroup else loading">
   <p-card header="Trainer #{{guideId$ | async}}">
     <!--JSON-Value of Guide-->
@@ -198,7 +199,9 @@
     </p-card>
   </p-card>
 </ng-container>
+</ng-container>
 <ng-template #loading>
   Einen kleinen Moment bitte...
   <a routerLink="../"><p-button label="Zurück"></p-button></a>
 </ng-template>
+<ng-template #usernotvarified></ng-template>

@@ -1,3 +1,4 @@
+<ng-container *ngIf="(userIsStaff$ | async) || (userIsAdmin$ | async) else usernotvarified">
 <ng-container *ngIf="tourGroup$ | async as tourGroup else loading">
 <p-card header="Tour #{{tourId$ | async}}">
 <!--<h1>Tour #{{tourId$ | async}}</h1>-->
@@ -462,14 +463,14 @@
 
   <p-card>
   <div class="p-grid">
-    <div class="p-col-12 p-sm-1 p-md-1 p-lg-1" *ngIf="!!(this.loginObject.valState >= 1)">
+    <div class="p-col-12 p-sm-1 p-md-1 p-lg-1">
       <p-button type="button" label="Speichern" class="ui-button-info"
           (click)="saveTour(this.tourGroup.value)"></p-button>
       </div>
     <div class="p-col-12 p-sm-1 p-md-1 p-lg-1">
       <a routerLink="../"><p-button label="Zurück"></p-button></a>
     </div>
-    <div class="p-col-12 p-sm-10 p-md-10 p-lg-10" style="text-align: right" *ngIf="!!(this.loginObject.valState >= 1)">
+    <div class="p-col-12 p-sm-10 p-md-10 p-lg-10" style="text-align: right">
       <a routerLink="../"><p-button type="button" label="Tour löschen" styleClass="ui-button-danger"
             (click)="deleteTour(this.tourGroup.value.id)"></p-button></a>
     </div>
@@ -478,8 +479,9 @@
 </form>
 </p-card>
 </ng-container>
-
+</ng-container>
 <ng-template #loading>
   Bitte kurz warten!
   <a routerLink="../"><p-button label="Zurück"></p-button></a>
 </ng-template>
+<ng-template #usernotvarified></ng-template>

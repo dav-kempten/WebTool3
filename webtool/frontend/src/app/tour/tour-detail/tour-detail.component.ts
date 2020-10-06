@@ -45,6 +45,8 @@ export class TourDetailComponent implements OnInit, OnDestroy {
   category$: Observable<Category>;
 
   authState$: Observable<User>;
+  userIsStaff$: Observable<boolean>;
+  userIsAdmin$: Observable<boolean>;
   loginObject = {id: undefined, firstName: '', lastName: '', role: undefined, valState: 0};
   display = false;
   currentEventGroup: FormGroup = undefined;
@@ -57,22 +59,8 @@ export class TourDetailComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-
-    this.authState$ = this.userService.user$;
-    this.authState$.pipe(
-      tap(value => {
-        this.loginObject = { ...value, valState: 0 };
-        if (value.role === 'Administrator') {
-          this.loginObject.valState = 4;
-        } else if (value.role === 'Geschäftsstelle') {
-          this.loginObject.valState = 3;
-        } else if (value.role === 'Fachbereichssprecher') {
-          this.loginObject.valState = 2;
-        } else if (value.role === 'Trainer') {
-          this.loginObject.valState = 1;
-        } else { this.loginObject.valState = 0; }
-      }),
-    ).subscribe();
+    this.userIsStaff$ = this.userService.isStaff$;
+    this.userIsAdmin$ = this.userService.isAdministrator$;
 
     this.tourId$ = this.store.select(selectRouterDetailId);
 
