@@ -44,33 +44,22 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
   collective$: Observable<Collective>;
 
   authState$: Observable<User>;
+  userIsStaff$: Observable<boolean>;
+  userIsAdmin$: Observable<boolean>;
   loginObject = {id: undefined, firstName: '', lastName: '', role: undefined, valState: 0};
   display = false;
   currentEventGroup: FormGroup = undefined;
   eventNumber: number[];
 
-  constructor(private store: Store<AppState>, private authService: AuthService) {
+  constructor(private store: Store<AppState>, private userService: AuthService) {
     this.store.dispatch(new NamesRequested());
     this.store.dispatch(new ValuesRequested());
     this.store.dispatch(new CalendarRequested());
   }
 
   ngOnInit(): void {
-    this.authState$ = this.authService.user$;
-    this.authState$.pipe(
-      tap(value => {
-        this.loginObject = { ...value, valState: 0 };
-        if (value.role === 'Administrator') {
-          this.loginObject.valState = 4;
-        } else if (value.role === 'Geschäftsstelle') {
-          this.loginObject.valState = 3;
-        } else if (value.role === 'Fachbereichssprecher') {
-          this.loginObject.valState = 2;
-        } else if (value.role === 'Trainer') {
-          this.loginObject.valState = 1;
-        } else { this.loginObject.valState = 0; }
-      }),
-    ).subscribe();
+    this.userIsStaff$ = this.userService.isStaff$;
+    this.userIsAdmin$ = this.userService.isAdministrator$;
 
     this.sessionId$ = this.store.select(selectRouterDetailId);
 
