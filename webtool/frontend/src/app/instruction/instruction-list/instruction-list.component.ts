@@ -69,10 +69,9 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
   }
 
   ngOnInit() {
-    this.userIsStaff$ = this.userService.isStaff$;
-    this.userIsAdmin$ = this.userService.isAdministrator$;
+    this.authState$ = this.userService.user$;
 
-    /*this.authState$.pipe(
+    this.authState$.pipe(
       tap(value => {
         this.loginObject = { ...value, valState: 0 };
         if (value.role === 'Administrator') {
@@ -85,7 +84,7 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
           this.loginObject.valState = 1;
         } else { this.loginObject.valState = 0; }
       }),
-    ).subscribe();*/
+    ).subscribe();
 
     this.part$ = this.store.pipe(
       takeUntil(this.destroySubject),
