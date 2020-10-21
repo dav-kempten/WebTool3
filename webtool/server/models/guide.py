@@ -98,6 +98,6 @@ class Guide(SeasonsMixin, TimeMixin, models.Model):
 
     class Meta():
         get_latest_by = "updated"
-        verbose_name = "Touren/Kurs/Gruppenleiter"
-        verbose_name_plural = "Touren/Kurs/Gruppenleiter"
+        verbose_name = "Tourenleiter"
+        verbose_name_plural = "Tourenleiter"
         ordering = ('user__last_name', 'user__first_name')
