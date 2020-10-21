@@ -24,7 +24,7 @@ export class TourSummaryEffects {
     switchMap(() => {
       return this.tourService.getTourSummaries().pipe(
         map((tourSummaries: TourSummary[]) => {
-          if (tourSummaries) {
+          if (tourSummaries.length > 0) {
             return new LoadTourSummaries({tourSummaries});
           } else {
             return new TourSummariesNotModified();

@@ -24,7 +24,7 @@ export class InstructionSummaryEffects {
     switchMap(() => {
       return this.instructionService.getInstructionSummaries().pipe(
         map((instructionSummaries: InstructionSummary[]) => {
-          if (instructionSummaries) {
+          if (instructionSummaries.length > 0) {
             return new LoadInstructionSummaries({instructionSummaries});
           } else {
             return new InstructionSummariesNotModified();
