@@ -34,6 +34,7 @@ class Topic(SeasonsMixin, TimeMixin, DescriptionMixin, QualificationMixin, Equip
         db_index=True,
         verbose_name='Preisaufschläge',
         related_name='tariff_list',
+        blank=True, default=''
     )
 
     order = fields.OrderField()

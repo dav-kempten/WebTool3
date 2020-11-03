@@ -36,16 +36,19 @@ SECRET_KEY = get_env('DJCODE_SECRET_KEY')
 # Application definition
 
 INSTALLED_APPS = [
+    'django.contrib.admin',
     'django.contrib.sites',
     'django.contrib.redirects',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.staticfiles',
+    'django.contrib.messages',
     'rest_framework',
     'django_filters',
     'corsheaders',
-    'server'
+    'server',
+    'admin_reorder',
 ]
 
 MIDDLEWARE = [
@@ -56,7 +59,9 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.contrib.redirects.middleware.RedirectFallbackMiddleware'
+    'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'admin_reorder.middleware.ModelAdminReorder',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -142,7 +147,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
@@ -161,3 +165,16 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+# use pip3.6 install django-modeladmin-reorder before using & register app in settings + middleware
+
+ADMIN_REORDER = (
+    {'app': 'auth', 'models': ('auth.User', 'auth.Group')},
+    {'app': 'server', 'label': 'Kalender', 'models': ('server.Vacation', 'server.Anniversary', 'server.Calendar')},
+    {'app': 'server', 'label': 'Gruppen', 'models': ('server.Collective', 'server.Session')},
+    {'app': 'server', 'label': 'Qualifikationen', 'models': ('server.Qualification', 'server.QualificationGroup')},
+    {'app': 'server', 'label': 'Events', 'models': ('server.Equipment', 'server.Tour', 'server.Category', 'server.CategoryGroup')},
+    {'app': 'server', 'label': 'Instructions', 'models': ('server.Instruction', 'server.Topic',)},
+    'sites'
+)
