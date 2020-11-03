@@ -30,7 +30,7 @@ import {UpdateEvent} from '../../core/store/event.actions';
 
 export class InstructionDetailComponent implements OnInit, OnDestroy {
 
-  private destroySubject = new Subject<void>();
+  private destroySubject: Subject<boolean> = new Subject<boolean>();
   private instructionSubject = new BehaviorSubject<FormGroup>(undefined);
   private topicSubject = new BehaviorSubject<FormGroup>(undefined);
   private categorySubject = new BehaviorSubject<FormGroup>(undefined);
@@ -75,6 +75,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     this.instruction$ = this.instructionId$.pipe(
       takeUntil(this.destroySubject),
       flatMap(id => this.store.pipe(
+        takeUntil(this.destroySubject),
         select(getInstructionById(id)),
         tap(instruction => {
           if (!instruction) {
@@ -204,8 +205,9 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.destroySubject.next();
-    this.destroySubject.complete();
+    this.destroySubject.next(true);
+    this.destroySubject.unsubscribe();
+
     this.instructionSubject.complete();
     this.topicSubject.complete();
     this.categorySubject.complete();
