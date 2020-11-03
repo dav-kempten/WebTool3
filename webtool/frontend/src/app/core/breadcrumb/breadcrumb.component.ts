@@ -59,11 +59,11 @@ export class BreadcrumbComponent implements OnInit {
                   first()
                 ).subscribe(category => {
                   if (category.summer) {
-                    breadcrumbs[breadcrumbs.length - 1].label = 'Sommer Kurse';
+                    breadcrumbs[breadcrumbs.length - 1].label = 'Sommerkurse';
                     breadcrumbs[breadcrumbs.length - 1].fragment = 'summer';
                   }
                   if (category.winter) {
-                    breadcrumbs[breadcrumbs.length - 1].label = 'Winter Kurse';
+                    breadcrumbs[breadcrumbs.length - 1].label = 'Winterkurse';
                     breadcrumbs[breadcrumbs.length - 1].fragment = 'winter';
                   }
                   if (category.indoor) {
@@ -92,7 +92,7 @@ export class BreadcrumbComponent implements OnInit {
             ).subscribe(
               tour => {
                 this.store.pipe(
-                  select(getCategoryById(tour.categoryIds[0])),
+                  select(getCategoryById(tour.categoryId)),
                   tap(category => {
                     if (!category) {
                       this.store.dispatch(new ValuesRequested());
@@ -102,11 +102,11 @@ export class BreadcrumbComponent implements OnInit {
                   first()
                 ).subscribe(category => {
                   if (category.summer) {
-                    breadcrumbs[breadcrumbs.length - 1].label = 'Sommer Touren';
+                    breadcrumbs[breadcrumbs.length - 1].label = 'Sommertouren';
                     breadcrumbs[breadcrumbs.length - 1].fragment = 'summer';
                   }
                   if (category.winter) {
-                    breadcrumbs[breadcrumbs.length - 1].label = 'Winter Touren';
+                    breadcrumbs[breadcrumbs.length - 1].label = 'Wintertouren';
                     breadcrumbs[breadcrumbs.length - 1].fragment = 'winter';
                   }
                   breadcrumbs[breadcrumbs.length - 1].url = '/tours';
@@ -140,6 +140,7 @@ export class BreadcrumbComponent implements OnInit {
                   filter(collective => !!collective),
                   first()
                 ).subscribe(collective => {
+                  breadcrumbs[breadcrumbs.length - 1].label = collective.name;
                   breadcrumbs[breadcrumbs.length - 1].url = '/sessions';
                   breadcrumbs.push({
                     url: `/sessions/${session.id}`,
@@ -177,14 +178,14 @@ export class BreadcrumbComponent implements OnInit {
             switch (fragment) {
               case 'summer':
                 breadcrumbs.push({
-                  label: 'Sommer Kurse',
+                  label: 'Sommerkurse',
                   url: '/instructions',
                   fragment: 'summer'
                 });
                 break;
               case 'winter':
                 breadcrumbs.push({
-                  label: 'Winter Kurse',
+                  label: 'Winterkurse',
                   url: '/instructions',
                   fragment: 'winter'
                 });
@@ -205,21 +206,21 @@ export class BreadcrumbComponent implements OnInit {
             switch (fragment) {
               case 'summer':
                 breadcrumbs.push({
-                  label: 'Sommer Touren',
+                  label: 'Sommertouren',
                   url: '/tours',
                   fragment: 'summer'
                 });
                 break;
               case 'winter':
                 breadcrumbs.push({
-                  label: 'Winter Touren',
+                  label: 'Wintertouren',
                   url: '/tours',
                   fragment: 'winter'
                 });
                 break;
               case 'youth':
                 breadcrumbs.push({
-                  label: 'Jugend Touren',
+                  label: 'Jugendtouren',
                   url: '/tours',
                   fragment: 'youth'
                 });

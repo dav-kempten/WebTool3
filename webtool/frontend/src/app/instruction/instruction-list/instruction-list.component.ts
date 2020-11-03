@@ -58,8 +58,8 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
   menuItems: MenuItem[] = [
     {label: 'Alle Kurse', routerLink: ['/instructions']},
     {label: 'Kletterschule', url: '/instructions#indoor'},
-    {label: 'Sommer Kurse', url: '/instructions#summer'},
-    {label: 'Winter Kurse', url: '/instructions#winter'},
+    {label: 'Sommerkurse', url: '/instructions#summer'},
+    {label: 'Winterkurse', url: '/instructions#winter'},
   ];
 
   constructor(private store: Store<AppState>, private router: Router, private userService: AuthService) {
