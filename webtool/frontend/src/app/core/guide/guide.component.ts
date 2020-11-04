@@ -1,11 +1,11 @@
 import {ReplaySubject, Subscription, of} from 'rxjs';
-import {map, switchMap, filter, delay} from 'rxjs/operators';
+import {map, switchMap, filter, delay, tap} from 'rxjs/operators';
 import {
   Component, Input, Output,
   OnInit, OnDestroy, AfterContentInit, AfterViewInit,
   ViewChild, ContentChild, forwardRef,
 } from '@angular/core';
-import {Store} from '@ngrx/store';
+import {select, Store} from '@ngrx/store';
 import {
   ControlValueAccessor, NG_VALUE_ACCESSOR,
   FormGroup, FormControl, FormControlName,
@@ -15,6 +15,7 @@ import {AppState} from '../../app.state';
 import {Name} from '../../model/name';
 import {getNameById, getNames} from '../store/name.selectors';
 import {AutoComplete} from 'primeng/autocomplete';
+import {NamesRequested} from '../store/name.actions';
 
 interface NameString {
   name: string;
@@ -128,7 +129,14 @@ export class GuideComponent implements OnInit, OnDestroy, AfterViewInit, AfterCo
     let nameList: NameString[] = [];
     of(nameId).pipe(
       filter(id => typeof id === 'number'),
-      switchMap(id => this.store.select(getNameById(id))),
+      switchMap(id => this.store.pipe(
+        select(getNameById(id)),
+        tap(guide => {
+          if (!guide) {
+            this.store.dispatch(new NamesRequested());
+          }
+        }),
+      )),
       filter((name: Name): boolean => !!name && !!Object.keys(name).length),
       map((name: Name): NameString[] => [
         {
