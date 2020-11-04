@@ -74,9 +74,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
         takeUntil(this.destroySubject),
         select(getInstructionById(id)),
         tap(instruction => {
-          if (!instruction) {
-            this.store.dispatch(new RequestInstruction({id}));
-          } else {
+          if (!!instruction) {
             if (this.instructionSubject.value === undefined) {
               instruction.admission = (instruction.admission / 100);
               instruction.advances = (instruction.advances / 100);

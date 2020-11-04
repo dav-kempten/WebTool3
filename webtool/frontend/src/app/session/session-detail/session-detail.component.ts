@@ -65,9 +65,7 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
         takeUntil(this.destroySubject),
         select(getSessionById(id)),
         tap(session => {
-          if (!session) {
-            this.store.dispatch(new RequestSession({id}));
-          } else {
+          if (!!session) {
             const sessionGroup = sessionGroupFactory(session);
             sessionGroup.valueChanges.pipe(
               takeUntil(this.destroySubject)

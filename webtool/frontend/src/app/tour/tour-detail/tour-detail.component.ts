@@ -66,9 +66,7 @@ export class TourDetailComponent implements OnInit, OnDestroy {
         takeUntil(this.destroySubject),
         select(getTourById(id)),
         tap(tour => {
-          if (!tour) {
-            this.store.dispatch(new RequestTour({id}));
-          } else {
+          if (!!tour) {
             if (this.tourSubject.value === undefined) {
               tour.admission = (tour.admission / 100);
               tour.advances = (tour.advances / 100);
