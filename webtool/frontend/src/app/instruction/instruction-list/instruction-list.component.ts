@@ -62,11 +62,7 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
     {label: 'Winterkurse', url: '/instructions#winter'},
   ];
 
-  constructor(private store: Store<AppState>, private router: Router, private userService: AuthService) {
-    this.store.dispatch(new NamesRequested());
-    this.store.dispatch(new ValuesRequested());
-    this.store.dispatch(new CalendarRequested());
-  }
+  constructor(private store: Store<AppState>, private router: Router, private userService: AuthService) { }
 
   ngOnInit() {
     this.authState$ = this.userService.user$;

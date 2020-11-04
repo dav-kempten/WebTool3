@@ -14,6 +14,8 @@ import {getSessionById} from '../store/session.selectors';
 import {RequestSession} from '../store/session.actions';
 import {getGuideById} from '../store/guide.selectors';
 import {RequestGuide} from '../store/guide.actions';
+import {NamesRequested} from '../store/name.actions';
+import {CalendarRequested} from '../store/calendar.actions';
 
 
 @Component({
@@ -26,6 +28,9 @@ export class BreadcrumbComponent implements OnInit {
   @Output() breadcrumb$: Observable<Breadcrumbs>;
 
   constructor(private store: Store<AppState>, private router: Router) {
+    this.store.dispatch(new NamesRequested());
+    this.store.dispatch(new ValuesRequested());
+    this.store.dispatch(new CalendarRequested());
 
     this.breadcrumb$ = this.store.pipe(
       select(selectRouterBreadcrumbs),

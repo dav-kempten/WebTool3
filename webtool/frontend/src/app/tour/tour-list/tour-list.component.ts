@@ -61,14 +61,11 @@ export class TourListComponent implements OnInit, OnDestroy, AfterViewInit {
     {label: 'Jugendtouren', url: '/tours#youth'},
   ];
 
-  constructor(private store: Store<AppState>, private router: Router, private authService: AuthService) {
-    this.store.dispatch(new NamesRequested());
-    this.store.dispatch(new ValuesRequested());
-    this.store.dispatch(new CalendarRequested());
-  }
+  constructor(private store: Store<AppState>, private router: Router, private authService: AuthService) { }
 
   ngOnInit() {
     this.authState$ = this.authService.user$;
+
     this.authState$.pipe(
       tap(value => {
         this.loginObject = { ...value, valState: 0 };

@@ -62,11 +62,7 @@ export class SessionListComponent implements OnInit, OnDestroy, AfterViewInit {
     {label: 'Vollmondstammtisch', url: '/sessions#vst'}
   ];
 
-  constructor(private store: Store<AppState>, private router: Router, private authService: AuthService) {
-    this.store.dispatch(new NamesRequested());
-    this.store.dispatch(new ValuesRequested());
-    this.store.dispatch(new CalendarRequested());
-  }
+  constructor(private store: Store<AppState>, private router: Router, private authService: AuthService) { }
 
   ngOnInit() {
     this.authState$ = this.authService.user$;
