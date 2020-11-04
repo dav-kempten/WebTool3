@@ -131,16 +131,19 @@ export class BreadcrumbComponent implements OnInit {
             ).subscribe(
               session => {
                 this.store.pipe(
-                  select(getCollectiveById(session.collectiveId)),
-                  tap(collective => {
-                    if (!collective) {
+                  select(getCategoryById(session.collectiveId)),
+                  tap(category => {
+                    if (!category) {
                       this.store.dispatch(new ValuesRequested());
                     }
                   }),
-                  filter(collective => !!collective),
+                  filter(category => !!category),
                   first()
-                ).subscribe(collective => {
-                  breadcrumbs[breadcrumbs.length - 1].label = collective.name;
+                ).subscribe(category => {
+                  if (category.collective) {
+                    breadcrumbs[breadcrumbs.length - 1].label = category.name;
+                    breadcrumbs[breadcrumbs.length - 1].fragment = category.code.toLowerCase();
+                  }
                   breadcrumbs[breadcrumbs.length - 1].url = '/sessions';
                   breadcrumbs.push({
                     url: `/sessions/${session.id}`,
@@ -223,6 +226,41 @@ export class BreadcrumbComponent implements OnInit {
                   label: 'Jugendtouren',
                   url: '/tours',
                   fragment: 'youth'
+                });
+                break;
+            }
+          }
+          if (part === 'Gruppen') {
+            breadcrumbs[breadcrumbs.length - 1].label = 'Gruppen';
+            breadcrumbs[breadcrumbs.length - 1].url = '/sessions';
+            delete breadcrumbs[breadcrumbs.length - 1].fragment;
+            switch (fragment) {
+              case 'gjm':
+                breadcrumbs.push({
+                  label: 'Jungmannschaft',
+                  url: '/sessions',
+                  fragment: 'gjm'
+                });
+                break;
+              case 'gbw':
+                breadcrumbs.push({
+                  label: 'Bergwandergruppe',
+                  url: '/sessions',
+                  fragment: 'gbw'
+                });
+                break;
+              case 'aas':
+                breadcrumbs.push({
+                  label: 'Alpine Abendschule',
+                  url: '/sessions',
+                  fragment: 'aas'
+                });
+                break;
+              case 'vst':
+                breadcrumbs.push({
+                  label: 'Vollmondstammtisch',
+                  url: '/sessions',
+                  fragment: 'vst'
                 });
                 break;
             }
