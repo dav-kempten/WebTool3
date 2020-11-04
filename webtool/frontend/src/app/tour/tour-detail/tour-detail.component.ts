@@ -97,7 +97,6 @@ export class TourDetailComponent implements OnInit, OnDestroy {
         select(getCategoryById(tour.categoryId)),
         tap(category => {
           if (!category) {
-            console.log('category', category);
             this.store.dispatch((new ValuesRequested()));
           } else {
             this.categorySubject.next(categoryGroupFactory(category));
