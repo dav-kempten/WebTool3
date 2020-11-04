@@ -145,7 +145,6 @@ export class TourListComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.store.dispatch(new RequestTourSummaries());
     this.dt.filter(this.activeTours, 'stateId', 'in');
   }
 

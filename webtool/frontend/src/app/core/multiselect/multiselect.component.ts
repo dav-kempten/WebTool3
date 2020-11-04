@@ -21,7 +21,6 @@ import {
 } from '@angular/forms';
 import {Observable, ReplaySubject, Subject, Subscription} from 'rxjs';
 import {delay, takeUntil, tap} from 'rxjs/operators';
-import {ValuesRequested} from '../store/value.actions';
 import {Store} from '@ngrx/store';
 import {AppState} from '../../app.state';
 import {Equipment as RawEquipment} from '../../model/value';
@@ -117,7 +116,6 @@ export class MultiselectComponent implements OnInit, AfterViewInit, OnDestroy, A
   }
 
   constructor(private store: Store<AppState>) {
-    this.store.dispatch(new ValuesRequested());
     this.formEquipState$ = this.store.select(getEquipState);
 
     this.formEquipState$.pipe(

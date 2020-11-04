@@ -102,7 +102,7 @@ export class ApproxdropdownComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   constructor(private store: Store<AppState>) {
-    this.store.dispatch(new ValuesRequested());
+    // this.store.dispatch(new ValuesRequested());
   }
 
   ngOnInit(): void {
