@@ -168,13 +168,11 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
     this.destroySubject.next(true);
     this.destroySubject.unsubscribe();
 
-    this.destroySubject.next();
-    this.destroySubject.complete();
     this.sessionSubject.complete();
     this.collectiveSubject.complete();
     this.eventsSubject.complete();
 
-    /* Clear tours after destroying component */
+    /* Clear sessions after destroying component */
     this.store.dispatch(new ClearSessions());
   }
 
