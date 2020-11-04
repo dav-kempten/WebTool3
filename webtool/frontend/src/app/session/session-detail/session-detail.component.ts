@@ -12,7 +12,7 @@ import {ValuesRequested} from '../../core/store/value.actions';
 import {CalendarRequested} from '../../core/store/calendar.actions';
 import {filter, flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {getSessionById} from '../../core/store/session.selectors';
-import {DeleteSession, RequestSession, UpsertSession} from '../../core/store/session.actions';
+import {ClearSessions, DeleteSession, RequestSession, UpsertSession} from '../../core/store/session.actions';
 import {getCollectiveById} from '../../core/store/value.selectors';
 import {getEventsByIds} from '../../core/store/event.selectors';
 import {CreateEvent, UpdateEvent} from '../../core/store/event.actions';
@@ -25,7 +25,7 @@ import {UpdateSession} from '../../core/store/session.actions';
 })
 export class SessionDetailComponent implements OnInit, OnDestroy {
 
-  private destroySubject = new Subject<void>();
+  private destroySubject: Subject<boolean> = new Subject<boolean>();
   private sessionSubject = new BehaviorSubject<FormGroup>(undefined);
   private collectiveSubject = new BehaviorSubject<FormGroup>(undefined);
   private eventsSubject = new BehaviorSubject<FormArray>(undefined);
@@ -51,11 +51,7 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
   currentEventGroup: FormGroup = undefined;
   eventNumber: number[];
 
-  constructor(private store: Store<AppState>, private userService: AuthService) {
-    this.store.dispatch(new NamesRequested());
-    this.store.dispatch(new ValuesRequested());
-    this.store.dispatch(new CalendarRequested());
-  }
+  constructor(private store: Store<AppState>, private userService: AuthService) {  }
 
   ngOnInit(): void {
     this.userIsStaff$ = this.userService.isStaff$;
@@ -66,6 +62,7 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
     this.session$ = this.sessionId$.pipe(
       takeUntil(this.destroySubject),
       flatMap(id => this.store.pipe(
+        takeUntil(this.destroySubject),
         select(getSessionById(id)),
         tap(session => {
           if (!session) {
@@ -90,6 +87,7 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
       takeUntil(this.destroySubject),
       filter(session => !!session),
       flatMap(session => this.store.pipe(
+        takeUntil(this.destroySubject),
         select(getCollectiveById(session.collectiveId)),
         tap(collective => {
           if (!collective) {
@@ -117,6 +115,7 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
       takeUntil(this.destroySubject),
       filter(eventIds => !!eventIds),
       flatMap(eventIds => this.store.select(getEventsByIds(eventIds)).pipe(
+        takeUntil(this.destroySubject),
         filter(() => !!eventIds && eventIds.length > 0),
         tap(events => {
           const eventArray = new FormArray([]);
@@ -166,11 +165,17 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.destroySubject.next(true);
+    this.destroySubject.unsubscribe();
+
     this.destroySubject.next();
     this.destroySubject.complete();
     this.sessionSubject.complete();
     this.collectiveSubject.complete();
     this.eventsSubject.complete();
+
+    /* Clear tours after destroying component */
+    this.store.dispatch(new ClearSessions());
   }
 
   selectEvent(index) {
