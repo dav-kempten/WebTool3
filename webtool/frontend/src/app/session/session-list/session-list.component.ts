@@ -101,6 +101,7 @@ export class SessionListComponent implements OnInit, OnDestroy, AfterViewInit {
       takeUntil(this.destroySubject),
       flatMap( part =>
         this.store.pipe(
+          takeUntil(this.destroySubject),
           select(getSessionSummaries),
           tap(sessions => {
             if (!sessions || !sessions.length) {
@@ -124,7 +125,6 @@ export class SessionListComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.store.dispatch(new RequestSessionSummaries());
     this.dt.filter(this.activeSessions, 'stateId', 'in');
   }
 
