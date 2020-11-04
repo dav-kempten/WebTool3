@@ -157,6 +157,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
       takeUntil(this.destroySubject),
       filter(eventIds => !!eventIds),
       flatMap(eventIds => this.store.select(getEventsByIds(eventIds)).pipe(
+        takeUntil(this.destroySubject),
         filter(() => !!eventIds && eventIds.length > 0),
         tap(events => {
           const eventArray = new FormArray([]);
@@ -164,7 +165,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
             const eventGroup = eventGroupFactory(event);
             eventGroup.valueChanges.pipe(
               takeUntil(this.destroySubject)
-            ).subscribe( value => this.eventChangeSubject.next(value));
+            ).subscribe(value => this.eventChangeSubject.next(value));
             eventArray.push(eventGroup);
           });
           this.eventsSubject.next(eventArray);

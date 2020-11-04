@@ -24,7 +24,7 @@ import {CreateEvent, UpdateEvent} from '../../core/store/event.actions';
 })
 export class TourDetailComponent implements OnInit, OnDestroy {
 
-  private destroySubject = new Subject<void>();
+  private destroySubject: Subject<boolean> = new Subject<boolean>();
   private tourSubject = new BehaviorSubject<FormGroup>(undefined);
   private categorySubject = new BehaviorSubject<FormGroup>(undefined);
   private eventsSubject = new BehaviorSubject<FormArray>(undefined);
@@ -67,6 +67,7 @@ export class TourDetailComponent implements OnInit, OnDestroy {
     this.tour$ = this.tourId$.pipe(
       takeUntil(this.destroySubject),
       flatMap(id => this.store.pipe(
+        takeUntil(this.destroySubject),
         select(getTourById(id)),
         tap(tour => {
           if (!tour) {
@@ -96,19 +97,21 @@ export class TourDetailComponent implements OnInit, OnDestroy {
       takeUntil(this.destroySubject),
       filter(tour => !!tour),
       flatMap(tour => this.store.pipe(
+        takeUntil(this.destroySubject),
         select(getCategoryById(tour.categoryId)),
         tap(category => {
           if (!category) {
+            console.log('category', category);
             this.store.dispatch((new ValuesRequested()));
           } else {
             this.categorySubject.next(categoryGroupFactory(category));
-          }
-          if (category.indoor) {
-            this.tourCategory.next('indoor');
-          } else if (category.summer) {
-            this.tourCategory.next('summer');
-          } else if (category.winter) {
-            this.tourCategory.next('winter');
+            if (category.indoor) {
+              this.tourCategory.next('indoor');
+            } else if (category.summer) {
+              this.tourCategory.next('summer');
+            } else if (category.winter) {
+              this.tourCategory.next('winter');
+            }
           }
         })
       )),
@@ -130,6 +133,7 @@ export class TourDetailComponent implements OnInit, OnDestroy {
       takeUntil(this.destroySubject),
       filter(eventIds => !!eventIds),
       flatMap(eventIds => this.store.select(getEventsByIds(eventIds)).pipe(
+        takeUntil(this.destroySubject),
         filter(() => !!eventIds && eventIds.length > 0),
         tap(events => {
           const eventArray = new FormArray([]);
@@ -181,8 +185,9 @@ export class TourDetailComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.destroySubject.next();
-    this.destroySubject.complete();
+    this.destroySubject.next(true);
+    this.destroySubject.unsubscribe();
+
     this.tourSubject.complete();
     this.categorySubject.complete();
     this.eventsSubject.complete();
