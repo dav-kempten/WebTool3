@@ -60,11 +60,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   currentEventGroup: FormGroup = undefined;
   eventNumber: number[];
 
-  constructor(private store: Store<AppState>, private userService: AuthService) {
-    this.store.dispatch(new NamesRequested());
-    this.store.dispatch(new ValuesRequested());
-    this.store.dispatch(new CalendarRequested());
-  }
+  constructor(private store: Store<AppState>, private userService: AuthService) { }
 
   ngOnInit(): void {
     this.userIsStaff$ = this.userService.isStaff$;
