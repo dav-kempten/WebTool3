@@ -66,7 +66,9 @@ export class TourDetailComponent implements OnInit, OnDestroy {
         takeUntil(this.destroySubject),
         select(getTourById(id)),
         tap(tour => {
-          if (!!tour) {
+          if (!tour) {
+            this.store.dispatch(new RequestTour({id}));
+          } else {
             if (this.tourSubject.value === undefined) {
               tour.admission = (tour.admission / 100);
               tour.advances = (tour.advances / 100);
@@ -178,15 +180,17 @@ export class TourDetailComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    /* Reset values of money-controls */
+    this.tourSubject.value.controls.admission.setValue(this.tourSubject.value.controls.admission.value * 100);
+    this.tourSubject.value.controls.extraCharges.setValue(this.tourSubject.value.controls.extraCharges.value * 100);
+    this.tourSubject.value.controls.advances.setValue(this.tourSubject.value.controls.advances.value * 100);
+
     this.destroySubject.next(true);
     this.destroySubject.unsubscribe();
 
     this.tourSubject.complete();
     this.categorySubject.complete();
     this.eventsSubject.complete();
-
-    /* Clear tours after destroying component */
-    this.store.dispatch(new ClearTours());
   }
 
   selectEvent(index) {

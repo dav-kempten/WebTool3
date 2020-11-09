@@ -65,7 +65,9 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
         takeUntil(this.destroySubject),
         select(getSessionById(id)),
         tap(session => {
-          if (!!session) {
+          if (!session) {
+            this.store.dispatch(new RequestSession({id}));
+          } else {
             const sessionGroup = sessionGroupFactory(session);
             sessionGroup.valueChanges.pipe(
               takeUntil(this.destroySubject)
@@ -169,9 +171,6 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
     this.sessionSubject.complete();
     this.collectiveSubject.complete();
     this.eventsSubject.complete();
-
-    /* Clear sessions after destroying component */
-    this.store.dispatch(new ClearSessions());
   }
 
   selectEvent(index) {

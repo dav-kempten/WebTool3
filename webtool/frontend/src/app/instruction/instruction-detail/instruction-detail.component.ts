@@ -74,7 +74,9 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
         takeUntil(this.destroySubject),
         select(getInstructionById(id)),
         tap(instruction => {
-          if (!!instruction) {
+          if (!instruction) {
+            this.store.dispatch(new RequestInstruction({id}));
+          } else {
             if (this.instructionSubject.value === undefined) {
               instruction.admission = (instruction.admission / 100);
               instruction.advances = (instruction.advances / 100);
@@ -200,6 +202,11 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    /* Reset values of money-controls */
+    this.instructionSubject.value.controls.admission.setValue(this.instructionSubject.value.controls.admission.value * 100);
+    this.instructionSubject.value.controls.extraCharges.setValue(this.instructionSubject.value.controls.extraCharges.value * 100);
+    this.instructionSubject.value.controls.advances.setValue(this.instructionSubject.value.controls.advances.value * 100);
+
     this.destroySubject.next(true);
     this.destroySubject.unsubscribe();
 
@@ -207,9 +214,6 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     this.topicSubject.complete();
     this.categorySubject.complete();
     this.eventsSubject.complete();
-
-    /* Clear instructions after destroying component */
-    this.store.dispatch(new ClearInstructions());
   }
 
   selectEvent(index) {
