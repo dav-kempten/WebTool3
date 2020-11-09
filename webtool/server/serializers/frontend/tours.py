@@ -208,9 +208,11 @@ class TourSerializer(serializers.ModelSerializer):
                 preliminary_event = create_event(preliminary_data, dict(category=None, season=season, type=dict(preliminary=True)))
                 tour = Tour.objects.create(tour=tour_event, deadline=deadline_event, preliminary=preliminary_event,
                                         state=state, **validated_data)
-                update_event(Event.objects.get(pk=tour.preliminary.pk), dict(name="Vorbesprechung "+str(tour.tour.reference)), self.context)
+                update_event(Event.objects.get(pk=tour.preliminary.pk), dict(title="VB " + str(tour.tour.reference),
+                                                                             name="Vorbesprechung "+ str(tour.tour.reference)), self.context)
 
-            update_event(Event.objects.get(pk=tour.deadline.pk), dict(name="Deadline für " + str(tour.tour.reference)), self.context)
+            update_event(Event.objects.get(pk=tour.deadline.pk), dict(title="AS "+ str(tour.tour.reference),
+                                                                      name="Anmeldeschluss für " + str(tour.tour.reference)), self.context)
             tour.categories = categories
             tour.info = info
             tour.team = team
