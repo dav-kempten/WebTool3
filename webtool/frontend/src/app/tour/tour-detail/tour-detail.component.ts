@@ -200,10 +200,6 @@ export class TourDetailComponent implements OnInit, OnDestroy {
     this.display = true;
   }
 
-  switchDistal(isDistal, distal) {
-    distal.disabled = !isDistal;
-  }
-
   addEvent() {
     this.store.dispatch(new CreateEvent({id: this.tourSubject.value.get('id').value}));
   }
@@ -290,7 +286,7 @@ function eventGroupFactory(event: Event): FormGroup {
     link: new FormControl(event.link),
     map: new FormControl(event.map),
     distal: new FormControl(event.distal),
-    distance: new FormControl({value: event.distance, disabled: !event.distal}),
+    distance: new FormControl(event.distance),
     publicTransport: new FormControl(event.publicTransport),
     shuttleService: new FormControl(event.shuttleService)
   });

@@ -172,6 +172,9 @@ export class SessionEffects {
 
     this.destroySubject.complete();
 
+    /* Check contradictory distance/distal fields before saving */
+    if (!session.distal) { session.distance = 0; }
+
     return {
       ... sessionInterface,
       session
