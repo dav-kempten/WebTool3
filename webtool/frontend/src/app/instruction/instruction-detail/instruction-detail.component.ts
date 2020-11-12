@@ -3,11 +3,9 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {select, Store} from '@ngrx/store';
 import {AppState, selectRouterDetailId} from '../../app.state';
 import {getCategoryById, getTopicById} from '../../core/store/value.selectors';
-import {NamesRequested} from '../../core/store/name.actions';
 import {ValuesRequested} from '../../core/store/value.actions';
-import {CalendarRequested} from '../../core/store/calendar.actions';
 import {
-  AddEventInstruction, ClearInstructions, DeleteEventInstruction, DeleteInstruction,
+  AddEventInstruction, DeleteEventInstruction, DeleteInstruction,
   RequestInstruction,
   UpdateInstruction,
   UpsertInstruction
@@ -77,11 +75,6 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
           if (!instruction) {
             this.store.dispatch(new RequestInstruction({id}));
           } else {
-            if (this.instructionSubject.value === undefined) {
-              instruction.admission = (instruction.admission / 100);
-              instruction.advances = (instruction.advances / 100);
-              instruction.extraCharges = (instruction.extraCharges / 100);
-            }
             const instructionGroup = instructionGroupFactory(instruction);
             instructionGroup.valueChanges.pipe(
               takeUntil(this.destroySubject)
@@ -202,11 +195,6 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    /* Reset values of money-controls */
-    this.instructionSubject.value.controls.admission.setValue(this.instructionSubject.value.controls.admission.value * 100);
-    this.instructionSubject.value.controls.extraCharges.setValue(this.instructionSubject.value.controls.extraCharges.value * 100);
-    this.instructionSubject.value.controls.advances.setValue(this.instructionSubject.value.controls.advances.value * 100);
-
     this.destroySubject.next(true);
     this.destroySubject.unsubscribe();
 

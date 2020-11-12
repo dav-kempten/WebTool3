@@ -28,7 +28,7 @@ import {RequestInstructionSummaries} from './instruction-summary.actions';
 import {Router} from '@angular/router';
 
 function convertDecimal(rawValue: string): number {
-  return Number(rawValue.replace('.', ''));
+  return Number(rawValue);
 }
 
 @Injectable({
@@ -140,9 +140,8 @@ export class InstructionEffects {
             const instructionInterface = this.transformInstruction(instruction);
             return new UpdateInstruction({instruction: {
               id: instructionInterface.id,
-              changes: {...instructionInterface, admission: instructionInterface.admission / 100,
-                                                 advances: instructionInterface.advances / 100,
-                                                 extraCharges: instructionInterface.extraCharges / 100}}});
+              changes: {...instructionInterface}
+            }});
           } else {
             alert('Kurs speichern gescheitert, nocheinmal versuchen oder Seite neuladen.');
             return new InstructionNotModified();
@@ -163,9 +162,8 @@ export class InstructionEffects {
             const instructionInterface = this.transformInstruction(instruction);
             return new UpdateInstruction({instruction: {
               id: instructionInterface.id,
-              changes: {...instructionInterface, admission: instructionInterface.admission / 100,
-                                                 advances: instructionInterface.advances / 100,
-                                                 extraCharges: instructionInterface.extraCharges / 100}}});
+              changes: {...instructionInterface}
+            }});
           } else {
             alert('Event hinzufügen gescheitert, bitte Seite neuladen.');
             return new InstructionNotModified();
@@ -186,9 +184,8 @@ export class InstructionEffects {
             const instructionInterface = this.transformInstruction(instruction);
             return new UpdateInstruction({instruction: {
               id: instructionInterface.id,
-              changes: {...instructionInterface, admission: instructionInterface.admission / 100,
-                                                 advances: instructionInterface.advances / 100,
-                                                 extraCharges: instructionInterface.extraCharges / 100}}});
+              changes: {...instructionInterface}
+            }});
           } else {
             return new InstructionNotModified();
           }
