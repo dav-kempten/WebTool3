@@ -377,13 +377,15 @@
                 [formControl]="currentEventGroup.get('distal')"
                 label="Gemeinschaftsanreise"
                 binary="true"
-                (onChange)="switchDistal($event, distal)"
             ></p-checkbox>
           </div>
-          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
-            <input #distal formControlName="distance" id="distance" placeholder="Entfernung"
-                   type="text" style="width:100%"
-                   pInputText>
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6" *ngIf="currentEventGroup.get('distal').value">
+            <div class="ui-inputgroup" >
+              <span class="ui-inputgroup-addon">Entfernung</span>
+              <input formControlName="distance" id="distance" type="number" min="0"
+                     pInputText>
+              <span class="ui-inputgroup-addon">Km</span>
+            </div>
           </div>
         </div>
         <!--ShuttleService & PublicTransport-->

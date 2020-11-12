@@ -238,6 +238,13 @@ export class InstructionEffects {
 
     this.destroySubject.complete();
 
+    /* Check contradictory distance/distal fields before saving */
+    if (!instruction.distal) { instruction.distance = 0; }
+
+    meetings.forEach(meeting => {
+      if (!meeting.distal) { meeting.distance = 0; }
+    });
+
     return {
       ... instructionInterface,
       instruction,

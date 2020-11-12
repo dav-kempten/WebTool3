@@ -226,10 +226,6 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     this.currentEventGroup = undefined;
   }
 
-  switchDistal(isDistal, distal) {
-    distal.disabled = !isDistal;
-  }
-
   /* Notizen: Bei der Erstellung eines zusätzlichen Events muss das Event erst serverseitig werden und der
    * Cache aktualisiert werden. So wird sichergestellt das die Kurse konsistent parallel bearbeitet werden können. */
   addEvent(instruction) {
@@ -329,7 +325,7 @@ function eventGroupFactory(event: Event): FormGroup {
     link: new FormControl(event.link),
     map: new FormControl(event.map),
     distal: new FormControl(event.distal),
-    distance: new FormControl({value: event.distance, disabled: !event.distal}),
+    distance: new FormControl(event.distance),
     publicTransport: new FormControl(event.publicTransport),
     shuttleService: new FormControl(event.shuttleService)
   });
