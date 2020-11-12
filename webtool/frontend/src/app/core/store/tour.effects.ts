@@ -10,13 +10,9 @@ import {
   TourActionTypes,
   TourNotModified,
   RequestTour,
-  TourCreateComplete,
   DeleteTour,
-  TourDeleteComplete,
   DeactivateTour,
-  TourDeactivateComplete,
-  UpsertTour,
-  TourUpdateComplete, CreateTour, UpdateTour
+  UpsertTour, CreateTour, UpdateTour
 } from './tour.actions';
 import {AppState} from '../../app.state';
 import {AddEvent} from './event.actions';
@@ -28,7 +24,7 @@ import {RequestTourSummaries} from './tour-summary.actions';
 import {Router} from '@angular/router';
 
 function convertDecimal(rawValue: string): number {
-  return Number(rawValue.replace('.', ''));
+  return Number(rawValue);
 }
 
 @Injectable({
@@ -141,9 +137,8 @@ export class TourEffects {
             const tourInterface = this.transformTour(tour);
             return new UpdateTour({tour: {
               id: tourInterface.id,
-              changes: {...tourInterface, admission: tourInterface.admission / 100,
-                                          advances: tourInterface.advances / 100,
-                                          extraCharges: tourInterface.extraCharges / 100}}});
+              changes: {...tourInterface}
+            }});
           } else {
             alert('Tour speichern gescheitert, nocheinmal versuchen oder Seite neuladen.');
             return new TourNotModified();
@@ -248,9 +243,9 @@ export class TourEffects {
       tour,
       deadline,
       preliminary,
-      admission: String(tourInterface.admission / 100),
-      advances: String(tourInterface.advances / 100),
-      extraCharges: String(tourInterface.extraCharges / 100)
+      admission: String(tourInterface.admission),
+      advances: String(tourInterface.advances),
+      extraCharges: String(tourInterface.extraCharges)
     };
   }
 }
