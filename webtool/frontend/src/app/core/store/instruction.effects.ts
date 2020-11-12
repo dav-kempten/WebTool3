@@ -138,6 +138,7 @@ export class InstructionEffects {
           if (instruction.id !== 0) {
             alert('Kurs erfolgreich gespeichert.');
             const instructionInterface = this.transformInstruction(instruction);
+            this.store.dispatch(new RequestInstructionSummaries());
             return new UpdateInstruction({instruction: {
               id: instructionInterface.id,
               changes: {...instructionInterface}

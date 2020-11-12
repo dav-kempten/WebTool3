@@ -135,6 +135,7 @@ export class TourEffects {
           if (tour.id !== 0) {
             alert('Tour erfolgreich gespeichert.');
             const tourInterface = this.transformTour(tour);
+            this.store.dispatch(new RequestTourSummaries());
             return new UpdateTour({tour: {
               id: tourInterface.id,
               changes: {...tourInterface}
