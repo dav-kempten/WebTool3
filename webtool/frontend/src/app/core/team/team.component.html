@@ -1,13 +1,15 @@
 <!--<label for="{{id}}">{{label}}: </label>-->
 <p-autoComplete
   id="{{id}}"
+  [inputStyle]="{'width':'350px'}"
   [suggestions]="suggestions"
   field="name"
   (completeMethod)="filterSuggestions($event)"
   [forceSelection]="true"
   [multiple]="true"
   [formControl]="team"
-  placeholder="Nachname Vorname"
-  [readonly]="readonly">
+  placeholder="Liste mit Namen der Helfer (Nachname, Vorname)"
+  [readonly]="readonly"
+  [dropdown]="true">
 </p-autoComplete>
 &nbsp;<i [ngStyle]="{'color':formControl?.valid ? 'green' : 'red'}" class="pi pi-users"></i>
