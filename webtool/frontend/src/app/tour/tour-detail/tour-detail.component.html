@@ -1,66 +1,15 @@
 <ng-container *ngIf="(userIsStaff$ | async) || (userIsAdmin$ | async) else usernotvarified">
-<ng-container *ngIf="tourGroup$ | async as tourGroup else loading">
-<p-card header="Tour #{{tourId$ | async}}">
+<ng-container *ngIf="tourGroup$ | async as tourGroup else loading" readonly="True">
+<!--<p-card header="Tour #{{tourId$ | async}}">-->
 <!--<h1>Tour #{{tourId$ | async}}</h1>-->
 <!--<p>{{tourGroup.value | json}}</p>-->
 
 <form [formGroup]="tourGroup">
-  <!--Guide, Kosten, Einnahmen-->
-  <p-card subheader="Trainer, Kosten & Einnahmen">
-  <div class="p-grid">
-    <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
-      <avk-guide
-          formControlName="guideId"
-          id="g1"
-          label="Trainer"
-          [nameIdList]="tourGroup.get('teamIds').value"
-          required
-      ></avk-guide>
-    </div>
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <input id="costs" placeholder="Kosten" type="text" style='width:100%'
-             pInputText>
-    </div>
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <input id="revenue" placeholder="Einnahmen" type="text" style='width:100%'
-             pInputText>
-    </div>
-  </div>
-  </p-card>
-
-  <!--Team, LadiesOnly, YouthOnTour-->
-  <p-card subheader="Team, LadiesOnly & YouthOnTour">
-  <div class="p-grid">
-    <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
-      <avk-team
-          formControlName="teamIds"
-          [nameId]="tourGroup.get('guideId').value"
-          id="g2"
-          label="Team"
-      ></avk-team>
-    </div>
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <p-checkbox
-          [formControl]="tourGroup.get('ladiesOnly')"
-          label="LadiesOnly"
-          binary="true"
-      ></p-checkbox>
-    </div>
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <p-checkbox
-          [formControl]="tourGroup.get('youthOnTour')"
-          label="YouthOnTour"
-          binary="true"
-      ></p-checkbox>
-    </div>
-  </div>
-  </p-card>
-
   <!--Buchungscode, Status, Hauptkategorie-->
-  <p-card subheader="Tour-Details">
+  <p-card subheader="Buchungsnummer, Bearbeitungsstatus und Tourenart">
   <div class="p-grid">
     <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-      <input formControlName="reference" id="reference" placeholder="Buchungsnummer" type="text" style='width:100%'
+      <input formControlName="reference" id="reference" placeholder="Buchungsnummer" type="text"
              readonly pInputText>
     </div>
     <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
@@ -75,118 +24,47 @@
         </avk-categoryselect>
     </div>
   </div>
-
-  <!--Technik, Ausdauer-->
-  <div class="p-grid">
-    <div class="p-col-12 p-sm-8 p-md-8 p-lg-8">
-      <avk-skillselect
-          formControlName="skillId"
-          label="Skills"
-          [categorySet]="tourGroup.get('categoryId').value"
-      ></avk-skillselect>
-    </div>
-    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-      <avk-fitnessselect
-          formControlName="fitnessId"
-          id="fitnessId"
-          [readOnly]="false"
-          [categorySet]="tourGroup.get('categoryId').value"
-      ></avk-fitnessselect>
-    </div>
-  </div>
-
-  <!--Beschreibung (Info)-->
-  <div class="p-grid">
-    <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
-      <textarea
-          [rows]="3"
-          pInputTextarea
-          formControlName="info"
-          id="info"
-          placeholder="Informationen, wenn z.B. keine Tourenbesprechung geplant ist."
-          autoResize="autoResize"
-          style='width:100%'
-      ></textarea>
-    </div>
-  </div>
-
-  <!--Voraussetzung-->
-  <div class="p-grid">
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <avk-qualificationselect
-          formControlName="qualificationIds"
-          label="Qualifikation"
-      ></avk-qualificationselect>
-    </div>
-    <div class="p-col-12 p-sm-9 p-md-9 p-lg-9">
-        <textarea
-            [rows]="1"
-            pInputTextarea
-            formControlName="preconditions"
-            id="preconditions"
-            placeholder="Spezielle Voraussetzungen (z.B. Trittsicherheit)"
-            autoResize="autoResize"
-            style='width:100%'
-        ></textarea>
-    </div>
-  </div>
   </p-card>
 
-  <!--Equipment-Fields-->
-  <p-card subheader="Ausrüstung">
+  <!--Guide, LadiesOnly, YouthOnTour-->
+  <p-card subheader="Organisation und Durchführung">
   <div class="p-grid">
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <avk-multiselect
-          formControlName="equipmentIds"
-          label="Ausrüstung"
-      ></avk-multiselect>
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <avk-guide
+          formControlName="guideId"
+          id="g1"
+          label="Trainer"
+          [nameIdList]="tourGroup.get('teamIds').value"
+          required
+      ></avk-guide>
     </div>
-    <div class="p-col-12 p-sm-7 p-md-7 p-lg-7">
-      <textarea
-          [rows]="1"
-          pInputTextarea
-          formControlName="miscEquipment"
-          id="miscEquipmentTopic"
-          placeholder="Weitere Ausrüstung"
-          autoResize="autoResize"
-          style='width:100%'
-      ></textarea>
-    </div>
-    <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
       <p-checkbox
-          [formControl]="tourGroup.get('equipmentService')"
-          label="Materialservice"
+          [formControl]="tourGroup.get('ladiesOnly')"
+          label="LadiesOnly"
+          binary="true"
+      ></p-checkbox>
+    </div>
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <p-checkbox
+          [formControl]="tourGroup.get('youthOnTour')"
+          label="Jugendtour"
           binary="true"
       ></p-checkbox>
     </div>
   </div>
   </p-card>
 
-  <!--Teilnehmer, Besondere Vorraussetzungen-->
-  <p-card subheader="Teilnehmer">
+  <!--Team-->
+  <p-card subheader="Team">
   <div class="p-grid">
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <avk-membernumber
-          formControlName="minQuantity"
-          label="Mindestens"
-          id="m1"
-          [maxMember]="tourGroup.get('maxQuantity').value"
-      ></avk-membernumber>
-    </div>
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <avk-membernumber
-          formControlName="maxQuantity"
-          label="Maximal"
-          id="m2"
-          [minMember]="tourGroup.get('minQuantity').value"
-      ></avk-membernumber>
-    </div>
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <avk-membernumber
-          formControlName="curQuantity"
-          label="Aktuell"
-          id="m3"
-      ></avk-membernumber>
+    <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+      <avk-team
+          formControlName="teamIds"
+          [nameId]="tourGroup.get('guideId').value"
+          id="g2"
+          label="Team"
+      ></avk-team>
     </div>
   </div>
   </p-card>
@@ -194,6 +72,13 @@
   <!--Liste mit Parametern (Tabelle)-->
   <ng-container *ngIf="(eventArray$ | async) as eventArray">
     <p-card subheader="Tour-Termine">
+    <div class="p-grid">
+      <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+      Hier können die einzelnen Termine der Tour bearbeitet werden. Erster Termin in der Liste ist die eigentliche <b>Tour</b>,
+      zweiter Termin ist der <b>Anmeldeschluss</b> und eventuell dritter Termin ist der Termin für die <b>Vorbesprechung</b>.
+      Öffnen kann man die Termine durch Klick auf die Liste.
+      </div>
+    </div>
     <div class="p-grid">
       <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
         <p-table [value]="eventArray.value" selectionMode="single"
@@ -219,17 +104,17 @@
   </ng-container>
 
   <ng-container *ngIf="currentEventGroup">
-    <p-dialog header="EventDetail" [modal]="true" [(visible)]="display" [blockScroll]="true"
+    <p-dialog header="Termin-Details" [modal]="true" [(visible)]="display" [blockScroll]="true"
               (onHide)="closeEvent()" [style]="{width: '60%', height: '60%'}">
       <form [formGroup]="currentEventGroup">
         <!--Kurztitel, Langtitel-->
         <div class="p-grid">
           <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-            <input formControlName="title" id="title" placeholder="Kurztitel" type="text" style='width:100%'
+            <input formControlName="title" id="title" placeholder="Kurzer, markanter Titel der Tour" type="text" style='width:100%'
                    pInputText>
           </div>
           <div class="p-col-12 p-sm-8 p-md-8 p-lg-8">
-            <input formControlName="name" id="name" placeholder="Langtitel" type="text" style='width:100%'
+            <input formControlName="name" id="name" placeholder="Längerer, ausführlicher Titel der Tour" type="text" style='width:100%'
                    pInputText>
           </div>
         </div>
@@ -278,10 +163,15 @@
                 pInputTextarea
                 formControlName="description"
                 id="description"
-                placeholder="Beschreibung"
+                placeholder="Kurze Beschreibung (Ablauf, Zeitbedarf, Höhenunterschiede, An-/Heimreise)"
                 autoResize="autoResize"
                 style='width:100%'
             ></textarea>
+          </div>
+        </div>
+        <div class="p-grid">
+          <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+            Sonderzeichen: ● ○ ➘ ➚ „“ ½ ⅓ ⅔ ¼ ¾
           </div>
         </div>
 
@@ -347,7 +237,7 @@
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
             <p-checkbox
                 [formControl]="currentEventGroup.get('shuttleService')"
-                label="ShuttleSerivce"
+                label="Alpin-Shuttle"
                 binary="true"
             ></p-checkbox>
           </div>
@@ -356,17 +246,17 @@
         <!--Source, Link & Map-->
         <div class="p-grid">
           <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-            <input formControlName="source" id="source" placeholder="Source"
+            <input formControlName="source" id="source" placeholder="Ausgangsort"
                    type="text" style="width:100%"
                    pInputText>
           </div>
           <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-            <input formControlName="link" id="link" placeholder="Link"
+            <input formControlName="link" id="link" placeholder="Link der Tour im Tourenportal"
                    type="text" style="width:100%"
                    pInputText>
           </div>
           <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-            <input formControlName="map" id="map" placeholder="Map"
+            <input formControlName="map" id="map" placeholder="URL zu einem Kartenausschnitt"
                    type="text" style="width:100%"
                    pInputText>
           </div>
@@ -374,6 +264,122 @@
       </form>
     </p-dialog>
   </ng-container>
+
+  <p-card subheader="Zusätzliche Toureninformationen">
+  <!--Beschreibung (Info)-->
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+      <textarea
+          [rows]="3"
+          pInputTextarea
+          formControlName="info"
+          id="info"
+          placeholder="Informationen, wenn z.B. keine Tourenbesprechung geplant ist."
+          autoResize="autoResize"
+          style='width:100%'
+      ></textarea>
+    </div>
+  </div>
+  </p-card>
+
+  <p-card subheader="Tourenschwierigkeit - Technik & Kondition">
+  <!--Technik, Ausdauer-->
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-8 p-md-8 p-lg-8">
+      <avk-skillselect
+          formControlName="skillId"
+          label="Skills"
+          [categorySet]="tourGroup.get('categoryId').value"
+      ></avk-skillselect>
+    </div>
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <avk-fitnessselect
+          formControlName="fitnessId"
+          id="fitnessId"
+          [readOnly]="false"
+          [categorySet]="tourGroup.get('categoryId').value"
+      ></avk-fitnessselect>
+    </div>
+  </div>
+  </p-card>
+
+  <p-card subheader="Tourenanforderungen und Ausrüstung">
+  <!--Voraussetzung-->
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <avk-qualificationselect
+          formControlName="qualificationIds"
+          label="Qualifikation"
+      ></avk-qualificationselect>
+    </div>
+    <div class="p-col-12 p-sm-8 p-md-8 p-lg-8">
+        <textarea
+            [rows]="1"
+            pInputTextarea
+            formControlName="preconditions"
+            id="preconditions"
+            placeholder="Spezielle Voraussetzungen (z.B. Trittsicherheit)"
+            autoResize="autoResize"
+            style='width:100%'
+        ></textarea>
+    </div>
+  </div>
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <avk-multiselect
+          formControlName="equipmentIds"
+          label="Ausrüstung"
+      ></avk-multiselect>
+    </div>
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <textarea
+          [rows]="1"
+          pInputTextarea
+          formControlName="miscEquipment"
+          id="miscEquipmentTopic"
+          placeholder="Weitere Ausrüstung"
+          autoResize="autoResize"
+          style='width:100%'
+      ></textarea>
+    </div>
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <p-checkbox
+          [formControl]="tourGroup.get('equipmentService')"
+          label="Reservierungswunsch für Ausrüstungsservice"
+          binary="true"
+      ></p-checkbox>
+    </div>
+  </div>
+  </p-card>
+
+  <!--Teilnehmer, Besondere Vorraussetzungen-->
+  <p-card subheader="Teilnehmeranzahl">
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <avk-membernumber
+          formControlName="minQuantity"
+          label="Mindestens"
+          id="m1"
+          [maxMember]="tourGroup.get('maxQuantity').value"
+      ></avk-membernumber>
+    </div>
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <avk-membernumber
+          formControlName="maxQuantity"
+          label="Maximal"
+          id="m2"
+          [minMember]="tourGroup.get('minQuantity').value"
+      ></avk-membernumber>
+    </div>
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <avk-membernumber
+          formControlName="curQuantity"
+          label="Aktuell"
+          id="m3"
+      ></avk-membernumber>
+    </div>
+  </div>
+  </p-card>
 
   <!--Fahrtkosten, Zusatzkosten, Anzahlung-->
   <p-card subheader="Teilnehmergebühr, Zusatzkosten, Anzahlung">
@@ -451,14 +457,14 @@
   </p-card>
 
   <!--Bemerkung für Interna-->
-  <p-card subheader="Nachricht an die Geschäftstelle">
+  <p-card subheader="Nachricht an die Geschäftstelle (intern)">
   <div class="p-grid">
     <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
       <textarea
           [rows]="3"
           formControlName="message"
           pInputTextarea
-          placeholder="Nachricht an die Geschäftsstelle"
+          placeholder="Wenn ihr noch Angaben zur Tour machen wollt, die bisher keinen Platz gefunden haben..."
           autoResize="autoResize"
           style='width:100%'
       ></textarea>
@@ -482,7 +488,7 @@
   </div>
   </p-card>
 </form>
-</p-card>
+<!--</p-card>-->
 </ng-container>
 </ng-container>
 <ng-template #loading>
