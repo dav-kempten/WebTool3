@@ -4,6 +4,7 @@
   list-style: none;
   background-color: lightgray;
   border-radius: 1px;
+  font-family: 'Open Sans', sans-serif;
 }
 
 .breadcrumb > li {
