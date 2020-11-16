@@ -67,7 +67,7 @@ export class ApproxdropdownComponent implements OnInit, OnDestroy, AfterViewInit
     [stateValidator]
   );
 
-  status: RawApprox[] = new Array(1).fill({id: 0, name: 'Startzeit', description: null, startTime: null});
+  status: RawApprox[] = new Array(1).fill({id: 0, name: 'Startzeit (ca.)', description: null, startTime: null});
 
    OnChangeWrapper(onChange: (stateIn) => void): (stateOut: RawApprox) => void {
     return ((state: RawApprox): void => {
