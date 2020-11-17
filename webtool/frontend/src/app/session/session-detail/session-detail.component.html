@@ -136,31 +136,34 @@
             </avk-approxdropdown>
           </div>
           <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-            <avk-time formControlName="startTime" id="time" [disable]="!!currentEventGroup.get('approximateId').value"
+            <avk-time formControlName="startTime" id="time" label="Startzeit"
+                      [disable]="!!currentEventGroup.get('approximateId').value"
             ></avk-time>
           </div>
           <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-            <avk-time formControlName="endTime" id="endTime" [disable]="!!currentEventGroup.get('approximateId').value"
+            <avk-time formControlName="endTime" id="endTime" label="Endzeit"
+                      [disable]="!!currentEventGroup.get('approximateId').value"
             ></avk-time>
           </div>
         </div>
 
         <!--Zusatz: Datumseingabe (Anfang + Ende + Art)-->
         <div class="p-grid">
-          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+          <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
             <avk-date formControlName="startDate"
-                      id="dbeginn" label="Start"
+                      id="dbeginn" label="Startdatum"
                       [maxInclude]="true"
                       [max]="currentEventGroup.get('endDate').value"
             ></avk-date>
           </div>
-          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+          <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
             <avk-date formControlName="endDate"
-                      id="dend" label="Ende"
+                      id="dend" label="Enddatum"
                       [minInclude]="true"
                       [min]="currentEventGroup.get('startDate').value"
             ></avk-date>
           </div>
+          <div class="p-col-12 p-sm-4 p-md-4 p-lg-4"></div>
         </div>
         <div class="p-grid">
           <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
