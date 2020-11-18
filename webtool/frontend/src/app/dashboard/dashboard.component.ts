@@ -38,7 +38,6 @@ export class DashboardComponent implements OnInit {
     this.authState$.pipe(
       tap(value => {
         this.userId = value.id;
-        console.log(this.userId);
       }),
     ).subscribe();
   }
