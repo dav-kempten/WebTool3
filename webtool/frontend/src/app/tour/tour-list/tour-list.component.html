@@ -8,7 +8,7 @@
           <p-button label="Tour hinzufügen" (onClick)="handleClick()" *ngIf="this.loginObject.valState >= 3" styleClass="ui-button-secondary"></p-button>
         </div>
         <div class="p-col-12 p-sm-6 p-md-6 p-lg-6" style="text-align: right">
-          <p-toggleButton onLabel="Alle Touren" offLabel="Aktive Touren" (onChange)="changeViewSet($event, dt)"></p-toggleButton>
+          <p-toggleButton onLabel="Alle Touren" offLabel="Aktive Touren" (onChange)="changeViewSetActive($event, dt)"></p-toggleButton>
         </div>
       </div>
     </ng-template>
