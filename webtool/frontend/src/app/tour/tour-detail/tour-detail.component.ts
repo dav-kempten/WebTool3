@@ -30,6 +30,7 @@ export class TourDetailComponent implements OnInit, OnDestroy {
   private eventsSubject = new BehaviorSubject<FormArray>(undefined);
   private tourChangeSubject = new BehaviorSubject<Tour>(undefined);
   private eventChangeSubject = new BehaviorSubject<Event>(undefined);
+  private tourOwner = new BehaviorSubject<boolean>(undefined);
 
   tourCategory = new BehaviorSubject<string>('');
 
@@ -47,6 +48,9 @@ export class TourDetailComponent implements OnInit, OnDestroy {
   authState$: Observable<User>;
   userIsStaff$: Observable<boolean>;
   userIsAdmin$: Observable<boolean>;
+  userIsOwner$: Observable<boolean> = this.tourOwner.asObservable();
+  userCurrent$: Observable<number>;
+
   loginObject = {id: undefined, firstName: '', lastName: '', role: undefined, valState: 0};
   display = false;
   currentEventGroup: FormGroup = undefined;
@@ -57,6 +61,8 @@ export class TourDetailComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.userIsStaff$ = this.userService.isStaff$;
     this.userIsAdmin$ = this.userService.isAdministrator$;
+
+    this.userCurrent$ = this.userService.guideId$;
 
     this.tourId$ = this.store.select(selectRouterDetailId);
 
@@ -69,6 +75,12 @@ export class TourDetailComponent implements OnInit, OnDestroy {
           if (!tour) {
             this.store.dispatch(new RequestTour({id}));
           } else {
+            /* Check if current user is owner of tour */
+            this.userCurrent$.pipe(
+              takeUntil(this.destroySubject),
+              tap(value => this.tourOwner.next(tour.guideId === value))
+            ).subscribe();
+            /* Generate tour */
             const tourGroup = tourGroupFactory(tour);
             tourGroup.valueChanges.pipe(
               takeUntil(this.destroySubject)

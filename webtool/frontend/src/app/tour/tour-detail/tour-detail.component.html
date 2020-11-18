@@ -1,4 +1,4 @@
-<ng-container *ngIf="(userIsStaff$ | async) || (userIsAdmin$ | async) else usernotvarified">
+<ng-container *ngIf="(userIsStaff$ | async) || (userIsAdmin$ | async) || (userIsOwner$ | async) else usernotvarified">
 <ng-container *ngIf="tourGroup$ | async as tourGroup else loading" readonly="True">
 <!--<p-card header="Tour #{{tourId$ | async}}">-->
 <!--<h1>Tour #{{tourId$ | async}}</h1>-->
