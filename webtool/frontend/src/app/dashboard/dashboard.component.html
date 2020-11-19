@@ -1,8 +1,18 @@
 <p-card header="Willkommen beim Webtool der Sektion Allgäu-Kempten des Deutschen Alpenvereins e.V.">
-  Bitte jetzt anmelden!
+  <div class="p-grid" *ngIf="this.userId === undefined">
+    <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+      Bitte jetzt anmelden!
+    </div>
+  </div>
+  <div class="p-grid" *ngIf="this.userId !== undefined">
+    <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+      Liebe Bergefreunde, hier könnt ihr eure Touren eintragen und verwalten. Wenn Ihr mit der Bearbeitung fertig seid, werden die
+      Touren noch geprüft und wandern dann auf die Homepage.
+    </div>
+  </div>
   <div class="p-grid">
     <div class="p-col-12 p-sm-6 p-md-6 p-lg-6" *ngIf="this.userId !== undefined">
-      <p-toggleButton onLabel="Tour hinzufügen" offLabel="Neue Tour" (onChange)="proposeTour()"></p-toggleButton>
+      <p-toggleButton onLabel="Neue Tour" offLabel="Tour hinzufügen" (onChange)="proposeTour()"></p-toggleButton>
     </div>
   </div>
   <form [formGroup]="createTour">

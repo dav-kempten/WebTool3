@@ -16,6 +16,7 @@ export class DashboardComponent implements OnInit {
   authState$: Observable<User>;
   preliminarySelect = false;
   display = false;
+  userIsStaff = false;
   userId = 0;
 
   categoryIds = new FormControl('');
@@ -37,6 +38,7 @@ export class DashboardComponent implements OnInit {
 
     this.authState$.pipe(
       tap(value => {
+        this.userIsStaff = (value.role === 'Geschäftsstelle' || value.role === 'Administrator');
         this.userId = value.id;
       }),
     ).subscribe();
@@ -54,6 +56,7 @@ export class DashboardComponent implements OnInit {
   }
 
   create(category, startdate, enddate, preliminary, guideId) {
+    if (this.userIsStaff) { guideId = null; }
     this.store.dispatch(new CreateTour({
       categoryId: category, startDate: startdate, deadline: enddate, preliminary, guideId
     }));
