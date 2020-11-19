@@ -16,7 +16,8 @@ class IsStaffOrReadOnly(permissions.BasePermission):
         return (
             request.method in permissions.SAFE_METHODS or
             request.user and request.user.is_staff or
-            request.user and (request.data['guideId'] == request.user.id)
+            request.user and ((request.data['guideId'] == request.user.id)
+                              and (request.data['stateId'] == 1 or request.data['stateId'] == 2))
         )
 
 class TourViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
@@ -36,6 +37,7 @@ class TourViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         return TourSerializer
 
     def list(self, request, *args, **kwargs):
+
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True, context=dict(request=request))
 

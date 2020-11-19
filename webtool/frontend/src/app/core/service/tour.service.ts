@@ -164,10 +164,10 @@ export class TourService {
     if (preliminary !== null) {
       this.createSubject.next({category: categoryId, tour: {startDate: startdate} as Event,
         deadline: {startDate: deadline} as Event, preliminary: {startDate: preliminary} as Event,
-        guideId, skillId: 1, fitnessId: 1});
+        guideId, skillId: 1, fitnessId: 1, stateId: 1});
     } else {
       this.createSubject.next({category: categoryId, tour: {startDate: startdate} as Event,
-        deadline: {startDate: deadline} as Event, guideId, skillId: 1, fitnessId: 1});
+        deadline: {startDate: deadline} as Event, guideId, skillId: 1, fitnessId: 1, stateId: 1});
     }
 
     return this.http.post<Tour>(
