@@ -7,18 +7,10 @@ import {MenuItem} from 'primeng/api';
 import {AuthService, User} from '../../core/service/auth.service';
 import {FormControl, FormGroup} from '@angular/forms';
 import {Router} from '@angular/router';
-import {NamesRequested} from '../../core/store/name.actions';
-import {ValuesRequested} from '../../core/store/value.actions';
-import {CalendarRequested} from '../../core/store/calendar.actions';
 import {flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {RequestSessionSummaries} from '../../core/store/session-summary.actions';
 import {getSessionSummaries} from '../../core/store/session-summary.selectors';
-import {
-  CloneSession,
-  CreateSession,
-  DeactivateSession,
-  DeleteSession,
-} from '../../core/store/session.actions';
+import {CloneSession, CreateSession, DeactivateSession, DeleteSession,} from '../../core/store/session.actions';
 
 
 @Component({

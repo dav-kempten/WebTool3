@@ -8,17 +8,15 @@ import {RequestInstructionSummaries} from '../../core/store/instruction-summary.
 import {filter, first, flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {Router} from '@angular/router';
 import {MenuItem} from 'primeng/api';
-import {NamesRequested} from '../../core/store/name.actions';
-import {ValuesRequested} from '../../core/store/value.actions';
 import {AuthService, User} from '../../core/service/auth.service';
 import {
   CloneInstruction,
   CreateInstruction,
   DeactivateInstruction,
-  DeleteInstruction, RequestInstruction
+  DeleteInstruction,
+  RequestInstruction
 } from '../../core/store/instruction.actions';
 import {FormControl, FormGroup} from '@angular/forms';
-import {CalendarRequested} from '../../core/store/calendar.actions';
 import {getInstructionById} from '../../core/store/instruction.selectors';
 
 @Component({

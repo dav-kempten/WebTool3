@@ -7,16 +7,13 @@ import {Session} from '../../core/store/session.model';
 import {Event} from '../../model/event';
 import {Collective} from '../../model/value';
 import {AuthService, User} from '../../core/service/auth.service';
-import {NamesRequested} from '../../core/store/name.actions';
 import {ValuesRequested} from '../../core/store/value.actions';
-import {CalendarRequested} from '../../core/store/calendar.actions';
 import {filter, flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {getSessionById} from '../../core/store/session.selectors';
-import {ClearSessions, DeleteSession, RequestSession, UpsertSession} from '../../core/store/session.actions';
+import {DeleteSession, RequestSession, UpdateSession, UpsertSession} from '../../core/store/session.actions';
 import {getCollectiveById} from '../../core/store/value.selectors';
 import {getEventsByIds} from '../../core/store/event.selectors';
 import {CreateEvent, UpdateEvent} from '../../core/store/event.actions';
-import {UpdateSession} from '../../core/store/session.actions';
 
 @Component({
   selector: 'avk-session-detail',

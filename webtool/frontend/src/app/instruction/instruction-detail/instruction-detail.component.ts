@@ -5,7 +5,9 @@ import {AppState, selectRouterDetailId} from '../../app.state';
 import {getCategoryById, getTopicById} from '../../core/store/value.selectors';
 import {ValuesRequested} from '../../core/store/value.actions';
 import {
-  AddEventInstruction, DeleteEventInstruction, DeleteInstruction,
+  AddEventInstruction,
+  DeleteEventInstruction,
+  DeleteInstruction,
   RequestInstruction,
   UpdateInstruction,
   UpsertInstruction
