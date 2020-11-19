@@ -3,7 +3,7 @@ import {select, Store} from '@ngrx/store';
 import {AppState, selectRouterFragment} from '../../app.state';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {TourSummary} from '../../model/tour';
-import {MenuItem} from 'primeng/api';
+import {MenuItem, SelectItem} from 'primeng/api';
 import {AuthService, User} from '../../core/service/auth.service';
 import {FormControl, FormGroup} from '@angular/forms';
 import {Router} from '@angular/router';
@@ -21,6 +21,8 @@ import {getTourById} from '../../core/store/tour.selectors';
 export class TourListComponent implements OnInit, OnDestroy, AfterViewInit {
 
   @ViewChild('dt') dt;
+
+  filter: SelectItem[];
 
   private destroySubject = new Subject<void>();
   part$: Observable<string>;
@@ -60,7 +62,13 @@ export class TourListComponent implements OnInit, OnDestroy, AfterViewInit {
     {label: 'Jugendtouren', url: '/tours#youth'},
   ];
 
-  constructor(private store: Store<AppState>, private router: Router, private authService: AuthService) { }
+  constructor(private store: Store<AppState>, private router: Router, private authService: AuthService) {
+    this.filter = [
+      {label: 'Aktive Touren', value: {id: 0, name: 'Aktive Touren'}},
+      {label: 'Alle Touren', value: {id: 1, name: 'Alle Touren'}},
+      {label: 'Fertige Touren', value: {id: 2, name: 'Fertige Touren'}}
+    ];
+  }
 
   ngOnInit() {
     this.authState$ = this.authService.user$;
@@ -222,11 +230,20 @@ export class TourListComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   changeViewSetActive(event, dt) {
-    if (!event.checked) {
-      dt.filter(this.activeTours, 'stateId', 'in');
-    } else {
-      dt.filter(this.allTours, 'stateId', 'in');
+    switch (event.value.id) {
+      case 0: {
+        dt.filter(this.activeTours, 'stateId', 'in');
+        break;
+      }
+      case 1: {
+        dt.filter(this.allTours, 'stateId', 'in');
+        break;
+      }
+      case 2: {
+        dt.filter(2, 'stateId', 'equals');
+        break;
+      }
+      default: break;
     }
   }
-
 }

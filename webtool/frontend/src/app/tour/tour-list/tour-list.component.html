@@ -4,11 +4,13 @@
     <p-table #dt [value]="tours" selectionMode="single" (selectionChange)="selectTour($event)">
     <ng-template pTemplate="caption">
       <div class="p-grid">
-        <div class="p-col-12 p-sm-6 p-md-6 p-lg-6" style="text-align: left">
-          <p-button label="Tour hinzufügen" (onClick)="handleClick()" *ngIf="this.loginObject.valState >= 3" styleClass="ui-button-secondary"></p-button>
+        <div class="p-col-12 p-sm-10 p-md-10 p-lg-10" style="text-align: left">
+          <p-button label="Tour hinzufügen" (onClick)="handleClick()" *ngIf="this.loginObject.valState >= 3"
+                    styleClass="ui-button-secondary"
+          ></p-button>
         </div>
-        <div class="p-col-12 p-sm-6 p-md-6 p-lg-6" style="text-align: right">
-          <p-toggleButton onLabel="Alle Touren" offLabel="Aktive Touren" (onChange)="changeViewSetActive($event, dt)"></p-toggleButton>
+        <div class="p-col-12 p-sm-2 p-md-2 p-lg-2" style="text-align: left">
+          <p-dropdown [options]="filter" (onChange)="changeViewSetActive($event, dt)"></p-dropdown>
         </div>
       </div>
     </ng-template>

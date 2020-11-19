@@ -26,8 +26,8 @@ class TourViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = (
         Tour.objects
         .filter(deprecated=False, tour__season__current=True)
-        .exclude(state__done=True)
-        .exclude(state__canceled=True)
+        # .exclude(state__done=True)
+        # .exclude(state__canceled=True)
     )
 
     def get_serializer_class(self):
