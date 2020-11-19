@@ -42,6 +42,7 @@ export class AuthService {
   isStaff$: Observable<boolean> = this.user$.pipe(map(user => user.role === Role.staff));
   isCoordinator$: Observable<boolean> = this.user$.pipe(map(user => user.role === Role.coordinator));
   isGuide$: Observable<boolean> = this.user$.pipe(map(user => user.role === Role.guide));
+  guideId$: Observable<number> = this.user$.pipe(map(user => user.id));
 
   constructor(private http: HttpClient) {}
 

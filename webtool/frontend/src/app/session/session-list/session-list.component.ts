@@ -56,16 +56,17 @@ export class SessionListComponent implements OnInit, OnDestroy, AfterViewInit {
 
   menuItems: MenuItem[] = [
     {label: 'Gruppentermine', routerLink: ['/sessions']},
+    {label: 'Jungmannschaft', url: '/sessions#gjm'},
+    {label: 'Bergwandergruppe', url: '/sessions#gbw'},
+    {label: 'Alpine Abendschule', url: '/sessions#aas'},
+    {label: 'Vollmondstammtisch', url: '/sessions#vst'}
   ];
 
-  constructor(private store: Store<AppState>, private router: Router, private authService: AuthService) {
-    this.store.dispatch(new NamesRequested());
-    this.store.dispatch(new ValuesRequested());
-    this.store.dispatch(new CalendarRequested());
-  }
+  constructor(private store: Store<AppState>, private router: Router, private authService: AuthService) { }
 
   ngOnInit() {
     this.authState$ = this.authService.user$;
+
     this.authState$.pipe(
       tap(value => {
         this.loginObject = { ...value, valState: 0 };
@@ -91,7 +92,18 @@ export class SessionListComponent implements OnInit, OnDestroy, AfterViewInit {
     this.activeItem$ = this.part$.pipe(
       takeUntil(this.destroySubject),
       map(part => {
-        return this.menuItems[0];
+        switch (part) {
+          case 'gjm':
+            return this.menuItems[1];
+          case 'gbw':
+            return this.menuItems[2];
+          case 'aas':
+            return this.menuItems[3];
+          case 'vst':
+            return this.menuItems[4];
+          default:
+            return this.menuItems[0];
+        }
       }),
       publishReplay(1),
       refCount()
@@ -101,12 +113,23 @@ export class SessionListComponent implements OnInit, OnDestroy, AfterViewInit {
       takeUntil(this.destroySubject),
       flatMap( part =>
         this.store.pipe(
+          takeUntil(this.destroySubject),
           select(getSessionSummaries),
           tap(sessions => {
             if (!sessions || !sessions.length) {
               this.store.dispatch(new RequestSessionSummaries());
             }
           }),
+          map(sessions =>
+            sessions.filter(session =>
+              (part === 'gjm' && session.reference.substr(0, 3).toLowerCase() === 'gjm') ||
+              (part === 'gbw' && session.reference.substr(0, 3).toLowerCase() === 'gbw') ||
+              (part === 'aas' && session.reference.substr(0, 3).toLowerCase() === 'aas') ||
+              (part === 'vst' && session.reference.substr(0, 3).toLowerCase() === 'vst') ||
+              !part
+            )
+          ),
+          tap(() => this.partNewSession.next(part)),
         )
       ),
       publishReplay(1),
@@ -124,7 +147,6 @@ export class SessionListComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.store.dispatch(new RequestSessionSummaries());
     this.dt.filter(this.activeSessions, 'stateId', 'in');
   }
 

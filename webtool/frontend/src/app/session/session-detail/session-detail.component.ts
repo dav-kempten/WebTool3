@@ -12,7 +12,7 @@ import {ValuesRequested} from '../../core/store/value.actions';
 import {CalendarRequested} from '../../core/store/calendar.actions';
 import {filter, flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {getSessionById} from '../../core/store/session.selectors';
-import {DeleteSession, RequestSession, UpsertSession} from '../../core/store/session.actions';
+import {ClearSessions, DeleteSession, RequestSession, UpsertSession} from '../../core/store/session.actions';
 import {getCollectiveById} from '../../core/store/value.selectors';
 import {getEventsByIds} from '../../core/store/event.selectors';
 import {CreateEvent, UpdateEvent} from '../../core/store/event.actions';
@@ -25,7 +25,7 @@ import {UpdateSession} from '../../core/store/session.actions';
 })
 export class SessionDetailComponent implements OnInit, OnDestroy {
 
-  private destroySubject = new Subject<void>();
+  private destroySubject: Subject<boolean> = new Subject<boolean>();
   private sessionSubject = new BehaviorSubject<FormGroup>(undefined);
   private collectiveSubject = new BehaviorSubject<FormGroup>(undefined);
   private eventsSubject = new BehaviorSubject<FormArray>(undefined);
@@ -44,39 +44,25 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
   collective$: Observable<Collective>;
 
   authState$: Observable<User>;
+  userIsStaff$: Observable<boolean>;
+  userIsAdmin$: Observable<boolean>;
   loginObject = {id: undefined, firstName: '', lastName: '', role: undefined, valState: 0};
   display = false;
   currentEventGroup: FormGroup = undefined;
   eventNumber: number[];
 
-  constructor(private store: Store<AppState>, private authService: AuthService) {
-    this.store.dispatch(new NamesRequested());
-    this.store.dispatch(new ValuesRequested());
-    this.store.dispatch(new CalendarRequested());
-  }
+  constructor(private store: Store<AppState>, private userService: AuthService) {  }
 
   ngOnInit(): void {
-    this.authState$ = this.authService.user$;
-    this.authState$.pipe(
-      tap(value => {
-        this.loginObject = { ...value, valState: 0 };
-        if (value.role === 'Administrator') {
-          this.loginObject.valState = 4;
-        } else if (value.role === 'Geschäftsstelle') {
-          this.loginObject.valState = 3;
-        } else if (value.role === 'Fachbereichssprecher') {
-          this.loginObject.valState = 2;
-        } else if (value.role === 'Trainer') {
-          this.loginObject.valState = 1;
-        } else { this.loginObject.valState = 0; }
-      }),
-    ).subscribe();
+    this.userIsStaff$ = this.userService.isStaff$;
+    this.userIsAdmin$ = this.userService.isAdministrator$;
 
     this.sessionId$ = this.store.select(selectRouterDetailId);
 
     this.session$ = this.sessionId$.pipe(
       takeUntil(this.destroySubject),
       flatMap(id => this.store.pipe(
+        takeUntil(this.destroySubject),
         select(getSessionById(id)),
         tap(session => {
           if (!session) {
@@ -101,6 +87,7 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
       takeUntil(this.destroySubject),
       filter(session => !!session),
       flatMap(session => this.store.pipe(
+        takeUntil(this.destroySubject),
         select(getCollectiveById(session.collectiveId)),
         tap(collective => {
           if (!collective) {
@@ -128,6 +115,7 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
       takeUntil(this.destroySubject),
       filter(eventIds => !!eventIds),
       flatMap(eventIds => this.store.select(getEventsByIds(eventIds)).pipe(
+        takeUntil(this.destroySubject),
         filter(() => !!eventIds && eventIds.length > 0),
         tap(events => {
           const eventArray = new FormArray([]);
@@ -177,8 +165,9 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.destroySubject.next();
-    this.destroySubject.complete();
+    this.destroySubject.next(true);
+    this.destroySubject.unsubscribe();
+
     this.sessionSubject.complete();
     this.collectiveSubject.complete();
     this.eventsSubject.complete();
@@ -189,10 +178,6 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
       eventArray => this.currentEventGroup = (eventArray.at(index.data)) as FormGroup
     ).unsubscribe();
     this.display = true;
-  }
-
-  switchDistal(isDistal, distal) {
-    distal.disabled = !isDistal;
   }
 
   addEvent() {
@@ -262,7 +247,7 @@ function eventGroupFactory(event: Event): FormGroup {
     link: new FormControl(event.link),
     map: new FormControl(event.map),
     distal: new FormControl(event.distal),
-    distance: new FormControl({value: event.distance, disabled: !event.distal}),
+    distance: new FormControl(event.distance),
     publicTransport: new FormControl(event.publicTransport),
     shuttleService: new FormControl(event.shuttleService)
   });

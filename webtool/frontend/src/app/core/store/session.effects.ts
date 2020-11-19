@@ -132,6 +132,7 @@ export class SessionEffects {
           if (session.id !== 0) {
             alert('Gruppentermin erfolgreich gespreichert.');
             const sessionInterface = this.transformSession(session);
+            this.store.dispatch(new RequestSessionSummaries());
             return new UpdateSession({session: {
               id: sessionInterface.id,
               changes: {...sessionInterface}}});
@@ -171,6 +172,9 @@ export class SessionEffects {
     delete sessionInterface.sessionId;
 
     this.destroySubject.complete();
+
+    /* Check contradictory distance/distal fields before saving */
+    if (!session.distal) { session.distance = 0; }
 
     return {
       ... sessionInterface,

@@ -3,11 +3,9 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {select, Store} from '@ngrx/store';
 import {AppState, selectRouterDetailId} from '../../app.state';
 import {getCategoryById, getTopicById} from '../../core/store/value.selectors';
-import {NamesRequested} from '../../core/store/name.actions';
 import {ValuesRequested} from '../../core/store/value.actions';
-import {CalendarRequested} from '../../core/store/calendar.actions';
 import {
-  AddEventInstruction, ClearInstructions, DeleteEventInstruction, DeleteInstruction,
+  AddEventInstruction, DeleteEventInstruction, DeleteInstruction,
   RequestInstruction,
   UpdateInstruction,
   UpsertInstruction
@@ -30,7 +28,7 @@ import {UpdateEvent} from '../../core/store/event.actions';
 
 export class InstructionDetailComponent implements OnInit, OnDestroy {
 
-  private destroySubject = new Subject<void>();
+  private destroySubject: Subject<boolean> = new Subject<boolean>();
   private instructionSubject = new BehaviorSubject<FormGroup>(undefined);
   private topicSubject = new BehaviorSubject<FormGroup>(undefined);
   private categorySubject = new BehaviorSubject<FormGroup>(undefined);
@@ -60,11 +58,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   currentEventGroup: FormGroup = undefined;
   eventNumber: number[];
 
-  constructor(private store: Store<AppState>, private userService: AuthService) {
-    this.store.dispatch(new NamesRequested());
-    this.store.dispatch(new ValuesRequested());
-    this.store.dispatch(new CalendarRequested());
-  }
+  constructor(private store: Store<AppState>, private userService: AuthService) { }
 
   ngOnInit(): void {
     this.userIsStaff$ = this.userService.isStaff$;
@@ -75,16 +69,12 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     this.instruction$ = this.instructionId$.pipe(
       takeUntil(this.destroySubject),
       flatMap(id => this.store.pipe(
+        takeUntil(this.destroySubject),
         select(getInstructionById(id)),
         tap(instruction => {
           if (!instruction) {
             this.store.dispatch(new RequestInstruction({id}));
           } else {
-            if (this.instructionSubject.value === undefined) {
-              instruction.admission = (instruction.admission / 100);
-              instruction.advances = (instruction.advances / 100);
-              instruction.extraCharges = (instruction.extraCharges / 100);
-            }
             const instructionGroup = instructionGroupFactory(instruction);
             instructionGroup.valueChanges.pipe(
               takeUntil(this.destroySubject)
@@ -156,6 +146,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
       takeUntil(this.destroySubject),
       filter(eventIds => !!eventIds),
       flatMap(eventIds => this.store.select(getEventsByIds(eventIds)).pipe(
+        takeUntil(this.destroySubject),
         filter(() => !!eventIds && eventIds.length > 0),
         tap(events => {
           const eventArray = new FormArray([]);
@@ -163,7 +154,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
             const eventGroup = eventGroupFactory(event);
             eventGroup.valueChanges.pipe(
               takeUntil(this.destroySubject)
-            ).subscribe( value => this.eventChangeSubject.next(value));
+            ).subscribe(value => this.eventChangeSubject.next(value));
             eventArray.push(eventGroup);
           });
           this.eventsSubject.next(eventArray);
@@ -204,15 +195,13 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.destroySubject.next();
-    this.destroySubject.complete();
+    this.destroySubject.next(true);
+    this.destroySubject.unsubscribe();
+
     this.instructionSubject.complete();
     this.topicSubject.complete();
     this.categorySubject.complete();
     this.eventsSubject.complete();
-
-    /* Clear instructions after destroying component */
-    this.store.dispatch(new ClearInstructions());
   }
 
   selectEvent(index) {
@@ -223,10 +212,6 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
 
   closeDialog() {
     this.currentEventGroup = undefined;
-  }
-
-  switchDistal(isDistal, distal) {
-    distal.disabled = !isDistal;
   }
 
   /* Notizen: Bei der Erstellung eines zusätzlichen Events muss das Event erst serverseitig werden und der
@@ -328,7 +313,7 @@ function eventGroupFactory(event: Event): FormGroup {
     link: new FormControl(event.link),
     map: new FormControl(event.map),
     distal: new FormControl(event.distal),
-    distance: new FormControl({value: event.distance, disabled: !event.distal}),
+    distance: new FormControl(event.distance),
     publicTransport: new FormControl(event.publicTransport),
     shuttleService: new FormControl(event.shuttleService)
   });

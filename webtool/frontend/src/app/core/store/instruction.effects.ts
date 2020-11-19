@@ -28,7 +28,7 @@ import {RequestInstructionSummaries} from './instruction-summary.actions';
 import {Router} from '@angular/router';
 
 function convertDecimal(rawValue: string): number {
-  return Number(rawValue.replace('.', ''));
+  return Number(rawValue);
 }
 
 @Injectable({
@@ -138,11 +138,11 @@ export class InstructionEffects {
           if (instruction.id !== 0) {
             alert('Kurs erfolgreich gespeichert.');
             const instructionInterface = this.transformInstruction(instruction);
+            this.store.dispatch(new RequestInstructionSummaries());
             return new UpdateInstruction({instruction: {
               id: instructionInterface.id,
-              changes: {...instructionInterface, admission: instructionInterface.admission / 100,
-                                                 advances: instructionInterface.advances / 100,
-                                                 extraCharges: instructionInterface.extraCharges / 100}}});
+              changes: {...instructionInterface}
+            }});
           } else {
             alert('Kurs speichern gescheitert, nocheinmal versuchen oder Seite neuladen.');
             return new InstructionNotModified();
@@ -163,9 +163,8 @@ export class InstructionEffects {
             const instructionInterface = this.transformInstruction(instruction);
             return new UpdateInstruction({instruction: {
               id: instructionInterface.id,
-              changes: {...instructionInterface, admission: instructionInterface.admission / 100,
-                                                 advances: instructionInterface.advances / 100,
-                                                 extraCharges: instructionInterface.extraCharges / 100}}});
+              changes: {...instructionInterface}
+            }});
           } else {
             alert('Event hinzufügen gescheitert, bitte Seite neuladen.');
             return new InstructionNotModified();
@@ -186,9 +185,8 @@ export class InstructionEffects {
             const instructionInterface = this.transformInstruction(instruction);
             return new UpdateInstruction({instruction: {
               id: instructionInterface.id,
-              changes: {...instructionInterface, admission: instructionInterface.admission / 100,
-                                                 advances: instructionInterface.advances / 100,
-                                                 extraCharges: instructionInterface.extraCharges / 100}}});
+              changes: {...instructionInterface}
+            }});
           } else {
             return new InstructionNotModified();
           }
@@ -237,6 +235,13 @@ export class InstructionEffects {
     delete instructionInterface.meetingIds;
 
     this.destroySubject.complete();
+
+    /* Check contradictory distance/distal fields before saving */
+    if (!instruction.distal) { instruction.distance = 0; }
+
+    meetings.forEach(meeting => {
+      if (!meeting.distal) { meeting.distance = 0; }
+    });
 
     return {
       ... instructionInterface,

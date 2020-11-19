@@ -43,6 +43,8 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
 
   user$: Observable<User>;
   authState$: Observable<User>;
+  userIsStaff$: Observable<boolean>;
+  userIsAdmin$: Observable<boolean>;
   loginObject = {id: undefined, firstName: '', lastName: '', role: undefined, valState: 0};
 
   topicId = new FormControl('');
@@ -56,18 +58,15 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
   menuItems: MenuItem[] = [
     {label: 'Alle Kurse', routerLink: ['/instructions']},
     {label: 'Kletterschule', url: '/instructions#indoor'},
-    {label: 'Sommer Kurse', url: '/instructions#summer'},
-    {label: 'Winter Kurse', url: '/instructions#winter'},
+    {label: 'Sommerkurse', url: '/instructions#summer'},
+    {label: 'Winterkurse', url: '/instructions#winter'},
   ];
 
-  constructor(private store: Store<AppState>, private router: Router, private authService: AuthService) {
-    this.store.dispatch(new NamesRequested());
-    this.store.dispatch(new ValuesRequested());
-    this.store.dispatch(new CalendarRequested());
-  }
+  constructor(private store: Store<AppState>, private router: Router, private userService: AuthService) { }
 
   ngOnInit() {
-    this.authState$ = this.authService.user$;
+    this.authState$ = this.userService.user$;
+
     this.authState$.pipe(
       tap(value => {
         this.loginObject = { ...value, valState: 0 };
@@ -145,13 +144,12 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
   }
 
   ngAfterViewInit(): void {
-    this.store.dispatch(new RequestInstructionSummaries());
     this.dt.filter(this.activeInstructions, 'stateId', 'in');
   }
 
   selectInstruction(instruction): void {
     if (!!instruction) {
-      if (this.loginObject.valState >= 3) {
+      if (this.loginObject.valState >= 2 || this.loginObject.id === instruction.guideId) {
         this.router.navigate(['instructions', instruction.id]);
       }
     }

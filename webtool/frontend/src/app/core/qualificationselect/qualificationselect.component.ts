@@ -122,7 +122,6 @@ export class QualificationselectComponent implements OnInit, AfterViewInit, OnDe
   }
 
   constructor(private store: Store<AppState>) {
-    this.store.dispatch(new ValuesRequested());
     this.formTopicState$ = this.store.select(getTopicState);
 
     this.formTopicState$.pipe(

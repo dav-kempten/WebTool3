@@ -1,8 +1,8 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {RouterModule, Routes} from '@angular/router';
-import {GuideListComponent} from './guide-list/guide-list.component';
-import {GuideDetailComponent} from './guide-detail/guide-detail.component';
+// import {GuideListComponent} from './guide-list/guide-list.component';
+// import {GuideDetailComponent} from './guide-detail/guide-detail.component';
 import {CoreModule} from '../core/core.module';
 import {NameListResolver} from '../core/store/name.resolver';
 import {ReactiveFormsModule} from '@angular/forms';
@@ -10,8 +10,8 @@ import {TableModule} from 'primeng/table';
 import {CalendarModule} from 'primeng/calendar';
 
 const routes: Routes = [
-  {path: ':id', component: GuideDetailComponent /* , resolve: {nameList: NameListResolver}*/ },
-  {path: '', component: GuideListComponent, pathMatch: 'full'}
+  // {path: ':id', component: GuideDetailComponent /* , resolve: {nameList: NameListResolver}*/ },
+  // {path: '', component: GuideListComponent, pathMatch: 'full'}
 ];
 
 @NgModule({
@@ -23,7 +23,10 @@ const routes: Routes = [
     TableModule,
     CalendarModule,
   ],
-  declarations: [GuideListComponent, GuideDetailComponent],
+  declarations: [
+    // GuideListComponent,
+    // GuideDetailComponent
+  ],
   exports: [],
 })
 export class GuideModule {}

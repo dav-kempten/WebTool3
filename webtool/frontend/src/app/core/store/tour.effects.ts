@@ -10,13 +10,9 @@ import {
   TourActionTypes,
   TourNotModified,
   RequestTour,
-  TourCreateComplete,
   DeleteTour,
-  TourDeleteComplete,
   DeactivateTour,
-  TourDeactivateComplete,
-  UpsertTour,
-  TourUpdateComplete, CreateTour, UpdateTour
+  UpsertTour, CreateTour, UpdateTour
 } from './tour.actions';
 import {AppState} from '../../app.state';
 import {AddEvent} from './event.actions';
@@ -28,7 +24,7 @@ import {RequestTourSummaries} from './tour-summary.actions';
 import {Router} from '@angular/router';
 
 function convertDecimal(rawValue: string): number {
-  return Number(rawValue.replace('.', ''));
+  return Number(rawValue);
 }
 
 @Injectable({
@@ -139,11 +135,11 @@ export class TourEffects {
           if (tour.id !== 0) {
             alert('Tour erfolgreich gespeichert.');
             const tourInterface = this.transformTour(tour);
+            this.store.dispatch(new RequestTourSummaries());
             return new UpdateTour({tour: {
               id: tourInterface.id,
-              changes: {...tourInterface, admission: tourInterface.admission / 100,
-                                          advances: tourInterface.advances / 100,
-                                          extraCharges: tourInterface.extraCharges / 100}}});
+              changes: {...tourInterface}
+            }});
           } else {
             alert('Tour speichern gescheitert, nocheinmal versuchen oder Seite neuladen.');
             return new TourNotModified();
@@ -204,6 +200,11 @@ export class TourEffects {
 
     this.destroySubject.complete();
 
+    /* Check contradictory distance/distal fields before saving */
+    if (!tour.distal) { tour.distance = 0; }
+    if (!deadline.distal) { deadline.distance = 0; }
+    if (preliminary) { if (!preliminary.distance) { preliminary.distance = 0; }}
+
     return {
       ... tourInterface,
       tour,
@@ -243,9 +244,9 @@ export class TourEffects {
       tour,
       deadline,
       preliminary,
-      admission: String(tourInterface.admission / 100),
-      advances: String(tourInterface.advances / 100),
-      extraCharges: String(tourInterface.extraCharges / 100)
+      admission: String(tourInterface.admission),
+      advances: String(tourInterface.advances),
+      extraCharges: String(tourInterface.extraCharges)
     };
   }
 }

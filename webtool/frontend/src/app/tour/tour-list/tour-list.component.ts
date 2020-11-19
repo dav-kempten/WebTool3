@@ -40,6 +40,8 @@ export class TourListComponent implements OnInit, OnDestroy, AfterViewInit {
 
   user$: Observable<User>;
   authState$: Observable<User>;
+  authChangeSubject = new BehaviorSubject<any>(undefined);
+  authChange$: Observable<any> = this.authChangeSubject.asObservable();
   loginObject = {id: undefined, firstName: '', lastName: '', role: undefined, valState: 0};
 
   categoryIds = new FormControl('');
@@ -61,15 +63,13 @@ export class TourListComponent implements OnInit, OnDestroy, AfterViewInit {
     {label: 'Jugendtouren', url: '/tours#youth'},
   ];
 
-  constructor(private store: Store<AppState>, private router: Router, private authService: AuthService) {
-    this.store.dispatch(new NamesRequested());
-    this.store.dispatch(new ValuesRequested());
-    this.store.dispatch(new CalendarRequested());
-  }
+  constructor(private store: Store<AppState>, private router: Router, private authService: AuthService) { }
 
   ngOnInit() {
     this.authState$ = this.authService.user$;
+
     this.authState$.pipe(
+      takeUntil(this.destroySubject),
       tap(value => {
         this.loginObject = { ...value, valState: 0 };
         if (value.role === 'Administrator') {
@@ -79,10 +79,15 @@ export class TourListComponent implements OnInit, OnDestroy, AfterViewInit {
         } else if (value.role === 'Fachbereichssprecher') {
           this.loginObject.valState = 2;
         } else if (value.role === 'Trainer') {
+          // this.changeViewSetTrainer(this.loginObject.id, this.dt);
           this.loginObject.valState = 1;
         } else { this.loginObject.valState = 0; }
       }),
-    ).subscribe();
+    ).subscribe(
+      value => {
+        this.authChangeSubject.next(value);
+      }
+    );
 
     this.part$ = this.store.pipe(
       takeUntil(this.destroySubject),
@@ -137,6 +142,13 @@ export class TourListComponent implements OnInit, OnDestroy, AfterViewInit {
     this.part$.subscribe();
     this.activeItem$.subscribe();
     this.tours$.subscribe();
+
+    this.authChange$.pipe(
+      takeUntil(this.destroySubject),
+      filter(user => !!user),
+      publishReplay(1),
+      refCount(),
+    );
   }
 
   ngOnDestroy(): void {
@@ -145,8 +157,14 @@ export class TourListComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.store.dispatch(new RequestTourSummaries());
     this.dt.filter(this.activeTours, 'stateId', 'in');
+    this.authChange$.subscribe(
+      value => {
+        if (value.id !== undefined && value.role === 'Trainer') {
+          this.dt.filter(value.id, 'guideId', 'equals');
+        }
+      }
+    );
   }
 
   selectTour(tour): void {
@@ -206,7 +224,7 @@ export class TourListComponent implements OnInit, OnDestroy, AfterViewInit {
     this.store.dispatch(new DeactivateTour({id: tourId}));
   }
 
-  changeViewSet(event, dt) {
+  changeViewSetActive(event, dt) {
     if (!event.checked) {
       dt.filter(this.activeTours, 'stateId', 'in');
     } else {

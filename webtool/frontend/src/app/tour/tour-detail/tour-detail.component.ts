@@ -24,12 +24,13 @@ import {CreateEvent, UpdateEvent} from '../../core/store/event.actions';
 })
 export class TourDetailComponent implements OnInit, OnDestroy {
 
-  private destroySubject = new Subject<void>();
+  private destroySubject: Subject<boolean> = new Subject<boolean>();
   private tourSubject = new BehaviorSubject<FormGroup>(undefined);
   private categorySubject = new BehaviorSubject<FormGroup>(undefined);
   private eventsSubject = new BehaviorSubject<FormArray>(undefined);
   private tourChangeSubject = new BehaviorSubject<Tour>(undefined);
   private eventChangeSubject = new BehaviorSubject<Event>(undefined);
+  private tourOwner = new BehaviorSubject<boolean>(undefined);
 
   tourCategory = new BehaviorSubject<string>('');
 
@@ -45,50 +46,41 @@ export class TourDetailComponent implements OnInit, OnDestroy {
   category$: Observable<Category>;
 
   authState$: Observable<User>;
+  userIsStaff$: Observable<boolean>;
+  userIsAdmin$: Observable<boolean>;
+  userIsOwner$: Observable<boolean> = this.tourOwner.asObservable();
+  userCurrent$: Observable<number>;
+
   loginObject = {id: undefined, firstName: '', lastName: '', role: undefined, valState: 0};
   display = false;
   currentEventGroup: FormGroup = undefined;
   eventNumber: number[];
 
-  constructor(private store: Store<AppState>, private userService: AuthService) {
-    this.store.dispatch(new NamesRequested());
-    this.store.dispatch(new ValuesRequested());
-    this.store.dispatch(new CalendarRequested());
-  }
+  constructor(private store: Store<AppState>, private userService: AuthService) {  }
 
   ngOnInit(): void {
+    this.userIsStaff$ = this.userService.isStaff$;
+    this.userIsAdmin$ = this.userService.isAdministrator$;
 
-    this.authState$ = this.userService.user$;
-    this.authState$.pipe(
-      tap(value => {
-        this.loginObject = { ...value, valState: 0 };
-        if (value.role === 'Administrator') {
-          this.loginObject.valState = 4;
-        } else if (value.role === 'Geschäftsstelle') {
-          this.loginObject.valState = 3;
-        } else if (value.role === 'Fachbereichssprecher') {
-          this.loginObject.valState = 2;
-        } else if (value.role === 'Trainer') {
-          this.loginObject.valState = 1;
-        } else { this.loginObject.valState = 0; }
-      }),
-    ).subscribe();
+    this.userCurrent$ = this.userService.guideId$;
 
     this.tourId$ = this.store.select(selectRouterDetailId);
 
     this.tour$ = this.tourId$.pipe(
       takeUntil(this.destroySubject),
       flatMap(id => this.store.pipe(
+        takeUntil(this.destroySubject),
         select(getTourById(id)),
         tap(tour => {
           if (!tour) {
             this.store.dispatch(new RequestTour({id}));
           } else {
-            if (this.tourSubject.value === undefined) {
-              tour.admission = (tour.admission / 100);
-              tour.advances = (tour.advances / 100);
-              tour.extraCharges = (tour.extraCharges / 100);
-            }
+            /* Check if current user is owner of tour */
+            this.userCurrent$.pipe(
+              takeUntil(this.destroySubject),
+              tap(value => this.tourOwner.next(tour.guideId === value))
+            ).subscribe();
+            /* Generate tour */
             const tourGroup = tourGroupFactory(tour);
             tourGroup.valueChanges.pipe(
               takeUntil(this.destroySubject)
@@ -108,19 +100,20 @@ export class TourDetailComponent implements OnInit, OnDestroy {
       takeUntil(this.destroySubject),
       filter(tour => !!tour),
       flatMap(tour => this.store.pipe(
+        takeUntil(this.destroySubject),
         select(getCategoryById(tour.categoryId)),
         tap(category => {
           if (!category) {
             this.store.dispatch((new ValuesRequested()));
           } else {
             this.categorySubject.next(categoryGroupFactory(category));
-          }
-          if (category.indoor) {
-            this.tourCategory.next('indoor');
-          } else if (category.summer) {
-            this.tourCategory.next('summer');
-          } else if (category.winter) {
-            this.tourCategory.next('winter');
+            if (category.indoor) {
+              this.tourCategory.next('indoor');
+            } else if (category.summer) {
+              this.tourCategory.next('summer');
+            } else if (category.winter) {
+              this.tourCategory.next('winter');
+            }
           }
         })
       )),
@@ -142,6 +135,7 @@ export class TourDetailComponent implements OnInit, OnDestroy {
       takeUntil(this.destroySubject),
       filter(eventIds => !!eventIds),
       flatMap(eventIds => this.store.select(getEventsByIds(eventIds)).pipe(
+        takeUntil(this.destroySubject),
         filter(() => !!eventIds && eventIds.length > 0),
         tap(events => {
           const eventArray = new FormArray([]);
@@ -193,14 +187,12 @@ export class TourDetailComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.destroySubject.next();
-    this.destroySubject.complete();
+    this.destroySubject.next(true);
+    this.destroySubject.unsubscribe();
+
     this.tourSubject.complete();
     this.categorySubject.complete();
     this.eventsSubject.complete();
-
-    /* Clear tours after destroying component */
-    this.store.dispatch(new ClearTours());
   }
 
   selectEvent(index) {
@@ -208,10 +200,6 @@ export class TourDetailComponent implements OnInit, OnDestroy {
       eventArray => this.currentEventGroup = (eventArray.at(index.data)) as FormGroup
     ).unsubscribe();
     this.display = true;
-  }
-
-  switchDistal(isDistal, distal) {
-    distal.disabled = !isDistal;
   }
 
   addEvent() {
@@ -300,7 +288,7 @@ function eventGroupFactory(event: Event): FormGroup {
     link: new FormControl(event.link),
     map: new FormControl(event.map),
     distal: new FormControl(event.distal),
-    distance: new FormControl({value: event.distance, disabled: !event.distal}),
+    distance: new FormControl(event.distance),
     publicTransport: new FormControl(event.publicTransport),
     shuttleService: new FormControl(event.shuttleService)
   });

@@ -1,4 +1,3 @@
-<label for="{{id}}">{{label}}: </label>
 <p-calendar
   id="{{id}}"
   dateFormat="dd.mm.yy"
@@ -10,7 +9,7 @@
   showButtonBar="false"
   monthNavigator = "true"
   yearNavigator = "true"
-  placeholder="tt.mm.jjjj"
+  placeholder="{{label}}"
   [minDate]="minDate"
   [maxDate]="maxDate"
   [yearRange]="yearRange"

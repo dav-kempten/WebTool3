@@ -42,10 +42,7 @@ const german: LocaleSettings = {
   styleUrls: ['./time.component.css']
 })
 export class TimeComponent implements OnInit, AfterViewInit, OnDestroy, AfterContentInit {
-
-  // id = 'time';
-  label = 'Uhrzeit';
-  // value: Time;
+  @Input() label = 'Datum';
 
   @ViewChild(Calendar) calendar: Calendar;
   @ContentChild(FormControlName) formControlNameRef: FormControlName;

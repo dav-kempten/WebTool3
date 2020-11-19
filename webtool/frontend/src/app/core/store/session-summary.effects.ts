@@ -24,7 +24,7 @@ export class SessionSummaryEffects {
     switchMap(() => {
       return this.sessionService.getSessionSummaries().pipe(
         map((sessionSummaries: SessionSummary[]) => {
-          if (sessionSummaries) {
+          if (sessionSummaries.length > 0) {
             return new LoadSessionSummaries({sessionSummaries});
           } else {
             return new SessionSummariesNotModified();

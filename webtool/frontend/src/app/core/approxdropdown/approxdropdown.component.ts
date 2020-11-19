@@ -17,7 +17,6 @@ import {Approximate as RawApprox} from '../../model/value';
 import {stateValidator} from '../dropdown/dropdown.component';
 import {Store} from '@ngrx/store';
 import {AppState} from '../../app.state';
-import {ValuesRequested} from '../store/value.actions';
 import {delay, tap} from 'rxjs/operators';
 import {getApproxState} from '../store/value.selectors';
 
@@ -68,7 +67,7 @@ export class ApproxdropdownComponent implements OnInit, OnDestroy, AfterViewInit
     [stateValidator]
   );
 
-  status: RawApprox[] = new Array(1).fill({id: 0, name: 'Startzeit', description: null, startTime: null});
+  status: RawApprox[] = new Array(1).fill({id: 0, name: 'Startzeit (ca.)', description: null, startTime: null});
 
    OnChangeWrapper(onChange: (stateIn) => void): (stateOut: RawApprox) => void {
     return ((state: RawApprox): void => {
@@ -101,9 +100,7 @@ export class ApproxdropdownComponent implements OnInit, OnDestroy, AfterViewInit
     this.delegatedMethodCalls.next(accessor => accessor.writeValue(stateId));
   }
 
-  constructor(private store: Store<AppState>) {
-    this.store.dispatch(new ValuesRequested());
-  }
+  constructor(private store: Store<AppState>) {  }
 
   ngOnInit(): void {
     this.formState$ = this.store.select(getApproxState);
