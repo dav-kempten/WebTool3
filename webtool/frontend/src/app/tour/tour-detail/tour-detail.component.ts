@@ -30,7 +30,7 @@ export class TourDetailComponent implements OnInit, OnDestroy {
   private eventsSubject = new BehaviorSubject<FormArray>(undefined);
   private tourChangeSubject = new BehaviorSubject<Tour>(undefined);
   private eventChangeSubject = new BehaviorSubject<Event>(undefined);
-  private tourOwner = new BehaviorSubject<boolean>(undefined);
+  tourOwner = new BehaviorSubject<boolean>(undefined);
 
   tourCategory = new BehaviorSubject<string>('');
 

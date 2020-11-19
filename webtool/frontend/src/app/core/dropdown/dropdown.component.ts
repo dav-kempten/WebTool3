@@ -58,10 +58,16 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   formStateComponent$: Observable<StateState>;
 
   readonly = false; /* init of readonly in guide component */
+  trainerstate = false;
 
   @Input()
   set readOnly(value: boolean) {
     this.readonly = value;
+  }
+
+  @ Input()
+  set trainerState(value: boolean) {
+    this.trainerstate = value;
   }
 
   group = new FormGroup(
@@ -73,7 +79,7 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   );
 
   status: RawState[] = new Array(1).fill({id: 0, state: 'Bearbeitungsstand',
-    description: null});
+   description: null});
 
   OnChangeWrapper(onChange: (stateIn) => void): (stateOut: RawState) => void {
     return ((state: RawState): void => {
@@ -119,6 +125,9 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         Object.keys(state.entities).forEach(key => {
           this.status.push(state.entities[key]);
         });
+        if (this.trainerstate) {
+          this.status = this.status.slice(0, 3);
+        }
         this.stateSubject.next(this.status);
       }),
       // shareReplay(),
