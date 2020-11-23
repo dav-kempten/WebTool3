@@ -6,7 +6,7 @@ import {TourDetailComponent} from './tour-detail/tour-detail.component';
 import {CoreModule} from '../core/core.module';
 import {ReactiveFormsModule} from '@angular/forms';
 import {TableModule} from 'primeng/table';
-import {DropdownModule, TabMenuModule} from 'primeng/primeng';
+import {DropdownModule, TabMenuModule, TooltipModule} from 'primeng/primeng';
 
 const routes: Routes = [
   {path: ':id', component: TourDetailComponent},
@@ -22,7 +22,8 @@ const routes: Routes = [
     ReactiveFormsModule,
     TableModule,
     TabMenuModule,
-    DropdownModule
+    DropdownModule,
+    TooltipModule,
   ]
 })
 export class TourModule {

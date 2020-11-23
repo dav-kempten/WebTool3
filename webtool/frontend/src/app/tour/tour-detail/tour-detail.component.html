@@ -10,7 +10,7 @@
   <div class="p-grid">
     <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
       <input formControlName="reference" id="reference" placeholder="Buchungsnummer" type="text"
-             readonly pInputText>
+             readonly  pTooltip="Buchungscode (nicht änderbar)" pInputText>
     </div>
     <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
       <avk-dropdown formControlName="stateId" id="stateId" [trainerState]="tourOwner.value"></avk-dropdown>
@@ -20,7 +20,8 @@
             formControlName="categoryId"
             id="categoryId"
             [readOnly]="true"
-            [topicSpecific]="'tour'">
+            [topicSpecific]="'tour'"
+        >
         </avk-categoryselect>
     </div>
   </div>
@@ -111,11 +112,11 @@
         <div class="p-grid">
           <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
             <input formControlName="title" id="title" placeholder="Kurzer, markanter Titel der Tour" type="text" style='width:100%'
-                   pInputText>
+                   pTooltip="Kurztitel" pInputText>
           </div>
           <div class="p-col-12 p-sm-8 p-md-8 p-lg-8">
             <input formControlName="name" id="name" placeholder="Längerer, ausführlicher Titel der Tour" type="text" style='width:100%'
-                   pInputText>
+                   pTooltip="Langtitel" pInputText>
           </div>
         </div>
 
@@ -145,6 +146,7 @@
                       id="dbeginn" label="Startdatum"
                       [maxInclude]="true"
                       [max]="currentEventGroup.get('endDate').value"
+                      pTooltip="Startdatum"
             ></avk-date>
           </div>
           <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
@@ -152,6 +154,7 @@
                       id="dend" label="Enddatum"
                       [minInclude]="true"
                       [min]="currentEventGroup.get('startDate').value"
+                      pTooltip="Enddatum"
             ></avk-date>
           </div>
           <div class="p-col-12 p-sm-4 p-md-4 p-lg-4"></div>
