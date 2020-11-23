@@ -7,7 +7,9 @@
   [forceSelection]="true"
   [multiple]="true"
   placeholder="Nachname Vorname"
-  [readonly]="readonly">
+  [readonly]="readonly"
+  pTooltip="Tourenleiter eingeben und auswählen (Nachname Vorname)"
+>
 </p-autoComplete>
 &nbsp;<i [ngStyle]="{'color':formControl?.valid ? 'green' : 'red'}" class="pi pi-user"></i>
 <i *ngIf="isRequired" class="pi pi-info-circle"></i>

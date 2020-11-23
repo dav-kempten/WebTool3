@@ -33,7 +33,7 @@ import {
   DropdownModule,
   InputTextareaModule,
   InputTextModule,
-  SpinnerModule
+  SpinnerModule, TooltipModule
 } from 'primeng/primeng';
 import {MultiSelectModule} from 'primeng/multiselect';
 import {MultiselectComponent} from './multiselect/multiselect.component';
@@ -105,6 +105,7 @@ import { CategoryMultiselectComponent } from './categorymultiselect/categorymult
     CheckboxModule,
     InputTextModule,
     InputTextareaModule,
+    TooltipModule,
     StoreModule.forFeature('values', ValueReducer),
     EffectsModule.forFeature([ValueEffects]),
     StoreModule.forFeature('events', eventReducer),

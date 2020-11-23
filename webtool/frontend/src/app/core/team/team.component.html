@@ -10,6 +10,7 @@
   [formControl]="team"
   placeholder="Liste mit Namen der Helfer (Nachname, Vorname)"
   [readonly]="readonly"
-  [dropdown]="true">
-</p-autoComplete>
+  [dropdown]="true"
+  pTooltip="Mitorganisatoren der Tour / des Kurses"
+></p-autoComplete>
 &nbsp;<i [ngStyle]="{'color':formControl?.valid ? 'green' : 'red'}" class="pi pi-users"></i>
