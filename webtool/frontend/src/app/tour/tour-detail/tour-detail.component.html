@@ -130,11 +130,13 @@
           <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
             <avk-time formControlName="startTime" id="time" label="Startzeit"
                       [disable]="!!currentEventGroup.get('approximateId').value"
+                      pTooltip="Startzeit"
             ></avk-time>
           </div>
           <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
             <avk-time formControlName="endTime" id="endTime" label="Endzeit"
                       [disable]="!!currentEventGroup.get('approximateId').value"
+                      pTooltip="Endzeit"
             ></avk-time>
           </div>
         </div>
@@ -154,7 +156,7 @@
                       id="dend" label="Enddatum"
                       [minInclude]="true"
                       [min]="currentEventGroup.get('startDate').value"
-                      pTooltip="Enddatum"
+                      pTooltip="Enddatum (nur angeben wenn die Veranstaltung länger als einen Tag dauert)"
             ></avk-date>
           </div>
           <div class="p-col-12 p-sm-4 p-md-4 p-lg-4"></div>
@@ -187,7 +189,7 @@
           </div>
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
             <input formControlName="rendezvous" id="rendezvous" placeholder="Treffpunkt"
-                   type="text" style="width:100%"
+                   type="text" style="width:100%" pTooltip="Treffpunkt für die Abfahrt"
                    pInputText>
           </div>
         </div>
@@ -197,14 +199,15 @@
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
             <p-checkbox
                 [formControl]="currentEventGroup.get('reservationService')"
-                label="Reservierungsservice"
+                label="Schulungsraum-Reservierung"
                 binary="true"
+                pTooltip="Reservierungswunsch Schulungsraum"
             ></p-checkbox>
           </div>
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
             <p-checkbox
                 [formControl]="currentEventGroup.get('lea')"
-                label="LowEmissionAdventure"
+                label="Low Emission Adventure"
                 binary="true"
             ></p-checkbox>
           </div>
@@ -223,7 +226,7 @@
             <div class="ui-inputgroup">
               <span class="ui-inputgroup-addon">Entfernung</span>
               <input formControlName="distance" id="distance" type="number" min="0"
-                   pInputText>
+                     pTooltip="Gesamtfahrtstrecke der Veranstaltung" pInputText>
               <span class="ui-inputgroup-addon">Km</span>
             </div>
           </div>
@@ -242,6 +245,7 @@
                 [formControl]="currentEventGroup.get('shuttleService')"
                 label="Alpin-Shuttle"
                 binary="true"
+                pTooltip="Reservierungswunsch für das Alpin-Shuttle"
             ></p-checkbox>
           </div>
         </div>
@@ -280,6 +284,7 @@
           placeholder="Informationen, wenn z.B. keine Tourenbesprechung geplant ist."
           autoResize="autoResize"
           style='width:100%'
+          pTooltip="Tourenabsprache per E-Mail etc."
       ></textarea>
     </div>
   </div>
@@ -324,6 +329,7 @@
             placeholder="Spezielle Voraussetzungen (z.B. Trittsicherheit)"
             autoResize="autoResize"
             style='width:100%'
+            pTooltip="Spezielle Voraussetzungen"
         ></textarea>
     </div>
   </div>
@@ -391,7 +397,7 @@
       <div class="ui-inputgroup">
         <span class="ui-inputgroup-addon">TN-Gebühr</span>
         <input formControlName="admission" id="admission" placeholder="Teilnehmergebühr" type="number" min="0"
-             pInputText>
+             pTooltip="Die TN-Gebühr wird von der GS entsprechend ergänzt" pInputText>
         <span class="ui-inputgroup-addon">.00</span>
         <span class="ui-inputgroup-addon">€</span>
       </div>
@@ -400,7 +406,7 @@
       <div class="ui-inputgroup">
         <span class="ui-inputgroup-addon">Zusatz</span>
         <input formControlName="extraCharges" id="extraCharges" placeholder="Zusatzkosten" type="number" min="0"
-             pInputText>
+             pTooltip="Zusatzkosten wie Maut, Übernachtungen etc." pInputText>
         <span class="ui-inputgroup-addon">.00</span>
         <span class="ui-inputgroup-addon">€</span>
       </div>
@@ -409,7 +415,7 @@
       <div class="ui-inputgroup">
         <span class="ui-inputgroup-addon">Anzahlung</span>
         <input formControlName="advances" id="advances" placeholder="Anzahlung" type="number" min="0"
-             pInputText>
+             pTooltip="Anzahlungen für die Tour, Hütten, Liftkarten etc." pInputText>
         <span class="ui-inputgroup-addon">.00</span>
         <span class="ui-inputgroup-addon">€</span>
       </div>
@@ -427,6 +433,7 @@
         placeholder="Zusatzkosten Details"
         autoResize="autoResize"
         style='width:100%'
+        pTooltip="Aufstellung der Zusatzkosten"
         pInputTextarea
       ></textarea>
     </div>
@@ -437,6 +444,7 @@
         placeholder="Anzahlung Details"
         autoResize="autoResize"
         style='width:100%'
+        pTooltip="Aufstellung der Anzahlung"
         pInputTextarea
       ></textarea>
     </div>
