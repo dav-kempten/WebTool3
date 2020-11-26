@@ -6,6 +6,15 @@
 
 <form [formGroup]="tourGroup">
   <!--Buchungscode, Status, Hauptkategorie-->
+  <p-card header="Tourenformular">
+    <div class="p-grid">
+      <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+        Willkommen im Tourenformular! Hier kannst du deine Touren bearbeiten. Es gibt eine Grundregel: Felder, von denen
+        du nicht weißt wie du sie füllen sollst kannst du leer lassen. Bei Rückfragen meldet sich dein Fachbereichssprecher
+        oder die Geschäftsstelle bei dir.
+      </div>
+    </div>
+  </p-card>
   <p-card subheader="Buchungsnummer, Bearbeitungsstatus und Tourenart">
   <div class="p-grid">
     <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
@@ -44,12 +53,13 @@
           [formControl]="tourGroup.get('ladiesOnly')"
           label="LadiesOnly"
           binary="true"
+          pTooltip="Touren von Frauen für Frauen"
       ></p-checkbox>
     </div>
     <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
       <p-checkbox
           [formControl]="tourGroup.get('youthOnTour')"
-          label="Jugendtour"
+          label="Jugend on Tour"
           binary="true"
       ></p-checkbox>
     </div>
@@ -259,7 +269,7 @@
           </div>
           <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
             <input formControlName="link" id="link" placeholder="Link der Tour im Tourenportal"
-                   type="text" style="width:100%"
+                   pTooltip="z.B. Alpenvereinaktiv, Outdooractive etc." type="text" style="width:100%"
                    pInputText>
           </div>
           <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
@@ -482,6 +492,15 @@
     </div>
   </div>
   </p-card>
+  <p-card header="Obacht!">
+  <div class="p-grid" style="color:red;">
+    <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+      Ist die Tour fertig bearbeitet und soll freigegeben werden, ändert vor dem Speichern oben in der Mitte den Status
+      von "<b>In Arbeit</b>" auf "<b>Fertig</b>". Danach prüfen Geschäftsstelle oder die Fachbereichssprecher eure Tour
+      und geben sie frei. Sollte etwas von den Angaben der Tour nicht passen, meldet sich jemand bei euch.
+    </div>
+  </div>
+  </p-card>
 
   <p-card>
   <div class="p-grid">
@@ -492,7 +511,7 @@
     <div class="p-col-12 p-sm-1 p-md-1 p-lg-1">
       <a routerLink="../"><p-button label="Zurück"></p-button></a>
     </div>
-    <div class="p-col-12 p-sm-10 p-md-10 p-lg-10" style="text-align: right">
+    <div class="p-col-12 p-sm-10 p-md-10 p-lg-10" style="text-align: right" *ngIf="!this.tourOwner.value">
       <a routerLink="../"><p-button type="button" label="Tour löschen" styleClass="ui-button-danger"
             (click)="deleteTour(this.tourGroup.value.id)"></p-button></a>
     </div>

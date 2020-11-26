@@ -211,7 +211,7 @@ class TourSerializer(serializers.ModelSerializer):
                 update_event(Event.objects.get(pk=tour.preliminary.pk), dict(title="VB " + str(tour.tour.reference),
                                                                              name="Vorbesprechung "+ str(tour.tour.reference)), self.context)
 
-            update_event(Event.objects.get(pk=tour.deadline.pk), dict(title="AS "+ str(tour.tour.reference),
+            update_event(Event.objects.get(pk=tour.deadline.pk), dict(title="AS " + str(tour.tour.reference),
                                                                       name="Anmeldeschluss für " + str(tour.tour.reference)), self.context)
             tour.categories = categories
             tour.info = info
