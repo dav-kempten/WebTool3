@@ -115,7 +115,7 @@ export class InstructionEffects {
     ofType<CreateInstruction>(InstructionActionTypes.CreateInstruction),
     map((action: CreateInstruction) => action.payload),
     switchMap(payload => {
-      return this.instructionService.createInstruction(payload.topicId, payload.startDate).pipe(
+      return this.instructionService.createInstruction(payload.topicId, payload.startDate, payload.guideId).pipe(
         map(instruction => {
           if (instruction.topicId !== 0) {
             this.router.navigate(['instructions', instruction.id]);

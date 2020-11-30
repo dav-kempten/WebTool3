@@ -125,7 +125,7 @@ export class ClearInstructions implements Action {
 export class CreateInstruction implements Action {
   readonly type = InstructionActionTypes.CreateInstruction;
 
-  constructor(public payload: { topicId: number, startDate: string}) {}
+  constructor(public payload: { topicId: number, startDate: string, guideId: number}) {}
 }
 
 export class CloneInstruction implements Action {

@@ -160,8 +160,8 @@ export class InstructionService {
     );
   }
 
-  createInstruction(topic: number, date: string): Observable<Instruction> {
-    this.createSubject.next({topicId: topic, instruction: {startDate: date} as Event } as Instruction);
+  createInstruction(topic: number, date: string, guideId: number): Observable<Instruction> {
+    this.createSubject.next({topicId: topic, instruction: {startDate: date} as Event, guideId, stateId: 1} as Instruction);
 
     return this.http.post<Instruction>(
       `/api/frontend/instructions/`,
