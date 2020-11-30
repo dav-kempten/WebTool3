@@ -16,7 +16,12 @@ class IsStaffOrReadOnly(permissions.BasePermission):
     def has_permission(self, request, view):
         return (
             request.method in permissions.SAFE_METHODS or
-            request.user and request.user.is_staff
+            request.user and request.user.is_staff or
+            # instruction owner is only allowed to perform actions under certain circumstances
+            (request.method == 'PUT' or request.method == 'POST') and request.user and (
+                (request.data['guideId'] == request.user.id)
+                and (request.data['stateId'] == 1 or request.data['stateId'] == 2)
+            )
         )
 
 
@@ -27,8 +32,8 @@ class InstructionViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = (
         Instruction.objects
         .filter(deprecated=False, instruction__season__current=True)
-        .exclude(state__done=True)
-        .exclude(state__canceled=True)
+        # .exclude(state__done=True)
+        # .exclude(state__canceled=True)
     )
 
     def get_serializer_class(self):
