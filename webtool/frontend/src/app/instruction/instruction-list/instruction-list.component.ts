@@ -7,7 +7,7 @@ import {getInstructionSummaries} from '../../core/store/instruction-summary.sele
 import {RequestInstructionSummaries} from '../../core/store/instruction-summary.actions';
 import {filter, first, flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {Router} from '@angular/router';
-import {MenuItem} from 'primeng/api';
+import {MenuItem, SelectItem} from 'primeng/api';
 import {AuthService, User} from '../../core/service/auth.service';
 import {
   CloneInstruction,
@@ -28,11 +28,14 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
 
   @ViewChild('dt') dt;
 
+  filter: SelectItem[];
+
   private destroySubject = new Subject<void>();
   part$: Observable<string>;
   instructions$: Observable<InstructionSummary[]>;
   activeItem$: Observable<MenuItem>;
   display = false;
+
   finishedInstructions = [6, 7];
   activeInstructions = [1, 2, 3, 4, 5, 8, 9];
   allInstructions = [1, 2, 3, 4, 5, 6, 7, 8, 9];
@@ -41,6 +44,8 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
 
   user$: Observable<User>;
   authState$: Observable<User>;
+  authChangeSubject = new BehaviorSubject<any>(undefined);
+  authChange$: Observable<any> = this.authChangeSubject.asObservable();
   userIsStaff$: Observable<boolean>;
   userIsAdmin$: Observable<boolean>;
   loginObject = {id: undefined, firstName: '', lastName: '', role: undefined, valState: 0};
@@ -60,7 +65,13 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
     {label: 'Winterkurse', url: '/instructions#winter'},
   ];
 
-  constructor(private store: Store<AppState>, private router: Router, private userService: AuthService) { }
+  constructor(private store: Store<AppState>, private router: Router, private userService: AuthService) {
+    this.filter = [
+      {label: 'Aktive Kurse', value: {id: 0, name: 'Aktive Touren'}},
+      {label: 'Alle Kurse', value: {id: 1, name: 'Alle Touren'}},
+      {label: 'Fertige Kurse', value: {id: 2, name: 'Fertige Touren'}}
+    ];
+  }
 
   ngOnInit() {
     this.authState$ = this.userService.user$;
@@ -78,7 +89,11 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
           this.loginObject.valState = 1;
         } else { this.loginObject.valState = 0; }
       }),
-    ).subscribe();
+    ).subscribe(
+      value => {
+        this.authChangeSubject.next(value);
+      }
+    );
 
     this.part$ = this.store.pipe(
       takeUntil(this.destroySubject),
@@ -134,6 +149,12 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
     this.activeItem$.subscribe();
     this.instructions$.subscribe();
 
+    this.authChange$.pipe(
+      takeUntil(this.destroySubject),
+      filter(user => !!user),
+      publishReplay(1),
+      refCount(),
+    );
   }
 
   ngOnDestroy(): void {
@@ -143,6 +164,13 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
 
   ngAfterViewInit(): void {
     this.dt.filter(this.activeInstructions, 'stateId', 'in');
+    this.authChange$.subscribe(
+      value => {
+        if (value.id !== undefined && value.role === 'Trainer') {
+          this.dt.filter(value.id, 'guideId', 'equals');
+        }
+      }
+    );
   }
 
   selectInstruction(instruction): void {
@@ -158,7 +186,15 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
   }
 
   create(topic, date) {
-    this.store.dispatch(new CreateInstruction({topicId: topic, startDate: date}));
+    let guideId: number;
+    if (this.loginObject.valState === 1) {
+      guideId = this.loginObject.id;
+    } else {
+      guideId = null;
+    }
+    this.store.dispatch(new CreateInstruction({
+      topicId: topic, startDate: date, guideId
+    }));
     this.display = false;
   }
 
@@ -188,10 +224,21 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
   }
 
   changeViewSet(event, dt) {
-    if (!event.checked) {
-      dt.filter(this.activeInstructions, 'stateId', 'in');
-    } else {
-      dt.filter(this.allInstructions, 'stateId', 'in');
+    switch (event.value.id) {
+      case 0: {
+        dt.filter(this.activeInstructions, 'stateId', 'in');
+        break;
+      }
+      case 1: {
+        dt.filter(this.allInstructions, 'stateId', 'in');
+        break;
+      }
+      case 2: {
+        dt.filter(2, 'stateId', 'equals');
+        break;
+      }
+      default:
+        break;
     }
   }
 }

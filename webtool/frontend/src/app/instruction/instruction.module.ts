@@ -8,6 +8,8 @@ import {ReactiveFormsModule} from '@angular/forms';
 
 import {TableModule} from 'primeng/table';
 import {TabMenuModule} from 'primeng/tabmenu';
+import {DropdownModule} from 'primeng/dropdown';
+import {TooltipModule} from 'primeng/primeng';
 
 const routes: Routes = [
   {path: ':id', component: InstructionDetailComponent},
@@ -22,7 +24,9 @@ const routes: Routes = [
     RouterModule.forChild(routes),
     ReactiveFormsModule,
     TableModule,
-    TabMenuModule
+    TabMenuModule,
+    DropdownModule,
+    TooltipModule,
   ]
 })
 export class InstructionModule {
