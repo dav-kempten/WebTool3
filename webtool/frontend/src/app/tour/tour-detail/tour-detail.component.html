@@ -5,7 +5,6 @@
 <!--<p>{{tourGroup.value | json}}</p>-->
 
 <form [formGroup]="tourGroup">
-  <!--Buchungscode, Status, Hauptkategorie-->
   <p-card header="Tourenformular">
     <div class="p-grid">
       <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
@@ -14,11 +13,12 @@
       </div>
     </div>
   </p-card>
+  <!--Buchungscode, Status, Hauptkategorie-->
   <p-card subheader="Buchungsnummer, Bearbeitungsstatus und Tourenart">
   <div class="p-grid">
     <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
       <input formControlName="reference" id="reference" placeholder="Buchungsnummer" type="text"
-             readonly  pTooltip="Buchungscode (nicht änderbar)" pInputText>
+             readonly pTooltip="Buchungscode (nicht änderbar)" pInputText>
     </div>
     <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
       <avk-dropdown formControlName="stateId" id="stateId" [trainerState]="tourOwner.value"
@@ -31,8 +31,7 @@
             id="categoryId"
             [readOnly]="true"
             [topicSpecific]="'tour'"
-        >
-        </avk-categoryselect>
+        ></avk-categoryselect>
     </div>
   </div>
   </p-card>
@@ -307,7 +306,7 @@
     <div class="p-col-12 p-sm-8 p-md-8 p-lg-8">
       <avk-skillselect
           formControlName="skillId"
-          label="Skills"
+          id="Skills"
           [categorySet]="tourGroup.get('categoryId').value"
       ></avk-skillselect>
     </div>
@@ -315,7 +314,6 @@
       <avk-fitnessselect
           formControlName="fitnessId"
           id="fitnessId"
-          [readOnly]="false"
           [categorySet]="tourGroup.get('categoryId').value"
       ></avk-fitnessselect>
     </div>
@@ -328,7 +326,7 @@
     <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
       <avk-qualificationselect
           formControlName="qualificationIds"
-          label="Qualifikation"
+          id="Qualifikation"
       ></avk-qualificationselect>
     </div>
     <div class="p-col-12 p-sm-8 p-md-8 p-lg-8">
@@ -348,7 +346,7 @@
     <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
       <avk-multiselect
           formControlName="equipmentIds"
-          label="Ausrüstung"
+          id="Ausrüstung"
       ></avk-multiselect>
     </div>
     <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
@@ -357,7 +355,8 @@
           pInputTextarea
           formControlName="miscEquipment"
           id="miscEquipmentTopic"
-          placeholder="Weitere Ausrüstung"
+          placeholder="Zusätzliche Ausrüstung"
+          pTooltip="Ergänzungsfeld für Ausrüstung, die in keinem Ausrüstungsset ist"
           autoResize="autoResize"
           style='width:100%'
       ></textarea>
@@ -408,7 +407,7 @@
       <div class="ui-inputgroup">
         <span class="ui-inputgroup-addon">TN-Gebühr</span>
         <input formControlName="admission" id="admission" placeholder="Teilnehmergebühr" type="number" min="0"
-             pTooltip="Die TN-Gebühr wird von der GS entsprechend ergänzt" pInputText>
+             pTooltip="Die TN-Gebühr wird von der Geschäftsstelle entsprechend ergänzt" pInputText>
         <span class="ui-inputgroup-addon">.00</span>
         <span class="ui-inputgroup-addon">€</span>
       </div>
@@ -486,7 +485,7 @@
           [rows]="3"
           formControlName="message"
           pInputTextarea
-          placeholder="Wenn ihr noch Angaben zur Tour machen wollt, die bisher keinen Platz gefunden haben..."
+          placeholder="Wenn du noch Angaben zur Tour machen willst, die bisher keinen Platz gefunden haben..."
           autoResize="autoResize"
           style='width:100%'
       ></textarea>
@@ -496,9 +495,9 @@
   <p-card header="Obacht!">
   <div class="p-grid" style="color:red;">
     <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
-      Ist die Tour fertig bearbeitet und soll freigegeben werden, ändert vor dem Speichern oben in der Mitte den Status
-      von "<b>In Arbeit</b>" auf "<b>Fertig</b>". Danach prüfen Geschäftsstelle oder die Fachbereichssprecher eure Tour
-      und geben sie frei. Sollte etwas von den Angaben der Tour nicht passen, meldet sich jemand bei euch.
+      Ist die Tour fertig bearbeitet und soll freigegeben werden, ändere vor dem Speichern oben in der Mitte den Status
+      von "<b>In Arbeit</b>" auf "<b>Fertig</b>". Danach prüfen Geschäftsstelle oder die Fachbereichssprecher deine Tour
+      und geben sie frei. Sollte etwas von den Angaben der Tour nicht passen, meldet sich jemand bei dir.
     </div>
   </div>
   </p-card>

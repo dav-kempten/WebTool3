@@ -49,7 +49,6 @@ export class TourDetailComponent implements OnInit, OnDestroy {
   userIsOwner$: Observable<boolean> = this.tourOwner.asObservable();
   userCurrent$: Observable<number>;
 
-  loginObject = {id: undefined, firstName: '', lastName: '', role: undefined, valState: 0};
   display = false;
   currentEventGroup: FormGroup = undefined;
   eventNumber: number[];
