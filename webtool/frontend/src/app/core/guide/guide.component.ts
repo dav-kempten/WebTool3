@@ -1,4 +1,4 @@
-import {ReplaySubject, Subscription, of} from 'rxjs';
+import {ReplaySubject, Subscription, of, BehaviorSubject} from 'rxjs';
 import {map, switchMap, filter, delay, tap} from 'rxjs/operators';
 import {
   Component, Input, Output,
@@ -52,10 +52,16 @@ export class GuideComponent implements OnInit, OnDestroy, AfterViewInit, AfterCo
   }
 
   readonly = false;
+  disableSubject = new BehaviorSubject<boolean>(false);
 
   @Input()
   set readOnly(value: boolean) {
     this.readonly = value;
+  }
+
+  @Input()
+  set disable(value: boolean) {
+    this.disableSubject.next(value);
   }
 
   suggestions: NameString[];
