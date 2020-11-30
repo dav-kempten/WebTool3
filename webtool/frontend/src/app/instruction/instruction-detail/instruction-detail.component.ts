@@ -37,6 +37,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   private eventsSubject = new BehaviorSubject<FormArray>(undefined);
   private instructionChangeSubject = new BehaviorSubject<Instruction>(undefined);
   private eventChangeSubject = new BehaviorSubject<Event>(undefined);
+  instructionOwner = new BehaviorSubject<boolean>(undefined);
 
   instructionCategory = new BehaviorSubject<string>('');
 
@@ -56,6 +57,9 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   authState$: Observable<User>;
   userIsStaff$: Observable<boolean>;
   userIsAdmin$: Observable<boolean>;
+  userIsOwner$: Observable<boolean> = this.instructionOwner.asObservable();
+  userCurrent$: Observable<number>;
+
   display = false;
   currentEventGroup: FormGroup = undefined;
   eventNumber: number[];
@@ -65,6 +69,8 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.userIsStaff$ = this.userService.isStaff$;
     this.userIsAdmin$ = this.userService.isAdministrator$;
+
+    this.userCurrent$ = this.userService.guideId$;
 
     this.instructionId$ = this.store.select(selectRouterDetailId);
 
@@ -77,6 +83,12 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
           if (!instruction) {
             this.store.dispatch(new RequestInstruction({id}));
           } else {
+            /* Check if current user is owner of instruction */
+            this.userCurrent$.pipe(
+              takeUntil(this.destroySubject),
+              tap(value => this.instructionOwner.next(instruction.guideId === value))
+            ).subscribe();
+            /* Generate instruction */
             const instructionGroup = instructionGroupFactory(instruction);
             instructionGroup.valueChanges.pipe(
               takeUntil(this.destroySubject)

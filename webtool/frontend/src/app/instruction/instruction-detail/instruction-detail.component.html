@@ -1,6 +1,6 @@
-<ng-container *ngIf="(userIsStaff$ | async) || (userIsAdmin$ | async) else usernotvarified">
-<ng-container *ngIf="instructionGroup$ | async as instructionGroup else loading">
-<p-card header="Instruction #{{instructionId$ | async}}">
+<ng-container *ngIf="(userIsStaff$ | async) || (userIsAdmin$ | async) || (userIsOwner$ | async) else usernotvarified">
+<ng-container *ngIf="instructionGroup$ | async as instructionGroup else loading" readonly="True">
+<!--<p-card header="Instruction #{{instructionId$ | async}}">-->
 <!--  <p>InstructionGroup:<br/>{{instructionGroup.value | json}}</p>-->
 <!--  <p>TopicGroup:<br/>{{(topicGroup$ | async)?.value | json}}</p>-->
 <!--  <p>CategoryGroup:<br />{{(categoryGroup$ | async)?.value | json}}</p>-->
@@ -8,121 +8,131 @@
 <!--    {{instructionGroup.get('meetingIds').value.join(', ')}}</p>-->
 <!--  <p>EventArray:<br/>{{(eventArray$ | async)?.value | json}}</p>-->
 
-  <form [formGroup]="instructionGroup">
-    <!--GuideComponent // Kosten // Einnahmen-->
-    <p-card subheader="Trainer, Kosten & Einnahmen">
+<form [formGroup]="instructionGroup">
+  <p-card header="Kursformular">
     <div class="p-grid">
-      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+      <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+        Willkommen im Kursformular! Hier kannst du deine Kurse bearbeiten. Es gibt eine Grundregel: Felder, von denen
+        du nicht weißt wie du sie füllen sollst, kannst du leer lassen.
+      </div>
+    </div>
+  </p-card>
+  <!--Buchungscode, Status, Kursthema-->
+  <p-card subheader="Buchungsnummer, Status und Kursthema">
+    <div class="p-grid">
+      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+        <input formControlName="reference" id="reference" placeholder="Buchungsnummer" type="text"
+               readonly pTooltip="Buchungscode (nicht änderbar)" pInputText>
+      </div>
+      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+        <avk-dropdown formControlName="stateId" id="stateId" [trainerState]="instructionOwner.value"
+                      [disable]="(instructionOwner.value && (instructionGroup.get('stateId').value > 2))"
+        ></avk-dropdown>
+      </div>
+      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+        <avk-categoryselect
+          formControlName="topicId"
+          id="topicId"
+          [readOnly]="true"
+          [seasonSpecific]="this.instructionCategory.value"
+          [topicSpecific]="'instruction'"
+        ></avk-categoryselect>
+      </div>
+    </div>
+  </p-card>
+
+  <p-card subheader="Organisation und Durchführung">
+    <div class="p-grid">
+      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
         <avk-guide
-            formControlName="guideId"
-            id="g1"
-            label="Trainer"
-            [nameIdList]="instructionGroup.get('teamIds').value"
-            [readOnly]=""
-            required
+          formControlName="guideId"
+          id="g1"
+          label="Trainer"
+          [nameIdList]="instructionGroup.get('teamIds').value"
+          required
         ></avk-guide>
       </div>
-      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-        <input id="costs" placeholder="Kosten" type="text" style='width:100%'
-                                          pInputText>
+      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+        <p-checkbox
+          [formControl]="instructionGroup.get('ladiesOnly')"
+          label="LadiesOnly"
+          binary="true"
+          pTooltip="Kurse von Frauen für Frauen"
+        ></p-checkbox>
       </div>
-      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-        <input id="revenue" placeholder="Einnahmen" type="text" style='width:100%'
-               pInputText>
+      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4" *ngIf="this.instructionCategory.value !== 'indoor'">
+        <p-checkbox
+          [formControl]="instructionGroup.get('isSpecial')"
+          label="Spezialkurs"
+          binary="true"
+          pTooltip="Willst du einen Spezialkurs anbieten?"
+        ></p-checkbox>
       </div>
     </div>
-    </p-card>
+  </p-card>
 
-    <p-card subheader="Team, LEA & LadiesOnly">
+  <!--Mitorganisatoren-->
+  <p-card subheader="Team">
     <div class="p-grid">
-      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+      <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
         <avk-team
-            formControlName="teamIds"
-            [nameId]="instructionGroup.get('guideId').value"
-            id="g2"
-            label="Team"
+          formControlName="teamIds"
+          [nameId]="instructionGroup.get('guideId').value"
+          id="g2"
+          label="Team"
         ></avk-team>
       </div>
-      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-        <p-checkbox
-            [formControl]="instructionGroup.get('ladiesOnly')"
-            label="LadiesOnly"
-            binary="true"
-        ></p-checkbox>
-      </div>
     </div>
-    </p-card>
+  </p-card>
 
-    <!--Buchungscode, Status, Kurskonzept, InfoBox-->
-    <p-card subheader="Kurs-Details">
-    <div class="p-grid">
-      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-        <input formControlName="reference" id="reference" placeholder="Buchungsnummer" type="text" style='width:100%'
-               readonly pInputText>
-      </div>
-      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-        <avk-dropdown formControlName="stateId" id="stateId" >
-        </avk-dropdown>
-      </div>
-      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-        <avk-categoryselect
-            formControlName="topicId"
-            id="topicId"
-            [readOnly]="true"
-            [seasonSpecific]="this.instructionCategory.value"
-            [topicSpecific]="'instruction'">
-        </avk-categoryselect>
-      </div>
-      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3"
-           *ngIf="this.instructionCategory.value !== 'indoor'">
-        <p-checkbox
-            [formControl]="instructionGroup.get('isSpecial')"
-            label="Spezial"
-            binary="true"
-        ></p-checkbox>
-      </div>
-    </div>
-  <!--</form>-->
-
-  <!--Ausrüstung, Besondere Vorausssetzungen-->
   <ng-container *ngIf="(topicGroup$ | async) as topicGroup">
-    <form [formGroup]="topicGroup">
-      <ng-container *ngIf="!instructionGroup.get('isSpecial').value">
+  <form [formGroup]="topicGroup">
+    <!--Ausrüstung, Besondere Vorausssetzungen-->
+    <p-card subheader="Kursdetails" *ngIf="!instructionGroup.get('isSpecial').value">
+      <ng-container>
         <div class="p-grid">
-          <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+          <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+            Dieser Abschnitt ist die Zusammenfassung der Kursvoraussetzungen & -beschreibung. Ist der Kurs kein
+            Spezialkurs gelten die Standardvoraussetzungen, du musst hier also nichts mehr ändern.
+          </div>
+        </div>
+        <div class="p-grid">
+          <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
             <avk-qualificationselect
-                formControlName="qualificationIds"
-                readOnly="'true'"
+              formControlName="qualificationIds"
+              [readOnly]="true"
             ></avk-qualificationselect>
           </div>
-          <div class="p-col-12 p-sm-9 p-md-9 p-lg-9">
+          <div class="p-col-12 p-sm-8 p-md-8 p-lg-8">
             <textarea
               [rows]="1"
               pInputTextarea
               formControlName="preconditions"
               id="preconditionsTopic"
               readonly
-              placeholder="Weitere Anforderungen"
+              placeholder="Zusätzliche Anforderungen"
+              pTooltip="Zusätzliche Anforderungen"
               autoResize="autoResize"
               style='width:100%'
             ></textarea>
           </div>
         </div>
         <div class="p-grid">
-          <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+          <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
             <avk-multiselect
-                formControlName="equipmentIds"
-                readOnly="'true'"
+              formControlName="equipmentIds"
+              [readOnly]="true"
             ></avk-multiselect>
           </div>
-          <div class="p-col-12 p-sm-9 p-md-9 p-lg-9">
+          <div class="p-col-12 p-sm-8 p-md-8 p-lg-8">
             <textarea
               [rows]="1"
               pInputTextarea
               formControlName="miscEquipment"
               id="miscEquipmentTopic"
               readonly
-              placeholder="Weitere Ausrüstung"
+              placeholder="Zusatzausrüstung"
+              pTooltip="Zusatzausrüstung"
               autoResize="autoResize"
               style='width:100%'
             ></textarea>
@@ -132,161 +142,170 @@
         <div class="p-grid">
           <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
             <textarea
-                [rows]="5"
-                pInputTextarea
-                formControlName="description"
-                id="topicDescription"
-                readonly
-                placeholder="Beschreibung"
-                autoResize="autoResize"
-                style='width:100%'
+              [rows]="3"
+              pInputTextarea
+              formControlName="description"
+              id="topicDescription"
+              readonly
+              placeholder="Beschreibung"
+              autoResize="autoResize"
+              style='width:100%'
+              pTooltip="Kurzbeschreibung der Kursinhalte"
             ></textarea>
           </div>
         </div>
       </ng-container>
-    </form>
+    </p-card>
+  </form>
   </ng-container>
-  </p-card>
 
   <ng-container *ngIf="this.instructionCategory.value !== 'indoor'">
     <!--Zusatzausrüstung-->
     <p-card subheader="Zusatzausrüstung">
-    <div class="p-grid">
-      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-        <avk-multiselect
+      <div class="p-grid">
+        <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+          <avk-multiselect
             formControlName="equipmentIds"
-        ></avk-multiselect>
-      </div>
-      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3" *ngIf="this.instructionCategory.value !== 'indoor'">
-        <p-checkbox
-          [formControl]="instructionGroup.get('equipmentService')"
-          label="Materialservice"
-          binary="true"
-        ></p-checkbox>
-      </div>
-      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+          ></avk-multiselect>
+        </div>
+        <div class="p-col-12 p-sm-4 p-md-4 p-lg-4" *ngIf="this.instructionCategory.value !== 'indoor'">
+          <p-checkbox
+            [formControl]="instructionGroup.get('equipmentService')"
+            label="Reservierungswunsch für Ausrüstungsservice"
+            binary="true"
+          ></p-checkbox>
+        </div>
+        <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
         <textarea
-            [rows]="1"
-            pInputTextarea
-            formControlName="miscEquipment"
-            id="miscEquipment"
-            placeholder="Spezielle Ausrüstung"
-            autoResize="autoResize"
-            style='width:100%'
+          [rows]="1"
+          pInputTextarea
+          formControlName="miscEquipment"
+          id="miscEquipment"
+          placeholder="Spezielle Ausrüstung"
+          pTooltip="Ergänzungsfeld für Ausrüstung, die in keinem Ausrüstungsset ist"
+          autoResize="autoResize"
+          style='width:100%'
         ></textarea>
+        </div>
       </div>
-    </div>
     </p-card>
 
-    <p-card subheader="Zusatzanforderungen, Spezialkategorie">
-    <div class="p-grid">
-      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-        <avk-qualificationselect
-            formControlName="qualificationIds"
-        ></avk-qualificationselect>
+    <p-card subheader="Zusatzanforderungen und Spezialkategorien" *ngIf="instructionGroup.get('isSpecial').value">
+      <div class="p-grid">
+        <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+          Hier kannst du einstellen, welche Voraussetzungen dein Spezialkurs in Bezug geforderter Qualifikation hat.
+          Zudem kannst du hier noch zuordnen welche Kategorien du dem Kurs neben der Hauptkategorie zuordnen würdest.
+          Den tatsächlichen Kursinhalt trägst du in die Beschreibung des 1. Kurstermins unter "<b>Termine</b>" ein.
+        </div>
       </div>
-      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-        <avk-categoryselect
+      <div class="p-grid">
+        <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+          <avk-qualificationselect
+            formControlName="qualificationIds"
+          ></avk-qualificationselect>
+        </div>
+        <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+          <avk-categoryselect
             formControlName="categoryId"
             id="categoryId"
             [seasonSpecific]="this.instructionCategory.value"
             [topicSpecific]="'instruction'"
-        ></avk-categoryselect>
-      </div>
-      <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+          ></avk-categoryselect>
+        </div>
+        <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
         <textarea
-            [rows]="1"
-            pInputTextarea
-            formControlName="preconditions"
-            id="preconditions"
-            placeholder="Spezielle Voraussetzungen (z.B. Trittsicherheit)"
-            autoResize="autoResize"
-            style='width:100%'
+          [rows]="1"
+          pInputTextarea
+          formControlName="preconditions"
+          id="preconditions"
+          placeholder="Spezielle Voraussetzungen (z.B. Trittsicherheit)"
+          autoResize="autoResize"
+          style='width:100%'
         ></textarea>
+        </div>
       </div>
-    </div>
     </p-card>
   </ng-container>
-  </form>
 
   <!--Teilnehmeranzahl-->
   <p-card subheader="Teilnehmer">
-  <form class="p-grid" [formGroup]="instructionGroup">
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <avk-membernumber
+    <form class="p-grid" [formGroup]="instructionGroup">
+      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+        <avk-membernumber
           formControlName="minQuantity"
           label="Mindestens"
           id="m1"
           [maxMember]="instructionGroup.get('maxQuantity').value"
-      ></avk-membernumber>
-    </div>
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <avk-membernumber
+        ></avk-membernumber>
+      </div>
+      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+        <avk-membernumber
           formControlName="maxQuantity"
           label="Maximal"
           id="m2"
           [minMember]="instructionGroup.get('minQuantity').value"
-      ></avk-membernumber>
-    </div>
-    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-      <avk-membernumber
+        ></avk-membernumber>
+      </div>
+      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+        <avk-membernumber
           formControlName="curQuantity"
           label="Aktuell"
           id="m3"
-      ></avk-membernumber>
-    </div>
-  </form>
+        ></avk-membernumber>
+      </div>
+    </form>
   </p-card>
 
   <p-card subheader="Termine">
-  <!--Button für neues Event-->
-  <p-button label="Event hinzufügen" (onClick)="addEvent(this.instructionGroup.value)"></p-button>
-  <!--Liste mit Parametern (Tabelle)-->
-  <ng-container *ngIf="(eventArray$ | async) as eventArray">
-    <div class="p-grid">
-      <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
-        <p-table [value]="eventArray.value" selectionMode="single"
-                 (onRowSelect)="selectEvent($event)">
-          <ng-template pTemplate="header">
-            <tr>
-              <th>Datum</th>
-              <th>Uhrzeit</th>
-              <th>Beschreibung</th>
-              <th></th>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="body" let-event let-i="rowIndex">
-            <tr [pSelectableRow]="i">
-              <td>{{event.startDate | date}}</td>
-              <td>{{event.startTime | time: event.approximateId}}</td>
-              <td>{{event.name}}</td>
-              <td>
-                <div style="text-align: center">
-                <p-button type="button" label="Löschen" styleClass="ui-button-danger" *ngIf="!(this.instructionGroup.value.id === event.id)"
-                    (click)="deleteEvent(this.instructionGroup.value, event.id)"></p-button>
-                </div>
-              </td>
-            </tr>
-          </ng-template>
-        </p-table>
+    <!--Button für neues Event-->
+    <p-button label="Kurstermin hinzufügen" (onClick)="addEvent(this.instructionGroup.value)"></p-button>
+    <!--Liste mit Parametern (Tabelle)-->
+    <ng-container *ngIf="(eventArray$ | async) as eventArray">
+      <div class="p-grid">
+        <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+          <p-table [value]="eventArray.value" selectionMode="single"
+                   (onRowSelect)="selectEvent($event)">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Datum</th>
+                <th>Uhrzeit</th>
+                <th>Beschreibung</th>
+                <th>Aktionen</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-event let-i="rowIndex">
+              <tr [pSelectableRow]="i">
+                <td>{{event.startDate | date}}</td>
+                <td>{{event.startTime | time: event.approximateId}}</td>
+                <td>{{event.name}}</td>
+                <td>
+                  <div style="text-align: center">
+                    <p-button type="button" label="Löschen" styleClass="ui-button-danger"
+                              *ngIf="!(this.instructionGroup.value.id === event.id)"
+                              (click)="deleteEvent(this.instructionGroup.value, event.id)"></p-button>
+                  </div>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
       </div>
-    </div>
-  </ng-container>
+    </ng-container>
   </p-card>
 
   <ng-container *ngIf="currentEventGroup">
-    <p-dialog header="EventDetail" [modal]="true" [(visible)]="display" [blockScroll]="true"
+    <p-dialog header="Termin-Details" [modal]="true" [(visible)]="display" [blockScroll]="true"
               (onHide)="closeDialog()" [style]="{width: '60%', height: '60%'}">
       <form [formGroup]="currentEventGroup">
         <!--Kurztitel, Langtitel-->
         <div class="p-grid">
           <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-            <input formControlName="title" id="title" placeholder="Kurztitel" type="text" style='width:100%'
-                   pInputText>
+            <input formControlName="title" id="title" placeholder="Kurzer, markanter Titel des Kurstermins" type="text" style='width:100%'
+                   pTooltip="Kurztitel (z.B. Praxistag 1)" pInputText>
           </div>
           <div class="p-col-12 p-sm-8 p-md-8 p-lg-8">
-            <input formControlName="name" id="name" placeholder="Langtitel" type="text" style='width:100%'
-                   pInputText>
+            <input formControlName="name" id="name" placeholder="Längerer, ausführlicher Titel des Kurstermins" type="text" style='width:100%'
+                   pTooltip="Langtitel" pInputText>
           </div>
         </div>
 
@@ -300,11 +319,13 @@
           <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
             <avk-time formControlName="startTime" id="startTime" label="Startzeit"
                       [disable]="!!currentEventGroup.get('approximateId').value"
+                      pTooltip="Startzeit"
             ></avk-time>
           </div>
           <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
             <avk-time formControlName="endTime" id="endTime" label="Endzeit"
                       [disable]="!!currentEventGroup.get('approximateId').value"
+                      pTooltip="Endzeit"
             ></avk-time>
           </div>
         </div>
@@ -316,6 +337,7 @@
                       id="dbeginn" label="Startdatum"
                       [maxInclude]="true"
                       [max]="currentEventGroup.get('endDate').value"
+                      pTooltip="Startdatum"
             ></avk-date>
           </div>
           <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
@@ -323,6 +345,7 @@
                       id="dend" label="Enddatum"
                       [minInclude]="true"
                       [min]="currentEventGroup.get('startDate').value"
+                      pTooltip="Enddatum"
             ></avk-date>
           </div>
           <div class="p-col-12 p-sm-4 p-md-4 p-lg-4"></div>
@@ -330,14 +353,19 @@
         <div class="p-grid">
           <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
             <textarea
-                [rows]="3"
-                pInputTextarea
-                formControlName="description"
-                id="description"
-                placeholder="Beschreibung"
-                autoResize="autoResize"
-                style='width:100%'
+              [rows]="3"
+              pInputTextarea
+              formControlName="description"
+              id="description"
+              placeholder="Kurze Beschreibung des Kurses falls Spezialkurs"
+              autoResize="autoResize"
+              style='width:100%'
             ></textarea>
+          </div>
+        </div>
+        <div class="p-grid">
+          <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+            Sonderzeichen: ● ○ ➘ ➚ „“ ½ ⅓ ⅔ ¼ ¾
           </div>
         </div>
 
@@ -349,7 +377,7 @@
                    pInputText>
           </div>
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
-            <input formControlName="rendezvous" id="rendezvous" placeholder="Treffpunkt"
+            <input formControlName="rendezvous" id="rendezvous" placeholder="Treffpunkt" pTooltip="Treffpunkt für die Abfahrt"
                    type="text" style="width:100%"
                    pInputText>
           </div>
@@ -359,15 +387,16 @@
         <div class="p-grid" *ngIf="this.instructionCategory.value !== 'indoor'">
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
             <p-checkbox
-                [formControl]="currentEventGroup.get('reservationService')"
-                label="Reservierungsservice"
-                binary="true"
+              [formControl]="currentEventGroup.get('reservationService')"
+              label="Schulungsraum-Reservierung"
+              binary="true"
+              pTooltip="Reservierungswunsch Schulungsraum"
             ></p-checkbox>
           </div>
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6" *ngIf="this.instructionCategory.value !== 'indoor'">
             <p-checkbox
               [formControl]="currentEventGroup.get('lea')"
-              label="LowEmissionAdventure"
+              label="Low Emission Adventure"
               binary="true"
             ></p-checkbox>
           </div>
@@ -377,16 +406,16 @@
         <div class="p-grid" *ngIf="this.instructionCategory.value !== 'indoor'">
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
             <p-checkbox
-                [formControl]="currentEventGroup.get('distal')"
-                label="Gemeinschaftsanreise"
-                binary="true"
+              [formControl]="currentEventGroup.get('distal')"
+              label="Gemeinschaftsanreise"
+              binary="true"
             ></p-checkbox>
           </div>
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6" *ngIf="currentEventGroup.get('distal').value">
-            <div class="ui-inputgroup" >
+            <div class="ui-inputgroup">
               <span class="ui-inputgroup-addon">Entfernung</span>
               <input formControlName="distance" id="distance" type="number" min="0"
-                     pInputText>
+                     pTooltip="Gesamtfahrtstrecke des Kurstermins" pInputText>
               <span class="ui-inputgroup-addon">Km</span>
             </div>
           </div>
@@ -395,16 +424,17 @@
         <div class="p-grid" *ngIf="this.instructionCategory.value !== 'indoor'">
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
             <p-checkbox
-                [formControl]="currentEventGroup.get('publicTransport')"
-                label="Öffentliche Anreise"
-                binary="true"
+              [formControl]="currentEventGroup.get('publicTransport')"
+              label="Öffentliche Anreise"
+              binary="true"
             ></p-checkbox>
           </div>
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
             <p-checkbox
-                [formControl]="currentEventGroup.get('shuttleService')"
-                label="ShuttleSerivce"
-                binary="true"
+              [formControl]="currentEventGroup.get('shuttleService')"
+              label="ShuttleSerivce"
+              binary="true"
+              pTooltip="Reservierungswunsch für das Alpin-Shuttle"
             ></p-checkbox>
           </div>
         </div>
@@ -412,17 +442,17 @@
         <!--Source, Link & Map-->
         <div class="p-grid" *ngIf="this.instructionCategory.value !== 'indoor'">
           <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-            <input formControlName="source" id="source" placeholder="Source"
+            <input formControlName="source" id="source" placeholder="Ausgangsort"
                    type="text" style="width:100%"
                    pInputText>
           </div>
           <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-            <input formControlName="link" id="link" placeholder="Link"
-                   type="text" style="width:100%"
+            <input formControlName="link" id="link" placeholder="Link zu Informationen im Tourenportal"
+                   pTooltip="z.B. Alpenvereinaktiv, Outdooractive etc." type="text" style="width:100%"
                    pInputText>
           </div>
           <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-            <input formControlName="map" id="map" placeholder="Map"
+            <input formControlName="map" id="map" placeholder="URL zu einem Kartenausschnitt"
                    type="text" style="width:100%"
                    pInputText>
           </div>
@@ -432,37 +462,36 @@
   </ng-container>
 
   <!--Teilnehmergebühr, Vorauszahlung & Zusatzkosten-->
-  <form [formGroup]="instructionGroup">
   <!--*ngIf="this.instructionCategory.value !== 'indoor'"-->
-    <p-card subheader="Teilnehmergebühr, Zusatzkosten, Anzahlung">
+  <p-card subheader="Teilnehmergebühr, Zusatzkosten, Anzahlung">
     <div class="p-grid">
-    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-      <div class="ui-inputgroup">
-        <span class="ui-inputgroup-addon">TN-Gebühr</span>
-        <input formControlName="admission" id="admission" placeholder="Teilnehmergebühr" type="number" min="0"
-             pInputText>
-        <span class="ui-inputgroup-addon">.00</span>
-        <span class="ui-inputgroup-addon">€</span>
+      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+        <div class="ui-inputgroup">
+          <span class="ui-inputgroup-addon">TN-Gebühr</span>
+          <input formControlName="admission" id="admission" placeholder="Teilnehmergebühr" type="number" min="0"
+                 pTooltip="Die TN-Gebühr wird von der Geschäftsstelle entsprechend ergänzt" pInputText>
+          <span class="ui-inputgroup-addon">.00</span>
+          <span class="ui-inputgroup-addon">€</span>
+        </div>
       </div>
-    </div>
-    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-      <div class="ui-inputgroup">
-        <span class="ui-inputgroup-addon">Vorauszahlung</span>
-        <input formControlName="advances" id="advances" placeholder="Vorauszahlung" type="number" min="0"
-             pInputText>
-        <span class="ui-inputgroup-addon">.00</span>
-        <span class="ui-inputgroup-addon">€</span>
+      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+        <div class="ui-inputgroup">
+          <span class="ui-inputgroup-addon">Vorauszahlung</span>
+          <input formControlName="advances" id="advances" placeholder="Vorauszahlung" type="number" min="0"
+                 pTooltip="Anzahlungen für den Kurs, Hütten, Liftkarten etc." pInputText>
+          <span class="ui-inputgroup-addon">.00</span>
+          <span class="ui-inputgroup-addon">€</span>
+        </div>
       </div>
-    </div>
-    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-      <div class="ui-inputgroup">
-        <span class="ui-inputgroup-addon">Zusatzkosten</span>
-        <input formControlName="extraCharges" id="extraCharges" placeholder="Zusatzkosten" type="number" min="0"
-             pInputText>
-        <span class="ui-inputgroup-addon">.00</span>
-        <span class="ui-inputgroup-addon">€</span>
+      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+        <div class="ui-inputgroup">
+          <span class="ui-inputgroup-addon">Zusatzkosten</span>
+          <input formControlName="extraCharges" id="extraCharges" placeholder="Zusatzkosten" type="number" min="0"
+                 pTooltip="Zusatzkosten wie Maut, Übernachtungen etc." pInputText>
+          <span class="ui-inputgroup-addon">.00</span>
+          <span class="ui-inputgroup-addon">€</span>
+        </div>
       </div>
-    </div>
     </div>
 
     <!--Zusatzkosten & Advances Details-->
@@ -471,76 +500,90 @@
       </div>
       <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
       <textarea
-          [rows]="2"
-          formControlName="advancesInfo"
-          placeholder="Vorauszahlung Details"
-          autoResize="autoResize"
-          style='width:100%'
-          pInputTextarea
+        [rows]="2"
+        formControlName="advancesInfo"
+        placeholder="Vorauszahlung Details"
+        autoResize="autoResize"
+        style='width:100%'
+        pTooltip="Aufstellung der Anzahlung"
+        pInputTextarea
       ></textarea>
       </div>
       <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
       <textarea
-          [rows]="2"
-          formControlName="extraChargesInfo"
-          pInputTextarea
-          placeholder="Zusatzkosten Details"
-          autoResize="autoResize"
-          style='width:100%'
+        [rows]="2"
+        formControlName="extraChargesInfo"
+        pInputTextarea
+        placeholder="Zusatzkosten Details"
+        autoResize="autoResize"
+        style='width:100%'
+        pTooltip="Aufstellung der Zusatzkosten"
       ></textarea>
       </div>
     </div>
-    </p-card>
+  </p-card>
 
-    <!--Bemerkung-->
-    <p-card subheader="Bemerkungen">
+  <!--Bemerkung-->
+  <p-card subheader="Bemerkungen">
     <div class="p-grid">
       <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
       <textarea
-          [rows]="3"
-          pInputTextarea
-          formControlName="comment"
-          placeholder="Bemerkungen"
-          autoResize="autoResize"
-          style='width:100%'
+        [rows]="3"
+        pInputTextarea
+        formControlName="comment"
+        placeholder="Bemerkungen"
+        autoResize="autoResize"
+        style='width:100%'
       ></textarea>
       </div>
     </div>
-    </p-card>
+  </p-card>
 
-    <!-- Nachricht an die Geschäftsstelle -->
-    <p-card subheader="Nachricht an die Geschäftsstelle" >
-    <div class="p-grid" >
+  <!-- Nachricht an die Geschäftsstelle -->
+  <p-card subheader="Nachricht an die Geschäftsstelle (intern)">
+    <div class="p-grid">
       <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
       <textarea
-          [rows]="3"
-          pInputTextarea
-          formControlName="message"
-          placeholder="Nachricht an die Geschäftsstelle"
-          autoResize="autoResize"
-          style='width:100%'
+        [rows]="3"
+        pInputTextarea
+        formControlName="message"
+        placeholder="Wenn du noch Angaben zur Tour machen willst, die bisher keinen Platz gefunden haben..."
+        autoResize="autoResize"
+        style='width:100%'
       ></textarea>
       </div>
     </div>
-    </p-card>
+  </p-card>
+  <p-card header="Obacht!">
+  <div class="p-grid" style="color:red;">
+    <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+      Ist der Kurs fertig bearbeitet und soll freigegeben werden, ändere vor dem Speichern oben in der Mitte den Status
+      von "<b>In Arbeit</b>" auf "<b>Fertig</b>". Danach prüfen Geschäftsstelle oder die Fachbereichssprecher deinen Kurs
+      und geben ihn frei. Sollte etwas von den Angaben des Kurses nicht passen, meldet sich jemand bei dir.
+    </div>
+  </div>
+  </p-card>
 
-    <p-card>
+  <p-card>
     <div class="p-grid">
-      <div class="p-col-12 p-sm-1 p-md-1 p-lg-1">
+      <div class="p-col-12 p-sm-1 p-md-1 p-lg-1" *ngIf="!(instructionOwner.value && (instructionGroup.get('stateId').value > 2))">
         <p-button type="button" label="Speichern"
-            (click)="save(this.instructionGroup.value)"></p-button>
+                  (click)="save(this.instructionGroup.value)"></p-button>
       </div>
       <div class="p-col-12 p-sm-1 p-md-1 p-lg-1">
-        <a routerLink="../"><p-button label="Zurück"></p-button></a>
+        <a routerLink="../">
+          <p-button label="Zurück"></p-button>
+        </a>
       </div>
-      <div class="p-col-12 p-sm-10 p-md-10 p-lg-10" style="text-align: right">
+      <div class="p-col-12 p-sm-10 p-md-10 p-lg-10" style="text-align: right" *ngIf="!this.instructionOwner.value">
         <a routerLink="../"><p-button type="button" label="Kurs löschen" styleClass="ui-button-danger"
-            (click)="deleteInstruction(this.instructionGroup.value.id)"></p-button></a>
+          (click)="deleteInstruction(this.instructionGroup.value.id)"></p-button>
+        </a>
       </div>
     </div>
-    </p-card>
-  </form>
-</p-card>
+  </p-card>
+</form>
+<!--</p-card>-->
 </ng-container>
 </ng-container>
 <ng-template #loading>Bitte kurz warten!</ng-template>
