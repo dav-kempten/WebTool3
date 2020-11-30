@@ -10,8 +10,7 @@
     <div class="p-grid">
       <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
         Willkommen im Tourenformular! Hier kannst du deine Touren bearbeiten. Es gibt eine Grundregel: Felder, von denen
-        du nicht weißt wie du sie füllen sollst kannst du leer lassen. Bei Rückfragen meldet sich dein Fachbereichssprecher
-        oder die Geschäftsstelle bei dir.
+        du nicht weißt wie du sie füllen sollst, kannst du leer lassen.
       </div>
     </div>
   </p-card>
@@ -22,7 +21,9 @@
              readonly  pTooltip="Buchungscode (nicht änderbar)" pInputText>
     </div>
     <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-      <avk-dropdown formControlName="stateId" id="stateId" [trainerState]="tourOwner.value"></avk-dropdown>
+      <avk-dropdown formControlName="stateId" id="stateId" [trainerState]="tourOwner.value"
+                    [disable]="(tourOwner.value && (tourGroup.get('stateId').value > 2))"
+      ></avk-dropdown>
     </div>
     <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
         <avk-categoryselect
@@ -504,9 +505,10 @@
 
   <p-card>
   <div class="p-grid">
-    <div class="p-col-12 p-sm-1 p-md-1 p-lg-1">
+    <div class="p-col-12 p-sm-1 p-md-1 p-lg-1" *ngIf="!(tourOwner.value && (tourGroup.get('stateId').value > 2))">
       <p-button type="button" label="Speichern" class="ui-button-info"
-          (click)="saveTour(this.tourGroup.value)"></p-button>
+           (click)="saveTour(this.tourGroup.value)"
+      ></p-button>
       </div>
     <div class="p-col-12 p-sm-1 p-md-1 p-lg-1">
       <a routerLink="../"><p-button label="Zurück"></p-button></a>

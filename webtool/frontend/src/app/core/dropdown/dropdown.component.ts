@@ -50,6 +50,7 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
 
   private destroySubject = new Subject<void>();
   stateSubject = new BehaviorSubject<RawState[]>(undefined);
+  disableSubject = new BehaviorSubject<boolean>(false);
 
   originalControl = new FormControl(null);
   choiceControl = new FormControl('');
@@ -57,12 +58,17 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   formState$: Observable<StateState>;
   formStateComponent$: Observable<StateState>;
 
-  readonly = false; /* init of readonly in guide component */
+  readonly = false;
   trainerstate = false;
 
   @Input()
   set readOnly(value: boolean) {
     this.readonly = value;
+  }
+
+  @Input()
+  set disable(value: boolean) {
+    this.disableSubject.next(value);
   }
 
   @ Input()
@@ -125,7 +131,7 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
         Object.keys(state.entities).forEach(key => {
           this.status.push(state.entities[key]);
         });
-        if (this.trainerstate) {
+        if (this.trainerstate && !this.disableSubject.value) {
           this.status = this.status.slice(0, 3);
         }
         this.stateSubject.next(this.status);
