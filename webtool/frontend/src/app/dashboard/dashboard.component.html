@@ -10,13 +10,14 @@
       Touren noch geprüft und wandern dann auf die Homepage.
     </div>
   </div>
+
   <div class="p-grid">
     <div class="p-col-12 p-sm-6 p-md-6 p-lg-6" *ngIf="this.userId !== undefined">
       <p-toggleButton onLabel="Neue Tour" offLabel="Tour hinzufügen" (onChange)="proposeTour()"></p-toggleButton>
     </div>
   </div>
   <form [formGroup]="createTour">
-  <p-card subheader="Neue Tour" *ngIf="this.userId !== undefined && this.display">
+  <p-card subheader="Neue Tour" *ngIf="this.userId !== undefined && this.displayTour">
     <div class="p-grid">
       <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
         <avk-categoryselect
@@ -47,8 +48,34 @@
                   [min]="createTour.get('deadline').value" [max]="createTour.get('startDate').value"></avk-date>
       </div>
     </div>
-    <p-button label="Tour erstellen & weiterbearbeiten" (onClick)="create(createTour.get('categoryIds').value, createTour.get('startDate').value,
+    <p-button label="Tour erstellen & weiterbearbeiten" (onClick)="creatingTour(createTour.get('categoryIds').value, createTour.get('startDate').value,
               createTour.get('deadline').value, createTour.get('preliminary').value, this.userId)"></p-button>
+  </p-card>
+  </form>
+
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-6 p-md-6 p-lg-6" *ngIf="this.userId !== undefined">
+      <p-toggleButton onLabel="Neuer Kurs" offLabel="Kurs hinzufügen" (onChange)="proposeInstruction()"></p-toggleButton>
+    </div>
+  </div>
+  <form [formGroup]="createInstruction">
+  <p-card subheader="Neuer Kurs" *ngIf="this.userId !== undefined && this.displayInstruction">
+    <div class="p-grid">
+      <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+        <avk-categoryselect
+            formControlName="topicId"
+            id="topicId"
+            [topicSpecific]="'instruction'">
+        </avk-categoryselect>
+      </div>
+    </div>
+    <div class="p-grid">
+      <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+        <avk-date formControlName="startDate" id="ibeginn" label="Startdatum"></avk-date>
+      </div>
+    </div>
+    <p-button label="Kurs erstellen & weiterbearbeiten" (onClick)="creatingInstruction(createInstruction.get('topicId').value,
+      createInstruction.get('startDate').value, this.userId)"></p-button>
   </p-card>
   </form>
 </p-card>

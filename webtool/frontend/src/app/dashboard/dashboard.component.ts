@@ -6,6 +6,7 @@ import {FormControl, FormGroup} from '@angular/forms';
 import {CreateTour} from '../core/store/tour.actions';
 import {tap} from 'rxjs/operators';
 import {Observable} from 'rxjs';
+import {CreateInstruction} from '../core/store/instruction.actions';
 
 @Component({
   selector: 'avk-dashboard',
@@ -15,20 +16,29 @@ import {Observable} from 'rxjs';
 export class DashboardComponent implements OnInit {
   authState$: Observable<User>;
   preliminarySelect = false;
-  display = false;
+  displayTour = false;
+  displayInstruction = false;
   userIsStaff = false;
   userId = 0;
 
   categoryIds = new FormControl('');
-  startDate = new FormControl('');
-  deadline = new FormControl('');
+  startDateTour = new FormControl('');
+  deadlineTour = new FormControl('');
   preliminary = new FormControl(null);
+
+  topicId = new FormControl('');
+  startDateInstruction = new FormControl('');
 
   createTour: FormGroup = new FormGroup({
     categoryIds: this.categoryIds,
-    startDate: this.startDate,
-    deadline: this.deadline,
+    startDate: this.startDateTour,
+    deadline: this.deadlineTour,
     preliminary: this.preliminary
+  });
+
+  createInstruction: FormGroup = new FormGroup({
+    topicId: this.topicId,
+    startDate: this.startDateInstruction
   });
 
   constructor(private store: Store<AppState>, private authService: AuthService) {}
@@ -45,7 +55,11 @@ export class DashboardComponent implements OnInit {
   }
 
   proposeTour() {
-    this.display = !this.display;
+    this.displayTour = !this.displayTour;
+  }
+
+  proposeInstruction() {
+    this.displayInstruction = !this.displayInstruction;
   }
 
   selectPreliminary() {
@@ -55,10 +69,17 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  create(category, startdate, enddate, preliminary, guideId) {
+  creatingTour(category, startdate, enddate, preliminary, guideId) {
     if (this.userIsStaff) { guideId = null; }
     this.store.dispatch(new CreateTour({
       categoryId: category, startDate: startdate, deadline: enddate, preliminary, guideId
+    }));
+  }
+
+  creatingInstruction(topic, startdate, guideId) {
+    if (this.userIsStaff) { guideId = null; }
+    this.store.dispatch(new CreateInstruction({
+      topicId: topic, startDate: startdate, guideId
     }));
   }
 
