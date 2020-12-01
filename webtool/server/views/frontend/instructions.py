@@ -17,7 +17,7 @@ class IsStaffOrReadOnly(permissions.BasePermission):
         return (
             request.method in permissions.SAFE_METHODS or
             request.user and request.user.is_staff or
-            # instruction owner is only allowed to perform actions under certain circumstances
+            # Instruction owner is only allowed to perform actions under certain circumstances
             (request.method == 'PUT' or request.method == 'POST') and request.user and (
                 (request.data['guideId'] == request.user.id)
                 and (request.data['stateId'] == 1 or request.data['stateId'] == 2)
