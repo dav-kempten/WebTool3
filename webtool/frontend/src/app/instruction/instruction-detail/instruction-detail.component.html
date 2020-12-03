@@ -185,6 +185,7 @@
           placeholder="Spezielle Ausrüstung"
           pTooltip="Ergänzungsfeld für Ausrüstung, die in keinem Ausrüstungsset ist"
           autoResize="autoResize"
+          maxlength="75"
           style='width:100%'
         ></textarea>
         </div>
@@ -302,11 +303,11 @@
         <div class="p-grid">
           <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
             <input formControlName="title" id="title" placeholder="Kurzer, markanter Titel des Kurstermins" type="text" style='width:100%'
-                   pTooltip="Kurztitel (z.B. Praxistag 1)" pInputText>
+                   maxlength="30" pTooltip="Kurztitel (z.B. Praxistag 1, max. 30 Zeichen)" pInputText>
           </div>
           <div class="p-col-12 p-sm-8 p-md-8 p-lg-8">
             <input formControlName="name" id="name" placeholder="Längerer, ausführlicher Titel des Kurstermins" type="text" style='width:100%'
-                   pTooltip="Langtitel" pInputText>
+                   maxlength="125" pTooltip="Langtitel (max. 125 Zeichen)" pInputText>
           </div>
         </div>
 
@@ -374,12 +375,12 @@
         <div class="p-grid">
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
             <input formControlName="location" id="location" placeholder="Ziel/Unterkunft (Hütte, Gipfel etc.)"
-                   type="text" style="width:100%"
+                   maxlength="75" type="text" style="width:100%"
                    pInputText>
           </div>
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
             <input formControlName="rendezvous" id="rendezvous" placeholder="Treffpunkt" pTooltip="Treffpunkt für die Abfahrt"
-                   type="text" style="width:100%"
+                   maxlength="75" type="text" style="width:100%"
                    pInputText>
           </div>
         </div>
@@ -415,7 +416,7 @@
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6" *ngIf="currentEventGroup.get('distal').value">
             <div class="ui-inputgroup">
               <span class="ui-inputgroup-addon">Entfernung</span>
-              <input formControlName="distance" id="distance" type="number" min="0"
+              <input formControlName="distance" id="distance" type="number" min="0" max="9999"
                      pTooltip="Gesamtfahrtstrecke des Kurstermins" pInputText>
               <span class="ui-inputgroup-addon">Km</span>
             </div>
@@ -443,17 +444,17 @@
         <!--Source, Link & Map-->
         <div class="p-grid" *ngIf="this.instructionCategory.value !== 'indoor'">
           <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-            <input formControlName="source" id="source" placeholder="Ausgangsort"
+            <input formControlName="source" id="source" placeholder="Ausgangsort" maxlength="75"
                    type="text" style="width:100%"
                    pInputText>
           </div>
           <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
             <input formControlName="link" id="link" placeholder="Link zu Informationen im Tourenportal"
-                   pTooltip="z.B. Alpenvereinaktiv, Outdooractive etc." type="text" style="width:100%"
+                   pTooltip="z.B. Alpenvereinaktiv, Outdooractive etc." type="text" style="width:100%" maxlength="200"
                    pInputText>
           </div>
           <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-            <input formControlName="map" id="map" placeholder="URL zu einem Kartenausschnitt"
+            <input formControlName="map" id="map" placeholder="URL zu einem Kartenausschnitt" maxlength="100"
                    type="text" style="width:100%"
                    pInputText>
           </div>
@@ -469,8 +470,8 @@
       <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
         <div class="ui-inputgroup">
           <span class="ui-inputgroup-addon">TN-Gebühr</span>
-          <input formControlName="admission" id="admission" placeholder="Teilnehmergebühr" type="number" min="0"
-                 pTooltip="Die TN-Gebühr wird von der Geschäftsstelle entsprechend ergänzt" pInputText>
+          <input formControlName="admission" id="admission" placeholder="Teilnehmergebühr" type="number" [min]="0" [max]="999"
+                 maxlength="3" pTooltip="Die TN-Gebühr wird von der Geschäftsstelle entsprechend ergänzt" pInputText>
           <span class="ui-inputgroup-addon">.00</span>
           <span class="ui-inputgroup-addon">€</span>
         </div>
@@ -478,8 +479,8 @@
       <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
         <div class="ui-inputgroup">
           <span class="ui-inputgroup-addon">Vorauszahlung</span>
-          <input formControlName="advances" id="advances" placeholder="Vorauszahlung" type="number" min="0"
-                 pTooltip="Anzahlungen für den Kurs, Hütten, Liftkarten etc." pInputText>
+          <input formControlName="advances" id="advances" placeholder="Vorauszahlung" type="number" [min]="0" [max]="999"
+                 maxlength="3" pTooltip="Anzahlungen für den Kurs, Hütten, Liftkarten etc." pInputText>
           <span class="ui-inputgroup-addon">.00</span>
           <span class="ui-inputgroup-addon">€</span>
         </div>
@@ -487,8 +488,8 @@
       <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
         <div class="ui-inputgroup">
           <span class="ui-inputgroup-addon">Zusatzkosten</span>
-          <input formControlName="extraCharges" id="extraCharges" placeholder="Zusatzkosten" type="number" min="0"
-                 pTooltip="Zusatzkosten wie Maut, Übernachtungen etc." pInputText>
+          <input formControlName="extraCharges" id="extraCharges" placeholder="Zusatzkosten" type="number" [min]="0" [max]="999"
+                 maxlength="3" pTooltip="Zusatzkosten wie Maut, Übernachtungen etc." pInputText>
           <span class="ui-inputgroup-addon">.00</span>
           <span class="ui-inputgroup-addon">€</span>
         </div>
@@ -506,6 +507,7 @@
         placeholder="Vorauszahlung Details"
         autoResize="autoResize"
         style='width:100%'
+        maxlength="75"
         pTooltip="Aufstellung der Anzahlung"
         pInputTextarea
       ></textarea>
@@ -518,6 +520,7 @@
         placeholder="Zusatzkosten Details"
         autoResize="autoResize"
         style='width:100%'
+        maxlength="75"
         pTooltip="Aufstellung der Zusatzkosten"
       ></textarea>
       </div>
