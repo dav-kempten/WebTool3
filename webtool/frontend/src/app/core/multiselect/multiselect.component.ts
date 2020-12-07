@@ -50,8 +50,7 @@ export class MultiselectComponent implements OnInit, AfterViewInit, OnDestroy, A
   private destroySubject = new Subject<void>();
 
   formEquipState$: Observable<EquipState>;
-
-  statusEquipment: RawEquipment[] = new Array(1).fill({id: 0, code: '', name: 'Ausrüstung', description: ''});
+  statusEquipment: RawEquipment[] = new Array(0);
 
   readonly = false; /* init of readonly in guide component */
 
@@ -101,15 +100,19 @@ export class MultiselectComponent implements OnInit, AfterViewInit, OnDestroy, A
   writeValue(choice): void {
     if (choice.length > 0) {
       const pushArray = new Array(0);
-      if (typeof(choice[0]) === 'number') {
-        choice.forEach(value => {
-          pushArray.push(this.statusEquipment[value]);
-        });
-      } else {
-        choice.forEach(value => {
-          pushArray.push(value);
-        });
-      }
+      choice.forEach(value => {
+        if (typeof(value) === 'number') {
+          this.statusEquipment.forEach(valueNumber => {
+            if (value === valueNumber.id) {
+              pushArray.push(valueNumber);
+            }
+          });
+        } else {
+          choice.forEach(valueObject => {
+            pushArray.push(valueObject);
+          });
+        }
+      });
       choice = pushArray;
     }
     this.delegatedMethodCalls.next(accessor => accessor.writeValue(choice));

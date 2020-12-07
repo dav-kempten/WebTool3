@@ -24,7 +24,6 @@ import {Topic as RawTopic} from '../../model/value';
 import {State as TopicState} from '../store/topic.reducer';
 import {Store} from '@ngrx/store';
 import {AppState} from '../../app.state';
-import {ValuesRequested} from '../store/value.actions';
 import {delay, takeUntil, tap} from 'rxjs/operators';
 import {getTopicState} from '../store/value.selectors';
 
@@ -51,9 +50,7 @@ export class QualificationselectComponent implements OnInit, AfterViewInit, OnDe
   private destroySubject = new Subject<void>();
 
   formTopicState$: Observable<TopicState>;
-
-  statusTopic: RawTopic[] = new Array(1).fill({id: 0, code: '', title: 'Topic', name: '', description: '',
-    preconditions: '', qualificationIds: [], equipmentIds: [], miscEquipment: ''});
+  statusTopic: RawTopic[] = new Array(0);
 
   readonly = false;
 
