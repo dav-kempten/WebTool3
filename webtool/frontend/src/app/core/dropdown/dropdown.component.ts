@@ -84,8 +84,7 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
     [stateValidator]
   );
 
-  status: RawState[] = new Array(1).fill({id: 0, state: 'Bearbeitungsstand',
-   description: null});
+  status: RawState[] = new Array(0);
 
   OnChangeWrapper(onChange: (stateIn) => void): (stateOut: RawState) => void {
     return ((state: RawState): void => {
@@ -108,10 +107,10 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   }
 
   writeValue(stateId): void {
-    if (typeof stateId === 'number') {
+    if (typeof stateId === 'number' && stateId > 0) {
       for (const el in this.status) {
         if (stateId === this.status[el].id) {
-          stateId = this.status[stateId];
+          stateId = this.status[stateId - 1];
         }
       }
     }
