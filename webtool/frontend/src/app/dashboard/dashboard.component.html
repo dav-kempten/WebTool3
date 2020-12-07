@@ -79,4 +79,11 @@
       createInstruction.get('startDate').value, this.userId)"></p-button>
   </p-card>
   </form>
+  
+  <div class="p-grid" *ngIf="this.userId !== undefined">
+    <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+      Wenn ihr Fragen habt, könnt ihr euch jederzeit bei der Geschäftsstelle (<b>info[at]dav-kempten.de</b>) oder bei Jojo
+      (<b>jojo[at]dav-kempten.de</b>) melden.
+    </div>
+  </div>
 </p-card>
