@@ -24,12 +24,12 @@
         <input formControlName="reference" id="reference" placeholder="Buchungsnummer" type="text"
                readonly pTooltip="Buchungscode (nicht änderbar)" pInputText>
       </div>
-      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4" pTooltip="Bearbeitungsstatus" tooltipPosition="left">
         <avk-dropdown formControlName="stateId" id="stateId" [trainerState]="instructionOwner.value"
                       [disable]="(instructionOwner.value && (instructionGroup.get('stateId').value > 2))"
         ></avk-dropdown>
       </div>
-      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4" pTooltip="Kurskategorie der Veranstaltung" tooltipPosition="left">
         <avk-categoryselect
           formControlName="topicId"
           id="topicId"
@@ -56,9 +56,8 @@
       <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
         <p-checkbox
           [formControl]="instructionGroup.get('ladiesOnly')"
-          label="LadiesOnly"
+          label="Kurse von Frauen für Frauen"
           binary="true"
-          pTooltip="Kurse von Frauen für Frauen"
         ></p-checkbox>
       </div>
       <div class="p-col-12 p-sm-4 p-md-4 p-lg-4" *ngIf="this.instructionCategory.value !== 'indoor'">
@@ -66,7 +65,6 @@
           [formControl]="instructionGroup.get('isSpecial')"
           label="Spezialkurs"
           binary="true"
-          pTooltip="Willst du einen Spezialkurs anbieten?"
         ></p-checkbox>
       </div>
     </div>
@@ -98,7 +96,7 @@
           </div>
         </div>
         <div class="p-grid">
-          <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+          <div class="p-col-12 p-sm-4 p-md-4 p-lg-4" pTooltip="Benötigte Qualifikation der Teilnehmer" tooltipPosition="left">
             <avk-qualificationselect
               formControlName="qualificationIds"
               [readOnly]="true"
@@ -119,7 +117,7 @@
           </div>
         </div>
         <div class="p-grid">
-          <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+          <div class="p-col-12 p-sm-4 p-md-4 p-lg-4" pTooltip="Benötigte Ausrüstungssets" tooltipPosition="left">
             <avk-multiselect
               formControlName="equipmentIds"
               [readOnly]="true"
@@ -164,7 +162,8 @@
     <!--Zusatzausrüstung-->
     <p-card subheader="Zusatzausrüstung">
       <div class="p-grid">
-        <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+        <div class="p-col-12 p-sm-4 p-md-4 p-lg-4" pTooltip="Zusatzausrüstung, die noch nicht aufgeführt ist"
+             tooltipPosition="left">
           <avk-multiselect
             formControlName="equipmentIds"
           ></avk-multiselect>
@@ -201,12 +200,12 @@
         </div>
       </div>
       <div class="p-grid">
-        <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+        <div class="p-col-12 p-sm-4 p-md-4 p-lg-4" pTooltip="Benötigte Qualifikationen der Teilnehmer" tooltipPosition="left">
           <avk-qualificationselect
             formControlName="qualificationIds"
           ></avk-qualificationselect>
         </div>
-        <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+        <div class="p-col-12 p-sm-4 p-md-4 p-lg-4" pTooltip="Zusatzkategorie des Spezialkurses" tooltipPosition="left">
           <avk-categoryselect
             formControlName="categoryId"
             id="categoryId"
@@ -214,7 +213,8 @@
             [topicSpecific]="'instruction'"
           ></avk-categoryselect>
         </div>
-        <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+        <div class="p-col-12 p-sm-4 p-md-4 p-lg-4" pTooltip="Sonstige spezielle Voraussetzugen (z.B. Trittsicherheit o.ä.)"
+             tooltipPosition="left">
         <textarea
           [rows]="1"
           pInputTextarea
@@ -309,7 +309,7 @@
           </div>
           <div class="p-col-12 p-sm-8 p-md-8 p-lg-8">
             <input formControlName="name" id="name" placeholder="Längerer, ausführlicher Titel des Kurstermins" type="text" style='width:100%'
-                   maxlength="125" pTooltip="Langtitel (max. 125 Zeichen)" pInputText>
+                   maxlength="125" pTooltip="Langtitel (max. 125 Zeichen) für die Detailansicht auf der Homepage" pInputText>
           </div>
         </div>
 
@@ -361,7 +361,7 @@
               pInputTextarea
               formControlName="description"
               id="description"
-              placeholder="Kurze Beschreibung des Kurses falls Spezialkurs"
+              placeholder="Kurze Beschreibung des Kurses falls es ein Spezialkurs ist oder der Kurs sich an eine bestimmte Zielgruppe richtet (z.B. Altersgruppe)"
               autoResize="autoResize"
               style='width:100%'
             ></textarea>
