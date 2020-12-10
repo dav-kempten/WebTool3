@@ -5,7 +5,7 @@ import {MenuItem, MessageService, TreeNode} from 'primeng/api';
 import {NavigationExtras, Router} from '@angular/router';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ANONYMOUS_USER, AuthService, User} from '../service/auth.service';
-import {Subject} from 'rxjs';
+import {BehaviorSubject, Subject} from 'rxjs';
 import {filter, takeUntil} from 'rxjs/operators';
 
 interface MenuData {
@@ -49,7 +49,13 @@ export class MenuComponent implements OnInit, OnDestroy {
     if (value.memberId) {
       this.userService.login('', '', value.memberId)
         .subscribe( user => {
-          this.displayMemberLogin = false;
+          const loginBox = document.getElementById('memberId');
+          if (!!Object.keys(user).length) {
+            this.displayMemberLogin = false;
+            loginBox.style.backgroundColor = 'white';
+          } else {
+            loginBox.style.backgroundColor = '#ff8080';
+          }
         });
     }
   }
@@ -59,7 +65,16 @@ export class MenuComponent implements OnInit, OnDestroy {
     if (value.userName && value.password) {
       this.userService.login(value.userName, value.password, '')
         .subscribe( user => {
-          this.displayUserLogin = false;
+          const userBox = document.getElementById('userName');
+          const passwordBox = document.getElementById('password');
+          if (!!Object.keys(user).length) {
+            this.displayUserLogin = false;
+            userBox.style.backgroundColor = 'white';
+            passwordBox.style.backgroundColor = 'white';
+          } else {
+            userBox.style.backgroundColor = '#ff8080';
+            passwordBox.style.backgroundColor = '#ff8080';
+          }
         });
     }
   }
@@ -184,5 +199,4 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.destroySubject.next();
     this.destroySubject.complete();
   }
-
 }

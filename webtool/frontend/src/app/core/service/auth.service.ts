@@ -1,7 +1,7 @@
-import {BehaviorSubject, Observable} from 'rxjs';
+import {BehaviorSubject, Observable, of} from 'rxjs';
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {filter, first, map, publishReplay, refCount, tap} from 'rxjs/operators';
+import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
+import {catchError, filter, first, map, publishReplay, refCount, tap} from 'rxjs/operators';
 import {User as RawUser} from '../../model/user';
 
 export const enum Role {
@@ -61,7 +61,20 @@ export class AuthService {
     );
 
     return user.pipe(
-      tap(rawUser => this.subject.next(convertUser(rawUser))),
+      catchError((error: HttpErrorResponse): Observable<User> => {
+        console.log(error.statusText, error.status);
+        return of({} as User);
+      }),
+      tap(rawUser => {
+        /* Set timeout for several automatic requests, make them slower */
+        setTimeout(() => {
+          if (!!Object.keys(rawUser).length) {
+            this.subject.next(convertUser(rawUser));
+          } else {
+            this.subject.next(ANONYMOUS_USER);
+          }
+        }, 500);
+      }),
       // shareReplay(),
       publishReplay(1),
       refCount()
