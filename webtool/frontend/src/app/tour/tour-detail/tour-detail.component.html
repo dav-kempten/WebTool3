@@ -20,12 +20,12 @@
       <input formControlName="reference" id="reference" placeholder="Buchungsnummer" type="text"
              readonly pTooltip="Buchungscode (nicht änderbar)" pInputText>
     </div>
-    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4" pTooltip="Bearbeitungsstatus" tooltipPosition="left">
       <avk-dropdown formControlName="stateId" id="stateId" [trainerState]="tourOwner.value"
                     [disable]="(tourOwner.value && (tourGroup.get('stateId').value > 2))"
       ></avk-dropdown>
     </div>
-    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4" pTooltip="Tourkategorie der Veranstaltung" tooltipPosition="left">
         <avk-categoryselect
             formControlName="categoryId"
             id="categoryId"
@@ -296,7 +296,8 @@
   <p-card subheader="Tourenschwierigkeit - Technik & Kondition">
   <!--Technik, Ausdauer-->
   <div class="p-grid">
-    <div class="p-col-12 p-sm-8 p-md-8 p-lg-8">
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4" pTooltip="Technikanforderungen der Tour (*/**/***) vgl. Karabiner auf der Homepage"
+         tooltipPosition="left">
       <avk-skillselect
           formControlName="skillId"
           id="Skills"
@@ -304,6 +305,9 @@
       ></avk-skillselect>
     </div>
     <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+    </div>
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4" pTooltip="Konditionsanforderungen der Tour (*/**/***) vgl. Bergsymbole auf der Homepage"
+         tooltipPosition="left">
       <avk-fitnessselect
           formControlName="fitnessId"
           id="fitnessId"
@@ -316,7 +320,7 @@
   <p-card subheader="Tourenanforderungen und Ausrüstung">
   <!--Voraussetzung-->
   <div class="p-grid">
-    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4" pTooltip="Benötigte Mindestqualifikation der Teilnehmer" tooltipPosition="left">
       <avk-qualificationselect
           formControlName="qualificationIds"
           id="Qualifikation"
@@ -336,7 +340,7 @@
     </div>
   </div>
   <div class="p-grid">
-    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4" pTooltip="Benötigte Ausrüstungssets" tooltipPosition="left">
       <avk-multiselect
           formControlName="equipmentIds"
           id="Ausrüstung"
