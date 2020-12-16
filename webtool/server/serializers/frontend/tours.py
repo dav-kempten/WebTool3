@@ -77,6 +77,7 @@ class TourSerializer(serializers.ModelSerializer):
     info = serializers.CharField(default='', allow_blank=True)
     ladiesOnly = serializers.BooleanField(source='ladies_only', default=False)
     youthOnTour = serializers.BooleanField(source='youth_on_tour', default=False)
+    relaxed = serializers.BooleanField(default=False)
     miscCategory = serializers.CharField(source='misc_category', max_length=75, default='', allow_blank=True)
     qualificationIds = serializers.PrimaryKeyRelatedField(
         source='qualifications', many=True, default=[], queryset=Topic.objects.all()
@@ -122,7 +123,7 @@ class TourSerializer(serializers.ModelSerializer):
             'categoryId', 'category', 'categoryIds',
             'tour', 'deadline', 'preliminary',
             'info',
-            'ladiesOnly', 'youthOnTour',
+            'ladiesOnly', 'youthOnTour', 'relaxed',
             'miscCategory',
             'qualificationIds', 'preconditions',
             'equipmentIds', 'miscEquipment', 'equipmentService',
@@ -241,6 +242,7 @@ class TourSerializer(serializers.ModelSerializer):
         instance.info = validated_data.get('info', instance.info)
         instance.ladies_only = validated_data.get('ladies_only', instance.ladies_only)
         instance.youth_on_tour = validated_data.get('youth_on_tour', instance.youth_on_tour)
+        instance.relaxed = validated_data.get('relaxed', instance.relaxed)
         qualifications = validated_data.get('qualifications')
         if qualifications is not None:
             instance.qualifications = qualifications

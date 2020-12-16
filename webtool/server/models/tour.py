@@ -56,6 +56,11 @@ class Tour(
         default=False,
     )
 
+    relaxed = models.BooleanField(
+        'Gemütliche Tour',
+        default=False
+    )
+
     deadline = models.OneToOneField(
         Event,
         verbose_name='Anmeldeschluss',
