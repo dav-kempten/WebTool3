@@ -49,9 +49,9 @@ class UserAdmin(BaseUserAdmin):
         list = []
 
         for user in queryset:
-            list.append(user.first_name + ' ' + user.last_name + ' <' + user.email + '> ')
+            list.append(user.first_name + ' ' + user.last_name + ' <' + user.email + '>\n')
 
-        response = HttpResponse(content_type='text/plain', content=list)
+        response = HttpResponse(content_type='text/plain; charset=utf-8', content=list)
 
         return response
 
