@@ -6,6 +6,7 @@ from server.models.retraining import Retraining
 from server.models.qualification import UserQualification
 
 from server.inlines import GuideInline, ProfileInline, QualificationInline, RetrainingInline
+from server.admin_filters import QualificationFilter
 
 
 class UserAdmin(BaseUserAdmin):
@@ -30,6 +31,8 @@ class UserAdmin(BaseUserAdmin):
                'add_to_group_climbing', 'add_to_group_leberkas', 'add_to_group_helpinghands', 'remove_from_gs',
                'remove_from_group_summer', 'remove_from_group_winter', 'remove_from_group_climbing',
                'remove_from_group_leberkas', 'remove_from_group_helpinghands', ]
+
+    list_filter = ('is_staff', 'is_active', 'groups', QualificationFilter)
 
     def export_as_csv(self, request, queryset):
         meta = self.model._meta
