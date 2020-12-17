@@ -131,7 +131,7 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
           this.status.push(state.entities[key]);
         });
         if (this.trainerstate && !this.disableSubject.value) {
-          this.status = this.status.slice(0, 3);
+          this.status = this.status.slice(0, 2);
         }
         this.stateSubject.next(this.status);
       }),
