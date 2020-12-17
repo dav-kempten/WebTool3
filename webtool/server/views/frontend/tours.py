@@ -7,25 +7,32 @@ from rest_framework.response import Response
 from server.models import Tour
 from server.serializers.frontend.tours import TourListSerializer, TourSerializer
 
-class IsStaffOrReadOnly(permissions.BasePermission):
-    """
-    The request is authenticated for a staff user, or is a read-only request.
-    """
 
-    def has_permission(self, request, view):
-        return (
-            request.method in permissions.SAFE_METHODS or
-            request.user and request.user.is_staff or
-            # Tour owner is only allowed to perform actions under certain circumstances
-            (request.method == 'PUT' or request.method == 'POST') and request.user and (
-                (request.data['guideId'] == request.user.id)
-                and (request.data['stateId'] == 1 or request.data['stateId'] == 2)
-            )
-        )
+class IsOwnerOrReadOnly(permissions.BasePermission):
+    """
+    Object-level permission to only allow owners of an object to edit it.
+    """
+    def has_object_permission(self, request, view, obj):
+        # Read permissions are allowed to any request,
+        # so we'll always allow GET, HEAD or OPTIONS requests
+        # or requests from staff.
+        if request.method in permissions.SAFE_METHODS or request.user and request.user.is_staff:
+            return True
+        # User is only allowed to perform actions on own objects,
+        # expect DELETE-Requests.
+        if obj.guide.user == request.user and request.method != 'DELETE':
+            # Only allow requests if tour and request is on stateId = 2
+            if obj.state.pk <= 2 and 'stateId' in request.data and request.data['stateId'] <= 2:
+                # Users are not allowed to change guideId
+                if 'guideId' in request.data and obj.guide.pk == request.data['guideId']:
+                    return True
+
+        return False
+
 
 class TourViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
-    permission_classes = (IsStaffOrReadOnly, )
+    permission_classes = (IsOwnerOrReadOnly, )
 
     queryset = (
         Tour.objects
