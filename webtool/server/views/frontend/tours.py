@@ -10,7 +10,7 @@ from server.serializers.frontend.tours import TourListSerializer, TourSerializer
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
     """
-    Object-level permission to only allow owners of an object to edit it.
+    Object-level permission to only allow owners of an object and member of staff to edit it.
     """
     def has_object_permission(self, request, view, obj):
         # Read permissions are allowed to any request,
@@ -21,7 +21,7 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
         # User is only allowed to perform actions on own objects,
         # expect DELETE-Requests.
         if obj.guide.user == request.user and request.method != 'DELETE':
-            # Only allow requests if tour and request is on stateId = 2
+            # Only allow requests if tour and request is on stateId = 2 or less
             if obj.state.pk <= 2 and 'stateId' in request.data and request.data['stateId'] <= 2:
                 # Users are not allowed to change guideId
                 if 'guideId' in request.data and obj.guide.pk == request.data['guideId']:
