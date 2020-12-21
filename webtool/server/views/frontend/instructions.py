@@ -20,8 +20,8 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
             return True
         # User is only allowed to perform actions on own objects,
         # expect DELETE-Requests.
-        if obj.guide.user == request.user and request.method != 'DELETE':
-            # Only allow requests if tour and request is on stateId = 2
+        if obj.guide is not None and obj.guide.user == request.user and request.method != 'DELETE':
+            # Only allow requests if tour and request is on stateId = 2 or less
             if obj.state.pk <= 2 and 'stateId' in request.data and request.data['stateId'] <= 2:
                 # Users are not allowed to change guideId
                 if 'guideId' in request.data and obj.guide.pk == request.data['guideId']:
