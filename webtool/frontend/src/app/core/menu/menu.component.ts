@@ -139,7 +139,7 @@ export class MenuComponent implements OnInit, OnDestroy {
 
     this.items = [
       {label: 'Dashboard', icon: 'pi pi-home', data: {routerLink: '/dashboard'}},
-      {label: 'Trainer', icon: 'pi pi-user', data: {routerLink: '/trainers'}},
+      /* {label: 'Trainer', icon: 'pi pi-user', data: {routerLink: '/trainers'}}, */
       {label: 'Kurse', icon: 'pi pi-comments', data: {routerLink: '/instructions'}, children: [
         {label: 'Winter', icon: 'pi pi-comments', data: {routerLink: '/instructions', fragment: 'winter'}},
         {label: 'Sommer', icon: 'pi pi-comments', data: {routerLink: '/instructions', fragment: 'summer'}},
@@ -150,7 +150,7 @@ export class MenuComponent implements OnInit, OnDestroy {
         {label: 'Sommer', icon: 'pi pi-globe', data: {routerLink: '/tours', fragment: 'summer'}},
         {label: 'Jugend', icon: 'pi pi-globe', data: {routerLink: '/tours', fragment: 'youth'}},
         ]},
-      {label: 'Gruppen', icon: 'pi pi-users', data: {routerLink: '/sessions'}, children: [
+      {label: 'Gruppen', icon: 'pi pi-users', data: {routerLink: '/sessions'}, /* children: [
         {label: 'Obergünzburg', icon: 'pi pi-users', data: {routerLink: '/sessions', queryParams: {g: 'OGG'}}, children: [
           {label: 'Kinder', icon: 'pi pi-users', data: {routerLink: '/sessions', queryParams: {g: 'OGK'}}},
           {label: 'Jugend', icon: 'pi pi-users', data: {routerLink: '/sessions', queryParams: {g: 'OGJ'}}},
@@ -166,7 +166,7 @@ export class MenuComponent implements OnInit, OnDestroy {
         {label: 'Abendschule', icon: 'pi pi-bookmark', data: {routerLink: '/talks', queryParams: {g: 'AAS'}}},
         {label: 'Radlrunde', icon: 'pi pi-bookmark', data: {routerLink: '/talks', queryParams: {g: 'GRR'}}},
         {label: 'Events', icon: 'pi pi-bookmark', data: {routerLink: '/talks', queryParams: {g: 'EVT'}}},
-        ]}
+        ] */}
     ];
 
     this.userService.user$.pipe(
