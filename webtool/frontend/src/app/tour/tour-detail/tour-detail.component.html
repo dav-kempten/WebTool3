@@ -123,7 +123,7 @@
 
   <ng-container *ngIf="currentEventGroup">
     <p-dialog header="Termin-Details" [modal]="true" [(visible)]="display" [blockScroll]="true"
-              (onHide)="closeEvent()" [style]="{width: '60%', height: '60%'}">
+              (onHide)="closeEvent()" [style]="{width: '60%', height: '60%'}" closeIcon="pi pi-minus">
       <form [formGroup]="currentEventGroup">
         <!--Kurztitel, Langtitel-->
         <div class="p-grid">
