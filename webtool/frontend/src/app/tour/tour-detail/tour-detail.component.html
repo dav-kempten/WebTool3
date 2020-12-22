@@ -49,17 +49,24 @@
           required
       ></avk-guide>
     </div>
-    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
       <p-checkbox
           [formControl]="tourGroup.get('ladiesOnly')"
           label="Touren von Frauen für Frauen"
           binary="true"
       ></p-checkbox>
     </div>
-    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
       <p-checkbox
           [formControl]="tourGroup.get('youthOnTour')"
           label="Jugend on Tour"
+          binary="true"
+      ></p-checkbox>
+    </div>
+    <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
+      <p-checkbox
+          [formControl]="tourGroup.get('relaxed')"
+          label="Geh'mütlich"
           binary="true"
       ></p-checkbox>
     </div>

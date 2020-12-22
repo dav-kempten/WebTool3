@@ -29,6 +29,7 @@ export interface Tour {
   preliminary: Event | null;
   info: string;
   youthOnTour: boolean;
+  relaxed: boolean;
   ladiesOnly: boolean;
   qualificationIds: number[];
   preconditions: string;

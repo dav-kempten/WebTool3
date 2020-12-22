@@ -10,6 +10,7 @@ export interface Tour {
   preliminaryId: number | null;
   info: string;
   youthOnTour: boolean;
+  relaxed: boolean;
   ladiesOnly: boolean;
   qualificationIds: number[];
   preconditions: string;
