@@ -34,7 +34,8 @@
         <avk-categoryselect
             formControlName="categoryIds"
             id="categoryIds"
-            [topicSpecific]="'tour'">
+            [topicSpecific]="'tour'"
+        >
         </avk-categoryselect>
       </div>
     </div>
@@ -76,7 +77,9 @@
         <avk-categoryselect
             formControlName="topicId"
             id="topicId"
-            [topicSpecific]="'instruction'">
+            [topicSpecific]="'instruction'"
+            [isStaffOrAdmin]="this.userIsStaff"
+        >
         </avk-categoryselect>
       </div>
     </div>

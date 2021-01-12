@@ -59,6 +59,7 @@ export class CategoryselectComponent implements OnInit, OnDestroy, AfterViewInit
 
   seasonKeyword = '';
   topicKeyword = '';
+  isStaff = false;
 
   @Input()
   set readOnly(value: boolean) {
@@ -75,6 +76,16 @@ export class CategoryselectComponent implements OnInit, OnDestroy, AfterViewInit
     this.seasonKeyword = value;
     if (this.status.length > 1 && this.categorySubject.value !== undefined) {
       this.filterBySeason(this.status, this.seasonKeyword);
+    }
+  }
+
+  @Input()
+  set isStaffOrAdmin(value: boolean) {
+    this.isStaff = value;
+    console.log(value, this.status.length, this.categorySubject.value);
+    /* Filter if current user is not Admin or Staff */
+    if (this.status.length > 1 && this.categorySubject.value !== undefined) {
+      this.filterByStatus(this.status, this.isStaff);
     }
   }
 
@@ -159,7 +170,7 @@ export class CategoryselectComponent implements OnInit, OnDestroy, AfterViewInit
             }
           }
         });
-        this.filterBySeason(this.status, this.seasonKeyword);
+        this.filterBySeason(this.filterByStatus(this.status, this.isStaff), this.seasonKeyword);
       }),
       // shareReplay(),
       publishReplay(1),
@@ -222,6 +233,23 @@ export class CategoryselectComponent implements OnInit, OnDestroy, AfterViewInit
       }
     }
     this.categorySubject.next(categorySeasonArray);
+  }
+
+  filterByStatus(categoryArray: RawCategory[], isStaff: boolean): RawCategory[] {
+    console.log(categoryArray);
+    let categoryStatusArray = new Array(0);
+    if (!isStaff) {
+      for (const idxCategory in categoryArray) {
+        if (!categoryArray[idxCategory].indoor) {
+          console.log(categoryArray[idxCategory].indoor);
+          categoryStatusArray.push(categoryArray[idxCategory]);
+        }
+      }
+    } else {
+      categoryStatusArray = [...categoryArray];
+    }
+    console.log(categoryStatusArray);
+    return categoryStatusArray;
   }
 }
 
