@@ -59,7 +59,7 @@ export class CategoryselectComponent implements OnInit, OnDestroy, AfterViewInit
 
   seasonKeyword = '';
   topicKeyword = '';
-  isStaff = false;
+  isStaff = true;
 
   @Input()
   set readOnly(value: boolean) {
@@ -82,7 +82,6 @@ export class CategoryselectComponent implements OnInit, OnDestroy, AfterViewInit
   @Input()
   set isStaffOrAdmin(value: boolean) {
     this.isStaff = value;
-    console.log(value, this.status.length, this.categorySubject.value);
     /* Filter if current user is not Admin or Staff */
     if (this.status.length > 1 && this.categorySubject.value !== undefined) {
       this.filterByStatus(this.status, this.isStaff);
@@ -235,19 +234,16 @@ export class CategoryselectComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   filterByStatus(categoryArray: RawCategory[], isStaff: boolean): RawCategory[] {
-    console.log(categoryArray);
     let categoryStatusArray = new Array(0);
     if (!isStaff) {
       for (const idxCategory in categoryArray) {
         if (!categoryArray[idxCategory].indoor) {
-          console.log(categoryArray[idxCategory].indoor);
           categoryStatusArray.push(categoryArray[idxCategory]);
         }
       }
     } else {
       categoryStatusArray = [...categoryArray];
     }
-    console.log(categoryStatusArray);
     return categoryStatusArray;
   }
 }
