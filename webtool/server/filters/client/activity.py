@@ -47,6 +47,7 @@ class ActivityFilter(filters.FilterSet):
     month = filters.NumberFilter(label='month', method='month_filter', min_value=1, max_value=12)
     ladiesOnly = filters.BooleanFilter(label='ladiesOnly', method='ladies_only_filter')
     youthOnTour = filters.BooleanFilter(label="youthOnTour", method='youth_on_tour')
+    relaxed = filters.BooleanFilter(label='relaxed', method='relaxed_filter')
     publicTransport = filters.BooleanFilter(label='publicTransport', method='public_transport_filter')
     lowEmissionAdventure = filters.BooleanFilter(label='lowEmissionAdventure', method='low_emission_adventure_filter')
     state = filters.ChoiceFilter(label='state', method='state_filter', choices=STATE_CHOICES)
@@ -155,6 +156,9 @@ class ActivityFilter(filters.FilterSet):
     def public_transport_filter(self, queryset, name, value):
         return queryset.filter(public_transport=value).exclude(deprecated=True)
 
+    def relaxed_filter(self, queryset, name, value):
+        return queryset.filter(tour__relaxed=value).exclude(deprecated=True)
+
     def low_emission_adventure_filter(self, queryset, name, value):
         return queryset.filter(lea=value).exclude(deprecated=True)
 
@@ -229,6 +233,7 @@ class ActivityFilter(filters.FilterSet):
             'ladiesOnly',
             'publicTransport',
             'lowEmissionAdventure',
+            'relaxed',
             'state',
             'open',
             'next'
