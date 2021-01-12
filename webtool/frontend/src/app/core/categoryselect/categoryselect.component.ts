@@ -102,8 +102,7 @@ export class CategoryselectComponent implements OnInit, OnDestroy, AfterViewInit
     [stateValidator]
   );
 
-  status: RawCategory[] = new Array(1).fill({id: 0, code: null, name: 'Kategorie', tour: false,
-    talk: false, instruction: false, collective: false, winter: true, summer: true, indoor: true});
+  status: RawCategory[] = new Array(0);
 
 
   OnChangeWrapper(onChange: (stateIn) => void): (stateOut: RawCategory) => void {
@@ -127,7 +126,7 @@ export class CategoryselectComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   writeValue(stateId): void {
-    if (typeof stateId === 'number') {
+    if (typeof stateId === 'number' && stateId > 0) {
       for (const el in this.status) {
         if (stateId === this.status[el].id) {
           stateId = this.status[el];
