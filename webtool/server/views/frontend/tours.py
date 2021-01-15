@@ -12,6 +12,13 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
     """
     Object-level permission to only allow owners of an object and member of staff to edit it.
     """
+    def has_permission(self, request, view):
+        if request.user.is_authenticated and not request.user.is_staff and request.method == 'POST':
+            if 'guideId' in request.data and request.data['guideId'] == request.user.id:
+                return True
+        authenticated_request = request.method == 'PUT' and request.user.is_authenticated
+        return request.method in permissions.SAFE_METHODS or authenticated_request or request.user.is_staff
+
     def has_object_permission(self, request, view, obj):
         # Read permissions are allowed to any request,
         # so we'll always allow GET, HEAD or OPTIONS requests
@@ -20,7 +27,7 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
             return True
         # User is only allowed to perform actions on own objects,
         # expect DELETE-Requests.
-        if obj.guide is not None and obj.guide.user == request.user and request.method != 'DELETE':
+        if obj.guide is not None and obj.guide.user == request.user and request.method == 'PUT':
             # Only allow requests if tour and request is on stateId = 2 or less
             if obj.state.pk <= 2 and 'stateId' in request.data and request.data['stateId'] <= 2:
                 # Users are not allowed to change guideId

@@ -20,7 +20,8 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
             if 'guideId' in request.data and request.data['guideId'] == request.user.id:
                 if 'topicId' in request.data and request.data['topicId'] not in self.climbing_instructions:
                     return True
-        return request.method in permissions.SAFE_METHODS or request.method == 'PUT' and request.user.is_authenticated or request.user.is_staff
+        authenticated_request = request.method == 'PUT' and request.user.is_authenticated
+        return request.method in permissions.SAFE_METHODS or authenticated_request or request.user.is_staff
 
     def has_object_permission(self, request, view, obj):
         # Read permissions are allowed to any request,
