@@ -9,24 +9,35 @@ from server.serializers.frontend.instructions import InstructionListSerializer, 
 
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
+    climbing_instructions = [18, 26, 31, 33, 35, 97, 41, 43, 44, 45, 46, 47, 110, 92, 112, 109, 52, 32, 91, 57]
     """
     Object-level permission to only allow owners of an object to edit it.
     """
+    def has_permission(self, request, view):
+        # Allow POST-request from authenticated users
+        if request.user.is_authenticated and not request.user.is_staff and request.method == 'POST':
+            # but only if they don't want to create a climing instruction
+            if 'guideId' in request.data and request.data['guideId'] == request.user.id:
+                if 'topicId' in request.data and request.data['topicId'] not in self.climbing_instructions:
+                    return True
+        return request.method in permissions.SAFE_METHODS or request.method == 'PUT' and request.user.is_authenticated or request.user.is_staff
+
     def has_object_permission(self, request, view, obj):
         # Read permissions are allowed to any request,
         # so we'll always allow GET, HEAD or OPTIONS requests
-        # or requests from staff.
-        if request.method in permissions.SAFE_METHODS or request.user and request.user.is_staff:
+        # or requests from staff
+        # if request.method in permissions.SAFE_METHODS or (request.user and request.user.is_staff):
+        if request.method is not None and request.method in permissions.SAFE_METHODS or request.user and request.user.is_staff:
             return True
         # User is only allowed to perform actions on own objects,
         # expect DELETE-Requests.
-        if obj.guide is not None and obj.guide.user == request.user and request.method != 'DELETE':
+        if obj.guide is not None and obj.guide.user == request.user and request.method == 'PUT' \
+                and not obj.topic.category.climbing:
             # Only allow requests if tour and request is on stateId = 2 or less
             if obj.state.pk <= 2 and 'stateId' in request.data and request.data['stateId'] <= 2:
                 # Users are not allowed to change guideId
                 if 'guideId' in request.data and obj.guide.pk == request.data['guideId']:
                     return True
-
         return False
 
 
@@ -67,6 +78,8 @@ class InstructionViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
         queryset = self.get_queryset()
         instance = self.get_object()
+        self.check_object_permissions(self.request, obj=instance)
+
         serializer = self.get_serializer(instance)
         response = Response(serializer.data)
         response['Cache-Control'] = "public, max-age=86400"
