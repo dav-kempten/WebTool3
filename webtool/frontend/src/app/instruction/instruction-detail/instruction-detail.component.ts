@@ -38,6 +38,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   private instructionChangeSubject = new BehaviorSubject<Instruction>(undefined);
   private eventChangeSubject = new BehaviorSubject<Event>(undefined);
   instructionOwner = new BehaviorSubject<boolean>(undefined);
+  instructionIndoor = new BehaviorSubject<boolean>(false);
 
   instructionCategory = new BehaviorSubject<string>('');
 
@@ -59,6 +60,8 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   userIsAdmin$: Observable<boolean>;
   userIsOwner$: Observable<boolean> = this.instructionOwner.asObservable();
   userCurrent$: Observable<number>;
+
+  instructionIndoor$: Observable<boolean> = this.instructionIndoor.asObservable();
 
   display = false;
   currentEventGroup: FormGroup = undefined;
@@ -131,6 +134,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
           if (!category) {
             this.store.dispatch((new ValuesRequested()));
           } else {
+            this.instructionIndoor.next(category.indoor);
             this.categorySubject.next(categoryGroupFactory(category));
           }
           if (category.indoor) {
