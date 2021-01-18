@@ -27,7 +27,7 @@ class UserAdmin(BaseUserAdmin):
     inlines = (GuideInline, ProfileInline, QualificationInline, RetrainingInline,)
     ordering = ('last_name', 'first_name')
 
-    actions = ['export_as_csv', 'email_as_plain', 'add_to_group_gs', 'add_to_group_summer', 'add_to_group_winter',
+    actions = ['export_as_csv', 'email_for_cleverreach', 'email_as_plain', 'add_to_group_gs', 'add_to_group_summer', 'add_to_group_winter',
                'add_to_group_climbing', 'add_to_group_leberkas', 'add_to_group_helpinghands', 'remove_from_gs',
                'remove_from_group_summer', 'remove_from_group_winter', 'remove_from_group_climbing',
                'remove_from_group_leberkas', 'remove_from_group_helpinghands', ]
@@ -48,6 +48,17 @@ class UserAdmin(BaseUserAdmin):
 
         return response
 
+    def email_for_cleverreach(self, request, queryset):
+        list = []
+
+        for user in queryset:
+            if user.email and user.first_name and user.last_name:
+                list.append(user.email + ';' + user.first_name + ';' + user.last_name + '\n')
+
+        response = HttpResponse(content_type='text/plain; charset=utf-8', content=list)
+
+        return response
+
     def email_as_plain(self, request, queryset):
         list = []
 
@@ -60,6 +71,7 @@ class UserAdmin(BaseUserAdmin):
         return response
 
     export_as_csv.short_description = 'Excel-Export'
+    email_for_cleverreach.short_description = 'CleverReach-Export'
     email_as_plain.short_description = 'Email-Export'
 
     def add_to_group_gs(self, request, queryset):
