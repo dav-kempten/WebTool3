@@ -15,6 +15,7 @@ import {CustomSerializer, initialAppState} from './app.state';
 import {routes} from './app.routing';
 import {ReactiveFormsModule} from '@angular/forms';
 import {buildSpecificModules} from './build-specifics';
+import {TooltipModule} from "primeng/primeng";
 
 @NgModule({
   declarations: [
@@ -22,25 +23,26 @@ import {buildSpecificModules} from './build-specifics';
     DashboardComponent,
     PageNotFoundComponent,
   ],
-  imports: [
-    BrowserModule,
-    HttpClientModule,
-    HttpClientXsrfModule.withOptions({
-    cookieName: 'csrftoken',
-    headerName: 'X-CSRFToken',
-    }),
-    BrowserAnimationsModule,
-    RouterModule.forRoot(routes, {enableTracing: false && !environment.production}),
-    StoreModule.forRoot({router: routerReducer}, {initialState: initialAppState}),
-    StoreRouterConnectingModule.forRoot({
-      serializer: CustomSerializer,
-      navigationActionTiming: NavigationActionTiming.PostActivation
-    }),
-    EffectsModule.forRoot([]),
-    CoreModule,
-    ReactiveFormsModule,
-    ...buildSpecificModules
-  ],
+    imports: [
+        BrowserModule,
+        HttpClientModule,
+        HttpClientXsrfModule.withOptions({
+            cookieName: 'csrftoken',
+            headerName: 'X-CSRFToken',
+        }),
+        BrowserAnimationsModule,
+        RouterModule.forRoot(routes, {enableTracing: false && !environment.production}),
+        StoreModule.forRoot({router: routerReducer}, {initialState: initialAppState}),
+        StoreRouterConnectingModule.forRoot({
+            serializer: CustomSerializer,
+            navigationActionTiming: NavigationActionTiming.PostActivation
+        }),
+        EffectsModule.forRoot([]),
+        CoreModule,
+        ReactiveFormsModule,
+        ...buildSpecificModules,
+        TooltipModule
+    ],
   bootstrap: [AppComponent]
 })
 export class AppModule {
