@@ -4,6 +4,7 @@ import csv
 from django.http import HttpResponse
 from server.models.retraining import Retraining
 from server.models.qualification import UserQualification
+from server.models.profile import Profile
 
 from server.inlines import GuideInline, ProfileInline, QualificationInline, RetrainingInline
 from server.admin_filters import QualificationFilter
@@ -36,15 +37,46 @@ class UserAdmin(BaseUserAdmin):
 
     def export_as_csv(self, request, queryset):
         meta = self.model._meta
-        field_names = [field.name for field in meta.fields]
 
-        response = HttpResponse(content_type='text/csv')
+        # Field-Names and their better looking brothers
+        field_names = ['first_name', 'last_name', 'email']
+        field_names_clear = ['Vorname', 'Nachname', 'E-Mail']
+
+        # Additional Fields, which are connected to User-Model
+        field_names_additional = ['Geburtstag', 'Gruppen', 'Ausbildungen']
+
+        response = HttpResponse(content_type='text/csv; charset=utf-8')
         response['Content-Disposition'] = 'attachment; filename={}.csv'.format(meta)
         writer = csv.writer(response)
 
-        writer.writerow(field_names)
+        writer.writerow(field_names_clear + field_names_additional)
         for obj in queryset:
-            row = writer.writerow([getattr(obj, field) for field in field_names])
+            row_list = [getattr(obj, field) for field in field_names]
+
+            # Prepare Birthdate for each User
+            try:
+                profile = Profile.objects.get(user=obj)
+                date_list = str(profile.birth_date).split("-")
+                birthdate = date_list[2] + "." + date_list[1] + '.' + date_list[0]
+            except:
+                birthdate = ''
+            row_list.append(birthdate)
+
+            # Prepare Groups for each User
+            group_str = ''
+            for group in Group.objects.filter(user=obj):
+                group_str += group.name + ", "
+            group_str = group_str[:-2]
+            row_list.append(group_str)
+
+            # Prepare UserQualification for each User
+            qualification_str = ''
+            for qualification in UserQualification.objects.filter(user=obj):
+                qualification_str += qualification.qualification.code + ", "
+            qualification_str = qualification_str[:-2]
+            row_list.append(qualification_str)
+
+            row = writer.writerow(row_list)
 
         return response
 
