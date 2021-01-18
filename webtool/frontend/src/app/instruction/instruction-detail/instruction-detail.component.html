@@ -581,9 +581,11 @@
 
   <p-card>
     <div class="p-grid">
-      <div class="p-col-12 p-sm-1 p-md-1 p-lg-1" *ngIf="!(instructionOwner.value && (instructionGroup.get('stateId').value > 2)) && !instructionIndoor.value">
+      <div class="p-col-12 p-sm-1 p-md-1 p-lg-1" *ngIf="!(instructionOwner.value && (instructionGroup.get('stateId').value > 2))">
         <p-button type="button" label="Speichern"
-                  (click)="save(this.instructionGroup.value)"></p-button>
+                  (click)="save(this.instructionGroup.value)"
+                  [disabled]="(instructionIndoor.value && instructionOwner.value)"
+        ></p-button>
       </div>
       <div class="p-col-12 p-sm-1 p-md-1 p-lg-1">
         <a routerLink="../">
