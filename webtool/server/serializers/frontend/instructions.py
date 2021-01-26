@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from rest_framework import serializers
 from rest_framework.reverse import reverse
+from django.core.mail import send_mail
 
 from server.models import (
     Instruction, Equipment, Guide, Topic, Category, State, Event, get_default_season, get_default_state
@@ -120,7 +121,6 @@ class InstructionSerializer(serializers.ModelSerializer):
         )
 
     def validate(self, data):
-        print(self.instance)
         if self.instance is not None:
             # This is the Update case
 
@@ -225,7 +225,19 @@ class InstructionSerializer(serializers.ModelSerializer):
         instance.cur_quantity = validated_data.get('cur_quantity', instance.cur_quantity)
         instance.deprecated = validated_data.get('deprecated', instance.deprecated)
         instance.state = validated_data.get('state', instance.state)
+        if instance.state.pk == 2:
+            self.send_instruction_notification(reference=instance.instruction.reference.__str__())
         instance.comment = validated_data.get('comment', instance.comment)
         instance.message = validated_data.get('message', instance.message)
         instance.save()
         return instance
+
+    @staticmethod
+    def send_instruction_notification(reference=None):
+        send_mail(
+            subject='Kurs ' + reference,
+            message='Der Kurs ' + reference + ' wurde auf Fertig gestellt und kann geprüft werden.',
+            from_email='django@dav-kempten.de',
+            recipient_list=['jojo@dav-kempten.de', 'matthias.keller@dav-kempten.de', 'info@dav-kempten.de']
+        )
+
