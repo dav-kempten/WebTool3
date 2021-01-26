@@ -16,5 +16,8 @@ class LoginView(views.APIView):
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
         user = authenticate(request, **data)
-        login(request, user)
+        try:
+            login(request, user)
+        except ValueError:
+            pass
         return Response(UserSerializer(user).data)
