@@ -50,7 +50,7 @@
   <p-dialog header="Neuer Gruppentermin" [modal]="true" [(visible)]="display" [style]="{width: '600px'}">
     <div class="p-grid">
       <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
-        <avk-collectiveselect formControlName="collectiveId" id="collectiveId"></avk-collectiveselect>
+        <avk-collectiveselect formControlName="collectiveId" id="collectiveId" [setCollective]="this.partNewSession.value"></avk-collectiveselect>
       </div>
     </div>
     <div class="p-grid">
