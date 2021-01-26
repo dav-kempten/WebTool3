@@ -41,6 +41,7 @@ export class CollectiveselectComponent implements OnInit, OnDestroy, AfterViewIn
   delegatedMethodsSubscription: Subscription;
   private destroySubject = new Subject<void>();
   collectiveSubject = new BehaviorSubject<RawCollective[]>(undefined);
+  collectiveSet = new BehaviorSubject<string>(undefined);
 
   originalControl = new FormControl(null);
   choiceControl = new FormControl('');
@@ -61,6 +62,14 @@ export class CollectiveselectComponent implements OnInit, OnDestroy, AfterViewIn
     this.editable = value;
   }
 
+  @Input()
+  set setCollective(value: string) {
+    this.collectiveSet.next(value);
+    if (this.status.length > 0 && this.collectiveSubject.value !== undefined) {
+      this.preSetCollective(this.status, this.collectiveSet.value);
+    }
+  }
+
   group = new FormGroup(
     {
       original: this.originalControl,
@@ -69,7 +78,7 @@ export class CollectiveselectComponent implements OnInit, OnDestroy, AfterViewIn
     [stateValidator]
   );
 
-  status: RawCollective[] = new Array(1).fill({id: 0, code: null, title: 'Gruppen', name: null, description: null});
+  status: RawCollective[] = new Array(0);
 
 
   OnChangeWrapper(onChange: (stateIn) => void): (stateOut: RawCollective) => void {
@@ -93,7 +102,7 @@ export class CollectiveselectComponent implements OnInit, OnDestroy, AfterViewIn
   }
 
   writeValue(stateId): void {
-    if (typeof stateId === 'number') {
+    if (typeof stateId === 'number' && stateId > 0) {
       for (const el in this.status) {
         if (stateId === this.status[el].id) {
           stateId = this.status[el];
@@ -114,7 +123,7 @@ export class CollectiveselectComponent implements OnInit, OnDestroy, AfterViewIn
         Object.keys(state.entities).forEach( key => {
           this.status.push(state.entities[key]);
         });
-        this.collectiveSubject.next(this.status);
+        this.preSetCollective(this.status, this.collectiveSet.value);
       }),
       // shareReplay(),
       publishReplay(1),
@@ -142,6 +151,20 @@ export class CollectiveselectComponent implements OnInit, OnDestroy, AfterViewIn
     this.formControl = this.formControlNameRef.control;
     this.originalControl.setValue(this.formControl);
     this.choiceControl.setValue(this.formControl.value);
+  }
+
+  preSetCollective(collectiveArray: RawCollective[], value: string): void {
+    const collectiveSetArray = new Array(0);
+    if (value !== null && value !== undefined) {
+      for (const idxCollective in collectiveArray) {
+        if (collectiveArray[idxCollective].code === value.toUpperCase()) {
+          collectiveSetArray.push(collectiveArray[idxCollective]);
+        }
+      }
+      this.collectiveSubject.next(collectiveSetArray);
+    } else {
+      this.collectiveSubject.next(this.status);
+    }
   }
 
 }
