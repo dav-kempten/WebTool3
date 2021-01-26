@@ -10,7 +10,7 @@ import {Router} from '@angular/router';
 import {flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {RequestSessionSummaries} from '../../core/store/session-summary.actions';
 import {getSessionSummaries} from '../../core/store/session-summary.selectors';
-import {CloneSession, CreateSession, DeactivateSession, DeleteSession,} from '../../core/store/session.actions';
+import {CloneSession, CreateSession, DeactivateSession, DeleteSession} from '../../core/store/session.actions';
 
 
 @Component({
@@ -50,6 +50,7 @@ export class SessionListComponent implements OnInit, OnDestroy, AfterViewInit {
     {label: 'Gruppentermine', routerLink: ['/sessions']},
     {label: 'Jungmannschaft', url: '/sessions#gjm'},
     {label: 'Bergwandergruppe', url: '/sessions#gbw'},
+    {label: 'Ortsgruppe Obergünzburg', url: '/sessions#obg'},
     {label: 'Alpine Abendschule', url: '/sessions#aas'},
     {label: 'Vollmondstammtisch', url: '/sessions#vst'}
   ];
@@ -89,10 +90,12 @@ export class SessionListComponent implements OnInit, OnDestroy, AfterViewInit {
             return this.menuItems[1];
           case 'gbw':
             return this.menuItems[2];
-          case 'aas':
+          case 'obg':
             return this.menuItems[3];
-          case 'vst':
+          case 'aas':
             return this.menuItems[4];
+          case 'vst':
+            return this.menuItems[5];
           default:
             return this.menuItems[0];
         }
@@ -116,6 +119,7 @@ export class SessionListComponent implements OnInit, OnDestroy, AfterViewInit {
             sessions.filter(session =>
               (part === 'gjm' && session.reference.substr(0, 3).toLowerCase() === 'gjm') ||
               (part === 'gbw' && session.reference.substr(0, 3).toLowerCase() === 'gbw') ||
+              (part === 'obg' && session.reference.substr(0, 3).toLowerCase() === 'obg') ||
               (part === 'aas' && session.reference.substr(0, 3).toLowerCase() === 'aas') ||
               (part === 'vst' && session.reference.substr(0, 3).toLowerCase() === 'vst') ||
               !part
