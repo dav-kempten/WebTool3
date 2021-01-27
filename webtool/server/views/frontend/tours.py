@@ -33,7 +33,6 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
                 # Users are not allowed to change guideId
                 if 'guideId' in request.data and obj.guide.pk == request.data['guideId']:
                     return True
-
         return False
 
 
