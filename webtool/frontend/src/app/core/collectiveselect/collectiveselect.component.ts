@@ -41,7 +41,7 @@ export class CollectiveselectComponent implements OnInit, OnDestroy, AfterViewIn
   delegatedMethodsSubscription: Subscription;
   private destroySubject = new Subject<void>();
   collectiveSubject = new BehaviorSubject<RawCollective[]>(undefined);
-  collectiveSet = new BehaviorSubject<string>(undefined);
+  collectiveSet: any;
 
   originalControl = new FormControl(null);
   choiceControl = new FormControl('');
@@ -63,10 +63,10 @@ export class CollectiveselectComponent implements OnInit, OnDestroy, AfterViewIn
   }
 
   @Input()
-  set setCollective(value: string) {
-    this.collectiveSet.next(value);
+  set setCollective(value) {
+    this.collectiveSet = value;
     if (this.status.length > 0 && this.collectiveSubject.value !== undefined) {
-      this.preSetCollective(this.status, this.collectiveSet.value);
+      this.preSetCollective(this.status, this.collectiveSet);
     }
   }
 
@@ -123,7 +123,7 @@ export class CollectiveselectComponent implements OnInit, OnDestroy, AfterViewIn
         Object.keys(state.entities).forEach( key => {
           this.status.push(state.entities[key]);
         });
-        this.preSetCollective(this.status, this.collectiveSet.value);
+        this.preSetCollective(this.status, this.collectiveSet);
       }),
       // shareReplay(),
       publishReplay(1),
@@ -153,7 +153,7 @@ export class CollectiveselectComponent implements OnInit, OnDestroy, AfterViewIn
     this.choiceControl.setValue(this.formControl.value);
   }
 
-  preSetCollective(collectiveArray: RawCollective[], value: string): void {
+  preSetCollective(collectiveArray: RawCollective[], value): void {
     const collectiveSetArray = new Array(0);
     if (value !== null && value !== undefined) {
       for (const idxCollective in collectiveArray) {
