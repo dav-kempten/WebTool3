@@ -4,26 +4,44 @@ from django.template.defaultfilters import date
 from rest_framework import viewsets, permissions, status, mixins
 from rest_framework.response import Response
 
-from server.models import Session
+from server.models import Session, Collective
 from server.serializers.frontend.sessions import SessionListSerializer, SessionSerializer
 
 
-class IsStaffOrReadOnly(permissions.BasePermission):
+class IsOwnerOrReadOnly(permissions.BasePermission):
     """
-    The request is authenticated for a staff user, or is a read-only request.
+    Object-level permission to only allow manager of a collective and member of staff to edit it.
     """
-
     def has_permission(self, request, view):
-        return (
-            request.method in permissions.SAFE_METHODS or
-            request.user and
-            request.user.is_staff
-        )
+        if request.user.is_authenticated and not request.user.is_staff and request.method == 'POST':
+            if 'collectiveId' in request.data:
+                managers = Collective.objects.get(pk=request.data['collectiveId']).managers.all()
+                for guide in managers:
+                    if request.user.id == guide.pk:
+                        return True
+        authenticated_request = request.method == 'PUT' and request.user.is_authenticated
+        return request.method in permissions.SAFE_METHODS or authenticated_request or request.user.is_staff
+
+    def has_object_permission(self, request, view, obj):
+        # Read permissions are allowed to any request,
+        # so we'll always allow GET, HEAD or OPTIONS requests
+        # or requests from staff.
+        if request.method in permissions.SAFE_METHODS or request.user and request.user.is_staff:
+            return True
+        # User is only allowed to perform actions on own objects expect DELETE-Requests.
+        if request.method == 'PUT':
+            # Only allow PUT-requests if request.user is manager of collective
+            if 'collectiveId' in request.data:
+                managers = Collective.objects.get(pk=request.data['collectiveId']).managers.all()
+                for guide in managers:
+                    if request.user.id == guide.pk:
+                        return True
+        return False
 
 
 class SessionViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
-    permission_classes = (IsStaffOrReadOnly, )
+    permission_classes = (IsOwnerOrReadOnly, )
 
     queryset = (
         Session.objects
