@@ -11,7 +11,7 @@
   <form autocomplete="off" novalidate [formGroup]="memberForm">
     <fieldset>
         <legend>Anmeldung Trainer</legend>
-        <div>
+        <div pTooltip='Obacht! Beim Login müsst ihr die "/" eurer Mitgliedsnummer "-" ersetzen.'>
             <label for="memberId">Mitgliedsnummer:</label>
             <input id="memberId" formControlName="memberId">
         </div>
