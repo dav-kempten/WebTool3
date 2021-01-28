@@ -187,6 +187,12 @@ class TourSerializer(serializers.ModelSerializer):
             equipments = validated_data.pop('equipments')
             state = validated_data.pop('state', get_default_state())
             category = validated_data.pop('category')
+            # Set Youth-On-Tour if tour is especially for youth
+            if "Jugend" in category.name:
+                youth_on_tour = True
+                validated_data.pop('youth_on_tour')
+            else:
+                youth_on_tour = validated_data.pop('youth_on_tour')
             categories = validated_data.pop('categories')
             season = get_default_season()
 
@@ -205,11 +211,11 @@ class TourSerializer(serializers.ModelSerializer):
 
             if not preliminary_data:
                 tour = Tour.objects.create(tour=tour_event, deadline=deadline_event, preliminary=None,
-                                           state=state, **validated_data)
+                                           state=state, youth_on_tour=youth_on_tour, **validated_data)
             else:
                 preliminary_event = create_event(preliminary_data, dict(category=None, season=season, type=dict(preliminary=True)))
                 tour = Tour.objects.create(tour=tour_event, deadline=deadline_event, preliminary=preliminary_event,
-                                        state=state, **validated_data)
+                                        state=state, youth_on_tour=youth_on_tour, **validated_data)
                 update_event(Event.objects.get(pk=tour.preliminary.pk), dict(title="VB " + str(tour.tour.reference),
                                                                              name="Vorbesprechung "+ str(tour.tour.reference)), self.context)
 
