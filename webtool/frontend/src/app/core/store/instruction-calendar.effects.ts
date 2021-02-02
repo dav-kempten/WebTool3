@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Actions, Effect, ofType} from '@ngrx/effects';
-import {InstructionCalendarService} from '../service/instruction_calendar.service';
+import {InstructionCalendarService} from '../service/instruction-calendar.service';
 import {Observable} from 'rxjs';
 import {Action} from '@ngrx/store';
 import {
@@ -24,9 +24,9 @@ export class InstructionCalendarEffects {
     ofType(InstructioncalendarsActionTypes.RequestInstructioncalendars),
     switchMap(() => {
       return this.calendarService.getInstructionCalendar().pipe(
-        map((fullcalendar: Fullcalendar[]) => {
-          if (fullcalendar.length > 0) {
-            return new LoadInstructioncalendars({fullcalendar});
+        map((instructions: Fullcalendar[]) => {
+          if (instructions.length > 0) {
+            return new LoadInstructioncalendars({instructions});
           } else {
             return new InstructioncalendarsNotModified();
           }

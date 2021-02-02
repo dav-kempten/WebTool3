@@ -14,7 +14,7 @@ export class RequestInstructioncalendars implements Action {
 export class LoadInstructioncalendars implements Action {
   readonly type = InstructioncalendarsActionTypes.LoadInstructioncalendars;
 
-  constructor(public payload: {fullcalendar: Fullcalendar[]}) {}
+  constructor(public payload: {instructions: Fullcalendar[]}) {}
 }
 
 export class InstructioncalendarsNotModified implements Action {
