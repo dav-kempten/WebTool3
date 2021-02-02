@@ -7,6 +7,8 @@ from . import InstructionViewSet
 from . import TourViewSet
 from . import TalkViewSet
 from . import SessionViewSet
+from . import TourcalendarViewSet
+from . import InstructioncalendarViewSet
 # from . import RetrainingViewSet
 # from . import UserQualificationViewSet
 # from . import GuideViewSet
@@ -19,6 +21,8 @@ router.register(r'instructions', InstructionViewSet, base_name='instructions')
 router.register(r'tours', TourViewSet, base_name='tours')
 router.register(r'talks', TalkViewSet, base_name='talks')
 router.register(r'sessions', SessionViewSet, base_name='sessions')
+router.register(r'tourcalendar', TourcalendarViewSet, base_name='tourcalendar')
+router.register(r'instructioncalendar', InstructioncalendarViewSet, base_name='instructioncalendar')
 # router.register(r'retrainings', RetrainingViewSet, base_name='retrainings')
 # router.register(r'qualifications', UserQualificationViewSet, base_name='qualifications')
 # router.register(r'guides', GuideViewSet, base_name='guides')
