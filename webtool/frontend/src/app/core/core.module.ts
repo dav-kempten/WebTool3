@@ -80,6 +80,8 @@ import { QualificationselectComponent } from './qualificationselect/qualificatio
 import { CollectiveselectComponent } from './collectiveselect/collectiveselect.component';
 import { SexdropdownComponent } from './sexdropdown/sexdropdown.component';
 import { CategoryMultiselectComponent } from './categorymultiselect/categorymultiselect.component';
+import { FullcalendarComponent } from './fullcalendar/fullcalendar.component';
+import {FullCalendarModule} from 'primeng/fullcalendar';
 
 @NgModule({
   declarations: [
@@ -87,7 +89,8 @@ import { CategoryMultiselectComponent } from './categorymultiselect/categorymult
     BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent, DropdownComponent,
     MultiselectComponent, ApproxdropdownComponent, CategoryselectComponent, DatePipe, TimePipe, SkillselectComponent,
     FitnessselectComponent, QualificationselectComponent, CollectiveselectComponent, SexdropdownComponent, StatePipe,
-    CategoryMultiselectComponent
+    CategoryMultiselectComponent,
+    FullcalendarComponent
   ],
   imports: [
     CommonModule,
@@ -110,6 +113,7 @@ import { CategoryMultiselectComponent } from './categorymultiselect/categorymult
     InputTextModule,
     InputTextareaModule,
     TooltipModule,
+    FullCalendarModule,
     StoreModule.forFeature('values', ValueReducer),
     EffectsModule.forFeature([ValueEffects]),
     StoreModule.forFeature('events', eventReducer),
@@ -152,7 +156,7 @@ import { CategoryMultiselectComponent } from './categorymultiselect/categorymult
     MultiselectComponent, ButtonModule, ToggleButtonModule, ApproxdropdownComponent, CategoryselectComponent,
     DialogModule, CheckboxModule, InputTextModule, InputTextareaModule, DatePipe, TimePipe, SkillselectComponent,
     FitnessselectComponent, QualificationselectComponent, CollectiveselectComponent, CardModule, SexdropdownComponent,
-    StatePipe, CategoryMultiselectComponent
+    StatePipe, CategoryMultiselectComponent, FullCalendarModule, FullcalendarComponent
   ]
 })
 export class CoreModule { }
