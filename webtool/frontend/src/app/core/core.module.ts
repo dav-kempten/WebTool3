@@ -1,6 +1,6 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {StoreModule} from '@ngrx/store';
+import {Store, StoreModule} from '@ngrx/store';
 import {EffectsModule} from '@ngrx/effects';
 import {ReactiveFormsModule} from '@angular/forms';
 import {CalendarModule} from 'primeng/calendar';
@@ -80,8 +80,7 @@ import { QualificationselectComponent } from './qualificationselect/qualificatio
 import { CollectiveselectComponent } from './collectiveselect/collectiveselect.component';
 import { SexdropdownComponent } from './sexdropdown/sexdropdown.component';
 import { CategoryMultiselectComponent } from './categorymultiselect/categorymultiselect.component';
-import { FullcalendarComponent } from './fullcalendar/fullcalendar.component';
-import {FullCalendarModule} from 'primeng/fullcalendar';
+
 
 @NgModule({
   declarations: [
@@ -89,8 +88,7 @@ import {FullCalendarModule} from 'primeng/fullcalendar';
     BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent, DropdownComponent,
     MultiselectComponent, ApproxdropdownComponent, CategoryselectComponent, DatePipe, TimePipe, SkillselectComponent,
     FitnessselectComponent, QualificationselectComponent, CollectiveselectComponent, SexdropdownComponent, StatePipe,
-    CategoryMultiselectComponent,
-    FullcalendarComponent
+    CategoryMultiselectComponent
   ],
   imports: [
     CommonModule,
@@ -113,7 +111,6 @@ import {FullCalendarModule} from 'primeng/fullcalendar';
     InputTextModule,
     InputTextareaModule,
     TooltipModule,
-    FullCalendarModule,
     StoreModule.forFeature('values', ValueReducer),
     EffectsModule.forFeature([ValueEffects]),
     StoreModule.forFeature('events', eventReducer),
@@ -156,7 +153,7 @@ import {FullCalendarModule} from 'primeng/fullcalendar';
     MultiselectComponent, ButtonModule, ToggleButtonModule, ApproxdropdownComponent, CategoryselectComponent,
     DialogModule, CheckboxModule, InputTextModule, InputTextareaModule, DatePipe, TimePipe, SkillselectComponent,
     FitnessselectComponent, QualificationselectComponent, CollectiveselectComponent, CardModule, SexdropdownComponent,
-    StatePipe, CategoryMultiselectComponent, FullCalendarModule, FullcalendarComponent
+    StatePipe, CategoryMultiselectComponent
   ]
 })
 export class CoreModule { }

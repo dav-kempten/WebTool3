@@ -1,6 +1,5 @@
 import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
-import {AppComponent} from './app.component';
 import {StoreModule} from '@ngrx/store';
 import {environment} from '../environments/environment';
 import {PageNotFoundComponent} from './page-not-found/page-not-found.component';
@@ -15,7 +14,8 @@ import {CustomSerializer, initialAppState} from './app.state';
 import {routes} from './app.routing';
 import {ReactiveFormsModule} from '@angular/forms';
 import {buildSpecificModules} from './build-specifics';
-import {TooltipModule} from "primeng/primeng";
+import {TooltipModule} from 'primeng/primeng';
+import {AppComponent} from './app.component';
 
 @NgModule({
   declarations: [
@@ -41,9 +41,8 @@ import {TooltipModule} from "primeng/primeng";
         CoreModule,
         ReactiveFormsModule,
         ...buildSpecificModules,
-        TooltipModule
+        TooltipModule,
     ],
   bootstrap: [AppComponent]
 })
-export class AppModule {
-}
+export class AppModule { }
