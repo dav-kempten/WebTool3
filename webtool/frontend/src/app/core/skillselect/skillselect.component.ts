@@ -76,8 +76,7 @@ export class SkillselectComponent implements OnInit, OnDestroy, AfterViewInit, A
     [stateValidator]
   );
 
-  status: RawSkill[] = new Array(1).fill({id: 0, level: null, categoryId: null, code: 'Skills',
-    description: 'Skills auswählen'});
+  status: RawSkill[] = new Array(0);
 
 
   OnChangeWrapper(onChange: (stateIn) => void): (stateOut: RawSkill) => void {
@@ -101,10 +100,10 @@ export class SkillselectComponent implements OnInit, OnDestroy, AfterViewInit, A
   }
 
   writeValue(stateId): void {
-    if (typeof stateId === 'number') {
+    if (typeof stateId === 'number' && stateId > 0) {
       for (const el in this.status) {
         if (stateId === this.status[el].level) {
-          stateId = this.status[el];
+          stateId = this.status[stateId - 1];
         }
       }
     }
