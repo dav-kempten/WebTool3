@@ -1,8 +1,10 @@
+/*
 import {Component, forwardRef, Input, OnInit} from '@angular/core';
 import {NG_VALUE_ACCESSOR} from '@angular/forms';
 import {Store} from '@ngrx/store';
 import {AppState} from '../../app.state';
 import {RequestTourcalendars} from '../store/tour-calendar.actions';
+import { CalendarOptions } from '@fullcalendar/angular';
 
 @Component({
   selector: 'avk-fullcalendar',
@@ -23,19 +25,15 @@ export class FullcalendarComponent implements OnInit {
   events: any[];
   options: any;
 
+  calendarOptions: CalendarOptions = {
+    initialView: 'dayGridMonth'
+  };
+
   constructor(private store: Store<AppState>) {
     this.store.dispatch(new RequestTourcalendars());
   }
 
-  ngOnInit() {
-    this.options = {
-      defaultDate: '2021-01-01',
-      header: {
-        left: 'prev, next',
-        center: 'title',
-        right: 'month'
-      }
-    };
-  }
+  ngOnInit() {}
 
 }
+*/
