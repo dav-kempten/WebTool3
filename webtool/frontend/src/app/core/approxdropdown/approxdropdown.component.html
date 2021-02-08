@@ -1,8 +1,9 @@
 <p-dropdown
-  [options]="status"
+  [options]="stateSubject.value"
   optionLabel="name"
   [readonly]="readonly"
-  [disabled]="disabledState"
+  [disabled]="disableSubject.value"
   pTooltip="Ungefähre Startzeit (wenn keine genaue Zeit angegeben werden kann)"
+  placeholder="Startzeit (ca.)"
 >
 </p-dropdown>

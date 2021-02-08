@@ -11,13 +11,13 @@ import {
 } from '@angular/core';
 import {ControlValueAccessor, FormControl, FormControlName, FormGroup, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {Dropdown} from 'primeng/primeng';
-import {Observable, ReplaySubject, Subscription} from 'rxjs';
+import {BehaviorSubject, Observable, ReplaySubject, Subject, Subscription} from 'rxjs';
 import {State as ApproxState} from '../store/approximate.reducer';
 import {Approximate as RawApprox} from '../../model/value';
 import {stateValidator} from '../dropdown/dropdown.component';
 import {Store} from '@ngrx/store';
 import {AppState} from '../../app.state';
-import {delay, tap} from 'rxjs/operators';
+import {delay, takeUntil, tap} from 'rxjs/operators';
 import {getApproxState} from '../store/value.selectors';
 
 @Component({
@@ -40,10 +40,15 @@ export class ApproxdropdownComponent implements OnInit, OnDestroy, AfterViewInit
   delegatedMethodCalls = new ReplaySubject<(_: ControlValueAccessor) => void>();
   delegatedMethodsSubscription: Subscription;
 
+  private destroySubject = new Subject<void>();
+  stateSubject = new BehaviorSubject<RawApprox[]>(undefined);
+  disableSubject = new BehaviorSubject<boolean>(false);
+
   originalControl = new FormControl(null);
   choiceControl = new FormControl('');
 
   formState$: Observable<ApproxState>;
+  formStateComponent$: Observable<ApproxState>;
 
   readonly = false; /* init of readonly in guide component */
 
@@ -52,11 +57,9 @@ export class ApproxdropdownComponent implements OnInit, OnDestroy, AfterViewInit
     this.readonly = !!value;
   }
 
-  disabledState = false;
-
   @Input()
   set disable(value: boolean) {
-    this.disabledState = value;
+    this.disableSubject.next(value);
   }
 
   group = new FormGroup(
@@ -71,7 +74,7 @@ export class ApproxdropdownComponent implements OnInit, OnDestroy, AfterViewInit
 
    OnChangeWrapper(onChange: (stateIn) => void): (stateOut: RawApprox) => void {
     return ((state: RawApprox): void => {
-      if ((state.id === 0)) {
+      if (state.id === 0) {
         state = null;
       }
       this.formControl.setValue(state);
@@ -93,8 +96,12 @@ export class ApproxdropdownComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   writeValue(stateId): void {
-    if ((typeof stateId === 'number') && (stateId <= this.status.length)) {
-      stateId = this.status[stateId];
+    if (typeof stateId === 'number' && stateId >= 0) {
+      for (const el in this.status) {
+        if (stateId === this.status[el].id) {
+          stateId = this.status[stateId];
+        }
+      }
     }
 
     this.delegatedMethodCalls.next(accessor => accessor.writeValue(stateId));
@@ -105,18 +112,17 @@ export class ApproxdropdownComponent implements OnInit, OnDestroy, AfterViewInit
   ngOnInit(): void {
     this.formState$ = this.store.select(getApproxState);
 
-    this.formState$.pipe(
+    this.formStateComponent$ = this.formState$.pipe(
+      takeUntil(this.destroySubject),
       tap((state) => {
         Object.keys(state.entities).forEach(key => {
-          const statePush: RawApprox = {
-            id: state.entities[key].id,
-            name: state.entities[key].name,
-            description: state.entities[key].description,
-            startTime: state.entities[key].startTime};
-          this.status.push(statePush);
+          this.status.push(state.entities[key]);
         });
+        this.stateSubject.next(this.status);
       })
-    ).subscribe().unsubscribe();
+    );
+
+    this.formStateComponent$.subscribe();
   }
 
   ngAfterViewInit(): void {
@@ -129,6 +135,8 @@ export class ApproxdropdownComponent implements OnInit, OnDestroy, AfterViewInit
     if (this.delegatedMethodsSubscription) {
       this.delegatedMethodsSubscription.unsubscribe();
     }
+    this.destroySubject.next();
+    this.destroySubject.complete();
   }
 
   ngAfterContentInit(): void {
