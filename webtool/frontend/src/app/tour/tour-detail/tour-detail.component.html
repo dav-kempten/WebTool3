@@ -539,7 +539,11 @@
 </ng-container>
 </ng-container>
 <ng-template #loading>
-  Bitte kurz warten!
-  <a routerLink="../"><p-button label="Zurück"></p-button></a>
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+      Bitte kurz warten! Bei Schwierigkeiten beim Laden der Tour, bitte Seite erneuern (F5) und nochmal anmelden.
+      <a routerLink="../"><p-button label="Zurück"></p-button></a>
+    </div>
+  </div>
 </ng-template>
 <ng-template #usernotvarified></ng-template>
