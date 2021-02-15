@@ -52,6 +52,8 @@ class Command(BaseCommand):
                 cq = tour.cur_quantity
                 if cq != cur_quantity:
                     tour.cur_quantity = cur_quantity
+                    event.new = False
+                    event.save()
                     tour.save()
                     updated = True
             if hasattr(event, 'talk') and event.talk:
@@ -66,6 +68,8 @@ class Command(BaseCommand):
                 cq = instruction.cur_quantity
                 if cq != cur_quantity:
                     instruction.cur_quantity = cur_quantity
+                    event.new = False
+                    event.save()
                     instruction.save()
                     updated = True
 
