@@ -179,6 +179,7 @@ class TourSerializer(serializers.ModelSerializer):
             return self.update(instance, validated_data)
         else:
             tour_data = validated_data.pop('tour')
+            tour_data.update({'new': True})
             deadline_data = validated_data.pop('deadline')
             preliminary_data = validated_data.pop('preliminary')
             info = validated_data.pop('info')

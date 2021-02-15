@@ -166,6 +166,7 @@ class InstructionSerializer(serializers.ModelSerializer):
             return self.update(instance, validated_data)
         else:
             event_data = validated_data.pop('instruction')
+            event_data.update({'new': True})
             meeting_list = validated_data.pop('meeting_list')
             team = validated_data.pop('team')
             qualifications = validated_data.pop('qualifications')
