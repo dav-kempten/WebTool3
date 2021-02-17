@@ -251,6 +251,9 @@ class TourSerializer(serializers.ModelSerializer):
         instance.ladies_only = validated_data.get('ladies_only', instance.ladies_only)
         instance.youth_on_tour = validated_data.get('youth_on_tour', instance.youth_on_tour)
         instance.relaxed = validated_data.get('relaxed', instance.relaxed)
+        categories = validated_data.get('categories')
+        if categories is not None:
+            instance.categories = categories
         qualifications = validated_data.get('qualifications')
         if qualifications is not None:
             instance.qualifications = qualifications
