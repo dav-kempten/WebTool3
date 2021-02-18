@@ -73,12 +73,11 @@ export class MultiselectComponent implements OnInit, AfterViewInit, OnDestroy, A
   );
 
   OnChangeWrapper(onChange: (choiceNew) => void): (choiceOld) => void {
-    return ((choiceOld): void => {
-      const choiceNew = choiceOld;
-      this.formControl.setValue(choiceNew);
-      this.choiceValueControl.setValue(choiceNew);
+    return ((choice): void => {
+      this.formControl.setValue(choice);
+      this.choiceValueControl.setValue(choice);
       const choiceNewId: number[] = [];
-      choiceNew.forEach(value => {
+      choice.forEach(value => {
         choiceNewId.push(value.id);
       });
       onChange(choiceNewId);
