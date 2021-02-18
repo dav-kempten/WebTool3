@@ -36,8 +36,8 @@
   </div>
   </p-card>
 
-  <!--Guide, LadiesOnly, YouthOnTour-->
-  <p-card subheader="Organisation und Durchführung">
+  <!--Guide, Team-->
+  <p-card subheader="Organisation und Team">
   <div class="p-grid">
     <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
       <avk-guide
@@ -48,6 +48,27 @@
           [disable]="this.tourOwner.value"
           required
       ></avk-guide>
+    </div>
+    <div class="p-col-12 p-sm-8 p-md-8 p-lg-8">
+      <avk-team
+          formControlName="teamIds"
+          [nameId]="tourGroup.get('guideId').value"
+          id="g2"
+          label="Team"
+      ></avk-team>
+    </div>
+  </div>
+  </p-card>
+
+  <!--Team-->
+  <p-card subheader="Tourenspezifika">
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4" tooltipPosition="left" pTooltip="Zusatzkategorien zusätzlich zur Hauptkategorie">
+      <avk-categorymultiselect
+          formControlName="categoryIds"
+          [readOnly]="false"
+          [topicSpecific]="'tour'">
+      ></avk-categorymultiselect>
     </div>
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
       <p-checkbox
@@ -70,20 +91,6 @@
           label="Geh'mütlich"
           binary="true"
       ></p-checkbox>
-    </div>
-  </div>
-  </p-card>
-
-  <!--Team-->
-  <p-card subheader="Team">
-  <div class="p-grid">
-    <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
-      <avk-team
-          formControlName="teamIds"
-          [nameId]="tourGroup.get('guideId').value"
-          id="g2"
-          label="Team"
-      ></avk-team>
     </div>
   </div>
   </p-card>
@@ -188,7 +195,6 @@
                 formControlName="description"
                 id="description"
                 placeholder="Kurze Beschreibung (Ablauf, Zeitbedarf, Höhenunterschiede, An-/Heimreise)"
-                autoResize="autoResize"
                 style='width:100%'
             ></textarea>
           </div>
@@ -486,7 +492,6 @@
           formControlName="comment"
           pInputTextarea
           placeholder="Bemerkungen"
-          autoResize="autoResize"
           style='width:100%'
       ></textarea>
     </div>
@@ -502,7 +507,6 @@
           formControlName="message"
           pInputTextarea
           placeholder="Wenn du noch Angaben zur Tour machen willst, die bisher keinen Platz gefunden haben..."
-          autoResize="autoResize"
           style='width:100%'
       ></textarea>
     </div>
