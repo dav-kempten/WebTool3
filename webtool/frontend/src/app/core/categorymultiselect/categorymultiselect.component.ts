@@ -86,8 +86,7 @@ export class CategoryMultiselectComponent implements OnInit, OnDestroy, AfterVie
     [multiselectValidator]
   );
 
-  status: RawCategory[] = new Array(1).fill({id: 0, code: null, name: 'Kategorie', tour: false,
-    talk: false, instruction: false, collective: false, winter: true, summer: true, indoor: true});
+  status: RawCategory[] = new Array(0);
 
 
   OnChangeWrapper(onChange: (stateIn) => void): (stateOut) => void {
@@ -114,21 +113,25 @@ export class CategoryMultiselectComponent implements OnInit, OnDestroy, AfterVie
     this.delegatedMethodCalls.next(accessor => accessor.setDisabledState(isDisabled));
   }
 
-  writeValue(stateId): void {
-    if (stateId.length > 0) {
+  writeValue(categories): void {
+    if (categories.length > 0) {
       const pushArray = new Array(0);
-      if (typeof stateId[0] === 'number') {
-        stateId.forEach(value => {
-          pushArray.push(this.status[value]);
-        });
-      } else {
-        stateId.forEach(value => {
-          pushArray.push(value);
-        });
-      }
-      stateId = pushArray;
+      categories.forEach(value => {
+        if (typeof(value) === 'number') {
+          this.status.forEach(valueNumber => {
+            if (value === valueNumber.id) {
+              pushArray.push(valueNumber);
+            }
+          });
+        } else {
+          categories.forEach(valueObject => {
+            pushArray.push(valueObject);
+          });
+        }
+      });
+      categories = pushArray;
     }
-    this.delegatedMethodCalls.next(accessor => accessor.writeValue(stateId));
+    this.delegatedMethodCalls.next(accessor => accessor.writeValue(categories));
   }
 
   constructor(private store: Store<AppState>) { }
