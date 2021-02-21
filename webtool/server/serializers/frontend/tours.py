@@ -1,10 +1,11 @@
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 from django.core.mail import send_mail
+import math
 
 from server.models import (
     Tour, Guide, Category, Equipment, State, get_default_state, get_default_season, Event, Reference,
-    Skill, Fitness, Qualification, Topic)
+    Skill, Fitness, UserQualification, Qualification, Topic)
 from server.serializers.frontend.core import EventSerializer, MoneyField, create_event, update_event
 
 
@@ -265,7 +266,6 @@ class TourSerializer(serializers.ModelSerializer):
         instance.equipment_service = validated_data.get('equipment_service', instance.equipment_service)
         instance.skill = validated_data.get('skill', instance.skill)
         instance.fitness = validated_data.get('fitness', instance.fitness)
-        instance.admission = validated_data.get('admission', instance.admission)
         instance.advances = validated_data.get('advances', instance.advances)
         instance.advances_info = validated_data.get('advances_info', instance.advances_info)
         instance.extra_charges = validated_data.get('extra_charges', instance.extra_charges)
@@ -273,6 +273,16 @@ class TourSerializer(serializers.ModelSerializer):
         instance.min_quantity = validated_data.get('min_quantity', instance.min_quantity)
         instance.max_quantity = validated_data.get('max_quantity', instance.max_quantity)
         instance.cur_quantity = validated_data.get('cur_quantity', instance.cur_quantity)
+        if validated_data.get('admission', instance.admission) == 0:
+            # Tour-admission calculation
+            trainer_ids = [instance.guide.pk]
+            for el in instance.team.all():
+                trainer_ids.append(el.pk)
+            instance.admission = self.calculate_admission(
+                start_date=tour_data['start_date'], end_date=tour_data['end_date'], trainer=trainer_ids,
+                distance=tour_data['distance'], min_tn=instance.min_quantity)
+        else:
+            instance.admission = validated_data.get('admission', instance.admission)
         instance.deprecated = validated_data.get('deprecated', instance.deprecated)
         instance.state = validated_data.get('state', instance.state)
         if instance.state.pk == 2:
@@ -291,3 +301,29 @@ class TourSerializer(serializers.ModelSerializer):
             from_email='django@dav-kempten.de',
             recipient_list=['jojo@dav-kempten.de', 'matthias.keller@dav-kempten.de', 'info@dav-kempten.de']
         )
+
+    def calculate_admission(self, start_date=None, end_date=None, trainer=None, distance=0, min_tn=1):
+        # Calculation total amount of trainer-price per day
+        if end_date and trainer and min_tn is not 0:
+            trainer_sets = []
+            trainer_price = 0.00
+            qualification_sets = [UserQualification.objects.filter(user__pk=el) for el in trainer]
+            for qualification_set in qualification_sets:
+                for entry in qualification_set:
+                    if entry.qualification.code[:2] == 'TB':
+                        trainer_sets.append(85.00)
+                    elif entry.qualification.code[:2] == 'TC':
+                        trainer_sets.append(70.00)
+                    else:
+                        trainer_sets.append(70.00)   # NK = not known
+                trainer_price = trainer_price + max(trainer_sets)
+            amount_days = (end_date-start_date).days
+            prize_distance = distance * 0.30
+
+            prize_whole = math.ceil((trainer_price * amount_days + 40.00 * len(trainer) * (amount_days-1) +
+                                    prize_distance * len(trainer)) / min_tn)
+
+        else:
+            prize_whole = 10.00
+
+        return prize_whole
