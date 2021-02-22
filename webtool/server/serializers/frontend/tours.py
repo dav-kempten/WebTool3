@@ -2,10 +2,9 @@ from rest_framework import serializers
 from rest_framework.reverse import reverse
 from django.core.mail import send_mail
 import math
-from datetime import datetime, date
 
 from server.models import (
-    Tour, Guide, Category, Equipment, State, get_default_state, get_default_season, Event, Reference,
+    Tour, Guide, Category, Equipment, State, get_default_state, get_default_season, Event,
     Skill, Fitness, QualificationGroup, Topic)
 from server.serializers.frontend.core import EventSerializer, MoneyField, create_event, update_event
 
@@ -267,6 +266,16 @@ class TourSerializer(serializers.ModelSerializer):
         instance.equipment_service = validated_data.get('equipment_service', instance.equipment_service)
         instance.skill = validated_data.get('skill', instance.skill)
         instance.fitness = validated_data.get('fitness', instance.fitness)
+        # Calculate admission for Tours
+        if validated_data.get('admission', instance.admission) == 0:
+            trainer_ids = [instance.guide.pk]
+            for el in instance.team.all():
+                trainer_ids.append(el.pk)
+            instance.admission = self.calculate_tour_admission(
+                start_date=tour_data['start_date'], end_date=tour_data['end_date'], trainer=trainer_ids,
+                distance=tour_data['distance'], min_tn=validated_data.get('min_quantity', instance.min_quantity))
+        else:
+            instance.admission = validated_data.get('admission', instance.admission)
         instance.advances = validated_data.get('advances', instance.advances)
         instance.advances_info = validated_data.get('advances_info', instance.advances_info)
         instance.extra_charges = validated_data.get('extra_charges', instance.extra_charges)
@@ -274,15 +283,6 @@ class TourSerializer(serializers.ModelSerializer):
         instance.min_quantity = validated_data.get('min_quantity', instance.min_quantity)
         instance.max_quantity = validated_data.get('max_quantity', instance.max_quantity)
         instance.cur_quantity = validated_data.get('cur_quantity', instance.cur_quantity)
-        if validated_data.get('admission', instance.admission) == 0:
-            trainer_ids = [instance.guide.pk]
-            for el in instance.team.all():
-                trainer_ids.append(el.pk)
-            instance.admission = self.calculate_tour_admission(
-                start_date=tour_data['start_date'], end_date=tour_data['end_date'], trainer=trainer_ids,
-                distance=tour_data['distance'], min_tn=instance.min_quantity)
-        else:
-            instance.admission = validated_data.get('admission', instance.admission)
         instance.deprecated = validated_data.get('deprecated', instance.deprecated)
         instance.state = validated_data.get('state', instance.state)
         if instance.state.pk == 2:
