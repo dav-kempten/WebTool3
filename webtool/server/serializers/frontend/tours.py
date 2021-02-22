@@ -2,10 +2,11 @@ from rest_framework import serializers
 from rest_framework.reverse import reverse
 from django.core.mail import send_mail
 import math
+from datetime import datetime, date
 
 from server.models import (
     Tour, Guide, Category, Equipment, State, get_default_state, get_default_season, Event, Reference,
-    Skill, Fitness, UserQualification, Qualification, Topic)
+    Skill, Fitness, QualificationGroup, Topic)
 from server.serializers.frontend.core import EventSerializer, MoneyField, create_event, update_event
 
 
@@ -274,11 +275,10 @@ class TourSerializer(serializers.ModelSerializer):
         instance.max_quantity = validated_data.get('max_quantity', instance.max_quantity)
         instance.cur_quantity = validated_data.get('cur_quantity', instance.cur_quantity)
         if validated_data.get('admission', instance.admission) == 0:
-            # Tour-admission calculation
             trainer_ids = [instance.guide.pk]
             for el in instance.team.all():
                 trainer_ids.append(el.pk)
-            instance.admission = self.calculate_admission(
+            instance.admission = self.calculate_tour_admission(
                 start_date=tour_data['start_date'], end_date=tour_data['end_date'], trainer=trainer_ids,
                 distance=tour_data['distance'], min_tn=instance.min_quantity)
         else:
@@ -302,28 +302,17 @@ class TourSerializer(serializers.ModelSerializer):
             recipient_list=['jojo@dav-kempten.de', 'matthias.keller@dav-kempten.de', 'info@dav-kempten.de']
         )
 
-    def calculate_admission(self, start_date=None, end_date=None, trainer=None, distance=0, min_tn=1):
-        # Calculation total amount of trainer-price per day
+    @staticmethod
+    def calculate_tour_admission(start_date=None, end_date=None, trainer=None, distance=0, min_tn=1):
         if end_date and trainer and min_tn is not 0:
-            trainer_sets = []
-            trainer_price = 0.00
-            qualification_sets = [UserQualification.objects.filter(user__pk=el) for el in trainer]
-            for qualification_set in qualification_sets:
-                for entry in qualification_set:
-                    if entry.qualification.code[:2] == 'TB':
-                        trainer_sets.append(85.00)
-                    elif entry.qualification.code[:2] == 'TC':
-                        trainer_sets.append(70.00)
-                    else:
-                        trainer_sets.append(55.00)   # NK = not known
-                trainer_price = trainer_price + max(trainer_sets)
+            trainer_price = float(QualificationGroup.objects.get(name='Tourenleiter').long_rate) * len(trainer)
             amount_days = (end_date-start_date).days
-            sleeping_prize = 40.00
+            if amount_days <= 0:
+                return 10.00
+            sleeping_price = 40.00
             prize_distance = distance * 0.30
 
-            prize_whole = math.ceil((trainer_price * amount_days + sleeping_prize * len(trainer) * (amount_days-1) +
-                                    prize_distance * len(trainer)) / min_tn)
+            return math.ceil((trainer_price * (amount_days+1) + sleeping_price * len(trainer) * amount_days +
+                              prize_distance * len(trainer)) / min_tn)
         else:
-            prize_whole = 10.00
-
-        return prize_whole
+            return 10.00
