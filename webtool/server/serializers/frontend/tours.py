@@ -315,14 +315,14 @@ class TourSerializer(serializers.ModelSerializer):
                     elif entry.qualification.code[:2] == 'TC':
                         trainer_sets.append(70.00)
                     else:
-                        trainer_sets.append(70.00)   # NK = not known
+                        trainer_sets.append(55.00)   # NK = not known
                 trainer_price = trainer_price + max(trainer_sets)
             amount_days = (end_date-start_date).days
+            sleeping_prize = 40.00
             prize_distance = distance * 0.30
 
-            prize_whole = math.ceil((trainer_price * amount_days + 40.00 * len(trainer) * (amount_days-1) +
+            prize_whole = math.ceil((trainer_price * amount_days + sleeping_prize * len(trainer) * (amount_days-1) +
                                     prize_distance * len(trainer)) / min_tn)
-
         else:
             prize_whole = 10.00
 
