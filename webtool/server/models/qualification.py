@@ -21,6 +21,21 @@ class QualificationGroup(TimeMixin, models.Model):
         unique=True
     )
 
+    long_rate = fields.AdmissionField(
+        verbose_name="Abrechnungssatz für lange Kurstage",
+        help_text="Abrechnungssatz für Kurstage länger als 6 Stunden in €"
+    )
+
+    middle_rate = fields.AdmissionField(
+        verbose_name="Abrechnungssatz für mittlere Kurstage",
+        help_text="Abrechnungssatz für Kurstage länger als 3 Stunden und kürzer als 6 Stunden in €"
+    )
+
+    short_rate = fields.AdmissionField(
+        verbose_name="Abrechnungssatz für kurze Kurstage",
+        help_text="Abrechnungssatz für Kurstage kürzer als 3 Stunden in €"
+    )
+
     order = fields.OrderField()
 
     def natural_key(self):
