@@ -2,9 +2,11 @@
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 from django.core.mail import send_mail
+import math
 
 from server.models import (
-    Instruction, Equipment, Guide, Topic, Category, State, Event, get_default_season, get_default_state
+    Instruction, Equipment, Guide, Topic, Category, State, Event, get_default_season, get_default_state,
+    UserQualification
 )
 from server.serializers.frontend.core import EventSerializer, MoneyField, create_event, update_event
 
@@ -216,7 +218,18 @@ class InstructionSerializer(serializers.ModelSerializer):
             instance.equipments = equipments
         instance.misc_equipment = validated_data.get('misc_equipment', instance.misc_equipment)
         instance.equipment_service = validated_data.get('equipment_service', instance.equipment_service)
-        instance.admission = validated_data.get('admission', instance.admission)
+        # Calculate admission for Instructions
+        if validated_data.get('admission', instance.admission) == 0:
+            trainer_ids = [instance.guide.pk]
+            for el in instance.team.all():
+                trainer_ids.append(el.pk)
+            instance.admission = self.calculate_instruction_admission(
+                start_date=instruction_data['start_date'], end_date=instruction_data['end_date'],
+                trainer=trainer_ids, distance=instruction_data['distance'],
+                min_tn=validated_data.get('min_quantity', instance.min_quantity)
+            )
+        else:
+            instance.admission = validated_data.get('admission', instance.admission)
         instance.advances = validated_data.get('advances', instance.advances)
         instance.advances_info = validated_data.get('advances_info', instance.advances_info)
         instance.extra_charges = validated_data.get('extra_charges', instance.extra_charges)
@@ -241,4 +254,26 @@ class InstructionSerializer(serializers.ModelSerializer):
             from_email='django@dav-kempten.de',
             recipient_list=['jojo@dav-kempten.de', 'matthias.keller@dav-kempten.de', 'info@dav-kempten.de']
         )
+
+    @staticmethod
+    def calculate_instruction_admission(start_date=None, end_date=None, trainer=None, distance=0, min_tn=1):
+        # Calculation total amount of trainer-price per day
+        if end_date and trainer and min_tn is not 0:
+            trainer_sets = []
+            trainer_price = 0.00
+            qualification_sets = [UserQualification.objects.filter(user__pk=el) for el in trainer]
+            for qualification_set in qualification_sets:
+                for entry in qualification_set:
+                    trainer_sets.append(float(entry.qualification.group.long_rate))
+                trainer_price = trainer_price + max(trainer_sets)
+            amount_days = (end_date-start_date).days
+            sleeping_prize = 40.00
+            prize_distance = distance * 0.30
+
+            prize_whole = math.ceil((trainer_price * amount_days + sleeping_prize * len(trainer) * (amount_days-1) +
+                                    prize_distance * len(trainer)) / min_tn)
+        else:
+            prize_whole = 10.00
+
+        return prize_whole
 
