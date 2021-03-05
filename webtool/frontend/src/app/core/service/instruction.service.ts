@@ -189,7 +189,7 @@ export class InstructionService {
   }
 
   addEventInstruction(instruction: Instruction): Observable<Instruction> {
-    const newEvent: Event = {...instruction.instruction, id: null};
+    const newEvent: Event = {id: null, startDate: instruction.instruction.startDate} as Event;
     instruction.meetings.push(newEvent);
     this.addEventSubject.next(instruction);
 
