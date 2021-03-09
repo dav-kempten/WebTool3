@@ -28,10 +28,11 @@ class UserAdmin(BaseUserAdmin):
     inlines = (GuideInline, ProfileInline, QualificationInline, RetrainingInline,)
     ordering = ('last_name', 'first_name')
 
-    actions = ['export_as_csv', 'email_for_cleverreach', 'email_as_plain', 'add_to_group_gs', 'add_to_group_summer', 'add_to_group_winter',
-               'add_to_group_climbing', 'add_to_group_leberkas', 'add_to_group_helpinghands', 'remove_from_gs',
-               'remove_from_group_summer', 'remove_from_group_winter', 'remove_from_group_climbing',
-               'remove_from_group_leberkas', 'remove_from_group_helpinghands', ]
+    actions = ['export_as_csv', 'email_for_cleverreach', 'email_as_plain', 'add_to_group_gs', 'add_to_group_summer',
+               'add_to_group_winter', 'add_to_group_climbing', 'add_to_group_youth', 'add_to_group_leberkas',
+               'add_to_group_helpinghands', 'remove_from_gs', 'remove_from_group_summer', 'remove_from_group_winter',
+               'remove_from_group_climbing', 'remove_from_group_youth', 'remove_from_group_leberkas',
+               'remove_from_group_helpinghands', ]
 
     list_filter = ('is_staff', 'is_active', 'groups', QualificationFilter)
 
@@ -121,6 +122,11 @@ class UserAdmin(BaseUserAdmin):
         for user in queryset:
             group.user_set.add(user)
 
+    def add_to_group_youth(self, request, queryset):
+        group = Group.objects.get(name='Jugend')
+        for user in queryset:
+            group.user_set.add(user)
+
     def add_to_group_climbing(self, request, queryset):
         group = Group.objects.get(name='FB Klettern')
         for user in queryset:
@@ -140,6 +146,7 @@ class UserAdmin(BaseUserAdmin):
     add_to_group_summer.short_description = 'Zum FB Sommer hinzufügen'
     add_to_group_winter.short_description = 'Zum FB Winter hinzufügen'
     add_to_group_climbing.short_description = 'Zum FB Klettern hinzufügen'
+    add_to_group_youth.short_description = 'Zur Jugend hinzufügen'
     add_to_group_leberkas.short_description = 'Zum Leberkäsessen hinzufügen'
     add_to_group_helpinghands.short_description = 'Zum Helfer-Pool hinzufügen'
 
@@ -163,6 +170,11 @@ class UserAdmin(BaseUserAdmin):
         for user in queryset:
             group.user_set.remove(user)
 
+    def remove_from_group_youth(self, request, queryset):
+        group = Group.objects.get(name='Jugend')
+        for user in queryset:
+            group.user_set.remove(user)
+
     def remove_from_group_leberkas(self, request, queryset):
         group = Group.objects.get(name='Leberkäsessen')
         for user in queryset:
@@ -177,6 +189,7 @@ class UserAdmin(BaseUserAdmin):
     remove_from_group_summer.short_description = 'Von FB Sommer entfernen'
     remove_from_group_winter.short_description = 'Von FB Winter entfernen'
     remove_from_group_climbing.short_description = 'Von FB Klettern entfernen'
+    remove_from_group_youth.short_description = 'Aus Jugend entfernen'
     remove_from_group_leberkas.short_description = 'Von Leberkäsessen entfernen'
     remove_from_group_helpinghands.short_description = 'Von Helfer-Pool entfernen'
 
