@@ -1,6 +1,7 @@
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin, Group
 
 import csv
+import json
 from django.http import HttpResponse
 from server.models.retraining import Retraining
 from server.models.qualification import UserQualification
@@ -28,7 +29,7 @@ class UserAdmin(BaseUserAdmin):
     inlines = (GuideInline, ProfileInline, QualificationInline, RetrainingInline,)
     ordering = ('last_name', 'first_name')
 
-    actions = ['export_as_csv', 'email_for_cleverreach', 'email_as_plain', 'add_to_group_gs', 'add_to_group_summer',
+    actions = ['export_as_csv', 'export_as_json', 'email_for_cleverreach', 'email_as_plain', 'add_to_group_gs', 'add_to_group_summer',
                'add_to_group_winter', 'add_to_group_climbing', 'add_to_group_youth', 'add_to_group_leberkas',
                'add_to_group_helpinghands', 'remove_from_gs', 'remove_from_group_summer', 'remove_from_group_winter',
                'remove_from_group_climbing', 'remove_from_group_youth', 'remove_from_group_leberkas',
@@ -81,6 +82,29 @@ class UserAdmin(BaseUserAdmin):
 
         return response
 
+    def export_as_json(self, request, queryset):
+        user_dicts = []
+
+        for user in queryset:
+            if user.first_name and user.last_name:
+                train_list = []
+                train_order_list = []
+                for user_training in UserQualification.objects.filter(user=user):
+                    train_list.append(user_training.qualification.code)
+                    train_order_list.append(user_training.qualification.group.order)
+                if len(train_order_list) == 0:
+                    train_code = ''
+                else:
+                    train_code = train_list[train_order_list.index(max(train_order_list))]
+                user_dicts.append({'Vorname': user.first_name, 'Nachname': user.last_name, 'Qualifikation': train_code})
+
+        json_list = json.dumps(user_dicts, ensure_ascii=False).encode('utf8')
+
+        response = HttpResponse(content_type='text/plain; charset=utf-8', content=json_list)
+        response['Content-Disposition'] = 'attachment; filename=user_sum.json'
+
+        return response
+
     def email_for_cleverreach(self, request, queryset):
         list = []
 
@@ -104,6 +128,7 @@ class UserAdmin(BaseUserAdmin):
         return response
 
     export_as_csv.short_description = 'Excel-Export'
+    export_as_json.short_description = 'JSON-Export'
     email_for_cleverreach.short_description = 'CleverReach-Export'
     email_as_plain.short_description = 'Email-Export'
 
