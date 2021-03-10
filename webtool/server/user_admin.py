@@ -208,7 +208,7 @@ class UserAdmin(BaseUserAdmin):
         retrai_string = ''
         for retrai in Retraining.objects.filter(user=obj):
             if retrai.qualification is not None:
-                qual = UserQualification.objects.get(pk = retrai.qualification.pk)
+                qual = UserQualification.objects.get(pk=retrai.qualification.pk)
                 retrai_string = retrai_string + qual.qualification.code + '(' + str(retrai.year)
                 if retrai.specific:
                     retrai_string = retrai_string + '-FS'
