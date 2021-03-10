@@ -267,7 +267,7 @@ class TourSerializer(serializers.ModelSerializer):
         instance.skill = validated_data.get('skill', instance.skill)
         instance.fitness = validated_data.get('fitness', instance.fitness)
         # Calculate admission for Tours
-        if validated_data.get('admission', instance.admission) == 0:
+        if validated_data.get('admission', instance.admission) == 0 and instance.guide:
             trainer_ids = [instance.guide.pk]
             for el in instance.team.all():
                 trainer_ids.append(el.pk)

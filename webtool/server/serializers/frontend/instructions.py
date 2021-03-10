@@ -219,7 +219,7 @@ class InstructionSerializer(serializers.ModelSerializer):
         instance.misc_equipment = validated_data.get('misc_equipment', instance.misc_equipment)
         instance.equipment_service = validated_data.get('equipment_service', instance.equipment_service)
         # Calculate admission for Instructions
-        if validated_data.get('admission', instance.admission) == 0:
+        if validated_data.get('admission', instance.admission) == 0 and instance.guide:
             trainer_ids = [instance.guide.pk]
             for el in instance.team.all():
                 trainer_ids.append(el.pk)

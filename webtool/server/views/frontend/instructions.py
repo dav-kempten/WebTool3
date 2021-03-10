@@ -66,8 +66,8 @@ class InstructionViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         response['Cache-Control'] = "public, max-age=86400"
         if queryset.exists():
             latest = queryset.latest()
-            response['ETag'] = '"{}"'.format(latest.get_etag())
-            response['Last-Modified'] = "{} GMT".format(date(latest.updated, "D, d M Y H:i:s"))
+            # response['ETag'] = '"{}"'.format(latest.get_etag())
+            # response['Last-Modified'] = "{} GMT".format(date(latest.updated, "D, d M Y H:i:s"))
         return response
 
     def retrieve(self, request, pk=None, *args, **kwargs):
