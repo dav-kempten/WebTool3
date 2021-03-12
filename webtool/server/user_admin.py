@@ -102,7 +102,7 @@ class UserAdmin(BaseUserAdmin):
                 else:
                     train_code = train_list[train_order_list.index(max(train_order_list))]
                 user_dicts.append({'Vorname': user.first_name, 'Nachname': user.last_name, 'Qualifikation': train_code,
-                                   'Migliedsnummer': profile_id})
+                                   'Mitgliedsnummer': profile_id})
 
         json_list = json.dumps(user_dicts, ensure_ascii=False).encode('utf8')
 
