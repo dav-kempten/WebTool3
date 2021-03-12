@@ -86,7 +86,12 @@ class UserAdmin(BaseUserAdmin):
         user_dicts = []
 
         for user in queryset:
-            if user.first_name and user.last_name:
+            try:
+                profile_id = Profile.objects.get(user=user).member_id
+            except:
+                profile_id = ''
+
+            if user.first_name and user.last_name and profile_id:
                 train_list = []
                 train_order_list = []
                 for user_training in UserQualification.objects.filter(user=user):
@@ -96,7 +101,8 @@ class UserAdmin(BaseUserAdmin):
                     train_code = ''
                 else:
                     train_code = train_list[train_order_list.index(max(train_order_list))]
-                user_dicts.append({'Vorname': user.first_name, 'Nachname': user.last_name, 'Qualifikation': train_code})
+                user_dicts.append({'Vorname': user.first_name, 'Nachname': user.last_name, 'Qualifikation': train_code,
+                                   'Migliedsnummer': profile_id})
 
         json_list = json.dumps(user_dicts, ensure_ascii=False).encode('utf8')
 
