@@ -2,7 +2,7 @@ import io
 import json
 
 from django.core.management.base import BaseCommand
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 
 from server.models import Profile
 
@@ -15,6 +15,9 @@ class Command(BaseCommand):
         self.log = None
 
     def update(self, tpo_json):
+        # Get youth-group and flush all user from group
+        youth = Group.objects.get(name="Jugend")
+        youth.user_set.clear()
         for obj in tpo_json:
             try:
                 member_id = obj['membernumber']
@@ -23,6 +26,7 @@ class Command(BaseCommand):
                     print('E-Mail TPO: {}, E-Mail Webtool: {}'.format(obj['email'], profile_user.email))
                     profile_user.email = obj['email']
                     profile_user.save()
+                youth.user_set.add(profile_user)
             except:
                 print('Member_Id from {} cannot be found.'.format((obj['name']+' '+obj['surname'])))
 
