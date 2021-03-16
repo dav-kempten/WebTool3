@@ -20,7 +20,7 @@ class GuideInline(admin.StackedInline):
 class ProfileInline(admin.StackedInline):
     model = Profile
     extra = 0
-    readonly_fields = ['member_id', 'birth_date', 'phone', 'mobile']
+    # readonly_fields = ['member_id', 'birth_date', 'phone', 'mobile']
     verbose_name = 'Nutzer-Profil'
     verbose_name_plural = 'Nutzer-Profil'
     classes = ['collapse']
