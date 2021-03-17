@@ -241,6 +241,8 @@ class InstructionSerializer(serializers.ModelSerializer):
         instance.state = validated_data.get('state', instance.state)
         if instance.state.pk == 2:
             self.send_instruction_notification(reference=instance.instruction.reference.__str__())
+        if instance.state.pk == 4:
+            self.send_instruction_kv_notification(instance=instance)
         instance.comment = validated_data.get('comment', instance.comment)
         instance.message = validated_data.get('message', instance.message)
         instance.save()
@@ -254,6 +256,65 @@ class InstructionSerializer(serializers.ModelSerializer):
             from_email='django@dav-kempten.de',
             recipient_list=['jojo@dav-kempten.de', 'matthias.keller@dav-kempten.de', 'info@dav-kempten.de']
         )
+
+    def send_instruction_kv_notification(self, instance=None):
+        team_format = ''
+        equipment_format = ''
+        meetings = ''
+        # Format team-members
+        for el in instance.team.all():
+            team_format = team_format + str(el) + ', '
+        team_format = team_format[:-2]
+        # Format equipments
+        for el in instance.topic.equipments.all():
+            equipment_format = equipment_format + str(el) + ', '
+        for el in instance.equipments.all():
+            equipment_format = equipment_format + str(el) + ', '
+        equipment_format = equipment_format[:-2]
+        # Format meetings
+        for el in instance.meeting_list.all():
+            meetings = meetings + el.title + ' ' + el.short_date(with_year=True) + ' ' + self.time_format(event=el) + '; '
+        meetings_format = meetings[:-2]
+
+        send_mail(
+            subject='Kurs ' + instance.instruction.reference.__str__() + ' KV-Update',
+            message='Der Kurs ' + instance.instruction.reference.__str__()
+                    + ' wurde auf Freigegeben gestellt und kann in den KV übertragen werden:' + '\n'
+                    + 'Buchungscode: ' + instance.instruction.reference.__str__() + '\n'
+                    + 'Kategorie: ' + instance.topic.name + '\n'
+                    + 'Titel: ' + instance.topic.title + '\n'
+                    + 'TN-Betrag: ' + str(instance.admission) + '\n'
+                    + 'Anzahlung: ' + str(instance.advances) + '\n'
+                    + 'Min TN: ' + str(instance.min_quantity) + '\n'
+                    + 'Geplante TN: ' + str(instance.max_quantity) + '\n'
+                    + 'Ausrüstung: ' + equipment_format + '\n'
+                    + 'Zusatzausrüstung: ' + self.misc_equipment_format(instance) + '\n'
+                    + 'Organisation: ' + instance.guide.user.first_name + ' ' + instance.guide.user.last_name + '\n'
+                    + 'Team: ' + team_format + '\n'
+                    + 'Anreise: ' + str(instance.instruction.distance) + '\n'
+                    + 'Praxistermin: ' + instance.instruction.short_date(with_year=True) + '\n'
+                    + 'Praxistermin Uhrzeit: ' + self.time_format(instance.instruction) + '\n'
+                    + 'weitere Termine: ' + meetings_format + '\n'
+                    + 'Kursort: ' + instance.instruction.location + '\n',
+            from_email='django@dav-kempten.de',
+            recipient_list=['jojo@dav-kempten.de']
+        )
+
+    @staticmethod
+    def misc_equipment_format(instruction=None):
+        if instruction.misc_equipment and instruction.misc_equipment:
+            return instruction.topic.misc_equipment + ', ' + instruction.misc_equipment
+        elif instruction.misc_equipment:
+            return instruction.misc_equipment
+        else:
+            return instruction.topic.misc_equipment
+
+    @staticmethod
+    def time_format(event=None):
+        if event.end_time:
+            return str(event.start_time) + ' - ' + str(event.end_time)
+        else:
+            return str(event.start_time)
 
     @staticmethod
     def calculate_instruction_admission(start_date=None, end_date=None, trainer=None, distance=0, min_tn=1):
