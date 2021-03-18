@@ -263,18 +263,15 @@ class InstructionSerializer(serializers.ModelSerializer):
         meetings = ''
         # Format team-members
         for el in instance.team.all():
-            team_format = team_format + str(el) + ', '
-        team_format = team_format[:-2]
+            team_format = team_format + el.__str__() + ', '
         # Format equipments
         for el in instance.topic.equipments.all():
-            equipment_format = equipment_format + str(el) + ', '
+            equipment_format = equipment_format + el.__str__() + ', '
         for el in instance.equipments.all():
-            equipment_format = equipment_format + str(el) + ', '
-        equipment_format = equipment_format[:-2]
+            equipment_format = equipment_format + el.__str__() + ', '
         # Format meetings
         for el in instance.meeting_list.all():
             meetings = meetings + el.title + ' ' + el.short_date(with_year=True) + ' ' + self.time_format(event=el) + '; '
-        meetings_format = meetings[:-2]
 
         send_mail(
             subject='Kurs ' + instance.instruction.reference.__str__() + ' KV-Update',
@@ -287,18 +284,25 @@ class InstructionSerializer(serializers.ModelSerializer):
                     + 'Anzahlung: ' + str(instance.advances) + '\n'
                     + 'Min TN: ' + str(instance.min_quantity) + '\n'
                     + 'Geplante TN: ' + str(instance.max_quantity) + '\n'
-                    + 'Ausrüstung: ' + equipment_format + '\n'
-                    + 'Zusatzausrüstung: ' + self.misc_equipment_format(instance) + '\n'
-                    + 'Organisation: ' + instance.guide.user.first_name + ' ' + instance.guide.user.last_name + '\n'
-                    + 'Team: ' + team_format + '\n'
+                    + 'Ausrüstung: ' + equipment_format[:-2] + '\n'
+                    + 'Zusatzausrüstung: ' + self.misc_equipment_format(instruction=instance) + '\n'
+                    + 'Organisation: ' + self.guide_format(guide=instance.guide) + '\n'
+                    + 'Team: ' + team_format[:-2] + '\n'
                     + 'Anreise: ' + str(instance.instruction.distance) + '\n'
                     + 'Praxistermin: ' + instance.instruction.short_date(with_year=True) + '\n'
-                    + 'Praxistermin Uhrzeit: ' + self.time_format(instance.instruction) + '\n'
-                    + 'weitere Termine: ' + meetings_format + '\n'
+                    + 'Praxistermin Uhrzeit: ' + self.approximation_time_format(event=instance.instruction) + '\n'
+                    + 'weitere Termine: ' + meetings[:-2] + '\n'
                     + 'Kursort: ' + instance.instruction.location + '\n',
             from_email='django@dav-kempten.de',
             recipient_list=['jojo@dav-kempten.de']
         )
+
+    @staticmethod
+    def guide_format(guide=None):
+        if guide:
+            return guide.__str__()
+        else:
+            return 'N.a.'
 
     @staticmethod
     def misc_equipment_format(instruction=None):
@@ -308,6 +312,14 @@ class InstructionSerializer(serializers.ModelSerializer):
             return instruction.misc_equipment
         else:
             return instruction.topic.misc_equipment
+
+    def approximation_time_format(self, event=None):
+        if event.start_time:
+            return self.time_format(event=event)
+        elif event.approximate:
+            return event.approximate.name
+        else:
+            return 'N.a.'
 
     @staticmethod
     def time_format(event=None):
