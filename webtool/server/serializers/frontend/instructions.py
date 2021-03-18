@@ -239,9 +239,9 @@ class InstructionSerializer(serializers.ModelSerializer):
         instance.cur_quantity = validated_data.get('cur_quantity', instance.cur_quantity)
         instance.deprecated = validated_data.get('deprecated', instance.deprecated)
         instance.state = validated_data.get('state', instance.state)
-        if instance.state.pk == 2:
+        if instance.state.pk == 2 and not instance.topic.category.climbing:
             self.send_instruction_notification(reference=instance.instruction.reference.__str__())
-        if instance.state.pk == 4:
+        if instance.state.pk == 4 and not instance.topic.category.climbing:
             self.send_instruction_kv_notification(instance=instance)
         instance.comment = validated_data.get('comment', instance.comment)
         instance.message = validated_data.get('message', instance.message)
