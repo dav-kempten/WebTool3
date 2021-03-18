@@ -324,6 +324,7 @@ class TourSerializer(serializers.ModelSerializer):
                     + 'Tourtermin: ' + instance.tour.short_date(with_year=True) + '\n'
                     + 'Tourtermin Uhrzeit: ' + self.approximation_time_format(event=instance.tour) + '\n'
                     + 'Vorbesprechung: ' + self.preliminary_format(instance=instance) + '\n'
+                    + 'Treffpunkt: ' + instance.tour.rendezvous + '\n'
                     + 'Tourziel: ' + instance.tour.location + '\n',
             from_email='django@dav-kempten.de',
             recipient_list=['jojo@dav-kempten.de', 'info@dav-kempten.de']

@@ -279,6 +279,7 @@ class InstructionSerializer(serializers.ModelSerializer):
                     + 'Anreise: ' + str(instance.instruction.distance) + '\n'
                     + 'Praxistermin: ' + instance.instruction.short_date(with_year=True) + '\n'
                     + 'Praxistermin Uhrzeit: ' + self.approximation_time_format(event=instance.instruction) + '\n'
+                    + 'Praxistermin Treffpunkt Abfahrt: ' + instance.instruction.rendezvous + '\n'
                     + 'weitere Termine: ' + meetings[:-2] + '\n'
                     + 'Kursort: ' + instance.instruction.location + '\n',
             from_email='django@dav-kempten.de',
