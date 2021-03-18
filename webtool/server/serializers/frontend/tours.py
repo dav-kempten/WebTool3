@@ -309,10 +309,10 @@ class TourSerializer(serializers.ModelSerializer):
         equipment_format = ''
         # Format team-members
         for el in instance.team.all():
-            team_format = team_format + str(el) + ', '
+            team_format = team_format + el.__str__() + ', '
         # Format equipments
         for el in instance.equipments.all():
-            equipment_format = equipment_format + str(el) + ', '
+            equipment_format = equipment_format + el.__str__() + ', '
 
         send_mail(
             subject='Tour ' + instance.tour.reference.__str__() + ' KV-Update',
@@ -327,7 +327,7 @@ class TourSerializer(serializers.ModelSerializer):
                     + 'Geplante TN: ' + str(instance.max_quantity) + '\n'
                     + 'Ausrüstung: ' + equipment_format[:-2] + '\n'
                     + 'Zusatzausrüstung: ' + instance.misc_equipment + '\n'
-                    + 'Organisation: ' + instance.guide.user.first_name + ' ' + instance.guide.user.last_name + '\n'
+                    + 'Organisation: ' + self.guide_format(guide=instance.guide) + '\n'
                     + 'Team: ' + team_format[:-2] + '\n'
                     + 'Anreise: ' + str(instance.tour.distance) + '\n'
                     + 'Buchbar bis: ' + instance.deadline.short_date(with_year=True) + '\n'
@@ -339,6 +339,13 @@ class TourSerializer(serializers.ModelSerializer):
             recipient_list=['jojo@dav-kempten.de']
         )
 
+    @staticmethod
+    def guide_format(guide=None):
+        if guide:
+            return guide.__str__()
+        else:
+            return 'N.a.'
+
     def preliminary_format(self, instance=None):
         if instance.preliminary:
             return instance.preliminary.short_date(with_year=True) + ' ' + self.time_format(event=instance.preliminary)
@@ -346,10 +353,10 @@ class TourSerializer(serializers.ModelSerializer):
             return instance.info
 
     def approximation_time_format(self, event=None):
-        if event.approximate:
-            return event.approximate.name
-        elif event.start_time:
+        if event.start_time:
             return self.time_format(event=event)
+        elif event.approximate:
+            return event.approximate.name
         else:
             return 'N.a.'
 
