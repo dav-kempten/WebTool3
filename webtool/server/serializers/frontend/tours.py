@@ -326,7 +326,7 @@ class TourSerializer(serializers.ModelSerializer):
                     + 'Vorbesprechung: ' + self.preliminary_format(instance=instance) + '\n'
                     + 'Tourziel: ' + instance.tour.location + '\n',
             from_email='django@dav-kempten.de',
-            recipient_list=['jojo@dav-kempten.de']
+            recipient_list=['jojo@dav-kempten.de', 'info@dav-kempten.de']
         )
 
     @staticmethod

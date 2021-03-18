@@ -282,7 +282,7 @@ class InstructionSerializer(serializers.ModelSerializer):
                     + 'weitere Termine: ' + meetings[:-2] + '\n'
                     + 'Kursort: ' + instance.instruction.location + '\n',
             from_email='django@dav-kempten.de',
-            recipient_list=['jojo@dav-kempten.de']
+            recipient_list=['jojo@dav-kempten.de', 'info@dav-kempten.de']
         )
 
     @staticmethod
