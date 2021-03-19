@@ -96,11 +96,11 @@ class UserAdmin(BaseUserAdmin):
                 train_order_list = []
                 for user_training in UserQualification.objects.filter(user=user):
                     train_list.append(user_training.qualification.code)
-                    train_order_list.append(user_training.qualification.group.order)
+                    train_order_list.append(user_training.qualification.order)
                 if len(train_order_list) == 0:
                     train_code = ''
                 else:
-                    train_code = train_list[train_order_list.index(max(train_order_list))]
+                    train_code = train_list[train_order_list.index(min(train_order_list))]
                 user_dicts.append({'Vorname': user.first_name, 'Nachname': user.last_name, 'Qualifikation': train_code,
                                    'Mitgliedsnummer': profile_id})
 
