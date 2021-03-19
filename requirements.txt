@@ -4,7 +4,7 @@ certifi==2019.3.9
 chardet==3.0.4
 django-filter==1.0.4
 Django==1.11.22
-djangorestframework==3.9.4
+djangorestframework==3.11.2
 django-cors-headers==2.5.2
 docutils==0.14
 dramatiq==1.4.0
