@@ -31,7 +31,7 @@ class ActivityListSerializer(serializers.ModelSerializer):
         if obj.ladies_only:
             categories = ['Frauen'] + categories
         if obj.relaxed:
-            categories = ['Gemütlich'] + categories
+            categories = ['Geh\'mütlich'] + categories
         if hasattr(obj, 'tour') and obj.tour:
             categories.extend(obj.tour.categories.values_list('name', flat=True))
         elif hasattr(obj, 'session') and obj.session:

@@ -200,10 +200,9 @@ export class TourEffects {
 
     this.destroySubject.complete();
 
-    /* Check contradictory distance/distal fields before saving */
-    if (!tour.distal) { tour.distance = 0; }
-    if (!deadline.distal) { deadline.distance = 0; }
-    if (preliminary) { if (!preliminary.distance) { preliminary.distance = 0; }}
+    /* erase distance field of deadline & preliminary  */
+    deadline.distance = 0;
+    if (preliminary) { preliminary.distance = 0; }
 
     return {
       ... tourInterface,
