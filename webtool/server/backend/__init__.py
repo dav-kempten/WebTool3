@@ -7,9 +7,9 @@ from server.models import Profile, Tour, Instruction, Session, Talk
 
 class Backend(ModelBackend):
 
-    def authenticate(self, member_id=None, **kwargs):
+    def authenticate(self, request, username=None, password=None, **kwargs):
         try:
-            profile = Profile.objects.get(member_id=member_id)
+            profile = Profile.objects.get(member_id=kwargs.get('member_id'))
         except Profile.DoesNotExist:
             return None
 
