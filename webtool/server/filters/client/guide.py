@@ -1,4 +1,4 @@
-from django_filters import rest_framework as filters, STRICTNESS
+from django_filters import rest_framework as filters
 
 from server.models import Guide
 
@@ -23,4 +23,3 @@ class GuideFilter(filters.FilterSet):
             'lastName',
             'collective',
         )
-        strict = STRICTNESS.RAISE_VALIDATION_ERROR
