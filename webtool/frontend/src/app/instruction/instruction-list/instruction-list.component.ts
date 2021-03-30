@@ -46,8 +46,6 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
   authState$: Observable<User>;
   authChangeSubject = new BehaviorSubject<any>(undefined);
   authChange$: Observable<any> = this.authChangeSubject.asObservable();
-  userIsStaff$: Observable<boolean>;
-  userIsAdmin$: Observable<boolean>;
   loginObject = {id: undefined, firstName: '', lastName: '', role: undefined, valState: 0};
 
   topicId = new FormControl('');
@@ -77,6 +75,7 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
     this.authState$ = this.userService.user$;
 
     this.authState$.pipe(
+      takeUntil(this.destroySubject),
       tap(value => {
         this.loginObject = { ...value, valState: 0 };
         if (value.role === 'Administrator') {
