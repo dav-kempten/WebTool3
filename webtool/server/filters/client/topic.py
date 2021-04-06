@@ -1,4 +1,4 @@
-from django_filters import rest_framework as filters, STRICTNESS
+from django_filters import rest_framework as filters
 
 from server.models import Topic, CategoryGroup
 
@@ -21,4 +21,3 @@ class TopicFilter(filters.FilterSet):
         fields = (
             'group',
         )
-        strict = STRICTNESS.RAISE_VALIDATION_ERROR

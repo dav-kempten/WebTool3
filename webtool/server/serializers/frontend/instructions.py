@@ -182,16 +182,16 @@ class InstructionSerializer(serializers.ModelSerializer):
                 meeting = create_event(meeting_data, dict(season=season, type=dict(meeting=True)))
                 meeting.instruction = instruction
                 meeting.save()
-            instruction.team = team
-            instruction.qualifications = qualifications
-            instruction.equipments = equipments
+            instruction.team.set(team)
+            instruction.qualifications.set(qualifications)
+            instruction.equipments.set(equipments)
             return instruction
 
     def update(self, instance, validated_data):
         instance.guide = validated_data.get('guide', instance.guide)
         team = validated_data.get('team')
         if team is not None:
-            instance.team = team
+            instance.team.set(team)
         instruction_data = validated_data.get('instruction')
         if instruction_data is not None:
             instruction = Event.objects.get(pk=instruction_data.get('pk'))
@@ -210,11 +210,11 @@ class InstructionSerializer(serializers.ModelSerializer):
         instance.category = validated_data.get('category', instance.category)
         qualifications = validated_data.get('qualifications')
         if qualifications is not None:
-            instance.qualifications = qualifications
+            instance.qualifications.set(qualifications)
         instance.preconditions = validated_data.get('preconditions', instance.preconditions)
         equipments = validated_data.get('equipments')
         if equipments is not None:
-            instance.equipments = equipments
+            instance.equipments.set(equipments)
         instance.misc_equipment = validated_data.get('misc_equipment', instance.misc_equipment)
         instance.equipment_service = validated_data.get('equipment_service', instance.equipment_service)
         instance.admission = validated_data.get('admission', instance.admission)

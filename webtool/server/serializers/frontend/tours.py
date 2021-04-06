@@ -222,11 +222,11 @@ class TourSerializer(serializers.ModelSerializer):
 
             update_event(Event.objects.get(pk=tour.deadline.pk), dict(title="AS " + str(tour.tour.reference),
                                                                       name="Anmeldeschluss für " + str(tour.tour.reference)), self.context)
-            tour.categories = categories
+            tour.categories.set(categories)
             tour.info = info
-            tour.team = team
-            tour.qualifications = qualifications
-            tour.equipments = equipments
+            tour.team.set(team)
+            tour.qualifications.set(qualifications)
+            tour.equipments.set(equipments)
 
             return tour
 
@@ -234,7 +234,7 @@ class TourSerializer(serializers.ModelSerializer):
         instance.guide = validated_data.get('guide', instance.guide)
         team = validated_data.get('team')
         if team is not None:
-            instance.team = team
+            instance.team.set(team)
         tour_data = validated_data.get('tour')
         if tour_data is not None:
             tour = Event.objects.get(pk=tour_data.get('pk'))
@@ -253,14 +253,14 @@ class TourSerializer(serializers.ModelSerializer):
         instance.relaxed = validated_data.get('relaxed', instance.relaxed)
         categories = validated_data.get('categories')
         if categories is not None:
-            instance.categories = categories
+            instance.categories.set(categories)
         qualifications = validated_data.get('qualifications')
         if qualifications is not None:
-            instance.qualifications = qualifications
+            instance.qualifications.set(qualifications)
         instance.preconditions = validated_data.get('preconditions', instance.preconditions)
         equipments = validated_data.get('equipments')
         if equipments is not None:
-            instance.equipments = equipments
+            instance.equipments.set(equipments)
         instance.misc_equipment = validated_data.get('misc_equipment', instance.misc_equipment)
         instance.equipment_service = validated_data.get('equipment_service', instance.equipment_service)
         instance.skill = validated_data.get('skill', instance.skill)

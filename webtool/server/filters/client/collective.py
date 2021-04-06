@@ -1,4 +1,4 @@
-from django_filters import rest_framework as filters, STRICTNESS
+from django_filters import rest_framework as filters
 
 from server.models import Collective, Guide
 
@@ -21,4 +21,3 @@ class CollectiveFilter(filters.FilterSet):
         fields = (
             'manager',
         )
-        strict = STRICTNESS.RAISE_VALIDATION_ERROR

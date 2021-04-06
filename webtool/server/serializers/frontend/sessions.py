@@ -126,6 +126,7 @@ class SessionSerializer(serializers.ModelSerializer):
             collective = validated_data.get('collective')
             misc_category = validated_data.pop('misc_category')
             categories = validated_data.pop('categories')
+            team = validated_data.pop('team')
             category = collective.category
             season = get_default_season()
             event = create_event(session_data, dict(category=category, season=season, type=dict(collective=True)))
@@ -141,13 +142,16 @@ class SessionSerializer(serializers.ModelSerializer):
 
             session = Session.objects.create(session=event, state=state, speaker=speaker, misc_category=misc_category,
                                              **validated_data)
-            session.categories = categories
-            session.equipments = equipments
+            session.team.set(team)
+            session.categories.set(categories)
+            session.equipments.set(equipments)
             return session
 
     def update(self, instance, validated_data):
         instance.guide = validated_data.get('guide', instance.guide)
-        instance.team = validated_data.get('team', instance.team)
+        team = validated_data.get('team')
+        if team is not None:
+            instance.team.set(team)
         instance.speaker = validated_data.get('speaker', instance.speaker)
         session_data = validated_data.get('session')
         if session_data is not None:
@@ -156,11 +160,11 @@ class SessionSerializer(serializers.ModelSerializer):
         instance.ladies_only = validated_data.get('ladies_only', instance.ladies_only)
         categories = validated_data.get('categories')
         if categories is not None:
-            instance.categories = categories
+            instance.categories.set(categories)
         instance.misc_category = validated_data.get('misc_category', instance.misc_category)
         equipments = validated_data.get('equipments')
         if equipments is not None:
-            instance.equipments = equipments
+            instance.equipments.set(equipments)
         instance.misc_equipment = validated_data.get('misc_equipment', instance.misc_equipment)
         instance.message = validated_data.get('message', instance.message)
         instance.comment = validated_data.get('comment', instance.comment)

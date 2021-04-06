@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import datetime
 from django.db.models import F, Q
-from django_filters import rest_framework as filters, STRICTNESS
+from django_filters import rest_framework as filters
 
 from server.models import Event, Category, Reference, Tour, State, Guide, CategoryGroup
 
@@ -238,4 +238,3 @@ class ActivityFilter(filters.FilterSet):
             'open',
             'next'
         )
-        strict = STRICTNESS.RAISE_VALIDATION_ERROR
