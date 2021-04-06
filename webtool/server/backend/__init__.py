@@ -12,6 +12,8 @@ class Backend(ModelBackend):
             profile = Profile.objects.get(member_id=kwargs.get('member_id'))
         except Profile.DoesNotExist:
             return None
+        except Profile.MultipleObjectsReturned:
+            return None
 
         user = profile.user
         return user
