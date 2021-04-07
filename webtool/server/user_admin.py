@@ -2,7 +2,8 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin, Group
 
 import csv
 import json
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
+from django.urls import path
 from server.models.retraining import Retraining
 from server.models.qualification import UserQualification
 from server.models.profile import Profile
@@ -12,6 +13,8 @@ from server.admin_filters import QualificationFilter
 
 
 class UserAdmin(BaseUserAdmin):
+    change_list_template = "update_csv.html"
+
     fieldsets = (
         ('Login', {
             'classes': ['collapse'],
@@ -250,3 +253,14 @@ class UserAdmin(BaseUserAdmin):
         return retrai_string
 
     get_userRetraining.short_description = 'Fortbildungen'
+
+    def get_urls(self):
+        urls = super().get_urls()
+        my_urls = [
+            path('kv_update/', self.kv_update)
+        ]
+        return my_urls + urls
+
+    def kv_update(self, request):
+        self.message_user(request, "KV-Update erfolgreich.")
+        return HttpResponseRedirect("../")
