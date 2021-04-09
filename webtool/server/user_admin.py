@@ -18,7 +18,7 @@ from server.admin_filters import QualificationFilter
 
 
 class CsvImportForm(Form):
-    csv_file = FileField()
+    csv_file = FileField(label='CSV-Datei')
 
 
 class UserAdmin(BaseUserAdmin):
