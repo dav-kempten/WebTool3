@@ -1,12 +1,8 @@
 {% extends 'admin/change_list.html' %}
 
 {% block object-tools %}
-    <div>
-        <form action="kv_update/" method="POST">
-            {% csrf_token %}
-                <button type="submit">KV-Update</button>
-        </form>
-    </div>
+    <a href="kv_update/">Update Buchnungsstände</a>
+    <br />
     <br />
     {{ block.super }}
 {% endblock %}

@@ -2,13 +2,16 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin, Group
 
 import csv
 import json
+from io import StringIO
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import path
 from django.forms import Form, FileField
 from django.shortcuts import render
+from django.contrib import messages
 from server.models.retraining import Retraining
 from server.models.qualification import UserQualification
 from server.models.profile import Profile
+from server.models.reference import Reference
 
 from server.inlines import GuideInline, ProfileInline, QualificationInline, RetrainingInline
 from server.admin_filters import QualificationFilter
@@ -19,7 +22,7 @@ class CsvImportForm(Form):
 
 
 class UserAdmin(BaseUserAdmin):
-    change_list_template = "update_csv.html"
+    change_list_template = 'update_csv.html'
 
     fieldsets = (
         ('Login', {
@@ -67,8 +70,8 @@ class UserAdmin(BaseUserAdmin):
             # Prepare Birthdate for each User
             try:
                 profile = Profile.objects.get(user=obj)
-                date_list = str(profile.birth_date).split("-")
-                birthdate = date_list[2] + "." + date_list[1] + '.' + date_list[0]
+                date_list = str(profile.birth_date).split('-')
+                birthdate = date_list[2] + '.' + date_list[1] + '.' + date_list[0]
             except:
                 birthdate = ''
             row_list.append(birthdate)
@@ -76,14 +79,14 @@ class UserAdmin(BaseUserAdmin):
             # Prepare Groups for each User
             group_str = ''
             for group in Group.objects.filter(user=obj):
-                group_str += group.name + ", "
+                group_str += group.name + ', '
             group_str = group_str[:-2]
             row_list.append(group_str)
 
             # Prepare UserQualification for each User
             qualification_str = ''
             for qualification in UserQualification.objects.filter(user=obj):
-                qualification_str += qualification.qualification.code + ", "
+                qualification_str += qualification.qualification.code + ', '
             qualification_str = qualification_str[:-2]
             row_list.append(qualification_str)
 
@@ -269,14 +272,75 @@ class UserAdmin(BaseUserAdmin):
 
     def kv_update(self, request):
         if request.method == 'POST':
-            csv_file = request.FILES['csv_file']
-            reader = csv.reader(csv_file)
+            file = request.FILES['csv_file'].read().decode('latin-1')
             # Update Tours & Instructions
-            self.message_user(request, 'KV-Update erfolgreich importiert.')
+            try:
+                source = self.handle_update(file)
+                self.message_user(request, '{}-Update erfolgreich importiert.'.format(source))
+            except KeyError:
+                messages.error(request, 'Update fehlgeschlagen.')
             return HttpResponseRedirect('../')
         form = CsvImportForm()
         payload = {'form': form}
-        self.message_user(request, 'KV-Update erfolgreich.')
         return render(
             request, 'csv_form.html', payload
         )
+
+    def handle_update(self, file):
+        data = csv.DictReader(StringIO(file), dialect='excel', delimiter=';')
+        kvm = False
+        for row in data:
+
+            reference_code = row.get('Kursnummer')
+            if reference_code is None:
+                kvm = False
+                reference_code = row.get('Nr')
+            else:
+                kvm = True
+            if reference_code is None:
+                continue
+
+            try:
+                reference = Reference.get_reference(reference_code)
+            except Reference.DoesNotExist:
+                continue
+
+            if reference.deprecated:
+                continue
+
+            event = reference.event
+            if event is None:
+                continue
+
+            if kvm:
+                cur_quantity = int(row['GebuchteTN'])
+            else:
+                cur_quantity = int(row['Ist Teilnehmer'])
+
+            if hasattr(event, 'tour') and event.tour:
+                tour = event.tour
+                cq = tour.cur_quantity
+                if cq != cur_quantity:
+                    tour.cur_quantity = cur_quantity
+                    event.new = False
+                    event.save()
+                    tour.save()
+            if hasattr(event, 'talk') and event.talk:
+                talk = event.talk
+                cq = talk.cur_quantity
+                if cq != cur_quantity:
+                    talk.cur_quantity = cur_quantity
+                    talk.save()
+            if hasattr(event, 'meeting') and event.meeting:
+                instruction = event.meeting
+                cq = instruction.cur_quantity
+                if cq != cur_quantity:
+                    instruction.cur_quantity = cur_quantity
+                    event.new = False
+                    event.save()
+                    instruction.save()
+
+        if kvm:
+            return 'KV'
+        else:
+            return 'Freeclimber'
