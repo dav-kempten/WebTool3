@@ -4,12 +4,18 @@ import csv
 import json
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import path
+from django.forms import Form, FileField
+from django.shortcuts import render
 from server.models.retraining import Retraining
 from server.models.qualification import UserQualification
 from server.models.profile import Profile
 
 from server.inlines import GuideInline, ProfileInline, QualificationInline, RetrainingInline
 from server.admin_filters import QualificationFilter
+
+
+class CsvImportForm(Form):
+    csv_file = FileField()
 
 
 class UserAdmin(BaseUserAdmin):
@@ -262,5 +268,15 @@ class UserAdmin(BaseUserAdmin):
         return my_urls + urls
 
     def kv_update(self, request):
-        self.message_user(request, "KV-Update erfolgreich.")
-        return HttpResponseRedirect("../")
+        if request.method == 'POST':
+            csv_file = request.FILES['csv_file']
+            reader = csv.reader(csv_file)
+            # Update Tours & Instructions
+            self.message_user(request, 'KV-Update erfolgreich importiert.')
+            return HttpResponseRedirect('../')
+        form = CsvImportForm()
+        payload = {'form': form}
+        self.message_user(request, 'KV-Update erfolgreich.')
+        return render(
+            request, 'csv_form.html', payload
+        )
