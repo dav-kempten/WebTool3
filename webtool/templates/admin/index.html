@@ -2,7 +2,8 @@
 
 {% block content %}
 <div id="content-main">
-    <a href="csv_form.html">Update Buchnungsstände</a>
+    {% csrf_token %}
+    <a href="kv_update/">Update Buchnungsstände</a>
     <br />
     <br />
     {{ block.super }}

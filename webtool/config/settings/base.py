@@ -36,7 +36,7 @@ SECRET_KEY = get_env('DJCODE_SECRET_KEY')
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
+    'webtool.apps.WebtoolAdminConfig',
     'django.contrib.sites',
     'django.contrib.redirects',
     'django.contrib.auth',

@@ -2,27 +2,14 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin, Group
 
 import csv
 import json
-from io import StringIO
-from django.http import HttpResponse, HttpResponseRedirect
-from django.urls import path
-from django.forms import Form, FileField
-from django.shortcuts import render
-from django.contrib import messages
+from django.http import HttpResponse
 from server.models.retraining import Retraining
 from server.models.qualification import UserQualification
 from server.models.profile import Profile
-from server.models.reference import Reference
 
 from server.inlines import GuideInline, ProfileInline, QualificationInline, RetrainingInline
 from server.admin_filters import QualificationFilter
-
-
-class CsvImportForm(Form):
-    csv_file = FileField(label='CSV-Datei')
-
-
 class UserAdmin(BaseUserAdmin):
-    change_list_template = 'update_csv.html'
 
     fieldsets = (
         ('Login', {
@@ -262,85 +249,3 @@ class UserAdmin(BaseUserAdmin):
         return retrai_string
 
     get_userRetraining.short_description = 'Fortbildungen'
-
-    def get_urls(self):
-        urls = super().get_urls()
-        my_urls = [
-            path('kv_update/', self.kv_update)
-        ]
-        return my_urls + urls
-
-    def kv_update(self, request):
-        if request.method == 'POST':
-            file = request.FILES['csv_file'].read().decode('latin-1')
-            # Update Tours & Instructions
-            try:
-                source = self.handle_update(file)
-                self.message_user(request, '{}-Update erfolgreich importiert.'.format(source))
-            except KeyError:
-                messages.error(request, 'Update fehlgeschlagen.')
-            return HttpResponseRedirect('../')
-        form = CsvImportForm()
-        payload = {'form': form}
-        return render(
-            request, 'csv_form.html', payload
-        )
-
-    def handle_update(self, file):
-        data = csv.DictReader(StringIO(file), dialect='excel', delimiter=';')
-        kvm = False
-        for row in data:
-
-            reference_code = row.get('Kursnummer')
-            if reference_code is None:
-                kvm = False
-                reference_code = row.get('Nr')
-            else:
-                kvm = True
-            if reference_code is None:
-                continue
-
-            try:
-                reference = Reference.get_reference(reference_code)
-            except Reference.DoesNotExist:
-                continue
-
-            if reference.deprecated:
-                continue
-
-            event = reference.event
-            if event is None:
-                continue
-
-            if kvm:
-                cur_quantity = int(row['GebuchteTN'])
-            else:
-                cur_quantity = int(row['Ist Teilnehmer'])
-
-            if hasattr(event, 'tour') and event.tour:
-                tour = event.tour
-                cq = tour.cur_quantity
-                if cq != cur_quantity:
-                    tour.cur_quantity = cur_quantity
-                    event.new = False
-                    event.save()
-                    tour.save()
-            if hasattr(event, 'talk') and event.talk:
-                talk = event.talk
-                cq = talk.cur_quantity
-                if cq != cur_quantity:
-                    talk.cur_quantity = cur_quantity
-                    talk.save()
-            if hasattr(event, 'meeting') and event.meeting:
-                instruction = event.meeting
-                cq = instruction.cur_quantity
-                if cq != cur_quantity:
-                    instruction.cur_quantity = cur_quantity
-                    event.new = False
-                    event.save()
-                    instruction.save()
-
-        if kvm:
-            return 'KV'
-        else:
-            return 'Freeclimber'
