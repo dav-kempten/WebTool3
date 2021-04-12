@@ -20,7 +20,7 @@ class Backend(ModelBackend):
 
     def get_all_permissions(self, user_obj, obj=None):
 
-        if not user_obj.is_active or user_obj.is_anonymous():
+        if not user_obj.is_active or user_obj.is_anonymous:
             return set()
 
         if not hasattr(user_obj, '_perm_cache'):
