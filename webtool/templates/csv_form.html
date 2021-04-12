@@ -2,6 +2,10 @@
 
 {% block content %}
     <div>
+        Hier könnt ihr die Updates vom KV oder Freeclimber einpflegen. Einfach die gewünschte CSV-Datei bei "Browse..."
+        auswählen und dann auf "Upload CSV-Datei" klicken.
+    </div>
+    <div>
         <form action="" method="POST" enctype="multipart/form-data">
             {{ form.as_p }}
             {% csrf_token %}
