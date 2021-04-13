@@ -21,12 +21,11 @@ class WebtoolAdminSite(admin.AdminSite):
     def get_urls(self):
         urls = super().get_urls()
         my_urls = [
-            url(r'^kv_update/$', self.admin_view(self.kv_update))
+            url(r'^csv_update/$', self.admin_view(self.csv_update))
         ]
         return my_urls + urls
 
-    def kv_update(self, request):
-        print(request)
+    def csv_update(self, request):
         if request.method == 'POST' and request.user.is_staff:
             file = request.FILES['csv_file'].read().decode('latin-1')
             if str(request.FILES['csv_file']).split('.')[-1] == 'csv':
@@ -40,15 +39,14 @@ class WebtoolAdminSite(admin.AdminSite):
             else:
                 messages.error(request, 'Falsches Datei-Format.')
                 return HttpResponseRedirect('../')
-        else:
-            messages.error(request, 'Nutzer ist nicht angemeldet.')
         form = CsvImportForm()
         payload = {'form': form}
         return render(
             request, 'csv_form.html', payload
         )
 
-    def handle_update(self, file):
+    @staticmethod
+    def handle_update(file):
         data = csv.DictReader(StringIO(file), dialect='excel', delimiter=';')
         kvm = False
         for row in data:
