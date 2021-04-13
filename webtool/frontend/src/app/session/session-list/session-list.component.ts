@@ -7,10 +7,17 @@ import {MenuItem} from 'primeng/api';
 import {AuthService, User} from '../../core/service/auth.service';
 import {FormControl, FormGroup} from '@angular/forms';
 import {Router} from '@angular/router';
-import {flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
+import {filter, first, flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {RequestSessionSummaries} from '../../core/store/session-summary.actions';
 import {getSessionSummaries} from '../../core/store/session-summary.selectors';
-import {CloneSession, CreateSession, DeactivateSession, DeleteSession} from '../../core/store/session.actions';
+import {
+  CloneSession,
+  CreateSession,
+  DeactivateSession,
+  DeleteSession,
+  RequestSession
+} from '../../core/store/session.actions';
+import {getSessionById} from '../../core/store/session.selectors';
 
 
 @Component({
@@ -164,7 +171,20 @@ export class SessionListComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   clone(sessionId) {
-    this.store.dispatch(new CloneSession({id: sessionId}));
+    this.store.pipe(
+      select(getSessionById(sessionId)),
+      tap(session => {
+        if (!session) {
+          this.store.dispatch(new RequestSession({id: sessionId}));
+        }
+      }),
+      filter(session => !!session),
+      first(),
+    ).subscribe(
+      session => {
+        this.store.dispatch(new CloneSession({session}));
+      }
+    );
   }
 
   delete(sessionId) {
