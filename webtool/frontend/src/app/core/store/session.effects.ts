@@ -57,7 +57,7 @@ export class SessionEffects {
     ofType<CloneSession>(SessionActionTypes.CloneSession),
     map((action: CloneSession) => action.payload),
     switchMap(payload => {
-      return this.sessionService.cloneSession(payload.id).pipe(
+      return this.sessionService.cloneSession(this.transformSessionForSaving(payload.session)).pipe(
         map(session => {
           if (session.id !== 0) {
             this.router.navigate(['sessions', session.id]);
@@ -172,9 +172,6 @@ export class SessionEffects {
     delete sessionInterface.sessionId;
 
     this.destroySubject.complete();
-
-    /* Check contradictory distance/distal fields before saving */
-    if (!session.distal) { session.distance = 0; }
 
     return {
       ... sessionInterface,

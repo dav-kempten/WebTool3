@@ -117,7 +117,7 @@ export class CreateSession implements Action {
 export class CloneSession implements Action {
   readonly type = SessionActionTypes.CloneSession;
 
-  constructor(public payload: { id: number }) {}
+  constructor(public payload: { session: Session }) {}
 }
 
 export class DeactivateSession implements Action {
