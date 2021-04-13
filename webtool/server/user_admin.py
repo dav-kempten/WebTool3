@@ -9,6 +9,8 @@ from server.models.profile import Profile
 
 from server.inlines import GuideInline, ProfileInline, QualificationInline, RetrainingInline
 from server.admin_filters import QualificationFilter
+
+
 class UserAdmin(BaseUserAdmin):
 
     fieldsets = (
