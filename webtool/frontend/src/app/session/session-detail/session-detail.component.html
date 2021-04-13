@@ -72,15 +72,9 @@
       </avk-categorymultiselect>
     </div>
     <div class="p-col-12 p-sm-8 p-md-8 p-lg-8">
-      <textarea
-          [rows]="1"
-          pInputTextarea
-          formControlName="miscCategory"
-          id="miscCategory"
-          placeholder="spezielle Kategorie"
-          autoResize="autoResize"
-          style='width:100%'
-      ></textarea>
+      <input formControlName="miscCategory" id="miscCategory" placeholder="spezielle Kategorie"
+             style='width:100%' type="text"
+             pInputText>
     </div>
   </div>
   </p-card>
@@ -173,7 +167,6 @@
                 formControlName="description"
                 id="description"
                 placeholder="Beschreibung"
-                autoResize="autoResize"
                 style='width:100%'
             ></textarea>
           </div>
@@ -215,7 +208,7 @@
                 binary="true"
             ></p-checkbox>
           </div>
-          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6" *ngIf="currentEventGroup.get('distal').value">
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
             <div class="ui-inputgroup" >
               <span class="ui-inputgroup-addon">Entfernung</span>
               <input formControlName="distance" id="distance" type="number" min="0"
@@ -236,7 +229,7 @@
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
             <p-checkbox
                 [formControl]="currentEventGroup.get('shuttleService')"
-                label="ShuttleSerivce"
+                label="ShuttleService"
                 binary="true"
             ></p-checkbox>
           </div>
@@ -245,17 +238,17 @@
         <!--Source, Link & Map-->
         <div class="p-grid">
           <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-            <input formControlName="source" id="source" placeholder="Source"
+            <input formControlName="source" id="source" placeholder="Ausgangsort" maxlength="75"
                    type="text" style="width:100%"
                    pInputText>
           </div>
           <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-            <input formControlName="link" id="link" placeholder="Link"
-                   type="text" style="width:100%"
+            <input formControlName="link" id="link" placeholder="Link zu Informationen im Tourenportal"
+                   type="text" style="width:100%" maxlength="200"
                    pInputText>
           </div>
           <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-            <input formControlName="map" id="map" placeholder="Map"
+            <input formControlName="map" id="map" placeholder="URL zu einem Kartenausschnitt" maxlength="100"
                    type="text" style="width:100%"
                    pInputText>
           </div>
@@ -274,15 +267,9 @@
       ></avk-multiselect>
     </div>
     <div class="p-col-12 p-sm-8 p-md-8 p-lg-8">
-      <textarea
-          [rows]="1"
-          pInputTextarea
-          formControlName="miscEquipment"
-          id="miscEquipmentTopic"
-          placeholder="Weitere Ausrüstung"
-          autoResize="autoResize"
-          style='width:100%'
-      ></textarea>
+      <input formControlName="miscEquipment" id="miscEquipmentTopic" placeholder="Weitere Ausrüstung"
+             style='width:100%' type="text"
+             pInputText>
     </div>
   </div>
   </p-card>
@@ -296,7 +283,6 @@
           pInputTextarea
           formControlName="comment"
           placeholder="Bemerkungen"
-          autoResize="autoResize"
           style='width:100%'
       ></textarea>
     </div>
@@ -312,7 +298,6 @@
           pInputTextarea
           formControlName="message"
           placeholder="Nachricht an die Geschäftsstelle"
-          autoResize="autoResize"
           style='width:100%'
       ></textarea>
     </div>
