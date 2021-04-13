@@ -103,17 +103,9 @@
             ></avk-qualificationselect>
           </div>
           <div class="p-col-12 p-sm-8 p-md-8 p-lg-8">
-            <textarea
-              [rows]="1"
-              pInputTextarea
-              formControlName="preconditions"
-              id="preconditionsTopic"
-              readonly
-              placeholder="Zusätzliche Anforderungen"
-              pTooltip="Zusätzliche Anforderungen"
-              autoResize="autoResize"
-              style='width:100%'
-            ></textarea>
+            <input readonly formControlName="preconditions" id="preconditionsTopic"
+                   placeholder="Zusätzliche Anforderungen" pTooltip="Zusätzliche Anforderungen" style='width:100%' type="text"
+                   pInputText>
           </div>
         </div>
         <div class="p-grid">
@@ -124,17 +116,9 @@
             ></avk-multiselect>
           </div>
           <div class="p-col-12 p-sm-8 p-md-8 p-lg-8">
-            <textarea
-              [rows]="1"
-              pInputTextarea
-              formControlName="miscEquipment"
-              id="miscEquipmentTopic"
-              readonly
-              placeholder="Zusatzausrüstung"
-              pTooltip="Zusatzausrüstung"
-              autoResize="autoResize"
-              style='width:100%'
-            ></textarea>
+            <input formControlName="miscEquipment" id="miscEquipmentTopic" readonly placeholder="Zusatzausrüstung"
+                   pTooltip="Zusatzausrüstung" autoResize="autoResize" style='width:100%'
+                   pInputText>
           </div>
         </div>
 
@@ -177,17 +161,9 @@
           ></p-checkbox>
         </div>
         <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-        <textarea
-          [rows]="1"
-          pInputTextarea
-          formControlName="miscEquipment"
-          id="miscEquipment"
-          placeholder="Spezielle Ausrüstung"
-          pTooltip="Ergänzungsfeld für Ausrüstung, die in keinem Ausrüstungsset ist"
-          autoResize="autoResize"
-          maxlength="75"
-          style='width:100%'
-        ></textarea>
+        <input formControlName="miscEquipment" id="miscEquipment" placeholder="Spezielle Ausrüstung"
+               pTooltip="Ergänzungsfeld für Ausrüstung, die in keinem Ausrüstungsset ist" maxlength="75" style='width:100%'
+               pInputText>
         </div>
       </div>
       <div class="p-grid">
@@ -515,7 +491,6 @@
         [rows]="2"
         formControlName="advancesInfo"
         placeholder="Vorauszahlung Details"
-        autoResize="autoResize"
         style='width:100%'
         maxlength="75"
         pTooltip="Aufstellung der Anzahlung"
@@ -528,7 +503,6 @@
         formControlName="extraChargesInfo"
         pInputTextarea
         placeholder="Zusatzkosten Details"
-        autoResize="autoResize"
         style='width:100%'
         maxlength="75"
         pTooltip="Aufstellung der Zusatzkosten"

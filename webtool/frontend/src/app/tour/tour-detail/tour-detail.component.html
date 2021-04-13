@@ -341,16 +341,10 @@
       ></avk-qualificationselect>
     </div>
     <div class="p-col-12 p-sm-8 p-md-8 p-lg-8">
-        <textarea
-            [rows]="1"
-            pInputTextarea
-            formControlName="preconditions"
-            id="preconditions"
-            placeholder="Spezielle Voraussetzungen (z.B. Trittsicherheit)"
-            autoResize="autoResize"
-            style='width:100%'
-            pTooltip="Spezielle Voraussetzungen"
-        ></textarea>
+        <input formControlName="preconditions" id="preconditions"
+               placeholder="Spezielle Voraussetzungen (z.B. Trittsicherheit)" style='width:100%'
+               pTooltip="Spezielle Voraussetzungen"
+               pInputText>
     </div>
   </div>
   <div class="p-grid">
@@ -361,17 +355,9 @@
       ></avk-multiselect>
     </div>
     <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-      <textarea
-          [rows]="1"
-          pInputTextarea
-          formControlName="miscEquipment"
-          id="miscEquipmentTopic"
-          placeholder="Zusätzliche Ausrüstung"
-          pTooltip="Ergänzungsfeld für Ausrüstung, die in keinem Ausrüstungsset ist"
-          autoResize="autoResize"
-          maxlength="75"
-          style='width:100%'
-      ></textarea>
+      <input formControlName="miscEquipment" id="miscEquipmentTopic" placeholder="Zusätzliche Ausrüstung"
+             pTooltip="Ergänzungsfeld für Ausrüstung, die in keinem Ausrüstungsset ist" maxlength="75" style='width:100%'
+             pInputText>
     </div>
     <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
       <p-checkbox
@@ -461,7 +447,6 @@
         [rows]="2"
         formControlName="extraChargesInfo"
         placeholder="Zusatzkosten Details"
-        autoResize="autoResize"
         style='width:100%'
         pTooltip="Aufstellung der Zusatzkosten"
         maxlength="75"
@@ -473,7 +458,6 @@
         [rows]="2"
         formControlName="advancesInfo"
         placeholder="Anzahlung Details"
-        autoResize="autoResize"
         style='width:100%'
         pTooltip="Aufstellung der Anzahlung"
         maxlength="75"
