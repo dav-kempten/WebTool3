@@ -43,6 +43,14 @@ personaldaten_json.py
 # CSV-Dateien #
 *.csv
 *.json
+*.sql
+*.mov
+*.jpg
+*.mp4
+*.ogg
+*.sh
 
-
-webtool/server/migrations/
+webtool/sslin.df.eu.cer
+webtool/static/rest_framework/
+webtool/static/admin/
+webtool/*.log

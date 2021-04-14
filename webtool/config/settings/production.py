@@ -9,7 +9,8 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 ALLOWED_HOSTS = ['webtool.dav-kempten.de', '46.252.16.44']
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
+    # os.path.join(BASE_DIR, 'static')
+    '/usr/local/lib/python3.6/site-packages/django/contrib/admin/static',
 ]
 
 CORS_ORIGIN_ALLOW_ALL = False
@@ -23,4 +24,9 @@ CORS_ORIGIN_WHITELIST = (
     'dav-kempten.de',
 )
 
-STATIC_ROOT = "/home/djcode/static"
+CSRF_TRUSTED_ORIGINS = ['.dav-kempten.de']
+CSRF_COOKIE_SECURE = True
+
+STATIC_ROOT = '/var/www/webtool/static'
+
+STATIC_URL = '/static/'
