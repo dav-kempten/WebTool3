@@ -32,6 +32,7 @@ package-lock.json
 node_modules/
 Skripte/
 webtool/wt3_guide-data.json
+webtool/config/settings/admin.py
 
 # Touren-Formulare (PDFs) #
 Formulare/

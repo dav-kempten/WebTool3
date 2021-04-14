@@ -1,5 +1,11 @@
 from .base import *
 
+try:
+    from .admin import *
+except ModuleNotFoundError:
+    ADMINS = []
+    pass
+
 DEBUG = False
 
 USE_X_FORWARDED_HOST = False
