@@ -1,0 +1,23 @@
+{% extends 'admin/base_site.html' %}
+{% load i18n static %}
+
+{% block title %}Update TPO | DAV Kempten-Allgäu{% endblock %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/dashboard.css" %}">{% endblock %}
+
+{% block content %}
+    <div id="content-main">
+        Hier könnt ihr die Updates vom TPO einpflegen. Einfach die gewünschte JSON-Datei bei
+        "Durchsuchen..." auswählen und dann auf "Upload JSON-Datei" klicken.
+    </div>
+    <br />
+    <div id="content-main">
+        <form action="" method="POST" enctype="multipart/form-data">
+            {{ form.as_p }}
+            {% csrf_token %}
+            <button type="submit">Upload JSON-Datei</button>
+        </form>
+    </div>
+    <br />
+
+{% endblock %}
