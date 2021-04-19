@@ -48,8 +48,8 @@ class UserAdmin(BaseUserAdmin):
         # Additional Fields, which are connected to User-Model
         field_names_additional = ['Geburtstag', 'Gruppen', 'Ausbildungen']
 
-        response = HttpResponse(content_type='text/csv; charset=utf-8')
-        response['Content-Disposition'] = 'attachment; filename={}.csv'.format(meta)
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename=django_user.csv'
         writer = csv.writer(response)
 
         writer.writerow(field_names_clear + field_names_additional)
