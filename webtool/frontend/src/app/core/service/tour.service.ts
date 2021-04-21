@@ -196,21 +196,22 @@ export class TourService {
   }
 
   transformTourForCloning(tour: Tour): any {
-    delete tour.id;
-    delete tour.reference;
-    delete tour.tour.id;
-    delete tour.deadline.id;
-    if (tour.preliminary !== null) {
-      delete tour.preliminary.id;
+    const subsetTour = {...tour};
+    delete subsetTour.id;
+    delete subsetTour.reference;
+    delete subsetTour.tour.id;
+    delete subsetTour.deadline.id;
+    if (subsetTour.preliminary !== null) {
+      delete subsetTour.preliminary.id;
     }
-    tour.stateId = 1;
-    tour.curQuantity = 0;
+    subsetTour.stateId = 1;
+    subsetTour.curQuantity = 0;
 
-    const category = tour.categoryId;
-    delete tour.categoryId;
+    const category = subsetTour.categoryId;
+    delete subsetTour.categoryId;
 
     return {
-      ... tour,
+      ...subsetTour,
       category,
     };
   }

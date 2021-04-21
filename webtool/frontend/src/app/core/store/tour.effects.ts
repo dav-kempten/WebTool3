@@ -232,20 +232,21 @@ export class TourEffects {
     );
     this.events$.subscribe();
 
-    delete tourInterface.tourId;
-    delete tourInterface.deadlineId;
-    delete tourInterface.preliminaryId;
+    const subsetTour = {...tourInterface};
+    delete subsetTour.tourId;
+    delete subsetTour.deadlineId;
+    delete subsetTour.preliminaryId;
 
     this.destroySubject.complete();
 
     return {
-      ... tourInterface,
+      ... subsetTour,
       tour,
       deadline,
       preliminary,
-      admission: String(tourInterface.admission),
-      advances: String(tourInterface.advances),
-      extraCharges: String(tourInterface.extraCharges)
+      admission: String(subsetTour.admission),
+      advances: String(subsetTour.advances),
+      extraCharges: String(subsetTour.extraCharges)
     };
   }
 }
