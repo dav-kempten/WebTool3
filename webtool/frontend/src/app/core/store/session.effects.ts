@@ -169,12 +169,13 @@ export class SessionEffects {
     );
     this.event$.subscribe();
 
-    delete sessionInterface.sessionId;
+    const subsetSession = {...sessionInterface};
+    delete subsetSession.sessionId;
 
     this.destroySubject.complete();
 
     return {
-      ... sessionInterface,
+      ...subsetSession,
       session
     };
   }
