@@ -231,8 +231,9 @@ export class InstructionEffects {
     );
     this.events$.subscribe();
 
-    delete instructionInterface.instructionId;
-    delete instructionInterface.meetingIds;
+    const subsetInstruction = {...instructionInterface};
+    delete subsetInstruction.instructionId;
+    delete subsetInstruction.meetingIds;
 
     this.destroySubject.complete();
 
@@ -240,12 +241,12 @@ export class InstructionEffects {
     meetings.forEach(meeting => { meeting.distance = 0; });
 
     return {
-      ... instructionInterface,
+      ... subsetInstruction,
       instruction,
       meetings,
-      admission: String(instructionInterface.admission),
-      advances: String(instructionInterface.advances),
-      extraCharges: String(instructionInterface.extraCharges)
+      admission: String(subsetInstruction.admission),
+      advances: String(subsetInstruction.advances),
+      extraCharges: String(subsetInstruction.extraCharges)
     };
   }
 }

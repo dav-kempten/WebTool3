@@ -3,10 +3,8 @@ import {
   catchError,
   first,
   map,
-  publishLast,
   publishReplay,
   refCount,
-  shareReplay,
   takeUntil,
   tap
 } from 'rxjs/operators';
@@ -15,6 +13,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse} from '@angular/common/http';
 import {Session, SessionSummary} from '../../model/session';
 import {Event} from '../../model/event';
+
 
 @Injectable({
   providedIn: 'root'
@@ -183,10 +182,11 @@ export class SessionService {
   }
 
   transformSessionForCloning(session: Session): any {
-    delete session.id;
-    delete session.reference;
-    delete session.session.id;
-    session.stateId = 1;
-    return session;
+    const subsetSession = {...session};
+    delete subsetSession.id;
+    delete subsetSession.reference;
+    delete subsetSession.session.id;
+    subsetSession.stateId = 1;
+    return subsetSession;
   }
 }

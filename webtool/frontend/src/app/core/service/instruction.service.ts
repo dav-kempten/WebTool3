@@ -221,12 +221,13 @@ export class InstructionService {
   }
 
   tranformInstructionForCloning(instruction: Instruction): any {
-    delete instruction.id;
-    delete instruction.reference;
-    delete instruction.instruction.id;
-    instruction.meetings.forEach((meeting) => delete meeting.id);
-    instruction.stateId = 1;
-    instruction.curQuantity = 0;
-    return instruction;
+    const subsetInstruction = {...instruction};
+    delete subsetInstruction.id;
+    delete subsetInstruction.reference;
+    delete subsetInstruction.instruction.id;
+    subsetInstruction.meetings.forEach((meeting) => delete meeting.id);
+    subsetInstruction.stateId = 1;
+    subsetInstruction.curQuantity = 0;
+    return subsetInstruction;
   }
 }

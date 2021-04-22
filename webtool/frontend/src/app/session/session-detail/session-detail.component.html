@@ -175,8 +175,8 @@
         <!--Ziel und Treffpunkt-->
         <div class="p-grid">
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
-            <input formControlName="location" id="location" placeholder="Ziel/Unterkunft (Hütte, Gipfel etc.)"
-                   type="text" style="width:100%"
+            <input formControlName="location" id="location" placeholder="Übernachtungsort (max. 75 Zeichen)"
+                   type="text" style="width:100%" maxlength="75"
                    pInputText>
           </div>
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
@@ -282,7 +282,7 @@
           [rows]="3"
           pInputTextarea
           formControlName="comment"
-          placeholder="Bemerkungen"
+          placeholder="Bemerkungen, die bisher keinen Platz gefunden haben."
           style='width:100%'
       ></textarea>
     </div>
@@ -297,7 +297,7 @@
           [rows]="3"
           pInputTextarea
           formControlName="message"
-          placeholder="Nachricht an die Geschäftsstelle"
+          placeholder="Reservierungsanfragen für den Bus, Bitte um Hüttenreservierungen etc..."
           style='width:100%'
       ></textarea>
     </div>
