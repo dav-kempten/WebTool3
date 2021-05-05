@@ -2,6 +2,7 @@ import {AfterViewInit, Component, OnDestroy, OnInit, ViewChild} from '@angular/c
 import {select, Store} from '@ngrx/store';
 import {AppState, selectRouterFragment} from '../../app.state';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
+import {startWith, withLatestFrom} from 'rxjs/operators';
 import {InstructionSummary} from '../../model/instruction';
 import {getInstructionSummaries} from '../../core/store/instruction-summary.selectors';
 import {RequestInstructionSummaries} from '../../core/store/instruction-summary.actions';
@@ -16,7 +17,7 @@ import {
   DeleteInstruction,
   RequestInstruction
 } from '../../core/store/instruction.actions';
-import {FormControl, FormGroup} from '@angular/forms';
+import {FormControl, FormGroup, FormBuilder} from '@angular/forms';
 import {getInstructionById} from '../../core/store/instruction.selectors';
 
 @Component({
@@ -35,6 +36,9 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
   instructions$: Observable<InstructionSummary[]>;
   activeItem$: Observable<MenuItem>;
   display = false;
+
+  filteredInstructions$: Observable<InstructionSummary[]>;
+  filterGroup: FormGroup;
 
   finishedInstructions = [6, 7];
   activeInstructions = [1, 2, 3, 4, 5, 8, 9];
@@ -69,6 +73,8 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
       {label: 'Alle Kurse', value: {id: 1, name: 'Alle Kurse'}},
       {label: 'Fertige Kurse', value: {id: 2, name: 'Fertige Kurse'}}
     ];
+
+    this.filterGroup = formBuilder.group({filter: ['']});
   }
 
   ngOnInit() {
@@ -154,6 +160,11 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
       publishReplay(1),
       refCount(),
     );
+
+    this.filteredInstructions$ = this.filterGroup.get('filter').valueChanges.pipe(
+      startWith(''),
+      tap(value => console.log(value))
+    );
   }
 
   ngOnDestroy(): void {
@@ -169,6 +180,9 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
           this.dt.filter(value.id, 'guideId', 'equals');
         }
       }
+    );
+    this.filteredInstructions$.subscribe(
+      value => this.dt.filter(value, 'reference', 'contains')
     );
   }
 
