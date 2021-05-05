@@ -8,7 +8,7 @@
           <p-button label="Kurs hinzufügen" (onClick)="handleClick()" *ngIf="this.loginObject.valState >= 3" styleClass="ui-button-secondary"></p-button>
         </div>
         <div class="p-col-12 p-sm-2 p-md-2 p-lg-2" style="text-align: left">
-          <p-dropdown [options]="filter" (onChange)="changeViewSet($event, dt)"></p-dropdown>
+          <p-dropdown [options]="filterDropdown" (onChange)="changeViewSet($event, dt)"></p-dropdown>
         </div>
       </div>
     </ng-template>

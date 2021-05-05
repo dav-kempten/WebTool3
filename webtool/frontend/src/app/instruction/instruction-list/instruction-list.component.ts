@@ -28,7 +28,7 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
 
   @ViewChild('dt') dt;
 
-  filter: SelectItem[];
+  filterDropdown: SelectItem[];
 
   private destroySubject = new Subject<void>();
   part$: Observable<string>;
@@ -63,11 +63,11 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
     {label: 'Winterkurse', url: '/instructions#winter'},
   ];
 
-  constructor(private store: Store<AppState>, private router: Router, private userService: AuthService) {
-    this.filter = [
-      {label: 'Aktive Kurse', value: {id: 0, name: 'Aktive Touren'}},
-      {label: 'Alle Kurse', value: {id: 1, name: 'Alle Touren'}},
-      {label: 'Fertige Kurse', value: {id: 2, name: 'Fertige Touren'}}
+  constructor(private store: Store<AppState>, private router: Router, private userService: AuthService, private formBuilder: FormBuilder) {
+    this.filterDropdown = [
+      {label: 'Aktive Kurse', value: {id: 0, name: 'Aktive Kurse'}},
+      {label: 'Alle Kurse', value: {id: 1, name: 'Alle Kurse'}},
+      {label: 'Fertige Kurse', value: {id: 2, name: 'Fertige Kurse'}}
     ];
   }
 
