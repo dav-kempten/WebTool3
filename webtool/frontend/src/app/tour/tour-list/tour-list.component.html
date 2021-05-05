@@ -1,13 +1,18 @@
 <ng-container *ngIf="(activeItem$ | async) as activeItem else loading">
   <p-tabMenu [model]="menuItems" [activeItem]="{}"></p-tabMenu>
   <ng-container *ngIf="(tours$ | async) as tours">
-    <p-table #dt [value]="tours" selectionMode="single" (selectionChange)="selectTour($event)">
+    <p-table #dt [value]="tours" selectionMode="single" (selectionChange)="selectTour($event)" [globalFilterFields]="['reference', 'title']">
     <ng-template pTemplate="caption">
       <div class="p-grid">
-        <div class="p-col-12 p-sm-10 p-md-10 p-lg-10" style="text-align: left">
+        <div class="p-col-12 p-sm-2 p-md-2 p-lg-2" style="text-align: left">
           <p-button label="Tour hinzufügen" (onClick)="handleClick()" *ngIf="this.loginObject.valState >= 3"
                     styleClass="ui-button-secondary"
           ></p-button>
+        </div>
+        <div class="p-col-12 p-sm-8 p-md-8 p-lg-8" style="text-align: left">
+          <i class="pi pi-search" style="margin:4px 4px 0 0" *ngIf="this.loginObject.valState >= 3"></i>
+          <input type="text" pInputText maxlength="50" placeholder="Tourenfilter" *ngIf="this.loginObject.valState >= 3"
+                 (input)="dt.filterGlobal($event.target.value, 'contains')" style="width:auto">
         </div>
         <div class="p-col-12 p-sm-2 p-md-2 p-lg-2" style="text-align: left">
           <p-dropdown [options]="filter" (onChange)="changeViewSetActive($event, dt)"></p-dropdown>
