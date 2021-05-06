@@ -14,6 +14,7 @@ import {reducer as CalendarReducer} from './store/calendar.reducer';
 import {NameEffects} from './store/name.effects';
 import {ValueEffects} from './store/value.effects';
 import {NamePipe, NamesPipe} from './store/name.pipe';
+import {CollectivePipe} from './store/collective.pipe';
 import {StatePipe} from './store/state.pipe';
 import {ButtonModule} from 'primeng/button';
 import {SidebarModule} from 'primeng/sidebar';
@@ -84,7 +85,7 @@ import { CategoryMultiselectComponent } from './categorymultiselect/categorymult
 
 @NgModule({
   declarations: [
-    GuideComponent, TeamComponent, DateComponent, TimeComponent, NamePipe, NamesPipe, MenuComponent,
+    GuideComponent, TeamComponent, DateComponent, TimeComponent, NamePipe, NamesPipe, CollectivePipe, MenuComponent,
     BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent, DropdownComponent,
     MultiselectComponent, ApproxdropdownComponent, CategoryselectComponent, DatePipe, TimePipe, SkillselectComponent,
     FitnessselectComponent, QualificationselectComponent, CollectiveselectComponent, SexdropdownComponent, StatePipe,
@@ -148,7 +149,7 @@ import { CategoryMultiselectComponent } from './categorymultiselect/categorymult
     // EffectsModule.forFeature([GuideEffects]),
   ],
   exports: [
-    GuideComponent, TeamComponent, DateComponent, TimeComponent, NamePipe, NamesPipe, MenuComponent,
+    GuideComponent, TeamComponent, DateComponent, TimeComponent, NamePipe, NamesPipe, CollectivePipe, MenuComponent,
     BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent, DropdownComponent,
     MultiselectComponent, ButtonModule, ToggleButtonModule, ApproxdropdownComponent, CategoryselectComponent,
     DialogModule, CheckboxModule, InputTextModule, InputTextareaModule, DatePipe, TimePipe, SkillselectComponent,
