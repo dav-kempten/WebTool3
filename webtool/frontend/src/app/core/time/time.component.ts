@@ -51,6 +51,7 @@ export class TimeComponent implements OnInit, AfterViewInit, OnDestroy, AfterCon
   delegatedMethodsSubscription: Subscription;
 
   defaultDate: Date = new Date();
+  stdTime: Date = new Date();
 
   de = german;
 
@@ -75,10 +76,9 @@ export class TimeComponent implements OnInit, AfterViewInit, OnDestroy, AfterCon
 
   OnChangeWrapper(onChange: (isoDate: string) => void): (stdDate: string) => void {
     return ((stdDate: string): void => {
-      const isoDate = dateTransformer(stdDate);
-      this.formControl.setValue(isoDate);
-      this.timeValueControl.setValue(isoDate);
-      onChange(isoDate);
+      this.formControl.setValue(stdDate);
+      this.timeValueControl.setValue(stdDate);
+      onChange(stdDate);
     });
   }
 
@@ -95,21 +95,17 @@ export class TimeComponent implements OnInit, AfterViewInit, OnDestroy, AfterCon
   }
 
   writeValue(isoDate): void {
-    if (isoDate !== null) {
-      const stdTime: Date = new Date();
-      const stdDate = (isoDate !== null) ? (isoDate.split(':')) : null;
-      stdTime.setHours(stdDate[0]);
-      stdTime.setMinutes(stdDate[1]);
-      this.delegatedMethodCalls.next(accessor => accessor.writeValue(stdTime));
-    } else {
-      this.delegatedMethodCalls.next(accessor => accessor.writeValue(isoDate));
+    if (isoDate) {
+      const stdDate = (isoDate.split(':'));
+      this.stdTime.setHours(stdDate[0]);
+      this.stdTime.setMinutes(stdDate[1]);
+      this.delegatedMethodCalls.next(accessor => accessor.writeValue(this.stdTime));
     }
   }
 
   constructor(private store: Store<AppState>) {}
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void { }
 
   ngAfterViewInit(): void {
     this.delegatedMethodsSubscription = this.delegatedMethodCalls.pipe(
