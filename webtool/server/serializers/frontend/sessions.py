@@ -16,6 +16,7 @@ class SessionListSerializer(serializers.ModelSerializer):
     startDate = serializers.DateField(source='session.start_date', read_only=True)
     guideId = serializers.PrimaryKeyRelatedField(source='guide_id', read_only=True)
     speaker = serializers.CharField(default=None, read_only=True)
+    collectiveId = serializers.PrimaryKeyRelatedField(source='collective_id', read_only=True)
     ladiesOnly = serializers.BooleanField(source='ladies_only', read_only=True)
     stateId = serializers.PrimaryKeyRelatedField(source='state_id', read_only=True)
     url = serializers.SerializerMethodField()
@@ -29,6 +30,7 @@ class SessionListSerializer(serializers.ModelSerializer):
             'startDate',
             'guideId',
             'speaker',
+            'collectiveId',
             'ladiesOnly',
             'stateId',
             'url'

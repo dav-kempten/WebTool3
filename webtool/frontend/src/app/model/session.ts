@@ -6,6 +6,7 @@ export interface SessionSummary {
   title: string;
   guideId: number;
   speaker: string;
+  collectiveId: number;
   ladiesOnly: boolean;
   stateId: number;
   url: string;
