@@ -1,11 +1,16 @@
 <ng-container *ngIf="(activeItem$ | async) as activeItem else loading">
   <p-tabMenu [model]="menuItems" [activeItem]="{}"></p-tabMenu>
   <ng-container *ngIf="(sessions$ | async) as sessions">
-    <p-table #dt [value]="sessions" selectionMode="single" (selectionChange)="selectSession($event)">
+    <p-table #dt [value]="sessions" selectionMode="single" (selectionChange)="selectSession($event)" [globalFilterFields]="['reference', 'title']">
       <ng-template pTemplate="caption">
       <div class="p-grid">
-        <div class="p-col-12 p-sm-6 p-md-6 p-lg-6" style="text-align: left">
+        <div class="p-col-12 p-sm-3 p-md-3 p-lg-3" style="text-align: left">
           <p-button label="Gruppentermin hinzufügen" (onClick)="handleClick()" *ngIf="this.loginObject.valState >= 3" styleClass="ui-button-secondary"></p-button>
+        </div>
+        <div class="p-col-12 p-sm-3 p-md-3 p-lg-3" style="text-align: left">
+          <i class="pi pi-search" style="margin:4px 4px 0 0" *ngIf="this.loginObject.valState >= 3"></i>
+          <input type="text" pInputText maxlength="50" placeholder="Gruppenterminfilter" *ngIf="this.loginObject.valState >= 3"
+                 (input)="dt.filterGlobal($event.target.value, 'contains')" style="width:auto">
         </div>
         <div class="p-col-12 p-sm-6 p-md-6 p-lg-6" style="text-align: right">
           <p-toggleButton onLabel="Alle Gruppentermine" offLabel="Aktive Gruppentermine" (onChange)="changeViewSet($event, dt)"></p-toggleButton>
