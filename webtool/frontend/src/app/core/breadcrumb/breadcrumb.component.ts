@@ -256,6 +256,20 @@ export class BreadcrumbComponent implements OnInit {
                   fragment: 'gbw'
                 });
                 break;
+              case 'obg':
+                breadcrumbs.push({
+                  label: 'Ortsgruppe Obergünzburg',
+                  url: '/sessions',
+                  fragment: 'obg'
+                });
+                break;
+              case 'hkw':
+                breadcrumbs.push({
+                  label: 'HiKE',
+                  url: '/sessions',
+                  fragment: 'hkw'
+                });
+                break;
               case 'aas':
                 breadcrumbs.push({
                   label: 'Alpine Abendschule',

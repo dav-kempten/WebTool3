@@ -58,6 +58,7 @@ export class SessionListComponent implements OnInit, OnDestroy, AfterViewInit {
     {label: 'Jungmannschaft', url: '/sessions#gjm'},
     {label: 'Bergwandergruppe', url: '/sessions#gbw'},
     {label: 'Ortsgruppe Obergünzburg', url: '/sessions#obg'},
+    {label: 'HiKE', url: '/sessions#hkw'},
     {label: 'Alpine Abendschule', url: '/sessions#aas'},
     {label: 'Vollmondstammtisch', url: '/sessions#vst'}
   ];
@@ -99,10 +100,12 @@ export class SessionListComponent implements OnInit, OnDestroy, AfterViewInit {
             return this.menuItems[2];
           case 'obg':
             return this.menuItems[3];
-          case 'aas':
+          case 'hkw':
             return this.menuItems[4];
-          case 'vst':
+          case 'aas':
             return this.menuItems[5];
+          case 'vst':
+            return this.menuItems[6];
           default:
             return this.menuItems[0];
         }
@@ -127,6 +130,7 @@ export class SessionListComponent implements OnInit, OnDestroy, AfterViewInit {
               (part === 'gjm' && session.reference.substr(0, 3).toLowerCase() === 'gjm') ||
               (part === 'gbw' && session.reference.substr(0, 3).toLowerCase() === 'gbw') ||
               (part === 'obg' && session.reference.substr(0, 3).toLowerCase() === 'obg') ||
+              (part === 'hkw' && session.reference.substr(0, 3).toLowerCase() === 'hkw') ||
               (part === 'aas' && session.reference.substr(0, 3).toLowerCase() === 'aas') ||
               (part === 'vst' && session.reference.substr(0, 3).toLowerCase() === 'vst') ||
               !part
