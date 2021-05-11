@@ -564,10 +564,18 @@
         </a>
       </div>
       <div class="p-col-12 p-sm-10 p-md-10 p-lg-10" style="text-align: right" *ngIf="!this.instructionOwner.value">
-        <a routerLink="../"><p-button type="button" label="Kurs löschen" styleClass="ui-button-danger"
-          (click)="deleteInstruction(this.instructionGroup.value.id)"></p-button>
-        </a>
+          <button type="text" label="Kurs löschen" (click)="confirm(this.instructionGroup.value.id)" class="ui-button-danger"
+                  pButton></button>
       </div>
+      <p-confirmDialog #cd header="Kurs #{{instructionId$ | async}}" icon="pi pi-exclamation-triangle">
+        <p-footer>
+          <button type="button" pButton icon="pi pi-times" label="Kurs nicht löschen"  class="ui-button-secondary"
+                  (click)="cd.reject()"></button>
+
+        <a routerLink="../"><button type="button" pButton icon="pi pi-check" label="Kurs löschen" class="ui-button-danger"
+                  (click)="cd.accept()"></button></a>
+        </p-footer>
+      </p-confirmDialog>
     </div>
   </p-card>
 </form>

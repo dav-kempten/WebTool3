@@ -247,8 +247,13 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     this.store.dispatch(new DeleteEventInstruction({instruction, eventId}));
   }
 
-  deleteInstruction(instructionId) {
-    this.store.dispatch(new DeleteInstruction({id: instructionId}));
+  confirm(instructionId) {
+    this.confirmationService.confirm({
+      message: 'Kurs endgültig löschen?',
+      accept: () => {
+        this.store.dispatch(new DeleteInstruction({id: instructionId}));
+      }
+    });
   }
 }
 
