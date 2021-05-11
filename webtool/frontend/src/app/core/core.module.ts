@@ -29,7 +29,7 @@ import {RequiredDirective as DateRequiredDirective} from './date/required.direct
 import {RequiredDirective as GuideRequiredDirective} from './guide/required.directive';
 import {MembernumberComponent} from './membernumber/membernumber.component';
 import {
-  CheckboxModule,
+  CheckboxModule, ConfirmDialogModule,
   DialogModule,
   DropdownModule,
   InputTextareaModule,
@@ -112,6 +112,7 @@ import { CategoryMultiselectComponent } from './categorymultiselect/categorymult
     InputTextModule,
     InputTextareaModule,
     TooltipModule,
+    ConfirmDialogModule,
     StoreModule.forFeature('values', ValueReducer),
     EffectsModule.forFeature([ValueEffects]),
     StoreModule.forFeature('events', eventReducer),
@@ -154,7 +155,7 @@ import { CategoryMultiselectComponent } from './categorymultiselect/categorymult
     MultiselectComponent, ButtonModule, ToggleButtonModule, ApproxdropdownComponent, CategoryselectComponent,
     DialogModule, CheckboxModule, InputTextModule, InputTextareaModule, DatePipe, TimePipe, SkillselectComponent,
     FitnessselectComponent, QualificationselectComponent, CollectiveselectComponent, CardModule, SexdropdownComponent,
-    StatePipe, CategoryMultiselectComponent
+    StatePipe, CategoryMultiselectComponent, ConfirmDialogModule
   ]
 })
 export class CoreModule { }

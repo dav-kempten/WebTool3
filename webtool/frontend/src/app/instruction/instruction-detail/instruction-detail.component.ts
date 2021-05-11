@@ -21,6 +21,7 @@ import {Event} from '../../model/event';
 import {Category, Topic} from '../../model/value';
 import {FormArray, FormControl, FormGroup} from '@angular/forms';
 import {UpdateEvent} from '../../core/store/event.actions';
+import {ConfirmationService} from 'primeng/api';
 
 @Component({
   selector: 'avk-instruction-detail',
@@ -67,7 +68,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   currentEventGroup: FormGroup = undefined;
   eventNumber: number[];
 
-  constructor(private store: Store<AppState>, private userService: AuthService) { }
+  constructor(private store: Store<AppState>, private userService: AuthService, private confirmationService: ConfirmationService) { }
 
   ngOnInit(): void {
     this.userIsStaff$ = this.userService.isStaff$;

@@ -16,6 +16,7 @@ import {ReactiveFormsModule} from '@angular/forms';
 import {buildSpecificModules} from './build-specifics';
 import {TooltipModule} from 'primeng/primeng';
 import {AppComponent} from './app.component';
+import {ConfirmationService} from "primeng/api";
 
 @NgModule({
   declarations: [
@@ -44,6 +45,7 @@ import {AppComponent} from './app.component';
         ...buildSpecificModules,
         TooltipModule,
     ],
+  providers: [ConfirmationService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
