@@ -12,9 +12,13 @@ import {
 import {Store} from '@ngrx/store';
 import {AppState} from '../../app.state';
 import {Calendar, LocaleSettings} from 'primeng/primeng';
-import {ControlValueAccessor, FormControl, FormControlName, FormGroup, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {
+  ControlValueAccessor,
+  FormControl,
+  FormControlName,
+  NG_VALUE_ACCESSOR,
+} from '@angular/forms';
 import {ReplaySubject, Subscription} from 'rxjs';
-import {dateTransformer} from '../date/date.component';
 import {delay} from 'rxjs/operators';
 
 const german: LocaleSettings = {
@@ -42,16 +46,13 @@ const german: LocaleSettings = {
   styleUrls: ['./time.component.css']
 })
 export class TimeComponent implements OnInit, AfterViewInit, OnDestroy, AfterContentInit {
-  @Input() label = 'Datum';
+  @Input() label = 'Zeitpunkt';
 
   @ViewChild(Calendar) calendar: Calendar;
   @ContentChild(FormControlName) formControlNameRef: FormControlName;
   formControl: FormControl;
   delegatedMethodCalls = new ReplaySubject<(_: ControlValueAccessor) => void>();
   delegatedMethodsSubscription: Subscription;
-
-  defaultDate: Date = new Date();
-  stdTime: Date = new Date();
 
   de = german;
 
@@ -62,22 +63,8 @@ export class TimeComponent implements OnInit, AfterViewInit, OnDestroy, AfterCon
     this.disabledState = !!value;
   }
 
-  originalControl = new FormControl(null);
-  labelControl = new FormControl('');
-  timeValueControl = new FormControl('');
-
-  group = new FormGroup(
-    {
-      original: this.originalControl,
-      label: this.labelControl,
-      timeValueControl: this.timeValueControl
-    }
-  );
-
   OnChangeWrapper(onChange: (isoDate: string) => void): (stdDate: string) => void {
     return ((stdDate: string): void => {
-      this.formControl.setValue(stdDate);
-      this.timeValueControl.setValue(stdDate);
       onChange(stdDate);
     });
   }
@@ -95,12 +82,7 @@ export class TimeComponent implements OnInit, AfterViewInit, OnDestroy, AfterCon
   }
 
   writeValue(isoDate): void {
-    if (isoDate) {
-      const stdDate = (isoDate.split(':'));
-      this.stdTime.setHours(stdDate[0]);
-      this.stdTime.setMinutes(stdDate[1]);
-      this.delegatedMethodCalls.next(accessor => accessor.writeValue(this.stdTime));
-    }
+    this.delegatedMethodCalls.next(accessor => accessor.writeValue(isoDate));
   }
 
   constructor(private store: Store<AppState>) {}
@@ -121,8 +103,5 @@ export class TimeComponent implements OnInit, AfterViewInit, OnDestroy, AfterCon
 
   ngAfterContentInit(): void {
     this.formControl = this.formControlNameRef.control;
-    this.originalControl.setValue(this.formControl);
-    this.timeValueControl.setValue(this.formControl.value);
-    this.labelControl.setValue(this.label);
   }
 }
