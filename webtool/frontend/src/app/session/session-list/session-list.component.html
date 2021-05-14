@@ -37,13 +37,10 @@
           <td>{{session.guideId | name}}</td>
           <td>{{session.speaker}}</td>
           <td>
-            <button pButton type="button" label="Klonen" class="ui-button-success"
+            <button pButton type="button" label="Klonen" class="ui-button-info"
                     (click)="clone(session.id)" *ngIf="this.loginObject.valState >= 3"></button>
-            <button pButton type="button" label="Löschen" class="ui-button-warning"
-                    (click)="delete(session.id)"
+            <button pButton type="button" label="Löschen" class="ui-button-danger" (click)="confirm(session.id)"
                     *ngIf="this.loginObject.valState >= 3 && this.finishedSessions.indexOf(session.stateId) === -1"></button>
-            <button pButton type="button" label="Deaktivieren" class="ui-button-info"
-                    (click)="deactivate(session.id)" *ngIf="this.loginObject.valState >= 3"></button>
           </td>
         </tr>
       </ng-template>
@@ -66,6 +63,15 @@
     <p-button label="Bestätigen" (onClick)="create(createSession.get('collectiveId').value, createSession.get('startDate').value)"></p-button>
   </p-dialog>
   </form>
+
+  <p-confirmDialog #cd header="Gruppenterminaktion" icon="pi pi-exclamation-triangle">
+    <p-footer>
+      <button type="button" pButton icon="pi pi-times" label="Termin nicht löschen" class="ui-button-secondary"
+              (click)="cd.reject()"></button>
+      <button type="button" pButton icon="pi pi-check" label="Termin löschen" class="ui-button-danger"
+              (click)="cd.accept()"></button>
+    </p-footer>
+  </p-confirmDialog>
 </ng-container>
 <ng-template #loading>Bitte kurz warten!</ng-template>
 

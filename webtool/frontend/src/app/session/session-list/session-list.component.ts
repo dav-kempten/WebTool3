@@ -3,7 +3,7 @@ import {select, Store} from '@ngrx/store';
 import {AppState, selectRouterFragment} from '../../app.state';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {SessionSummary} from '../../model/session';
-import {MenuItem} from 'primeng/api';
+import {ConfirmationService, MenuItem} from 'primeng/api';
 import {AuthService, User} from '../../core/service/auth.service';
 import {FormControl, FormGroup} from '@angular/forms';
 import {Router} from '@angular/router';
@@ -13,7 +13,6 @@ import {getSessionSummaries} from '../../core/store/session-summary.selectors';
 import {
   CloneSession,
   CreateSession,
-  DeactivateSession,
   DeleteSession,
   RequestSession
 } from '../../core/store/session.actions';
@@ -63,7 +62,7 @@ export class SessionListComponent implements OnInit, OnDestroy, AfterViewInit {
     {label: 'Vollmondstammtisch', url: '/sessions#vst'}
   ];
 
-  constructor(private store: Store<AppState>, private router: Router, private authService: AuthService) { }
+  constructor(private store: Store<AppState>, private router: Router, private authService: AuthService, private confirmationService: ConfirmationService) { }
 
   ngOnInit() {
     this.authState$ = this.authService.user$;
@@ -191,12 +190,13 @@ export class SessionListComponent implements OnInit, OnDestroy, AfterViewInit {
     );
   }
 
-  delete(sessionId) {
-    this.store.dispatch(new DeleteSession({id: sessionId}));
-  }
-
-  deactivate(sessionId) {
-    this.store.dispatch(new DeactivateSession({id: sessionId}));
+  confirm(sessionId) {
+    this.confirmationService.confirm({
+      message: 'Gruppentermin endgültig löschen?',
+      accept: () => {
+        this.store.dispatch(new DeleteSession({id: sessionId}));
+      }
+    });
   }
 
   changeViewSet(event, dt) {
