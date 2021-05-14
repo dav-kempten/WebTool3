@@ -7,7 +7,7 @@ import {getInstructionSummaries} from '../../core/store/instruction-summary.sele
 import {RequestInstructionSummaries} from '../../core/store/instruction-summary.actions';
 import {filter, first, flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {Router} from '@angular/router';
-import {MenuItem, SelectItem} from 'primeng/api';
+import {ConfirmationService, MenuItem, SelectItem} from 'primeng/api';
 import {AuthService, User} from '../../core/service/auth.service';
 import {
   CloneInstruction,
@@ -63,7 +63,8 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
     {label: 'Winterkurse', url: '/instructions#winter'},
   ];
 
-  constructor(private store: Store<AppState>, private router: Router, private userService: AuthService, private formBuilder: FormBuilder) {
+  constructor(private store: Store<AppState>, private router: Router, private userService: AuthService,
+              private confirmationService: ConfirmationService) {
     this.filterDropdown = [
       {label: 'Aktive Kurse', value: {id: 0, name: 'Aktive Kurse'}},
       {label: 'Alle Kurse', value: {id: 1, name: 'Alle Kurse'}},
@@ -214,12 +215,13 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
     );
   }
 
-  delete(instructionId) {
-    this.store.dispatch(new DeleteInstruction({id: instructionId}));
-  }
-
-  deactivate(instructionId) {
-    this.store.dispatch(new DeactivateInstruction({id: instructionId}));
+  confirm(instructionId) {
+    this.confirmationService.confirm({
+      message: 'Kurstermin endgültig löschen?',
+      accept: () => {
+        this.store.dispatch(new DeleteInstruction({id: instructionId}));
+      }
+    });
   }
 
   changeViewSet(event, dt) {

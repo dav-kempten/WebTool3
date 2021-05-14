@@ -37,13 +37,10 @@
           <td>{{instruction.stateId | state}}</td>
           <td>{{instruction.minQuantity}} | {{instruction.curQuantity}} | {{instruction.maxQuantity}}</td>
           <td>
-            <button pButton type="button" label="Klonen" class="ui-button-success"
+            <button pButton type="button" label="Klonen" class="ui-button-info"
                     (click)="clone(instruction.id)" *ngIf="this.loginObject.valState >= 3"></button>
-            <button pButton type="button" label="Löschen" class="ui-button-warning"
-                    (click)="delete(instruction.id)"
+            <button pButton type="button" label="Löschen" class="ui-button-danger" (click)="confirm(instruction.id)"
                     *ngIf="this.loginObject.valState >= 3 && this.finishedInstructions.indexOf(instruction.stateId) === -1"></button>
-            <button pButton type="button" label="Deaktivieren" class="ui-button-info"
-                    (click)="deactivate(instruction.id)" *ngIf="this.loginObject.valState >= 3"></button>
           </td>
         </tr>
       </ng-template>
@@ -63,7 +60,7 @@
         </avk-categoryselect>
       </div>
     </div>
-      <div class="p-grid">
+    <div class="p-grid">
       <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
         <avk-date formControlName="startDate"
                   id="dbeginn" label="Start"
@@ -73,5 +70,14 @@
     <p-button label="Bestätigen" (onClick)="create(createInstruction.get('topicId').value, createInstruction.get('startDate').value)"></p-button>
   </p-dialog>
   </form>
+
+  <p-confirmDialog #cd header="Kursaktion" icon="pi pi-exclamation-triangle">
+    <p-footer>
+      <button type="button" pButton icon="pi pi-times" label="Kurs nicht löschen" class="ui-button-secondary"
+              (click)="cd.reject()"></button>
+      <button type="button" pButton icon="pi pi-check" label="Kurs löschen" class="ui-button-danger"
+              (click)="cd.accept()"></button>
+    </p-footer>
+  </p-confirmDialog>
 </ng-container>
 <ng-template #loading>Bitte kurz warten!</ng-template>
