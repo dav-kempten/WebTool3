@@ -3,7 +3,7 @@ import {select, Store} from '@ngrx/store';
 import {AppState, selectRouterFragment} from '../../app.state';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {TourSummary} from '../../model/tour';
-import {MenuItem, SelectItem} from 'primeng/api';
+import {ConfirmationService, MenuItem, SelectItem} from 'primeng/api';
 import {AuthService, User} from '../../core/service/auth.service';
 import {FormControl, FormGroup} from '@angular/forms';
 import {Router} from '@angular/router';
@@ -62,7 +62,8 @@ export class TourListComponent implements OnInit, OnDestroy, AfterViewInit {
     {label: 'Jugendtouren', url: '/tours#youth'},
   ];
 
-  constructor(private store: Store<AppState>, private router: Router, private authService: AuthService) {
+  constructor(private store: Store<AppState>, private router: Router, private authService: AuthService,
+              private confirmationService: ConfirmationService) {
     this.filter = [
       {label: 'Aktive Touren', value: {id: 0, name: 'Aktive Touren'}},
       {label: 'Alle Touren', value: {id: 1, name: 'Alle Touren'}},
@@ -221,8 +222,13 @@ export class TourListComponent implements OnInit, OnDestroy, AfterViewInit {
     );
   }
 
-  delete(tourId) {
-    this.store.dispatch(new DeleteTour({id: tourId}));
+  confirm(tourId) {
+    this.confirmationService.confirm({
+      message: 'Tour endgültig löschen?',
+      accept: () => {
+        this.store.dispatch(new DeleteTour({id: tourId}));
+      }
+    });
   }
 
   deactivate(tourId) {
