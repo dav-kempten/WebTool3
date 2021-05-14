@@ -14,6 +14,7 @@ import {DeleteSession, RequestSession, UpdateSession, UpsertSession} from '../..
 import {getCollectiveById} from '../../core/store/value.selectors';
 import {getEventsByIds} from '../../core/store/event.selectors';
 import {CreateEvent, UpdateEvent} from '../../core/store/event.actions';
+import {ConfirmationService} from 'primeng/api';
 
 @Component({
   selector: 'avk-session-detail',
@@ -48,7 +49,7 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
   currentEventGroup: FormGroup = undefined;
   eventNumber: number[];
 
-  constructor(private store: Store<AppState>, private userService: AuthService) {  }
+  constructor(private store: Store<AppState>, private userService: AuthService, private confirmationService: ConfirmationService) {  }
 
   ngOnInit(): void {
     this.userIsStaff$ = this.userService.isStaff$;
@@ -185,8 +186,13 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
     this.store.dispatch(new UpsertSession({session: session as Session}));
   }
 
-  deleteSession(sessionId) {
-    this.store.dispatch(new DeleteSession({id: sessionId}));
+  confirm(sessionId) {
+    this.confirmationService.confirm({
+      message: 'Gruppentermin endgültig löschen?',
+      accept: () => {
+        this.store.dispatch(new DeleteSession({id: sessionId}));
+      }
+    });
   }
 
   closeEvent() {

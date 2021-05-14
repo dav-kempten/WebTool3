@@ -313,9 +313,18 @@
       <a routerLink="../"><p-button label="Zurück"></p-button></a>
     </div>
     <div class="p-col-12 p-sm-10 p-md-10 p-lg-10" style="text-align: right" >
-      <a routerLink="../"><p-button type="button" label="Gruppentermin löschen" styleClass="ui-button-danger"
-            (click)="deleteSession(this.sessionGroup.value.id)"></p-button></a>
-    </div>
+      <button type="text" label="Gruppentermin löschen" (click)="confirm(this.sessionGroup.value.id)" class="ui-button-danger"
+                  pButton></button>
+      </div>
+      <p-confirmDialog #cd header="Gruppentermin #{{sessionId$ | async}}" icon="pi pi-exclamation-triangle">
+        <p-footer>
+          <button type="button" pButton icon="pi pi-times" label="Termin nicht löschen"  class="ui-button-secondary"
+                  (click)="cd.reject()"></button>
+
+        <a routerLink="../"><button type="button" pButton icon="pi pi-check" label="Termin löschen" class="ui-button-danger"
+                  (click)="cd.accept()"></button></a>
+        </p-footer>
+      </p-confirmDialog>
   </div>
   </p-card>
 </form>
