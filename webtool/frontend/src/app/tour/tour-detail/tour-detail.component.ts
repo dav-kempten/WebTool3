@@ -14,6 +14,7 @@ import {DeleteTour, RequestTour, UpdateTour, UpsertTour} from '../../core/store/
 import {getCategoryById} from '../../core/store/value.selectors';
 import {getEventsByIds} from '../../core/store/event.selectors';
 import {CreateEvent, UpdateEvent} from '../../core/store/event.actions';
+import {ConfirmationService} from 'primeng/api';
 
 @Component({
   selector: 'avk-tour-detail',
@@ -53,7 +54,7 @@ export class TourDetailComponent implements OnInit, OnDestroy {
   currentEventGroup: FormGroup = undefined;
   eventNumber: number[];
 
-  constructor(private store: Store<AppState>, private userService: AuthService) {  }
+  constructor(private store: Store<AppState>, private userService: AuthService, private confirmationService: ConfirmationService) {  }
 
   ngOnInit(): void {
     this.userIsStaff$ = this.userService.isStaff$;
@@ -207,8 +208,13 @@ export class TourDetailComponent implements OnInit, OnDestroy {
     this.store.dispatch(new UpsertTour({tour: tour as Tour}));
   }
 
-  deleteTour(tourId) {
-    this.store.dispatch(new DeleteTour({id: tourId}));
+  confirm(tourId) {
+    this.confirmationService.confirm({
+      message: 'Tour endgültig löschen?',
+      accept: () => {
+        this.store.dispatch(new DeleteTour({id: tourId}));
+      }
+    });
   }
 
   closeEvent() {
