@@ -231,10 +231,6 @@ export class TourListComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  deactivate(tourId) {
-    this.store.dispatch(new DeactivateTour({id: tourId}));
-  }
-
   changeViewSetActive(event, dt) {
     switch (event.value.id) {
       case 0: {
