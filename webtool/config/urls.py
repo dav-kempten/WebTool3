@@ -21,6 +21,8 @@ from server.views.client import client_router
 from server.views.frontend import frontend_router
 
 urlpatterns = [
+    url(r'^jet/', include('jet.urls', 'jet')),
+    url(r'^jet/dashboard/', include('jet.dashboard.urls', 'jet-dashboard')),
     url(r'^admin/', admin.site.urls),
     url(r'^api/', include(auth_urls)),
     url(r'^api/client/', include(client_router.urls)),

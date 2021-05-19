@@ -21,6 +21,9 @@ def get_env(name):
         raise ImproperlyConfigured("environment variable '{}' is missing.".format(name))
 
 
+PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
+STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -36,6 +39,8 @@ SECRET_KEY = get_env('DJCODE_SECRET_KEY')
 # Application definition
 
 INSTALLED_APPS = [
+    'jet.dashboard',
+    'jet',
     'apps.WebtoolAdminConfig',
     'django.contrib.sites',
     'django.contrib.redirects',
@@ -179,3 +184,7 @@ ADMIN_REORDER = (
     {'app': 'server', 'label': 'Instructions', 'models': ('server.Instruction', 'server.Topic',)},
     'sites'
 )
+
+JET_DEFAULT_THEME = 'green'
+
+JET_SIDE_MENU_COMPACT = True
