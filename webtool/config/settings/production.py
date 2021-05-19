@@ -15,8 +15,8 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 ALLOWED_HOSTS = ['webtool.dav-kempten.de', '46.252.16.44']
 
 STATICFILES_DIRS = [
-    # os.path.join(BASE_DIR, 'static')
-    '/usr/local/lib/python3.6/site-packages/django/contrib/admin/static',
+    os.path.join(BASE_DIR, 'static')
+    # '/usr/local/lib/python3.6/site-packages/django/contrib/admin/static',
 ]
 
 CORS_ORIGIN_ALLOW_ALL = False
