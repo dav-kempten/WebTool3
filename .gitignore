@@ -53,4 +53,5 @@ personaldaten_json.py
 webtool/sslin.df.eu.cer
 webtool/static/rest_framework/
 webtool/static/admin/
+webtool/config/settings/static/
 webtool/*.log
