@@ -7,6 +7,8 @@ from server.models.collective import Role
 from server.models.qualification import UserQualification
 from server.models.guide import Guide
 
+from jet.admin import CompactInline
+
 
 class GuideInline(admin.StackedInline):
     model = Guide
@@ -26,7 +28,7 @@ class ProfileInline(admin.StackedInline):
     classes = ['collapse']
 
 
-class QualificationInline(admin.StackedInline):
+class QualificationInline(CompactInline):
     model = UserQualification
     can_delete = True
     extra = 0
@@ -35,7 +37,7 @@ class QualificationInline(admin.StackedInline):
     classes = ['collapse']
 
 
-class RetrainingInline(admin.StackedInline):
+class RetrainingInline(CompactInline):
     model = Retraining
     can_delete = True
     extra = 0
