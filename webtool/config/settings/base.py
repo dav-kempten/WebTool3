@@ -185,6 +185,6 @@ ADMIN_REORDER = (
     'sites'
 )
 
-JET_DEFAULT_THEME = 'green'
+JET_DEFAULT_THEME = 'light-green'
 
 JET_SIDE_MENU_COMPACT = True
