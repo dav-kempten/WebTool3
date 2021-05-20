@@ -185,3 +185,5 @@ ADMIN_REORDER = (
 JET_DEFAULT_THEME = 'light-green'
 
 JET_SIDE_MENU_COMPACT = True
+
+JET_INDEX_DASHBOARD = 'dashboard.CustomIndexDashboard'
