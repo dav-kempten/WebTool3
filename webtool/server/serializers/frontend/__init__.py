@@ -10,4 +10,5 @@ from .names import NameListSerializer
 from .values import ValueSerializer
 from .tourcalendar import TourcalendarSerializerList
 from .instructioncalendar import InstructioncalendarSerializerList
+from .guides import GuideListSerializer, GuideSerializer
 # from .retrainings import RetrainingListSerializer

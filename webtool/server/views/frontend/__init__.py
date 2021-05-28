@@ -10,5 +10,5 @@ from .tourcalendar import TourcalendarViewSet
 from .instructioncalendar import InstructioncalendarViewSet
 # from .retrainings import RetrainingViewSet
 # from .qualifications import UserQualificationViewSet
-# from .guides import GuideViewSet
+from .guides import GuideViewSet
 from .urls import router as frontend_router
