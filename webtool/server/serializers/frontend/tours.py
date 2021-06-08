@@ -189,7 +189,7 @@ class TourSerializer(serializers.ModelSerializer):
             state = validated_data.pop('state', get_default_state())
             category = validated_data.pop('category')
             # Set Youth-On-Tour if tour is especially for youth
-            if "Jugend" in category.name:
+            if hasattr(category, 'name') and 'Jugend' in category.name:
                 youth_on_tour = True
                 validated_data.pop('youth_on_tour')
             else:
