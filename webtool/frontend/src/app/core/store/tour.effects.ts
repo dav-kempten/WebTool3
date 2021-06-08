@@ -118,6 +118,7 @@ export class TourEffects {
             this.router.navigate(['tours', tour.id]);
             return new RequestTourSummaries();
           } else {
+            alert('Tourerstellung fehlgeschlagen. Bitte Eingaben nocheinmal überprüfen.');
             return new TourNotModified();
           }
         })

@@ -117,10 +117,11 @@ export class InstructionEffects {
     switchMap(payload => {
       return this.instructionService.createInstruction(payload.topicId, payload.startDate, payload.guideId).pipe(
         map(instruction => {
-          if (instruction.topicId !== 0) {
+          if (instruction.id !== 0) {
             this.router.navigate(['instructions', instruction.id]);
             return new RequestInstructionSummaries();
           } else {
+            alert('Kurserstellung fehlgeschlagen. Bitte Eingaben nocheinmal überprüfen.');
             return new InstructionNotModified();
           }
         })
