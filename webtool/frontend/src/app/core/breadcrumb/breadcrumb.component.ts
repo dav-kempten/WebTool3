@@ -16,6 +16,7 @@ import {CalendarRequested} from '../store/calendar.actions';
 import {RequestInstruction} from '../store/instruction.actions';
 import {RequestTour} from '../store/tour.actions';
 import {RequestSession} from '../store/session.actions';
+import {RequestGuideSummaries} from '../store/guide-summary.actions';
 
 
 @Component({
@@ -31,6 +32,7 @@ export class BreadcrumbComponent implements OnInit {
     this.store.dispatch(new NamesRequested());
     this.store.dispatch(new ValuesRequested());
     this.store.dispatch(new CalendarRequested());
+    this.store.dispatch(new RequestGuideSummaries());
 
     this.breadcrumb$ = this.store.pipe(
       select(selectRouterBreadcrumbs),
