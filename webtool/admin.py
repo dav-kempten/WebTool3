@@ -10,6 +10,7 @@ from django.forms import Form, FileField
 from django.contrib.auth.models import Group
 from server.models.reference import Reference
 from server.models.profile import Profile
+from server.models.instruction import Instruction
 
 from ast import literal_eval
 
@@ -30,7 +31,8 @@ class WebtoolAdminSite(admin.AdminSite):
         urls = super().get_urls()
         my_urls = [
             url(r'^csv_update/$', self.admin_view(self.csv_update)),
-            url(r'^tpo_update/$', self.admin_view(self.tpo_update))
+            url(r'^tpo_update/$', self.admin_view(self.tpo_update)),
+            url(r'^instruction_overview/$', self.admin_view(self.instruction_overview))
         ]
         return my_urls + urls
 
@@ -70,6 +72,12 @@ class WebtoolAdminSite(admin.AdminSite):
         payload = {'form': form}
         return render(
             request, 'tpo_form.html', payload
+        )
+
+    def instruction_overview(self, request):
+        payload = { 'instructions': list(Instruction.objects.values('instruction__reference', 'instruction__start_date')) }
+        return render (
+            request, 'instruction_overview.html', payload
         )
 
     @staticmethod
