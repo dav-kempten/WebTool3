@@ -94,7 +94,6 @@ class SessionSerializer(serializers.ModelSerializer):
         )
 
     def validate(self, data):
-        print(self.instance)
         if self.instance is not None:
             # This is the Update case
 
