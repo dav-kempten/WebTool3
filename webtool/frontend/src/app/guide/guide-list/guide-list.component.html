@@ -1,3 +1,19 @@
-<p>
-  guide-list works!
-</p>
+<ng-container *ngIf="(guides$ | async) as guides else loading">
+    <p-table #dt [value]="guides" selectionMode="single" (selectionChange)="selectGuide($event)">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Vorname</th>
+          <th>Nachname</th>
+          <th>Username</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-guide>
+        <tr [pSelectableRow]="guide">
+          <td>{{guide.firstName}}</td>
+          <td>{{guide.lastName}}</td>
+          <td>{{guide.userName}}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+</ng-container>
+<ng-template #loading>Bitte kurz warten!</ng-template>
