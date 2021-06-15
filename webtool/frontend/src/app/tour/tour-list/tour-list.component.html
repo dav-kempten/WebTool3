@@ -1,7 +1,7 @@
 <ng-container *ngIf="(activeItem$ | async) as activeItem else loading">
   <p-tabMenu [model]="menuItems" [activeItem]="{}"></p-tabMenu>
   <ng-container *ngIf="(tours$ | async) as tours">
-    <p-table #dt [value]="tours" selectionMode="single" (selectionChange)="selectTour($event)" [globalFilterFields]="['reference', 'title']">
+    <p-table #dt [value]="tours" selectionMode="single" (selectionChange)="selectTour($event)" [globalFilterFields]="['reference', 'title', 'guide']">
     <ng-template pTemplate="caption">
       <div class="p-grid">
         <div class="p-col-12 p-sm-2 p-md-2 p-lg-2" style="text-align: left">
@@ -29,13 +29,14 @@
           <th>Belegung (Min|Aktuell|Max)</th>
           <th>Kursaktionen</th>
         </tr>
+
       </ng-template>
       <ng-template pTemplate="body" let-tour>
         <tr [pSelectableRow]="tour">
           <td>{{tour.reference}}</td>
           <td>{{tour.startDate | date}}</td>
           <td>{{tour.title}}</td>
-          <td>{{tour.guideId | name}}</td>
+          <td>{{tour.guide}}</td>
           <td>{{tour.stateId | state}}</td>
           <td>{{tour.minQuantity}} | {{tour.curQuantity}} | {{tour.maxQuantity}}</td>
           <td>
