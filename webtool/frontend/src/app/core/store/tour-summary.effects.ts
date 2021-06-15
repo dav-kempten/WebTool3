@@ -9,23 +9,25 @@ import {
   LoadTourSummaries,
   TourSummariesNotModified
 } from './tour-summary.actions';
-import {TourSummary} from '../../model/tour';
+import {TourSummary as RawTourSummary} from '../../model/tour';
+import {TourSummary} from './tour-summary.model';
+import {NamePipe} from './name.pipe';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class TourSummaryEffects {
 
-  constructor(private actions$: Actions, private tourService: TourService) {}
+  constructor(private actions$: Actions, private tourService: TourService, private namePipe: NamePipe) {}
 
   @Effect()
   loadTourSummaries$: Observable<Action> = this.actions$.pipe(
     ofType(TourSummaryActionTypes.RequestTourSummaries),
     switchMap(() => {
       return this.tourService.getTourSummaries().pipe(
-        map((tourSummaries: TourSummary[]) => {
+        map((tourSummaries) => {
           if (tourSummaries.length > 0) {
-            return new LoadTourSummaries({tourSummaries});
+            return new LoadTourSummaries({tourSummaries: this.transformSummaries(tourSummaries)});
           } else {
             return new TourSummariesNotModified();
           }
@@ -33,4 +35,15 @@ export class TourSummaryEffects {
       );
     })
   );
+
+  transformSummaries(tourSummaries: RawTourSummary[]): TourSummary[] {
+    let storeTourSummaries: any = [];
+
+    storeTourSummaries = tourSummaries;
+    storeTourSummaries.forEach(summary => {
+      summary.guide = this.namePipe.transform(summary.guideId);
+    });
+
+    return storeTourSummaries;
+  }
 }

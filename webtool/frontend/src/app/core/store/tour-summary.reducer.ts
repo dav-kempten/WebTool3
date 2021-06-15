@@ -1,4 +1,4 @@
-import {TourSummary} from '../../model/tour';
+import {TourSummary} from './tour-summary.model';
 import {createEntityAdapter, EntityAdapter, EntityState} from '@ngrx/entity';
 import {TourSummaryActions, TourSummaryActionTypes} from './tour-summary.actions';
 

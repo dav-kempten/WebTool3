@@ -1,6 +1,6 @@
 import { Action } from '@ngrx/store';
 import { Update } from '@ngrx/entity';
-import { TourSummary } from '../../model/tour';
+import { TourSummary } from './tour-summary.model';
 
 export enum TourSummaryActionTypes {
   TourSummariesNotModified = '[TourSummary] TourSummaries not modified',

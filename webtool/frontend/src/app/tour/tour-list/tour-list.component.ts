@@ -2,7 +2,7 @@ import {AfterViewInit, Component, OnDestroy, OnInit, ViewChild} from '@angular/c
 import {select, Store} from '@ngrx/store';
 import {AppState, selectRouterFragment} from '../../app.state';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
-import {TourSummary} from '../../model/tour';
+import {TourSummary} from '../../core/store/tour-summary.model';
 import {ConfirmationService, MenuItem, SelectItem} from 'primeng/api';
 import {AuthService, User} from '../../core/service/auth.service';
 import {FormControl, FormGroup} from '@angular/forms';

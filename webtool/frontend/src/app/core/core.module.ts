@@ -156,6 +156,7 @@ import { CategoryMultiselectComponent } from './categorymultiselect/categorymult
     DialogModule, CheckboxModule, InputTextModule, InputTextareaModule, DatePipe, TimePipe, SkillselectComponent,
     FitnessselectComponent, QualificationselectComponent, CollectiveselectComponent, CardModule, SexdropdownComponent,
     StatePipe, CategoryMultiselectComponent, ConfirmDialogModule
-  ]
+  ],
+  providers: [NamePipe]
 })
 export class CoreModule { }
