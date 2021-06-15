@@ -1,7 +1,7 @@
 <ng-container *ngIf="(activeItem$ | async) as activeItem else loading">
   <p-tabMenu [model]="menuItems" [activeItem]="{}"></p-tabMenu>
   <ng-container *ngIf="(instructions$ | async) as instructions">
-    <p-table #dt [value]="instructions" selectionMode="single" (selectionChange)="selectInstruction($event)" [globalFilterFields]="['reference', 'title']">
+    <p-table #dt [value]="instructions" selectionMode="single" (selectionChange)="selectInstruction($event)" [globalFilterFields]="['reference', 'title', 'guide']">
     <ng-template pTemplate="caption">
       <div class="p-grid">
         <div class="p-col-12 p-sm-2 p-md-2 p-lg-2" style="text-align: left">
@@ -33,7 +33,7 @@
           <td>{{instruction.reference}}</td>
           <td>{{instruction.startDate | date}}</td>
           <td>{{instruction.title}}</td>
-          <td>{{instruction.guideId | name}}</td>
+          <td>{{instruction.guide}}</td>
           <td>{{instruction.stateId | state}}</td>
           <td>{{instruction.minQuantity}} | {{instruction.curQuantity}} | {{instruction.maxQuantity}}</td>
           <td>
