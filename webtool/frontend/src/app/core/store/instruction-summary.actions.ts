@@ -1,6 +1,6 @@
 import { Action } from '@ngrx/store';
 import { Update } from '@ngrx/entity';
-import { InstructionSummary } from '../../model/instruction';
+import { InstructionSummary } from './instruction-summary.model';
 
 export enum InstructionSummaryActionTypes {
   InstructionSummariesNotModified = '[InstructionSummary] InstructionSummaries not modified',

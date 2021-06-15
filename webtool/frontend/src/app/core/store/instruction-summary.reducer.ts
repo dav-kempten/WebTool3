@@ -1,5 +1,5 @@
 import {createEntityAdapter, EntityAdapter, EntityState} from '@ngrx/entity';
-import {InstructionSummary} from '../../model/instruction';
+import {InstructionSummary} from './instruction-summary.model';
 import {InstructionSummaryActions, InstructionSummaryActionTypes} from './instruction-summary.actions';
 
 export interface State extends EntityState<InstructionSummary> {
