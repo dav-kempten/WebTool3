@@ -85,7 +85,6 @@ export class TourListComponent implements OnInit, OnDestroy, AfterViewInit {
         } else if (value.role === 'Fachbereichssprecher') {
           this.loginObject.valState = 2;
         } else if (value.role === 'Trainer') {
-          // this.changeViewSetTrainer(this.loginObject.id, this.dt);
           this.loginObject.valState = 1;
         } else { this.loginObject.valState = 0; }
       }),
