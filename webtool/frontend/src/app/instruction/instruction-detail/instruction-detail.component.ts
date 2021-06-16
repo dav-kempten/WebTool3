@@ -56,13 +56,10 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   events$: Observable<Event[]>;
   category$: Observable<Category>;
 
-  authState$: Observable<User>;
   userIsStaff$: Observable<boolean>;
   userIsAdmin$: Observable<boolean>;
   userIsOwner$: Observable<boolean> = this.instructionOwner.asObservable();
   userCurrent$: Observable<number>;
-
-  instructionIndoor$: Observable<boolean> = this.instructionIndoor.asObservable();
 
   display = false;
   currentEventGroup: FormGroup = undefined;
