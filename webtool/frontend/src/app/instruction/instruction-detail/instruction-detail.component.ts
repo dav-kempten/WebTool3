@@ -22,6 +22,7 @@ import {Category, Topic} from '../../model/value';
 import {FormArray, FormControl, FormGroup} from '@angular/forms';
 import {UpdateEvent} from '../../core/store/event.actions';
 import {ConfirmationService} from 'primeng/api';
+import {Permission, PermissionService} from '../../core/service/permission.service';
 
 @Component({
   selector: 'avk-instruction-detail',
@@ -30,6 +31,11 @@ import {ConfirmationService} from 'primeng/api';
 })
 
 export class InstructionDetailComponent implements OnInit, OnDestroy {
+  private myObserver = {
+    next: (x: Permission) => console.log('Observer got a next value: ' + x.permissionLevel + ' ' + x.guideId),
+    error: (err: Error) => console.error('Observer got an error: ' + err),
+    complete: () => console.log('Observer got a complete notification'),
+  };
 
   private destroySubject: Subject<boolean> = new Subject<boolean>();
   private instructionSubject = new BehaviorSubject<FormGroup>(undefined);
@@ -60,6 +66,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   userIsAdmin$: Observable<boolean>;
   userIsOwner$: Observable<boolean> = this.instructionOwner.asObservable();
   userCurrent$: Observable<number>;
+  permissionCurrent$: Observable<Permission>;
 
   display = false;
   currentEventGroup: FormGroup = undefined;
@@ -72,6 +79,8 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     this.userIsAdmin$ = this.userService.isAdministrator$;
 
     this.userCurrent$ = this.userService.guideId$;
+    this.permissionCurrent$ = this.userService.guidePermission$;
+    this.permissionCurrent$.subscribe(this.myObserver);
 
     this.instructionId$ = this.store.select(selectRouterDetailId);
 

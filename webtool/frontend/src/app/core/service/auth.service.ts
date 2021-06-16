@@ -3,6 +3,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {catchError, filter, first, map, publishReplay, refCount, tap} from 'rxjs/operators';
 import {User as RawUser} from '../../model/user';
+import {Permission, PermissionService} from './permission.service';
 
 export const enum Role {
   administrator = 'Administrator',
@@ -43,8 +44,11 @@ export class AuthService {
   isCoordinator$: Observable<boolean> = this.user$.pipe(map(user => user.role === Role.coordinator));
   isGuide$: Observable<boolean> = this.user$.pipe(map(user => user.role === Role.guide));
   guideId$: Observable<number> = this.user$.pipe(map(user => user.id));
+  guidePermission$: Observable<Permission> = this.user$.pipe(map(user => {
+    return {permissionLevel: this.permission.convertRole(user.role), guideId: user.id};
+  }));
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private permission: PermissionService) {}
 
   login(userName: string = '', password: string = '', memberId: string = ''): Observable<User> {
 
