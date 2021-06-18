@@ -158,7 +158,7 @@ export class InstructionEffects {
     ofType<AddEventInstruction>(InstructionActionTypes.AddEventInstruction),
     map((action: AddEventInstruction) => action.payload),
     switchMap(payload  => {
-      return this.instructionService.addEventInstruction(this.tranformInstructionForSaving(payload.instruction)).pipe(
+      return this.instructionService.addEventInstruction(this.tranformInstructionForSaving(payload.instruction), payload.isIndoor).pipe(
         map(instruction => {
           if (instruction.id !== 0) {
             const instructionInterface = this.transformInstruction(instruction);

@@ -73,7 +73,7 @@ export class UpsertInstruction implements Action {
 export class AddEventInstruction implements Action {
   readonly type = InstructionActionTypes.AddEventInstruction;
 
-  constructor(public payload: { instruction: Instruction }) {}
+  constructor(public payload: { instruction: Instruction, isIndoor: boolean }) {}
 }
 
 export class DeleteEventInstruction implements Action {

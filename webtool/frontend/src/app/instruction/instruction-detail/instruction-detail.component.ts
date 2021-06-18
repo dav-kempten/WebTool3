@@ -236,7 +236,8 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   /* Notizen: Bei der Erstellung eines zusätzlichen Events muss das Event erst serverseitig werden und der
    * Cache aktualisiert werden. So wird sichergestellt das die Kurse konsistent parallel bearbeitet werden können. */
   addEvent(instruction) {
-    this.store.dispatch(new AddEventInstruction({instruction: instruction as Instruction}));
+    this.store.dispatch(new AddEventInstruction({instruction: instruction as Instruction,
+      isIndoor: this.instructionIndoor.value}));
   }
 
   save(instruction) {

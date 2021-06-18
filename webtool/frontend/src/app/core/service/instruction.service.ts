@@ -188,9 +188,12 @@ export class InstructionService {
     );
   }
 
-  addEventInstruction(instruction: Instruction): Observable<Instruction> {
-    const newEvent: Event = {id: null, startDate: instruction.instruction.startDate} as Event;
-    instruction.meetings.push(newEvent);
+  addEventInstruction(instruction: Instruction, isIndoor: boolean): Observable<Instruction> {
+    if (isIndoor) {
+      instruction.meetings.push({id: null, startDate: instruction.instruction.startDate, startTime: instruction.instruction.startTime,
+        endTime: instruction.instruction.endTime} as Event);
+    } else { instruction.meetings.push({id: null, startDate: instruction.instruction.startDate} as Event); }
+
     this.addEventSubject.next(instruction);
 
     return this.http.put<Instruction>(
