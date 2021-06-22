@@ -1,4 +1,4 @@
-<ng-container *ngIf="(userIsStaff$ | async) || (userIsAdmin$ | async) || (userIsOwner$ | async) else usernotvarified">
+<ng-container *ngIf="permissionHandler$ | async else usernotvarified">
 <ng-container *ngIf="instructionGroup$ | async as instructionGroup else loading" readonly="True">
 <!--<p-card header="Instruction #{{instructionId$ | async}}">-->
 <!--  <p>InstructionGroup:<br/>{{instructionGroup.value | json}}</p>-->
