@@ -5,6 +5,18 @@ export interface State {
   disabled?: boolean;
 }
 
+export enum States {
+  WORKING = 1,
+  READY,
+  REJECTED,
+  ACCEPTED,
+  PUBLISHED,
+  FINISHED,
+  CANCELED,
+  POSTPONED,
+  SOON_BOOKABLE
+}
+
 export interface Category {
   id: number;
   code: string;
