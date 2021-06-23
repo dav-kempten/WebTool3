@@ -5,11 +5,12 @@
     <ng-template pTemplate="caption">
       <div class="p-grid">
         <div class="p-col-12 p-sm-2 p-md-2 p-lg-2" style="text-align: left">
-          <p-button label="Kurs hinzufügen" (onClick)="handleClick()" *ngIf="this.loginObject.valState >= 3" styleClass="ui-button-secondary"></p-button>
+          <p-button label="Kurs hinzufügen" (onClick)="handleClick()" *ngIf="permissionHandler$ | async"
+                    styleClass="ui-button-secondary"></p-button>
         </div>
         <div class="p-col-12 p-sm-8 p-md-8 p-lg-8" style="text-align: left">
-          <i class="pi pi-search" style="margin:4px 4px 0 0" *ngIf="this.loginObject.valState >= 3"></i>
-          <input type="text" pInputText maxlength="50" placeholder="Kursfilter" *ngIf="this.loginObject.valState >= 3"
+          <i class="pi pi-search" style="margin:4px 4px 0 0" *ngIf="permissionHandler$ | async"></i>
+          <input type="text" pInputText maxlength="50" placeholder="Kursfilter" *ngIf="permissionHandler$ | async"
                  (input)="dt.filterGlobal($event.target.value, 'contains')" style="width:auto">
         </div>
         <div class="p-col-12 p-sm-2 p-md-2 p-lg-2" style="text-align: left">
@@ -38,9 +39,9 @@
           <td>{{instruction.minQuantity}} | {{instruction.curQuantity}} | {{instruction.maxQuantity}}</td>
           <td>
             <button pButton type="button" label="Klonen" class="ui-button-info"
-                    (click)="clone(instruction.id)" *ngIf="this.loginObject.valState >= 3"></button>
+                    (click)="clone(instruction.id)" *ngIf="permissionHandler$ | async"></button>
             <button pButton type="button" label="Löschen" class="ui-button-danger" (click)="confirm(instruction.id)"
-                    *ngIf="this.loginObject.valState >= 3 && this.finishedInstructions.indexOf(instruction.stateId) === -1"></button>
+                    *ngIf="(permissionHandler$ | async) && this.finishedInstructions.indexOf(instruction.stateId) === -1"></button>
           </td>
         </tr>
       </ng-template>
