@@ -15,6 +15,7 @@ import {getCollectiveById} from '../../core/store/value.selectors';
 import {getEventsByIds} from '../../core/store/event.selectors';
 import {CreateEvent, UpdateEvent} from '../../core/store/event.actions';
 import {ConfirmationService} from 'primeng/api';
+import {Permission, PermissionLevel} from '../../core/service/permission.service';
 
 @Component({
   selector: 'avk-session-detail',
@@ -41,19 +42,17 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
   events$: Observable<Event[]>;
   collective$: Observable<Collective>;
 
-  authState$: Observable<User>;
-  userIsStaff$: Observable<boolean>;
-  userIsAdmin$: Observable<boolean>;
-  loginObject = {id: undefined, firstName: '', lastName: '', role: undefined, valState: 0};
+  permissionHandler$: Observable<boolean>;
+  permissionCurrent$: Observable<Permission>;
+
   display = false;
   currentEventGroup: FormGroup = undefined;
   eventNumber: number[];
 
-  constructor(private store: Store<AppState>, private userService: AuthService, private confirmationService: ConfirmationService) {  }
+  constructor(private store: Store<AppState>, private authService: AuthService, private confirmationService: ConfirmationService) {  }
 
   ngOnInit(): void {
-    this.userIsStaff$ = this.userService.isStaff$;
-    this.userIsAdmin$ = this.userService.isAdministrator$;
+    this.permissionCurrent$ = this.authService.guidePermission$;
 
     this.sessionId$ = this.store.select(selectRouterDetailId);
 
@@ -66,6 +65,14 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
           if (!session) {
             this.store.dispatch(new RequestSession({id}));
           } else {
+            /* Check if current user is staff-member */
+            this.permissionHandler$ = this.permissionCurrent$.pipe(
+              takeUntil(this.destroySubject),
+              map(permission => {
+                return permission.permissionLevel >= PermissionLevel.coordinator;
+              })
+            );
+            /* Generate session */
             const sessionGroup = sessionGroupFactory(session);
             sessionGroup.valueChanges.pipe(
               takeUntil(this.destroySubject)
