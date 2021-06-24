@@ -5,11 +5,11 @@
       <ng-template pTemplate="caption">
       <div class="p-grid">
         <div class="p-col-12 p-sm-3 p-md-3 p-lg-3" style="text-align: left">
-          <p-button label="Gruppentermin hinzufügen" (onClick)="handleClick()" *ngIf="this.loginObject.valState >= 3" styleClass="ui-button-secondary"></p-button>
+          <p-button label="Gruppentermin hinzufügen" (onClick)="handleClick()" *ngIf="permissionHandler$ | async" styleClass="ui-button-secondary"></p-button>
         </div>
         <div class="p-col-12 p-sm-3 p-md-3 p-lg-3" style="text-align: left">
-          <i class="pi pi-search" style="margin:4px 4px 0 0" *ngIf="this.loginObject.valState >= 3"></i>
-          <input type="text" pInputText maxlength="50" placeholder="Gruppenterminfilter" *ngIf="this.loginObject.valState >= 3"
+          <i class="pi pi-search" style="margin:4px 4px 0 0" *ngIf="permissionHandler$ | async"></i>
+          <input type="text" pInputText maxlength="50" placeholder="Gruppenterminfilter" *ngIf="permissionHandler$ | async"
                  (input)="dt.filterGlobal($event.target.value, 'contains')" style="width:auto">
         </div>
         <div class="p-col-12 p-sm-6 p-md-6 p-lg-6" style="text-align: right">
@@ -38,9 +38,9 @@
           <td>{{session.speaker}}</td>
           <td>
             <button pButton type="button" label="Klonen" class="ui-button-info"
-                    (click)="clone(session.id)" *ngIf="this.loginObject.valState >= 3"></button>
+                    (click)="clone(session.id)" *ngIf="permissionHandler$ | async"></button>
             <button pButton type="button" label="Löschen" class="ui-button-danger" (click)="confirm(session.id)"
-                    *ngIf="this.loginObject.valState >= 3 && this.finishedSessions.indexOf(session.stateId) === -1"></button>
+                    *ngIf="(permissionHandler$ | async) && this.filterFinishedSessions(session.stateId)"></button>
           </td>
         </tr>
       </ng-template>
