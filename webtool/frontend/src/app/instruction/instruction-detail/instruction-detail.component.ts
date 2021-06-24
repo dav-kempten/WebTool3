@@ -64,10 +64,10 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   currentEventGroup: FormGroup = undefined;
   eventNumber: number[];
 
-  constructor(private store: Store<AppState>, private userService: AuthService, private confirmationService: ConfirmationService) { }
+  constructor(private store: Store<AppState>, private authService: AuthService, private confirmationService: ConfirmationService) { }
 
   ngOnInit(): void {
-    this.permissionCurrent$ = this.userService.guidePermission$;
+    this.permissionCurrent$ = this.authService.guidePermission$;
 
     this.instructionId$ = this.store.select(selectRouterDetailId);
 
