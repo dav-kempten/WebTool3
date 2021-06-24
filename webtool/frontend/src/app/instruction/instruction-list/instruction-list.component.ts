@@ -18,7 +18,7 @@ import {
 import {FormControl, FormGroup} from '@angular/forms';
 import {getInstructionById} from '../../core/store/instruction.selectors';
 import {Permission, PermissionLevel} from '../../core/service/permission.service';
-import {States} from '../../model/value';
+import {getStatesOfGroup, States, StatesGroup} from '../../model/value';
 
 @Component({
   selector: 'avk-instruction-list',
@@ -30,21 +30,15 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
   @ViewChild('dt') dt;
 
   filterDropdown: SelectItem[];
+  display = false;
 
   private destroySubject = new Subject<void>();
   part$: Observable<string>;
   instructions$: Observable<InstructionSummary[]>;
   activeItem$: Observable<MenuItem>;
-  display = false;
 
   permissionHandler$: Observable<boolean>;
   permissionCurrent$: Observable<Permission>;
-
-  finishedInstructions = [States.FINISHED, States.CANCELED];
-  activeInstructions = [States.WORKING, States.READY, States.REJECTED, States.ACCEPTED, States.PUBLISHED,
-    States.POSTPONED, States.SOON_BOOKABLE];
-  allInstructions = [States.WORKING, States.READY, States.REJECTED, States.ACCEPTED, States.PUBLISHED,
-    States.FINISHED, States.CANCELED, States.POSTPONED, States.SOON_BOOKABLE];
 
   partNewInstruction = new BehaviorSubject<string>('');
 
@@ -63,7 +57,7 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
     {label: 'Winterkurse', url: '/instructions#winter'},
   ];
 
-  constructor(private store: Store<AppState>, private router: Router, private userService: AuthService,
+  constructor(private store: Store<AppState>, private router: Router, private authService: AuthService,
               private confirmationService: ConfirmationService) {
     this.filterDropdown = [
       {label: 'Aktive Kurse', value: {id: 0, name: 'Aktive Kurse'}},
@@ -73,7 +67,7 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
   }
 
   ngOnInit() {
-    this.permissionCurrent$ = this.userService.guidePermission$;
+    this.permissionCurrent$ = this.authService.guidePermission$;
 
     this.part$ = this.store.pipe(
       takeUntil(this.destroySubject),
@@ -143,7 +137,7 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
   }
 
   ngAfterViewInit(): void {
-    this.dt.filter(this.activeInstructions, 'stateId', 'in');
+    this.dt.filter(getStatesOfGroup(StatesGroup.Active), 'stateId', 'in');
     this.permissionCurrent$.pipe(takeUntil(this.destroySubject)).subscribe(permission => {
       if (permission.guideId !== undefined && permission.permissionLevel === PermissionLevel.guide) {
         this.dt.filter(permission.guideId, 'guideId', 'equals');
@@ -199,18 +193,22 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
     });
   }
 
+  filterFinishedInstructions(stateId: number): boolean {
+    return getStatesOfGroup(StatesGroup.Finished).indexOf(stateId) === -1;
+  }
+
   changeViewSet(event, dt) {
     switch (event.value.id) {
       case 0: {
-        dt.filter(this.activeInstructions, 'stateId', 'in');
+        dt.filter(getStatesOfGroup(StatesGroup.Active), 'stateId', 'in');
         break;
       }
       case 1: {
-        dt.filter(this.allInstructions, 'stateId', 'in');
+        dt.filter(getStatesOfGroup(StatesGroup.All), 'stateId', 'in');
         break;
       }
       case 2: {
-        dt.filter(2, 'stateId', 'equals');
+        dt.filter(States.READY, 'stateId', 'equals');
         break;
       }
       default:

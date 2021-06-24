@@ -41,7 +41,7 @@
             <button pButton type="button" label="Klonen" class="ui-button-info"
                     (click)="clone(instruction.id)" *ngIf="permissionHandler$ | async"></button>
             <button pButton type="button" label="Löschen" class="ui-button-danger" (click)="confirm(instruction.id)"
-                    *ngIf="(permissionHandler$ | async) && this.finishedInstructions.indexOf(instruction.stateId) === -1"></button>
+                    *ngIf="(permissionHandler$ | async) && this.filterFinishedInstructions(instruction.stateId)"></button>
           </td>
         </tr>
       </ng-template>
