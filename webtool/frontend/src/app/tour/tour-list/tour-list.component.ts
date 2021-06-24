@@ -4,14 +4,16 @@ import {AppState, selectRouterFragment} from '../../app.state';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {TourSummary} from '../../core/store/tour-summary.model';
 import {ConfirmationService, MenuItem, SelectItem} from 'primeng/api';
-import {AuthService, User} from '../../core/service/auth.service';
+import {AuthService} from '../../core/service/auth.service';
 import {FormControl, FormGroup} from '@angular/forms';
 import {Router} from '@angular/router';
 import {filter, first, flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {RequestTourSummaries} from '../../core/store/tour-summary.actions';
 import {getTourSummaries} from '../../core/store/tour-summary.selectors';
-import {CloneTour, CreateTour, DeactivateTour, DeleteTour, RequestTour} from '../../core/store/tour.actions';
+import {CloneTour, CreateTour, DeleteTour, RequestTour} from '../../core/store/tour.actions';
 import {getTourById} from '../../core/store/tour.selectors';
+import {Permission, PermissionLevel} from '../../core/service/permission.service';
+import {getStatesOfGroup, States, StatesGroup} from '../../model/value';
 
 @Component({
   selector: 'avk-tour-list',
@@ -31,17 +33,10 @@ export class TourListComponent implements OnInit, OnDestroy, AfterViewInit {
   display = false;
   preliminarySelect = false;
 
-  finishedTours = [6, 7];
-  activeTours = [1, 2, 3, 4, 5, 8, 9];
-  allTours = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-
   partNewTour = new BehaviorSubject<string>('');
 
-  user$: Observable<User>;
-  authState$: Observable<User>;
-  authChangeSubject = new BehaviorSubject<any>(undefined);
-  authChange$: Observable<any> = this.authChangeSubject.asObservable();
-  loginObject = {id: undefined, firstName: '', lastName: '', role: undefined, valState: 0};
+  permissionHandler$: Observable<boolean>;
+  permissionCurrent$: Observable<Permission>;
 
   categoryIds = new FormControl('');
   startDate = new FormControl('');
@@ -72,27 +67,7 @@ export class TourListComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit() {
-    this.authState$ = this.authService.user$;
-
-    this.authState$.pipe(
-      takeUntil(this.destroySubject),
-      tap(value => {
-        this.loginObject = { ...value, valState: 0 };
-        if (value.role === 'Administrator') {
-          this.loginObject.valState = 4;
-        } else if (value.role === 'Geschäftsstelle') {
-          this.loginObject.valState = 3;
-        } else if (value.role === 'Fachbereichssprecher') {
-          this.loginObject.valState = 2;
-        } else if (value.role === 'Trainer') {
-          this.loginObject.valState = 1;
-        } else { this.loginObject.valState = 0; }
-      }),
-    ).subscribe(
-      value => {
-        this.authChangeSubject.next(value);
-      }
-    );
+    this.permissionCurrent$ = this.authService.guidePermission$;
 
     this.part$ = this.store.pipe(
       takeUntil(this.destroySubject),
@@ -127,6 +102,13 @@ export class TourListComponent implements OnInit, OnDestroy, AfterViewInit {
           tap(tours => {
             if (!tours || !tours.length) {
               this.store.dispatch(new RequestTourSummaries());
+            } else {
+              this.permissionHandler$ = this.permissionCurrent$.pipe(
+                takeUntil(this.destroySubject),
+                map(permission => {
+                  return permission.permissionLevel >= PermissionLevel.coordinator;
+                })
+              );
             }
           }),
           map(tours =>
@@ -147,13 +129,6 @@ export class TourListComponent implements OnInit, OnDestroy, AfterViewInit {
     this.part$.subscribe();
     this.activeItem$.subscribe();
     this.tours$.subscribe();
-
-    this.authChange$.pipe(
-      takeUntil(this.destroySubject),
-      filter(user => !!user),
-      publishReplay(1),
-      refCount(),
-    );
   }
 
   ngOnDestroy(): void {
@@ -162,21 +137,21 @@ export class TourListComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.dt.filter(this.activeTours, 'stateId', 'in');
-    this.authChange$.subscribe(
-      value => {
-        if (value.id !== undefined && value.role === 'Trainer') {
-          this.dt.filter(value.id, 'guideId', 'equals');
-        }
+    this.dt.filter(getStatesOfGroup(StatesGroup.Active), 'stateId', 'in');
+    this.permissionCurrent$.pipe(takeUntil(this.destroySubject)).subscribe(permission => {
+      if (permission.guideId !== undefined && permission.permissionLevel === PermissionLevel.guide) {
+        this.dt.filter(permission.guideId, 'guideId', 'equals');
       }
-    );
+    });
   }
 
   selectTour(tour): void {
     if (!!tour) {
-      if (this.loginObject.valState >= 2 || this.loginObject.id === tour.guideId) {
-        this.router.navigate(['tours', tour.id]);
-      }
+      this.permissionCurrent$.pipe(takeUntil(this.destroySubject)).subscribe( permission => {
+        if (permission.permissionLevel >= PermissionLevel.coordinator || permission.guideId === tour.guideId) {
+          this.router.navigate(['tours', tour.id]);
+        }
+      });
     }
   }
 
@@ -192,16 +167,11 @@ export class TourListComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   create(category, startdate, enddate, preliminary) {
-    let guideId: number;
-    if (this.loginObject.valState === 1) {
-      guideId = this.loginObject.id;
-    } else {
-      guideId = null;
-    }
-    this.store.dispatch(new CreateTour({
-      categoryId: category, startDate: startdate, deadline: enddate, preliminary, guideId
-    }));
-    this.display = false;
+    this.permissionCurrent$.pipe(takeUntil(this.destroySubject)).subscribe( permission => {
+      const guideId: number = permission.permissionLevel === PermissionLevel.guide ? permission.guideId : null;
+      this.store.dispatch(new CreateTour({ categoryId: category, startDate: startdate, deadline: enddate, preliminary, guideId }));
+      this.display = false;
+    });
   }
 
   clone(tourId) {
@@ -230,18 +200,22 @@ export class TourListComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
+  filterFinishedTours(stateId: number): boolean {
+    return getStatesOfGroup(StatesGroup.Finished).indexOf(stateId) === -1;
+  }
+
   changeViewSetActive(event, dt) {
     switch (event.value.id) {
       case 0: {
-        dt.filter(this.activeTours, 'stateId', 'in');
+        dt.filter(getStatesOfGroup(StatesGroup.Active), 'stateId', 'in');
         break;
       }
       case 1: {
-        dt.filter(this.allTours, 'stateId', 'in');
+        dt.filter(getStatesOfGroup(StatesGroup.All), 'stateId', 'in');
         break;
       }
       case 2: {
-        dt.filter(2, 'stateId', 'equals');
+        dt.filter(States.READY, 'stateId', 'equals');
         break;
       }
       default: break;
