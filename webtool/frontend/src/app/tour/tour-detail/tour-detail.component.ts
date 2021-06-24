@@ -15,6 +15,7 @@ import {getCategoryById} from '../../core/store/value.selectors';
 import {getEventsByIds} from '../../core/store/event.selectors';
 import {CreateEvent, UpdateEvent} from '../../core/store/event.actions';
 import {ConfirmationService} from 'primeng/api';
+import {Permission, PermissionLevel} from "../../core/service/permission.service";
 
 @Component({
   selector: 'avk-tour-detail',
@@ -44,23 +45,17 @@ export class TourDetailComponent implements OnInit, OnDestroy {
   events$: Observable<Event[]>;
   category$: Observable<Category>;
 
-  authState$: Observable<User>;
-  userIsStaff$: Observable<boolean>;
-  userIsAdmin$: Observable<boolean>;
-  userIsOwner$: Observable<boolean> = this.tourOwner.asObservable();
-  userCurrent$: Observable<number>;
+  permissionHandler$: Observable<boolean>;
+  permissionCurrent$: Observable<Permission>;
 
   display = false;
   currentEventGroup: FormGroup = undefined;
   eventNumber: number[];
 
-  constructor(private store: Store<AppState>, private userService: AuthService, private confirmationService: ConfirmationService) {  }
+  constructor(private store: Store<AppState>, private authService: AuthService, private confirmationService: ConfirmationService) {  }
 
   ngOnInit(): void {
-    this.userIsStaff$ = this.userService.isStaff$;
-    this.userIsAdmin$ = this.userService.isAdministrator$;
-
-    this.userCurrent$ = this.userService.guideId$;
+    this.permissionCurrent$ = this.authService.guidePermission$;
 
     this.tourId$ = this.store.select(selectRouterDetailId);
 
@@ -74,10 +69,18 @@ export class TourDetailComponent implements OnInit, OnDestroy {
             this.store.dispatch(new RequestTour({id}));
           } else {
             /* Check if current user is owner of tour */
-            this.userCurrent$.pipe(
+            this.permissionHandler$ = this.permissionCurrent$.pipe(
               takeUntil(this.destroySubject),
-              tap(value => this.tourOwner.next(tour.guideId === value))
-            ).subscribe();
+              map(permission => {
+                this.tourOwner.next(permission.guideId === tour.guideId);
+                if (permission.permissionLevel >= PermissionLevel.coordinator) {
+                  return true;
+                } else if (permission.permissionLevel === PermissionLevel.guide) {
+                  return permission.guideId === tour.guideId;
+                }
+                return false;
+              })
+            );
             /* Generate tour */
             const tourGroup = tourGroupFactory(tour);
             tourGroup.valueChanges.pipe(
@@ -195,8 +198,7 @@ export class TourDetailComponent implements OnInit, OnDestroy {
 
   selectEvent(index) {
     this.eventArray$.subscribe(
-      eventArray => this.currentEventGroup = (eventArray.at(index.data)) as FormGroup
-    ).unsubscribe();
+      eventArray => this.currentEventGroup = (eventArray.at(index.data)) as FormGroup).unsubscribe();
     this.display = true;
   }
 

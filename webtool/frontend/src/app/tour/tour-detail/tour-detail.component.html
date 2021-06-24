@@ -1,4 +1,4 @@
-<ng-container *ngIf="(userIsStaff$ | async) || (userIsAdmin$ | async) || (userIsOwner$ | async) else usernotvarified">
+<ng-container *ngIf="permissionHandler$ | async else usernotvarified">
 <ng-container *ngIf="tourGroup$ | async as tourGroup else loading" readonly="True">
 <!--<p-card header="Tour #{{tourId$ | async}}">-->
 <!--<h1>Tour #{{tourId$ | async}}</h1>-->
@@ -543,4 +543,13 @@
     </div>
   </div>
 </ng-template>
-<ng-template #usernotvarified></ng-template>
+<ng-template #usernotvarified>
+  <p-card header="Tourenformular - Zugriff verboten">
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+      Sie sind nicht berechtigt den Inhalt dieser Seite zu sehen. Bitte melden Sie sich mit Ihrem Zugang an oder wenden
+      sich an den zuständigen Mitarbeiter.
+    </div>
+  </div>
+  </p-card>
+</ng-template>
