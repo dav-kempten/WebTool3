@@ -17,6 +17,23 @@ export enum States {
   SOON_BOOKABLE
 }
 
+export enum StatesGroup {
+  Active = 1,
+  Finished,
+  All
+}
+
+export function getStatesOfGroup(group: StatesGroup): States[] {
+  switch (group) {
+    case StatesGroup.Active:
+      return [States.WORKING, States.READY, States.REJECTED, States.ACCEPTED, States.PUBLISHED, States.POSTPONED, States.SOON_BOOKABLE];
+    case StatesGroup.Finished: return [States.FINISHED, States.CANCELED];
+    case StatesGroup.All:
+      return [States.WORKING, States.READY, States.REJECTED, States.ACCEPTED, States.PUBLISHED, States.FINISHED, States.CANCELED,
+        States.POSTPONED, States.SOON_BOOKABLE];
+  }
+}
+
 export interface Category {
   id: number;
   code: string;
