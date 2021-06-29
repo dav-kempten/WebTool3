@@ -1,4 +1,4 @@
-<ng-container *ngIf="(userIsStaff$ | async) || (userIsAdmin$ | async) || (userIsOwner$ | async) else usernotvarified">
+<ng-container *ngIf="permissionHandler$ | async else usernotvarified">
 <ng-container *ngIf="instructionGroup$ | async as instructionGroup else loading" readonly="True">
 <!--<p-card header="Instruction #{{instructionId$ | async}}">-->
 <!--  <p>InstructionGroup:<br/>{{instructionGroup.value | json}}</p>-->
@@ -583,4 +583,13 @@
 </ng-container>
 </ng-container>
 <ng-template #loading>Bitte kurz warten!</ng-template>
-<ng-template #usernotvarified></ng-template>
+<ng-template #usernotvarified>
+  <p-card header="Kursformular - Zugriff verboten">
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+      Sie sind nicht berechtigt den Inhalt dieser Seite zu sehen. Bitte melden Sie sich mit Ihrem Zugang an oder wenden
+      sich an den zuständigen Mitarbeiter.
+    </div>
+  </div>
+  </p-card>
+</ng-template>

@@ -9,13 +9,7 @@ import {
   OnInit,
   ViewChild
 } from '@angular/core';
-import {
-  ControlValueAccessor,
-  FormControl,
-  FormControlName,
-  FormGroup,
-  NG_VALUE_ACCESSOR
-} from '@angular/forms';
+import {ControlValueAccessor, FormControl, FormControlName, FormGroup, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {Dropdown} from 'primeng/primeng';
 import {BehaviorSubject, Observable, ReplaySubject, Subject, Subscription} from 'rxjs';
 import {stateValidator} from '../dropdown/dropdown.component';
@@ -24,7 +18,8 @@ import {Category as RawCategory} from '../../model/value';
 import {Store} from '@ngrx/store';
 import {AppState} from '../../app.state';
 import {getCategoryState} from '../store/value.selectors';
-import {delay, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
+import {delay, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
+import {Permission, PermissionLevel} from '../service/permission.service';
 
 @Component({
   selector: 'avk-categoryselect',
@@ -59,7 +54,7 @@ export class CategoryselectComponent implements OnInit, OnDestroy, AfterViewInit
 
   seasonKeyword = '';
   topicKeyword = '';
-  isStaff = true;
+  isStaff = new BehaviorSubject<boolean>(true);
 
   @Input()
   set readOnly(value: boolean) {
@@ -80,11 +75,11 @@ export class CategoryselectComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   @Input()
-  set isStaffOrAdmin(value: boolean) {
-    this.isStaff = value;
+  set isStaffOrAdmin(value: Permission) {
+    this.isStaff.next(value.permissionLevel >= PermissionLevel.coordinator);
     /* Filter if current user is not Admin or Staff */
     if (this.status.length > 1 && this.categorySubject.value !== undefined) {
-      this.filterByStatus(this.status, this.isStaff);
+      this.filterByStatus(this.status, this.isStaff.value);
     }
   }
 
@@ -168,7 +163,7 @@ export class CategoryselectComponent implements OnInit, OnDestroy, AfterViewInit
             }
           }
         });
-        this.filterBySeason(this.filterByStatus(this.status, this.isStaff), this.seasonKeyword);
+        this.filterBySeason(this.filterByStatus(this.status, this.isStaff.value), this.seasonKeyword);
       }),
       // shareReplay(),
       publishReplay(1),

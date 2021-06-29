@@ -1,10 +1,11 @@
-<ng-container *ngIf="(userIsStaff$ | async) || (userIsAdmin$ | async) else usernotvarified">
+<ng-container *ngIf="permissionHandler$ | async else usernotvarified">
 <ng-container *ngIf="sessionGroup$ | async as sessionGroup else loading">
-<p-card header="Session #{{sessionId$ | async}}">
 <!--<h1>Tour #{{sessionId$ | async}}</h1>-->
 <!--<p>{{sessionGroup.value | json}}</p>-->
 
 <form [formGroup]="sessionGroup">
+  <p-card header="Gruppenterminformular">
+  </p-card>
   <!--Guide-->
   <p-card subheader="Guide & Team">
   <div class="p-grid">
@@ -328,11 +329,19 @@
   </div>
   </p-card>
 </form>
-</p-card>
 </ng-container>
 </ng-container>
 <ng-template #loading>
   Bitte kurz warten!
   <a routerLink="../"><p-button label="Zurück"></p-button></a>
 </ng-template>
-<ng-template #usernotvarified></ng-template>
+<ng-template #usernotvarified>
+  <p-card header="Gruppenterminformular - Zugriff verboten">
+  <div class="p-grid">
+    <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+      Sie sind nicht berechtigt den Inhalt dieser Seite zu sehen. Bitte melden Sie sich mit Ihrem Zugang an oder wenden
+      sich an den zuständigen Mitarbeiter.
+    </div>
+  </div>
+  </p-card>
+</ng-template>

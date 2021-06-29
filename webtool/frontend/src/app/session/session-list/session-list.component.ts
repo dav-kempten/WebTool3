@@ -4,19 +4,16 @@ import {AppState, selectRouterFragment} from '../../app.state';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {SessionSummary} from '../../model/session';
 import {ConfirmationService, MenuItem} from 'primeng/api';
-import {AuthService, User} from '../../core/service/auth.service';
+import {AuthService} from '../../core/service/auth.service';
 import {FormControl, FormGroup} from '@angular/forms';
 import {Router} from '@angular/router';
 import {filter, first, flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {RequestSessionSummaries} from '../../core/store/session-summary.actions';
 import {getSessionSummaries} from '../../core/store/session-summary.selectors';
-import {
-  CloneSession,
-  CreateSession,
-  DeleteSession,
-  RequestSession
-} from '../../core/store/session.actions';
+import {CloneSession, CreateSession, DeleteSession, RequestSession} from '../../core/store/session.actions';
 import {getSessionById} from '../../core/store/session.selectors';
+import {Permission, PermissionLevel} from '../../core/service/permission.service';
+import {getStatesOfGroup, StatesGroup} from '../../model/value';
 
 
 @Component({
@@ -34,15 +31,10 @@ export class SessionListComponent implements OnInit, OnDestroy, AfterViewInit {
   activeItem$: Observable<MenuItem>;
   display = false;
 
-  finishedSessions = [6, 7, 8];
-  activeSessions = [1, 2, 3, 4, 5, 9];
-  allSessions = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  permissionHandler$: Observable<boolean>;
+  permissionCurrent$: Observable<Permission>;
 
   partNewSession = new BehaviorSubject<string>('');
-
-  user$: Observable<User>;
-  authState$: Observable<User>;
-  loginObject = {id: undefined, firstName: '', lastName: '', role: undefined, valState: 0};
 
   collectiveId = new FormControl('');
   startDate = new FormControl('');
@@ -62,25 +54,11 @@ export class SessionListComponent implements OnInit, OnDestroy, AfterViewInit {
     {label: 'Vollmondstammtisch', url: '/sessions#vst'}
   ];
 
-  constructor(private store: Store<AppState>, private router: Router, private authService: AuthService, private confirmationService: ConfirmationService) { }
+  constructor(private store: Store<AppState>, private router: Router, private authService: AuthService,
+              private confirmationService: ConfirmationService) { }
 
   ngOnInit() {
-    this.authState$ = this.authService.user$;
-
-    this.authState$.pipe(
-      tap(value => {
-        this.loginObject = { ...value, valState: 0 };
-        if (value.role === 'Administrator') {
-          this.loginObject.valState = 4;
-        } else if (value.role === 'Geschäftsstelle') {
-          this.loginObject.valState = 3;
-        } else if (value.role === 'Fachbereichssprecher') {
-          this.loginObject.valState = 2;
-        } else if (value.role === 'Trainer') {
-          this.loginObject.valState = 1;
-        } else { this.loginObject.valState = 0; }
-      }),
-    ).subscribe();
+    this.permissionCurrent$ = this.authService.guidePermission$;
 
     this.part$ = this.store.pipe(
       takeUntil(this.destroySubject),
@@ -122,6 +100,13 @@ export class SessionListComponent implements OnInit, OnDestroy, AfterViewInit {
           tap(sessions => {
             if (!sessions || !sessions.length) {
               this.store.dispatch(new RequestSessionSummaries());
+            } else {
+              this.permissionHandler$ = this.permissionCurrent$.pipe(
+                takeUntil(this.destroySubject),
+                map(permission => {
+                  return permission.permissionLevel >= PermissionLevel.coordinator;
+                })
+              );
             }
           }),
           map(sessions =>
@@ -153,14 +138,16 @@ export class SessionListComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.dt.filter(this.activeSessions, 'stateId', 'in');
+    this.dt.filter(getStatesOfGroup(StatesGroup.Active), 'stateId', 'in');
   }
 
   selectSession(session): void {
     if (!!session) {
-      if (this.loginObject.valState >= 2) {
-        this.router.navigate(['sessions', session.id]);
-      }
+      this.permissionCurrent$.pipe(takeUntil(this.destroySubject)).subscribe( permission => {
+        if (permission.permissionLevel >= PermissionLevel.coordinator) {
+          this.router.navigate(['sessions', session.id]);
+        }
+      });
     }
   }
 
@@ -169,8 +156,12 @@ export class SessionListComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   create(collective, date) {
-    this.store.dispatch(new CreateSession({collectiveId: collective, startDate: date}));
-    this.display = false;
+    this.permissionCurrent$.pipe(takeUntil(this.destroySubject)).subscribe( permission => {
+      if (permission.permissionLevel >= PermissionLevel.coordinator) {
+        this.store.dispatch(new CreateSession({collectiveId: collective, startDate: date}));
+        this.display = false;
+      }
+    });
   }
 
   clone(sessionId) {
@@ -199,11 +190,15 @@ export class SessionListComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
+  filterFinishedSessions(stateId: number): boolean {
+    return getStatesOfGroup(StatesGroup.Finished).indexOf(stateId) === -1;
+  }
+
   changeViewSet(event, dt) {
     if (!event.checked) {
-      dt.filter(this.activeSessions, 'stateId', 'in');
+      dt.filter(getStatesOfGroup(StatesGroup.Active), 'stateId', 'in');
     } else {
-      dt.filter(this.allSessions, 'stateId', 'in');
+      dt.filter(getStatesOfGroup(StatesGroup.All), 'stateId', 'in');
     }
   }
 

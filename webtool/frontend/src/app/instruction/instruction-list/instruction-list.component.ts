@@ -8,16 +8,17 @@ import {RequestInstructionSummaries} from '../../core/store/instruction-summary.
 import {filter, first, flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {Router} from '@angular/router';
 import {ConfirmationService, MenuItem, SelectItem} from 'primeng/api';
-import {AuthService, User} from '../../core/service/auth.service';
+import {AuthService} from '../../core/service/auth.service';
 import {
   CloneInstruction,
   CreateInstruction,
-  DeactivateInstruction,
   DeleteInstruction,
   RequestInstruction
 } from '../../core/store/instruction.actions';
-import {FormControl, FormGroup, FormBuilder} from '@angular/forms';
+import {FormControl, FormGroup} from '@angular/forms';
 import {getInstructionById} from '../../core/store/instruction.selectors';
+import {Permission, PermissionLevel} from '../../core/service/permission.service';
+import {getStatesOfGroup, States, StatesGroup} from '../../model/value';
 
 @Component({
   selector: 'avk-instruction-list',
@@ -29,24 +30,17 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
   @ViewChild('dt') dt;
 
   filterDropdown: SelectItem[];
+  display = false;
 
   private destroySubject = new Subject<void>();
   part$: Observable<string>;
   instructions$: Observable<InstructionSummary[]>;
   activeItem$: Observable<MenuItem>;
-  display = false;
 
-  finishedInstructions = [6, 7];
-  activeInstructions = [1, 2, 3, 4, 5, 8, 9];
-  allInstructions = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  permissionHandler$: Observable<boolean>;
+  permissionCurrent$: Observable<Permission>;
 
   partNewInstruction = new BehaviorSubject<string>('');
-
-  user$: Observable<User>;
-  authState$: Observable<User>;
-  authChangeSubject = new BehaviorSubject<any>(undefined);
-  authChange$: Observable<any> = this.authChangeSubject.asObservable();
-  loginObject = {id: undefined, firstName: '', lastName: '', role: undefined, valState: 0};
 
   topicId = new FormControl('');
   startDate = new FormControl('');
@@ -63,7 +57,7 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
     {label: 'Winterkurse', url: '/instructions#winter'},
   ];
 
-  constructor(private store: Store<AppState>, private router: Router, private userService: AuthService,
+  constructor(private store: Store<AppState>, private router: Router, private authService: AuthService,
               private confirmationService: ConfirmationService) {
     this.filterDropdown = [
       {label: 'Aktive Kurse', value: {id: 0, name: 'Aktive Kurse'}},
@@ -73,27 +67,7 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
   }
 
   ngOnInit() {
-    this.authState$ = this.userService.user$;
-
-    this.authState$.pipe(
-      takeUntil(this.destroySubject),
-      tap(value => {
-        this.loginObject = { ...value, valState: 0 };
-        if (value.role === 'Administrator') {
-          this.loginObject.valState = 4;
-        } else if (value.role === 'Geschäftsstelle') {
-          this.loginObject.valState = 3;
-        } else if (value.role === 'Fachbereichssprecher') {
-          this.loginObject.valState = 2;
-        } else if (value.role === 'Trainer') {
-          this.loginObject.valState = 1;
-        } else { this.loginObject.valState = 0; }
-      }),
-    ).subscribe(
-      value => {
-        this.authChangeSubject.next(value);
-      }
-    );
+    this.permissionCurrent$ = this.authService.guidePermission$;
 
     this.part$ = this.store.pipe(
       takeUntil(this.destroySubject),
@@ -128,6 +102,13 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
           tap(instructions => {
             if (!instructions || !instructions.length) {
               this.store.dispatch(new RequestInstructionSummaries());
+            } else {
+              this.permissionHandler$ = this.permissionCurrent$.pipe(
+                takeUntil(this.destroySubject),
+                map(permission => {
+                  return permission.permissionLevel >= PermissionLevel.coordinator;
+                })
+              );
             }
           }),
           map(instructions =>
@@ -148,13 +129,6 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
     this.part$.subscribe();
     this.activeItem$.subscribe();
     this.instructions$.subscribe();
-
-    this.authChange$.pipe(
-      takeUntil(this.destroySubject),
-      filter(user => !!user),
-      publishReplay(1),
-      refCount(),
-    );
   }
 
   ngOnDestroy(): void {
@@ -163,42 +137,37 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
   }
 
   ngAfterViewInit(): void {
-    this.dt.filter(this.activeInstructions, 'stateId', 'in');
-    this.authChange$.subscribe(
-      value => {
-        if (value.id !== undefined && value.role === 'Trainer') {
-          this.dt.filter(value.id, 'guideId', 'equals');
-        }
+    this.dt.filter(getStatesOfGroup(StatesGroup.Active), 'stateId', 'in');
+    this.permissionCurrent$.pipe(takeUntil(this.destroySubject)).subscribe(permission => {
+      if (permission.guideId !== undefined && permission.permissionLevel === PermissionLevel.guide) {
+        this.dt.filter(permission.guideId, 'guideId', 'equals');
       }
-    );
+    });
   }
 
   selectInstruction(instruction): void {
     if (!!instruction) {
-      if (this.loginObject.valState >= 2 || this.loginObject.id === instruction.guideId) {
-        this.router.navigate(['instructions', instruction.id]);
-      }
+      this.permissionCurrent$.pipe(takeUntil(this.destroySubject)).subscribe( permission => {
+        if (permission.permissionLevel >= PermissionLevel.coordinator || permission.guideId === instruction.guideId) {
+          this.router.navigate(['instructions', instruction.id]);
+        }
+      });
     }
   }
 
-  handleClick() {
+  handleClick(): void {
     this.display = true;
   }
 
-  create(topic, date) {
-    let guideId: number;
-    if (this.loginObject.valState === 1) {
-      guideId = this.loginObject.id;
-    } else {
-      guideId = null;
-    }
-    this.store.dispatch(new CreateInstruction({
-      topicId: topic, startDate: date, guideId
-    }));
-    this.display = false;
+  create(topic, date): void {
+    this.permissionCurrent$.pipe(takeUntil(this.destroySubject)).subscribe( permission => {
+      const guideId: number = permission.permissionLevel === PermissionLevel.guide ? permission.guideId : null;
+      this.store.dispatch(new CreateInstruction({ topicId: topic, startDate: date, guideId }));
+      this.display = false;
+    });
   }
 
-  clone(instructionId) {
+  clone(instructionId): void {
     this.store.pipe(
       select(getInstructionById(instructionId)),
       tap(instruction => {
@@ -224,18 +193,22 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
     });
   }
 
+  filterFinishedInstructions(stateId: number): boolean {
+    return getStatesOfGroup(StatesGroup.Finished).indexOf(stateId) === -1;
+  }
+
   changeViewSet(event, dt) {
     switch (event.value.id) {
       case 0: {
-        dt.filter(this.activeInstructions, 'stateId', 'in');
+        dt.filter(getStatesOfGroup(StatesGroup.Active), 'stateId', 'in');
         break;
       }
       case 1: {
-        dt.filter(this.allInstructions, 'stateId', 'in');
+        dt.filter(getStatesOfGroup(StatesGroup.All), 'stateId', 'in');
         break;
       }
       case 2: {
-        dt.filter(2, 'stateId', 'equals');
+        dt.filter(States.READY, 'stateId', 'equals');
         break;
       }
       default:

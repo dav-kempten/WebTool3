@@ -16,12 +16,13 @@ import {getInstructionById} from '../../core/store/instruction.selectors';
 import {Instruction} from '../../core/store/instruction.model';
 import {filter, flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {getEventsByIds} from '../../core/store/event.selectors';
-import {AuthService, User} from '../../core/service/auth.service';
+import {AuthService} from '../../core/service/auth.service';
 import {Event} from '../../model/event';
 import {Category, Topic} from '../../model/value';
 import {FormArray, FormControl, FormGroup} from '@angular/forms';
 import {UpdateEvent} from '../../core/store/event.actions';
 import {ConfirmationService} from 'primeng/api';
+import {Permission, PermissionLevel} from '../../core/service/permission.service';
 
 @Component({
   selector: 'avk-instruction-detail',
@@ -56,25 +57,17 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   events$: Observable<Event[]>;
   category$: Observable<Category>;
 
-  authState$: Observable<User>;
-  userIsStaff$: Observable<boolean>;
-  userIsAdmin$: Observable<boolean>;
-  userIsOwner$: Observable<boolean> = this.instructionOwner.asObservable();
-  userCurrent$: Observable<number>;
-
-  instructionIndoor$: Observable<boolean> = this.instructionIndoor.asObservable();
+  permissionHandler$: Observable<boolean>;
+  permissionCurrent$: Observable<Permission>;
 
   display = false;
   currentEventGroup: FormGroup = undefined;
   eventNumber: number[];
 
-  constructor(private store: Store<AppState>, private userService: AuthService, private confirmationService: ConfirmationService) { }
+  constructor(private store: Store<AppState>, private authService: AuthService, private confirmationService: ConfirmationService) { }
 
   ngOnInit(): void {
-    this.userIsStaff$ = this.userService.isStaff$;
-    this.userIsAdmin$ = this.userService.isAdministrator$;
-
-    this.userCurrent$ = this.userService.guideId$;
+    this.permissionCurrent$ = this.authService.guidePermission$;
 
     this.instructionId$ = this.store.select(selectRouterDetailId);
 
@@ -88,10 +81,18 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
             this.store.dispatch(new RequestInstruction({id}));
           } else {
             /* Check if current user is owner of instruction */
-            this.userCurrent$.pipe(
+            this.permissionHandler$ = this.permissionCurrent$.pipe(
               takeUntil(this.destroySubject),
-              tap(value => this.instructionOwner.next(instruction.guideId === value))
-            ).subscribe();
+              map(permission => {
+                this.instructionOwner.next(permission.guideId === instruction.guideId);
+                if (permission.permissionLevel >= PermissionLevel.coordinator) {
+                  return true;
+                } else if (permission.permissionLevel === PermissionLevel.guide) {
+                  return permission.guideId === instruction.guideId;
+                }
+                return false;
+              })
+            );
             /* Generate instruction */
             const instructionGroup = instructionGroupFactory(instruction);
             instructionGroup.valueChanges.pipe(
@@ -184,7 +185,6 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     );
 
     this.instructionId$.subscribe();
-    this.instruction$.subscribe();
     this.topic$.subscribe();
     this.category$.subscribe();
     this.eventIds$.subscribe();
