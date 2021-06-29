@@ -7,13 +7,13 @@
       </a>
     </div>
   </div>
-  <div class="p-grid" *ngIf="this.userId === undefined">
+  <div class="p-grid" *ngIf="!(permissionHandler$ | async)">
     <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
       Liebe Bergfreunde,
       <br>meldet euch mit eurer Mitgliedsnummer unter dem Button <b>Anmelden</b> an.
     </div>
   </div>
-  <div class="p-grid" *ngIf="this.userId !== undefined">
+  <div class="p-grid" *ngIf="permissionHandler$ | async">
     <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
       Liebe Bergefreunde,
       <br>hier könnt ihr eure Touren und Kurse eintragen und verwalten. Wenn Ihr mit der Bearbeitung fertig seid, werden die
@@ -25,12 +25,12 @@
   </div>
   <br>
   <div class="p-grid">
-    <div class="p-col-12 p-sm-6 p-md-6 p-lg-6" *ngIf="this.userId !== undefined">
+    <div class="p-col-12 p-sm-6 p-md-6 p-lg-6" *ngIf="permissionHandler$ | async">
       <p-toggleButton onLabel="Neue Tour" offLabel="Tour hinzufügen" (onChange)="proposeTour()"></p-toggleButton>
     </div>
   </div>
   <form [formGroup]="createTour">
-  <p-card subheader="Tourerstellung" *ngIf="this.userId !== undefined && this.displayTour">
+  <p-card subheader="Tourerstellung" *ngIf="(permissionHandler$ | async) && this.displayTour.value">
     <div class="p-grid">
       <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
         <b>Wie erstelle ich eine Tour?</b>
@@ -75,17 +75,17 @@
       </div>
     </div>
     <p-button label="Tour erstellen & weiterbearbeiten" (onClick)="creatingTour(createTour.get('categoryIds').value, createTour.get('startDate').value,
-              createTour.get('deadline').value, createTour.get('preliminary').value, this.userId)"></p-button>
+              createTour.get('deadline').value, createTour.get('preliminary').value)"></p-button>
   </p-card>
   </form>
 
   <div class="p-grid">
-    <div class="p-col-12 p-sm-6 p-md-6 p-lg-6" *ngIf="this.userId !== undefined">
+    <div class="p-col-12 p-sm-6 p-md-6 p-lg-6" *ngIf="permissionHandler$ | async">
       <p-toggleButton onLabel="Neuer Kurs" offLabel="Kurs hinzufügen" (onChange)="proposeInstruction()"></p-toggleButton>
     </div>
   </div>
   <form [formGroup]="createInstruction">
-  <p-card subheader="Kurserstellung" *ngIf="this.userId !== undefined && this.displayInstruction">
+  <p-card subheader="Kurserstellung" *ngIf="(permissionHandler$ | async) && this.displayInstruction.value">
     <div class="p-grid">
       <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
         <b>Wie erstelle ich einen Kurs?</b>
@@ -101,7 +101,7 @@
             formControlName="topicId"
             id="topicId"
             [topicSpecific]="'instruction'"
-            [isStaffOrAdmin]="this.userIsStaff"
+            [isStaffOrAdmin]="permissionCurrent$ | async"
         >
         </avk-categoryselect>
       <i class="pi pi-question-circle" pTooltip="Kurskategorie"></i>
@@ -114,11 +114,11 @@
       </div>
     </div>
     <p-button label="Kurs erstellen & weiterbearbeiten" (onClick)="creatingInstruction(createInstruction.get('topicId').value,
-      createInstruction.get('startDate').value, this.userId)"></p-button>
+      createInstruction.get('startDate').value)"></p-button>
   </p-card>
   </form>
 
-  <p-card subheader="Hilfe" *ngIf="this.userId !== undefined">
+  <p-card subheader="Hilfe" *ngIf="permissionHandler$ | async">
     <div class="p-grid">
       <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
         Wenn ihr Fragen habt, könnt ihr euch jederzeit bei der Geschäftsstelle (<b>info[at]dav-kempten.de</b>) oder bei Jojo

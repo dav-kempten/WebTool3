@@ -1,25 +1,28 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Store} from '@ngrx/store';
 import {AppState} from '../app.state';
-import {AuthService, User} from '../core/service/auth.service';
+import {AuthService} from '../core/service/auth.service';
 import {FormControl, FormGroup} from '@angular/forms';
 import {CreateTour} from '../core/store/tour.actions';
-import {tap} from 'rxjs/operators';
-import {Observable} from 'rxjs';
+import {map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
+import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {CreateInstruction} from '../core/store/instruction.actions';
+import {Permission, PermissionLevel} from '../core/service/permission.service';
 
 @Component({
   selector: 'avk-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
-export class DashboardComponent implements OnInit {
-  authState$: Observable<User>;
+export class DashboardComponent implements OnInit, OnDestroy {
+  private destroySubject: Subject<boolean> = new Subject<boolean>();
+
+  permissionHandler$: Observable<boolean>;
+  permissionCurrent$: Observable<Permission>;
+
   preliminarySelect = false;
-  displayTour = false;
-  displayInstruction = false;
-  userIsStaff = false;
-  userId = 0;
+  displayTour = new BehaviorSubject(false);
+  displayInstruction = new BehaviorSubject(false);
 
   categoryIds = new FormControl('');
   startDateTour = new FormControl('');
@@ -41,25 +44,40 @@ export class DashboardComponent implements OnInit {
     startDate: this.startDateInstruction
   });
 
-  constructor(private store: Store<AppState>, private authService: AuthService) {}
+  constructor(private store: Store<AppState>, private authService: AuthService) { }
 
   ngOnInit() {
-    this.authState$ = this.authService.user$;
+    this.permissionCurrent$ = this.authService.guidePermission$;
 
-    this.authState$.pipe(
-      tap(value => {
-        this.userIsStaff = (value.role === 'Geschäftsstelle' || value.role === 'Administrator');
-        this.userId = value.id;
+    this.permissionHandler$ = this.permissionCurrent$.pipe(
+      takeUntil(this.destroySubject),
+      tap(permission => {
+        if (permission.guideId === undefined) {
+          this.displayInstruction.next(false);
+          this.displayTour.next(false);
+        }
       }),
-    ).subscribe();
+      map(permission => permission.permissionLevel >= PermissionLevel.guide),
+      // shareReplay(),
+      publishReplay(1),
+      refCount()
+    );
+
+    this.permissionCurrent$.subscribe();
+    this.permissionHandler$.subscribe();
+  }
+
+  ngOnDestroy() {
+    this.destroySubject.next(true);
+    this.destroySubject.unsubscribe();
   }
 
   proposeTour() {
-    this.displayTour = !this.displayTour;
+    this.displayTour.next(!this.displayTour.value);
   }
 
   proposeInstruction() {
-    this.displayInstruction = !this.displayInstruction;
+    this.displayInstruction.next(!this.displayInstruction.value);
   }
 
   selectPreliminary() {
@@ -69,18 +87,22 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  creatingTour(category, startdate, enddate, preliminary, guideId) {
-    if (this.userIsStaff) { guideId = null; }
-    this.store.dispatch(new CreateTour({
-      categoryId: category, startDate: startdate, deadline: enddate, preliminary, guideId
-    }));
+  creatingTour(category, startdate, enddate, preliminary) {
+    this.permissionCurrent$.pipe(takeUntil(this.destroySubject)).subscribe(permission => {
+      const guideId = permission.permissionLevel >= PermissionLevel.coordinator ? null : permission.guideId;
+      this.store.dispatch(new CreateTour({
+        categoryId: category, startDate: startdate, deadline: enddate, preliminary, guideId
+      }));
+    }).unsubscribe();
   }
 
-  creatingInstruction(topic, startdate, guideId) {
-    if (this.userIsStaff) { guideId = null; }
-    this.store.dispatch(new CreateInstruction({
-      topicId: topic, startDate: startdate, guideId
-    }));
+  creatingInstruction(topic, startdate) {
+    this.permissionCurrent$.pipe(takeUntil(this.destroySubject)).subscribe(permission => {
+      const guideId = permission.permissionLevel >= PermissionLevel.coordinator ? null : permission.guideId;
+      this.store.dispatch(new CreateInstruction({
+        topicId: topic, startDate: startdate, guideId
+      }));
+    }).unsubscribe();
   }
 
 }
