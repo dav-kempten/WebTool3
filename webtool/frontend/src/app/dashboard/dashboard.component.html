@@ -26,97 +26,96 @@
   <br>
   <div class="p-grid">
     <div class="p-col-12 p-sm-6 p-md-6 p-lg-6" *ngIf="permissionHandler$ | async">
-      <p-toggleButton onLabel="Neue Tour" offLabel="Tour hinzufügen" (onChange)="proposeTour()"></p-toggleButton>
+      <form [formGroup]="createTour">
+        <p-card subheader="Tourenerstellung">
+          <div class="p-grid">
+            <div class="p-col-12 p-sm-12 p-md-12 p-lg-12" style="text-align: justify">
+              <b>Wie erstelle ich eine Tour?</b>
+              <br>Um eine Tour zu erstellen, brauchst du drei bzw. vier Angaben: Die Art der Tour und das jeweilige
+              Datum zu Tourenbeginn, Anmeldeschluss und Vorbesprechung (optional). Die restlichen Daten lassen sich
+              dann in der Detailansicht der Tour einpflegen.
+            </div>
+          </div>
+          <div class="p-grid">
+            <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+              <avk-categoryselect
+                formControlName="categoryIds"
+                id="categoryIds"
+                [topicSpecific]="'tour'"
+              >
+              </avk-categoryselect>
+              <i class="pi pi-question-circle" pTooltip="Tourkategorie"></i>
+            </div>
+          </div>
+          <div class="p-grid">
+            <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+              <avk-date formControlName="startDate" id="dbeginn" label="Startdatum"
+                        [min]="createTour.get('deadline').value"></avk-date>
+              <i class="pi pi-question-circle" pTooltip="Datum des Starts der Tour"></i>
+            </div>
+            <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+              <avk-date formControlName="deadline" id="dend" label="Anmeldung"
+                        [max]="createTour.get('startDate').value"></avk-date>
+              <i class="pi pi-question-circle"
+                 pTooltip="Datum des Anmeldeschlusses (normalerweise ca. 1 Woche vorher)"></i>
+            </div>
+          </div>
+          <div class="p-grid">
+            <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+              <p-toggleButton offLabel="Vorbesprechung hinzufügen" onLabel="Vorbesprechung entfernen"
+                              class="ui-button-success" (click)="selectPreliminary()"></p-toggleButton>
+            </div>
+          </div>
+          <div class="p-grid" *ngIf="preliminarySelect">
+            <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+              <avk-date formControlName="preliminary" id="preliminary" label="Vorbesprechung"
+                        [min]="createTour.get('deadline').value" [max]="createTour.get('startDate').value"></avk-date>
+              <i class="pi pi-question-circle"
+                 pTooltip="Datum der Vorbesprechung (normalerweise ein paar Tage vorher)"></i>
+            </div>
+          </div>
+          <p-button label="Tour erstellen & weiterbearbeiten" (onClick)="creatingTour(createTour.get('categoryIds').value,
+              createTour.get('startDate').value, createTour.get('deadline').value, createTour.get('preliminary').value)"
+          ></p-button>
+        </p-card>
+      </form>
     </div>
-  </div>
-  <form [formGroup]="createTour">
-  <p-card subheader="Tourerstellung" *ngIf="(permissionHandler$ | async) && this.displayTour.value">
-    <div class="p-grid">
-      <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
-        <b>Wie erstelle ich eine Tour?</b>
-        <br>Um eine Tour zu erstellen, brauchst du drei bzw. vier Angaben: Die Art der Tour und das jeweilige Datum zu
-        Tourenbeginn, Anmeldeschluss und Vorbesprechung (optional). Die restlichen Daten lassen sich dann in der
-        Detailansicht der Tour einpflegen.
-      </div>
-    </div>
-    <div class="p-grid">
-      <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
-        <avk-categoryselect
-            formControlName="categoryIds"
-            id="categoryIds"
-            [topicSpecific]="'tour'"
-        >
-        </avk-categoryselect>
-      <i class="pi pi-question-circle" pTooltip="Tourkategorie"></i>
-      </div>
-    </div>
-    <div class="p-grid">
-      <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
-        <avk-date formControlName="startDate" id="dbeginn" label="Startdatum" [min]="createTour.get('deadline').value"></avk-date>
-        <i class="pi pi-question-circle" pTooltip="Datum des Starts der Tour"></i>
-      </div>
-    </div>
-    <div class="p-grid">
-      <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
-        <avk-date formControlName="deadline" id="dend" label="Anmeldung" [max]="createTour.get('startDate').value"></avk-date>
-        <i class="pi pi-question-circle" pTooltip="Datum des Anmeldeschlusses (normalerweise ca. 1 Woche vorher)"></i>
-      </div>
-    </div>
-    <div class="p-grid">
-      <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
-        <p-toggleButton offLabel="Vorbesprechung hinzufügen" onLabel="Vorbesprechung entfernen" class="ui-button-success" (click)="selectPreliminary()"></p-toggleButton>
-      </div>
-    </div>
-    <div class="p-grid" *ngIf="preliminarySelect">
-      <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
-        <avk-date formControlName="preliminary" id="preliminary" label="Vorbesprechung"
-                  [min]="createTour.get('deadline').value" [max]="createTour.get('startDate').value"></avk-date>
-        <i class="pi pi-question-circle" pTooltip="Datum der Vorbesprechung (normalerweise ein paar Tage vorher)"></i>
-      </div>
-    </div>
-    <p-button label="Tour erstellen & weiterbearbeiten" (onClick)="creatingTour(createTour.get('categoryIds').value, createTour.get('startDate').value,
-              createTour.get('deadline').value, createTour.get('preliminary').value)"></p-button>
-  </p-card>
-  </form>
-
-  <div class="p-grid">
     <div class="p-col-12 p-sm-6 p-md-6 p-lg-6" *ngIf="permissionHandler$ | async">
-      <p-toggleButton onLabel="Neuer Kurs" offLabel="Kurs hinzufügen" (onChange)="proposeInstruction()"></p-toggleButton>
+      <form [formGroup]="createInstruction">
+        <p-card subheader="Kurserstellung">
+          <div class="p-grid">
+            <div class="p-col-12 p-sm-12 p-md-12 p-lg-12" style="text-align: justify">
+              <b>Wie erstelle ich einen Kurs?</b>
+              <br>Um einen Kurs zu erstellen, musst du lediglich die Art des Kurses und das Startdatum des Hauptermins
+              angeben. Der Haupttermin ist in den meisten Fällen der Praxistermin des Kurses - das ist dann auch das
+              Datum, das später auf der Homepage dargestellt wird. Die restlichen Termine (z.B. Theorieabende) kannst
+              du in der Detailansicht, auf die man dann weitergeleitet wird, zusätzlich hinzufügen.
+            </div>
+          </div>
+          <div class="p-grid">
+            <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+              <avk-categoryselect
+                formControlName="topicId"
+                id="topicId"
+                [topicSpecific]="'instruction'"
+                [isStaffOrAdmin]="permissionCurrent$ | async"
+              >
+              </avk-categoryselect>
+              <i class="pi pi-question-circle" pTooltip="Kurskategorie"></i>
+            </div>
+          </div>
+          <div class="p-grid">
+            <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+              <avk-date formControlName="startDate" id="ibeginn" label="Startdatum"></avk-date>
+              <i class="pi pi-question-circle" pTooltip="Starttermin des Haupttermins (z.B. Praxiswochenende)"></i>
+            </div>
+          </div>
+          <p-button label="Kurs erstellen & weiterbearbeiten" (onClick)="creatingInstruction(createInstruction.get('topicId').value,
+      createInstruction.get('startDate').value)"></p-button>
+        </p-card>
+      </form>
     </div>
   </div>
-  <form [formGroup]="createInstruction">
-  <p-card subheader="Kurserstellung" *ngIf="(permissionHandler$ | async) && this.displayInstruction.value">
-    <div class="p-grid">
-      <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
-        <b>Wie erstelle ich einen Kurs?</b>
-        <br>Um einen Kurs zu erstellen, musst du lediglich die Art des Kurses und das Startdatum des Hauptermins angeben.
-        Der Haupttermin ist in den meisten Fällen der Praxistermin des Kurses - das ist dann auch das Datum, das später
-        auf der Homepage dargestellt wird. Die restlichen Termine (z.B. Theorieabende) kannst du in der Detailansicht,
-        auf die man dann weitergeleitet wird, zusätzlich hinzufügen.
-      </div>
-    </div>
-    <div class="p-grid">
-      <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
-        <avk-categoryselect
-            formControlName="topicId"
-            id="topicId"
-            [topicSpecific]="'instruction'"
-            [isStaffOrAdmin]="permissionCurrent$ | async"
-        >
-        </avk-categoryselect>
-      <i class="pi pi-question-circle" pTooltip="Kurskategorie"></i>
-      </div>
-    </div>
-    <div class="p-grid">
-      <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
-        <avk-date formControlName="startDate" id="ibeginn" label="Startdatum"></avk-date>
-        <i class="pi pi-question-circle" pTooltip="Starttermin des Haupttermins (z.B. Praxiswochenende)"></i>
-      </div>
-    </div>
-    <p-button label="Kurs erstellen & weiterbearbeiten" (onClick)="creatingInstruction(createInstruction.get('topicId').value,
-      createInstruction.get('startDate').value)"></p-button>
-  </p-card>
-  </form>
 
   <p-card subheader="Hilfe" *ngIf="permissionHandler$ | async">
     <div class="p-grid">
