@@ -12,3 +12,13 @@ export interface Guide {
   username: string;
   profile: string;
 }
+
+export interface Profile {
+  city: string;
+  name: string;
+  qualification: string;
+  job: string;
+  reason: string;
+  hobby: string;
+  tip: string;
+}
