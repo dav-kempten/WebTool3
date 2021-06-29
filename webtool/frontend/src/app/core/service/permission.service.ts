@@ -1,7 +1,5 @@
-import {Injectable, OnInit} from '@angular/core';
-import {BehaviorSubject, Observable, Subject} from 'rxjs';
-import {ANONYMOUS_USER, AuthService, Role, User} from './auth.service';
-import {filter, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
+import {Injectable} from '@angular/core';
+import {Role} from './auth.service';
 
 export const enum PermissionLevel {
   unknown = 0,
