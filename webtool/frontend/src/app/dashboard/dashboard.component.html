@@ -66,7 +66,7 @@
                               class="ui-button-success" (click)="selectPreliminary()"></p-toggleButton>
             </div>
           </div>
-          <div class="p-grid" *ngIf="preliminarySelect">
+          <div class="p-grid" *ngIf="preliminarySelect | async">
             <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
               <avk-date formControlName="preliminary" id="preliminary" label="Vorbesprechung"
                         [min]="createTour.get('deadline').value" [max]="createTour.get('startDate').value"></avk-date>

@@ -4,7 +4,7 @@ import {AppState} from '../app.state';
 import {AuthService} from '../core/service/auth.service';
 import {FormControl, FormGroup} from '@angular/forms';
 import {CreateTour} from '../core/store/tour.actions';
-import {map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
+import {map, publishReplay, refCount, takeUntil} from 'rxjs/operators';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {CreateInstruction} from '../core/store/instruction.actions';
 import {Permission, PermissionLevel} from '../core/service/permission.service';
@@ -20,9 +20,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   permissionHandler$: Observable<boolean>;
   permissionCurrent$: Observable<Permission>;
 
-  preliminarySelect = false;
-  displayTour = new BehaviorSubject(false);
-  displayInstruction = new BehaviorSubject(false);
+  preliminarySelect = new BehaviorSubject<boolean>(false);
 
   categoryIds = new FormControl('');
   startDateTour = new FormControl('');
@@ -51,12 +49,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     this.permissionHandler$ = this.permissionCurrent$.pipe(
       takeUntil(this.destroySubject),
-      tap(permission => {
-        if (permission.guideId === undefined) {
-          this.displayInstruction.next(false);
-          this.displayTour.next(false);
-        }
-      }),
       map(permission => permission.permissionLevel >= PermissionLevel.guide),
       // shareReplay(),
       publishReplay(1),
@@ -65,6 +57,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     this.permissionCurrent$.subscribe();
     this.permissionHandler$.subscribe();
+    this.preliminarySelect.subscribe( preliminary => {
+      if (preliminary) { this.preliminary.setValue(null); }
+    });
   }
 
   ngOnDestroy() {
@@ -72,19 +67,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.destroySubject.unsubscribe();
   }
 
-  proposeTour() {
-    this.displayTour.next(!this.displayTour.value);
-  }
-
-  proposeInstruction() {
-    this.displayInstruction.next(!this.displayInstruction.value);
-  }
-
   selectPreliminary() {
-    this.preliminarySelect = !this.preliminarySelect;
-    if (this.preliminarySelect === false) {
-      this.preliminary.setValue(null);
-    }
+    this.preliminarySelect.next(!this.preliminarySelect.value);
   }
 
   creatingTour(category, startdate, enddate, preliminary) {
