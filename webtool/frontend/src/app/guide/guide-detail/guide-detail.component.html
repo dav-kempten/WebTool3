@@ -1,3 +1,4 @@
-<p>
-  guide-detail works!
-</p>
+<ng-container *ngIf="profileGroup$ | async as profileGroup else loading">
+  <p>ProfileGroup:<br/>{{profileGroup.value | json}}</p>
+</ng-container>
+<ng-template #loading>Bitte kurz warten!</ng-template>
