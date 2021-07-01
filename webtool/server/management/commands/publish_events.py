@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from server.models import Tour, Instruction
+from server.models import Tour, Instruction, Session
 
 
 class Command(BaseCommand):
@@ -19,6 +19,10 @@ class Command(BaseCommand):
         for i in Instruction.objects.filter(state_id=4):
             i.state_id = 5
             i.save()
+
+        for s in Session.objects.filter(state_id=4):
+            s.state_id = 5
+            s.save()
 
         print('Events published')
 
