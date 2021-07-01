@@ -7,35 +7,47 @@
 <p-splitButton (onClick)="loginButtonHandler()" icon="pi pi-user" [label]="label" [model]="buttonItems"></p-splitButton>
 <!--p-toast [style]="{marginTop: '80px'}"></p-toast-->
 
-<p-dialog [modal]="true" [(visible)]="displayMemberLogin">
+<p-dialog [modal]="true" [(visible)]="displayMemberLogin" header="Trainerzugang">
   <form autocomplete="off" novalidate [formGroup]="memberForm">
     <fieldset>
         <legend>Anmeldung Trainer</legend>
-        <div pTooltip='Obacht! Beim Login müsst ihr die "/" eurer Mitgliedsnummer durch "-" ersetzen.'>
-            <label for="memberId">Mitgliedsnummer:</label>
-            <input id="memberId" formControlName="memberId">
+        <br>
+        <div class="p-grid">
+          <div class="ui-float-label" pTooltip='Obacht! Beim Login müsst ihr die "/" eurer Mitgliedsnummer durch "-" ersetzen.'>
+            <input id="memberId" formControlName="memberId" type="text" maxlength="13" pInputText>
+            <label for="memberId">Mitgliedsnummer</label>
+          </div>
         </div>
-        <div>
-            <button (click)="loginMember()" [disabled]="memberForm.invalid">Trainer anmelden</button>
+        <br>
+        <div class="p-grid">
+            <button type="button" (click)="loginMember()" pButton
+                    style='width:100%' [disabled]="memberForm.invalid" label="Anmelden"></button>
         </div>
     </fieldset>
 </form>
 </p-dialog>
 
-<p-dialog [modal]="true" [(visible)]="displayUserLogin">
+<p-dialog [modal]="true" [(visible)]="displayUserLogin" header="Mitarbeiterzugang">
 <form novalidate [formGroup]="userForm">
     <fieldset>
-        <legend>Anmeldung Benutzer</legend>
-        <div>
-            <label for="userName">Benutzer:</label>
-            <input id="userName" formControlName="userName" autocomplete="username">
+        <legend>Anmeldung Mitarbeiter</legend>
+        <br>
+        <div class="p-grid">
+            <div class="ui-float-label">
+              <input id="userName" formControlName="userName" autocomplete="username" pInputText>
+              <label for="userName">Benutzername</label>
+            </div>
         </div>
-        <div>
-            <label for="password">Password:</label>
-            <input id="password" formControlName="password" type="password" autocomplete="current-password">
+        <br>
+        <div class="p-grid">
+            <div class="ui-float-label">
+              <input id="password" formControlName="password" type="password" autocomplete="current-password" pInputText>
+              <label for="password">Passwort</label>
+            </div>
         </div>
-        <div>
-          <button (click)="loginUser()" [disabled]="userForm.invalid">Benutzer anmelden</button>
+        <br>
+        <div class="p-grid">
+          <button (click)="loginUser()" [disabled]="userForm.invalid" style="width:100%" pButton label="Anmelden"></button>
         </div>
     </fieldset>
 </form>
