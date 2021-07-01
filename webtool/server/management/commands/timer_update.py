@@ -67,3 +67,5 @@ class Command(BaseCommand):
                 session.state = completed
                 session.save()
                 session.session.save()
+
+        print('Timer updated')
