@@ -18,6 +18,10 @@ WebTool3
 
    code/code
 
+   modules/rocket_chat
+   modules/lets_encrypt
+   modules/nextcloud
+
 Verzeichnisse und Tabellen
 ==========================
 
