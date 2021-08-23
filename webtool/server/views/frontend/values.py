@@ -143,11 +143,11 @@ class _Values(object):
     def _get_collectives(self):
         self._updated = max(self._updated, Collective.objects.latest().updated)
         return [
-            dict(id=a, code=b, title=c, name=d, description=e)
-            for (a, b, c, d, e) in Collective.objects
+            dict(id=a, code=b, title=c, name=d, managers=e, description=f)
+            for (a, b, c, d, e, f) in Collective.objects
             .exclude(deprecated=True)
             .filter(seasons=self._season)
-            .values_list('pk', 'category__code', 'title', 'name', 'description')
+            .values_list('pk', 'category__code', 'title', 'name', 'managers', 'description')
         ]
 
     def _get_tour_data(self):

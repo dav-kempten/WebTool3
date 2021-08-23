@@ -27,6 +27,7 @@ class CollectiveListField(serializers.ListField):
     code = serializers.CharField(source='category.code', read_only=True)
     title = serializers.CharField(read_only=True)
     name = serializers.CharField(read_only=True)
+    managerIds = serializers.PrimaryKeyRelatedField(source='managers', many=True, read_only=True)
     description = serializers.CharField(read_only=True)
 
 
