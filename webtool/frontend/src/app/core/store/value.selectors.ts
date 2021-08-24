@@ -9,7 +9,7 @@ import {State as SkillState} from './skill.reducer';
 import {State as CategoryState} from './category.reducer';
 import {State as TopicState} from './topic.reducer';
 import {State as FitnessState} from './fitness.reducer';
-import {State as CollectiveState} from './collective.reducer';
+import {selectAll, State as CollectiveState} from './collective.reducer';
 import {Dictionary} from '@ngrx/entity';
 
 export const getValueState = createFeatureSelector<ValueState>('values');
@@ -55,6 +55,8 @@ export const getOpeningHours = createSelector(
 );
 
 export const getStates = createSelector(selectStatesState, (state: Dictionary<any>): RawState => state.entities);
+
+export const getCollectives = createSelector(getCollectiveState, selectAll);
 
 export const getTopicById = (topicId: number) => createSelector(
   getTopicState, topicState => topicState.entities[topicId]

@@ -13,7 +13,8 @@ import {getSessionSummaries} from '../../core/store/session-summary.selectors';
 import {CloneSession, CreateSession, DeleteSession, RequestSession} from '../../core/store/session.actions';
 import {getSessionById} from '../../core/store/session.selectors';
 import {Permission, PermissionLevel} from '../../core/service/permission.service';
-import {getStatesOfGroup, StatesGroup} from '../../model/value';
+import {Collective, getStatesOfGroup, StatesGroup} from '../../model/value';
+import {getCollectiveById, getCollectives} from '../../core/store/value.selectors';
 
 
 @Component({
@@ -29,11 +30,14 @@ export class SessionListComponent implements OnInit, OnDestroy, AfterViewInit {
   part$: Observable<string>;
   sessions$: Observable<SessionSummary[]>;
   activeItem$: Observable<MenuItem>;
+  collectives$: Observable<Collective[]>;
+
   display = false;
 
   permissionHandler$: Observable<boolean>;
   permissionCurrent$: Observable<Permission>;
 
+  collectiveManagers = new BehaviorSubject<{id: number, managers: number[]}[]>([]);
   partNewSession = new BehaviorSubject<string>('');
 
   collectiveId = new FormControl('');
@@ -127,9 +131,23 @@ export class SessionListComponent implements OnInit, OnDestroy, AfterViewInit {
       refCount()
     );
 
+    this.collectives$ = this.store.pipe(
+      takeUntil(this.destroySubject),
+      select(getCollectives),
+      publishReplay(1),
+      refCount()
+    );
+
     this.part$.subscribe();
     this.activeItem$.subscribe();
     this.sessions$.subscribe();
+
+    /* Store all manager/collective pair in BehaviourSubject */
+    this.collectives$.subscribe(collective => {
+      this.collectiveManagers.next(collective
+        .map(value => ({id: value.id, managers: value.managers}))
+      );
+    });
   }
 
   ngOnDestroy(): void {
@@ -146,6 +164,8 @@ export class SessionListComponent implements OnInit, OnDestroy, AfterViewInit {
       this.permissionCurrent$.pipe(takeUntil(this.destroySubject)).subscribe( permission => {
         if (permission.permissionLevel >= PermissionLevel.coordinator) {
           this.router.navigate(['sessions', session.id]);
+        } else if (this.collectiveManagers.value.find(value => value.id === session.collectiveId).managers.includes(permission.guideId)) {
+            this.router.navigate(['sessions', session.id]);
         }
       });
     }
