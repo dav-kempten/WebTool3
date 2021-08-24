@@ -94,6 +94,7 @@ export interface Collective {
   code: string;
   title: string;
   name: string;
+  managers: number[];
   description: string;
 }
 
