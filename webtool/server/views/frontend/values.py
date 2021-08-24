@@ -143,7 +143,9 @@ class _Values(object):
     def _get_collectives(self):
         self._updated = max(self._updated, Collective.objects.latest().updated)
         return [
-            dict(id=a, code=b, title=c, name=d, managers=e, description=f)
+            dict(id=a, code=b, title=c, name=d,
+                 managers=list(e) if isinstance(e, Iterable) else [e] if e else [],
+                 description=f)
             for (a, b, c, d, e, f) in Collective.objects
             .exclude(deprecated=True)
             .filter(seasons=self._season)

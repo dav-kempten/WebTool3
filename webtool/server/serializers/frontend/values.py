@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from server.models import Guide, Role
 
 from .core import MoneyField
 
@@ -27,7 +28,7 @@ class CollectiveListField(serializers.ListField):
     code = serializers.CharField(source='category.code', read_only=True)
     title = serializers.CharField(read_only=True)
     name = serializers.CharField(read_only=True)
-    managerIds = serializers.PrimaryKeyRelatedField(source='managers', many=True, read_only=True)
+    managers = serializers.PrimaryKeyRelatedField(source='managers', many=True, default=[], read_only=True)
     description = serializers.CharField(read_only=True)
 
 
