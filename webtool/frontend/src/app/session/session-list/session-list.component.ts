@@ -37,7 +37,7 @@ export class SessionListComponent implements OnInit, OnDestroy, AfterViewInit {
   permissionHandler$: Observable<boolean>;
   permissionCurrent$: Observable<Permission>;
 
-  collectiveManagers = new BehaviorSubject<{id: number, managers: number[]}[]>([]);
+  private collectiveManagers = new BehaviorSubject<{id: number, managers: number[]}[]>([]);
   partNewSession = new BehaviorSubject<string>('');
 
   collectiveId = new FormControl('');
