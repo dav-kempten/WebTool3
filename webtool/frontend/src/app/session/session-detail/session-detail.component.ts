@@ -11,7 +11,7 @@ import {ValuesRequested} from '../../core/store/value.actions';
 import {filter, flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {getSessionById} from '../../core/store/session.selectors';
 import {DeleteSession, RequestSession, UpdateSession, UpsertSession} from '../../core/store/session.actions';
-import {getCollectiveById} from '../../core/store/value.selectors';
+import {getCollectiveById, getCollectives} from '../../core/store/value.selectors';
 import {getEventsByIds} from '../../core/store/event.selectors';
 import {CreateEvent, UpdateEvent} from '../../core/store/event.actions';
 import {ConfirmationService} from 'primeng/api';
@@ -30,6 +30,7 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
   private eventsSubject = new BehaviorSubject<FormArray>(undefined);
   private sessionChangeSubject = new BehaviorSubject<Session>(undefined);
   private eventChangeSubject = new BehaviorSubject<Event>(undefined);
+  private collectiveManagers = new BehaviorSubject<{id: number, managers: number[]}[]>([]);
 
   sessionGroup$: Observable<FormGroup> = this.sessionSubject.asObservable();
   sessionChange$: Observable<Session> = this.sessionChangeSubject.asObservable();
@@ -41,6 +42,7 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
   eventIds$: Observable<number[]>;
   events$: Observable<Event[]>;
   collective$: Observable<Collective>;
+  collectives$: Observable<Collective[]>;
 
   permissionHandler$: Observable<boolean>;
   permissionCurrent$: Observable<Permission>;
@@ -69,7 +71,10 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
             this.permissionHandler$ = this.permissionCurrent$.pipe(
               takeUntil(this.destroySubject),
               map(permission => {
-                return permission.permissionLevel >= PermissionLevel.coordinator;
+                return this.collectiveManagers.value
+                  .find(value => value.id === session.collectiveId).managers
+                  .includes(permission.guideId)
+                  || permission.permissionLevel >= PermissionLevel.coordinator;
               })
             );
             /* Generate session */
@@ -140,11 +145,25 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
       refCount()
     );
 
+    this.collectives$ = this.store.pipe(
+      takeUntil(this.destroySubject),
+      select(getCollectives),
+      publishReplay(1),
+      refCount()
+    );
+
     this.sessionId$.subscribe();
     this.session$.subscribe();
     this.collective$.subscribe();
     this.eventIds$.subscribe();
     this.events$.subscribe();
+
+    /* Store all manager/collective pair in BehaviourSubject */
+    this.collectives$.subscribe(collective => {
+      this.collectiveManagers.next(collective
+        .map(value => ({id: value.id, managers: value.managers}))
+      );
+    });
 
     this.eventChange$.pipe(
       takeUntil(this.destroySubject),
