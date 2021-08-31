@@ -5,7 +5,7 @@ import {MenuItem, MessageService, TreeNode} from 'primeng/api';
 import {NavigationExtras, Router} from '@angular/router';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ANONYMOUS_USER, AuthService, User} from '../service/auth.service';
-import {BehaviorSubject, Subject} from 'rxjs';
+import {Subject} from 'rxjs';
 import {filter, takeUntil} from 'rxjs/operators';
 
 interface MenuData {
@@ -124,6 +124,8 @@ export class MenuComponent implements OnInit, OnDestroy {
     private userService: AuthService) {}
 
   ngOnInit() {
+
+    this.userService.checkLogin(JSON.parse(localStorage.getItem('user')));
 
     this.buttonItems = [
       {

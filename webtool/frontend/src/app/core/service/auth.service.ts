@@ -77,6 +77,7 @@ export class AuthService {
           } else {
             this.subject.next(ANONYMOUS_USER);
           }
+          localStorage.setItem('user', JSON.stringify(this.subject.value));
         }, 500);
       }),
       // shareReplay(),
@@ -86,6 +87,8 @@ export class AuthService {
   }
 
   logout(): void {
+
+    localStorage.removeItem('user');
 
     const httpOptions = {
       headers: new HttpHeaders({
@@ -101,6 +104,12 @@ export class AuthService {
       first()
     ).subscribe(() => this.subject.next(ANONYMOUS_USER));
 
+  }
+
+  checkLogin(user: User): void {
+    if (!!user) {
+      this.subject.next(user);
+    }
   }
 }
 
