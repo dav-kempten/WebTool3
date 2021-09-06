@@ -119,15 +119,16 @@
 
   <div class="p-grid">
     <div class="p-col-12 p-sm-12 p-md-12 p-lg-12" *ngIf="permissionHandler$ | async">
+      <p-card subheader="Hilfe">
+            Wenn ihr Fragen habt, könnt ihr euch jederzeit bei der Geschäftsstelle (<b>info[at]dav-kempten.de</b>) oder
+            bei Jojo (<b>jojo[at]dav-kempten.de</b>) melden.
+      </p-card>
       <p-card subheader="Webtool Neuerung V.28">
             <ul>
               <li>Gruppentermine sind unter Gruppen im Hauptmenü jetzt über den Trainerzugang von den jeweiligen Gruppen aufruf und bearbeitbar</li>
               <li>Änderungen an der Frontend-API für die einzelnen Gruppen</li>
+              <li>Erhaltung der Login-Session, sodass nach User nach Erneuerung der Seite immer noch angemeldet ist</li>
             </ul>
-      </p-card>
-      <p-card subheader="Hilfe">
-            Wenn ihr Fragen habt, könnt ihr euch jederzeit bei der Geschäftsstelle (<b>info[at]dav-kempten.de</b>) oder
-            bei Jojo (<b>jojo[at]dav-kempten.de</b>) melden.
       </p-card>
     </div>
   </div>
