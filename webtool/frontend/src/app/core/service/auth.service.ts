@@ -4,6 +4,7 @@ import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {catchError, filter, first, map, publishReplay, refCount, tap} from 'rxjs/operators';
 import {User as RawUser} from '../../model/user';
 import {Permission, PermissionService} from './permission.service';
+import * as CryptoTS from 'crypto-ts';
 
 export const enum Role {
   administrator = 'Administrator',
@@ -77,7 +78,11 @@ export class AuthService {
           } else {
             this.subject.next(ANONYMOUS_USER);
           }
-          localStorage.setItem('user', JSON.stringify(this.subject.value));
+          const passphrase = document.cookie.toString().split('=')[1];
+          if (!!passphrase) {
+            const token = (CryptoTS.AES.encrypt(JSON.stringify(this.subject.value), passphrase)).toString();
+            sessionStorage.setItem('token', token);
+          }
         }, 500);
       }),
       // shareReplay(),
@@ -88,7 +93,7 @@ export class AuthService {
 
   logout(): void {
 
-    localStorage.removeItem('user');
+    sessionStorage.removeItem('token');
 
     const httpOptions = {
       headers: new HttpHeaders({
@@ -106,9 +111,14 @@ export class AuthService {
 
   }
 
-  checkLogin(user: User): void {
-    if (!!user) {
-      this.subject.next(user);
+  checkLogin(token: string): void {
+    const passphrase = document.cookie.toString().split('=')[1];
+    if (!!token && !!passphrase) {
+      const bytes = CryptoTS.AES.decrypt(token, passphrase);
+      const user = JSON.parse(bytes.toString(CryptoTS.enc.Utf8));
+      if (user.hasOwnProperty('id') && user.hasOwnProperty('firstName') && user.hasOwnProperty('lastName') && user.hasOwnProperty('role')) {
+        this.subject.next(user);
+      }
     }
   }
 }

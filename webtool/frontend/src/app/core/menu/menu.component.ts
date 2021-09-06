@@ -125,7 +125,7 @@ export class MenuComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
-    this.userService.checkLogin(JSON.parse(localStorage.getItem('user')));
+    this.userService.checkLogin(sessionStorage.getItem('token'));
 
     this.buttonItems = [
       {
