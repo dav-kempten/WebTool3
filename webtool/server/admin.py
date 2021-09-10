@@ -8,6 +8,7 @@ from server.models.tour import Tour
 from server.models.equipment import Equipment
 from server.models.calendar import Calendar, Anniversary, Vacation
 from server.user_admin import UserAdmin
+from server.event_admin import InstructionAdmin, TourAdmin
 
 # Register your models here.
 
@@ -31,9 +32,9 @@ admin.site.register(QualificationGroup)
 # Mixins
 admin.site.register(Category)
 admin.site.register(CategoryGroup)
-admin.site.register(Tour)
+admin.site.register(Tour, TourAdmin)
 admin.site.register(Equipment)
 
 # Instructions
-admin.site.register(Instruction)
+admin.site.register(Instruction, InstructionAdmin)
 admin.site.register(Topic)
