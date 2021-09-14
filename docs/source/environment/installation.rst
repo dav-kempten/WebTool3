@@ -187,12 +187,15 @@ mit dem sich die Daten verwalten lassen und das eine eigene RESTful API anbietet
 
 Grundlegende Vorbereitungen
 ---------------------------
-| See: `Initial Server Setup <https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-16-04>`__
-| See: `How to add and delete Users <https://www.digitalocean.com/community/tutorials/how-to-add-and-delete-users-on-ubuntu-16-04>`__
-| See: `How do i disable ssh login for the root user <https://mediatemple.net/community/products/dv/204643810/how-do-i-disable-ssh-login-for-the-root-user>`__
+See: `Initial Server Setup <https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-16-04>`__ &
+`How to add and delete Users <https://www.digitalocean.com/community/tutorials/how-to-add-and-delete-users-on-ubuntu-16-04>`__ &
+`How do i disable ssh login for the root user <https://mediatemple.net/community/products/dv/204643810/how-do-i-disable-ssh-login-for-the-root-user>`__
 
 Benutzer und Zugang über ssh einrichten
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Für den Zugang per SSH muss ein Nutzer angelegt werden. Dieser Nutzer muss noch in der Gruppe ``sudo`` aufgenommen werden.
+Nutzer in der Gruppe ``sudo`` können Kommandos mit Root-Rechten ausführen. Zudem sollte die Authetifizierung mittels
+Passwort aktiviert werden.
 
 .. code-block:: none
 
@@ -247,8 +250,8 @@ See: `How to set up a firewall with ufw <https://www.digitalocean.com/community/
 Zeitsynchronisation
 ~~~~~~~~~~~~~~~~~~~
 
-| See: `How to set up Time Synchronization <https://www.digitalocean.com/community/tutorials/how-to-set-up-time-synchronization-on-ubuntu-16-04>`__
-| See: `How to configure ntp for use in the Ntp Pool Project <https://www.digitalocean.com/community/tutorials/how-to-configure-ntp-for-use-in-the-ntp-pool-project-on-ubuntu-16-04>`__
+See: `How to set up Time Synchronization <https://www.digitalocean.com/community/tutorials/how-to-set-up-time-synchronization-on-ubuntu-16-04>`__ &
+`How to configure ntp for use in the Ntp Pool Project <https://www.digitalocean.com/community/tutorials/how-to-configure-ntp-for-use-in-the-ntp-pool-project-on-ubuntu-16-04>`__
 
 .. code-block:: none
 
@@ -258,20 +261,22 @@ Zeitsynchronisation
     > sudo apt-get install ntp
     > sudo ntpq -p
 
-NginX
+NGINX
 ~~~~~
+NGINX ist eine freie, quelloffene Webserver-Engine um HTTP-Server und Reverse Proxys aufzusetzen. Die folgenden Links
+dienen zur Installation und Konfiguration von NGINX-Services unter Ubuntu:
 
-| See: `How To Install Nginx <https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-16-04>`__
-| See: `Config Pitfalls <https://www.nginx.com/resources/wiki/start/topics/tutorials/config_pitfalls/>`__
-| See: `How to install an SSL Certificate from a commercial Certificate Authority <https://www.digitalocean.com/community/tutorials/how-to-install-an-ssl-certificate-from-a-commercial-certificate-authority>`__
-| See: `Where to store SSL certificates on a Linux server <https://www.getpagespeed.com/server-setup/ssl-directory>`__
-| See: `nginx SSL PEM_read_bio:bad end line <http://www.ur-ban.com/2010/12/09/nginx-ssl-pem_read_biobad-end-line/>`__
-| See: `Implementing SSL Perfect Forward Secrecy in NGINX Web-Server <https://www.howtoforge.com/ssl-perfect-forward-secrecy-in-nginx-webserver>`__
-| See: `How to set up NginX with http 2 support <https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04>`__
-| See: `How to increase Pagespeed Score by changing your NginX Configuration <https://www.digitalocean.com/community/tutorials/how-to-increase-pagespeed-score-by-changing-your-nginx-configuration-on-ubuntu-16-04>`__
-| See: `How to upgrade NginX in place without dropping Client Connections <https://www.digitalocean.com/community/tutorials/how-to-upgrade-nginx-in-place-without-dropping-client-connections>`__
-| See: `Creating NginX Rewrite Rules <https://www.nginx.com/blog/creating-nginx-rewrite-rules/>`__
-| See: `How to configure Nginx so you can quickly put your website into maintenance mode <https://www.calazan.com/how-to-configure-nginx-so-you-can-quickly-put-your-website-into-maintenance-mode/>`__
+* `How To Install Nginx <https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-16-04>`__
+* `Config Pitfalls <https://www.nginx.com/resources/wiki/start/topics/tutorials/config_pitfalls/>`__
+* `How to install an SSL Certificate from a commercial Certificate Authority <https://www.digitalocean.com/community/tutorials/how-to-install-an-ssl-certificate-from-a-commercial-certificate-authority>`__
+* `Where to store SSL certificates on a Linux server <https://www.getpagespeed.com/server-setup/ssl-directory>`__
+* `nginx SSL PEM_read_bio:bad end line <http://www.ur-ban.com/2010/12/09/nginx-ssl-pem_read_biobad-end-line/>`__
+* `Implementing SSL Perfect Forward Secrecy in NGINX Web-Server <https://www.howtoforge.com/ssl-perfect-forward-secrecy-in-nginx-webserver>`__
+* `How to set up NGINX with http 2 support <https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04>`__
+* `How to increase Pagespeed Score by changing your NGINX Configuration <https://www.digitalocean.com/community/tutorials/how-to-increase-pagespeed-score-by-changing-your-nginx-configuration-on-ubuntu-16-04>`__
+* `How to upgrade NGINX in place without dropping Client Connections <https://www.digitalocean.com/community/tutorials/how-to-upgrade-nginx-in-place-without-dropping-client-connections>`__
+* `Creating NGINX Rewrite Rules <https://www.nginx.com/blog/creating-nginx-rewrite-rules/>`__
+* `How to configure Nginx so you can quickly put your website into maintenance mode <https://www.calazan.com/how-to-configure-nginx-so-you-can-quickly-put-your-website-into-maintenance-mode/>`__
 
 .. code-block:: none
 
@@ -282,8 +287,10 @@ NginX
 
 Cerbot
 ~~~~~~
+Cerbot dient dazu eine vorhandene HTTP-Website durch ein ``Let's Encrypt``-Zertifikat in eine HTTPS-Website umzuwandeln.
+Für den Cerbot braucht man eine vorhandene HTTP-Website und SSH-Zugriff auf den darunterliegenden Server.
 
-| See: `How to secure NginX with Let's encrypt <https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-16-04>`__
+See: `How to secure NGINX with Let's encrypt <https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-16-04>`__
 
 .. code-block:: none
 
@@ -317,19 +324,28 @@ Cerbot
 
 Django
 ~~~~~~
+Django ist ein in Python geschriebenes, quelloffenes Webframework, das einem Model-View-Presenter-Schema folgt. Um
+gemeinsam mit ``NGINX`` zu funktionieren braucht es bestimmte Konfigurationen seitens des Servers und dessen Module.
 
-| See: `Automatic Maintenance Page for NginX+Django <http://www.djangocurrent.com/2015/12/automatic-maintenance-page-for.html>`__
-| See: `How to Scale Django: Beyond the Basics <https://www.digitalocean.com/community/tutorials/how-to-scale-django-beyond-the-basics>`__
+See: `Automatic Maintenance Page for NGINX+Django <http://www.djangocurrent.com/2015/12/automatic-maintenance-page-for.html>`__ &
+`How to Scale Django: Beyond the Basics <https://www.digitalocean.com/community/tutorials/how-to-scale-django-beyond-the-basics>`__
 
 Varnish
 ~~~~~~~
+Varnish ist ein Cache für dynamische Webseiten mit viel Inhalt. Im Gegensatz zu anderen Reverse-Proxys, die häufig aus
+clientseitigen Proxys oder aus Servern entstanden, wurde Varnish von Grund auf als Reverse-Proxy konzipiert. Aufgrunddessen
+lassen sich mit Varnish viele Performance-Probleme lösen, da die Requests nicht an die Django-Instanz an sich gehen, sondern
+an den vorgeschalteten Varnish-Cache.
 
-| https://www.digitalocean.com/community/tutorials/how-to-configure-varnish-cache-4-0-with-ssl-termination-on-ubuntu-14-04
-| http://chase-seibert.github.io/blog/2011/09/23/varnish-caching-for-unauthenticated-django-views.html
+See: `How To Configure Varnish Cache 4.0 with SSL Termination on Ubuntu 14.04 <https://www.digitalocean.com/community/tutorials/how-to-configure-varnish-cache-4-0-with-ssl-termination-on-ubuntu-14-04>`__ &
+`Varnish caching for unauthenticated Django views <http://chase-seibert.github.io/blog/2011/09/23/varnish-caching-for-unauthenticated-django-views.html>`__
 
 
 TeXLive
 ~~~~~~~
+Für die Erstellung flexbiler PDF-Dokumente nutzen wir ``TeXLive``, eine Distribution von ``TeX``. ``TeX`` ist eine
+Programmiersprache, die eigens dafür entwickelt wurde schöne, einheitliche Dokumente aus zugrundliegenden Quellcode
+zu erstellen.
 
 .. code-block:: none
 
@@ -361,14 +377,16 @@ TeXLive
 
 RabbitMQ
 ~~~~~~~~
+RabbitMQ ist eine Open Source Message Broker Software, die das Advanced Message Queuing Protocol implementiert. RabbitMQ
+verwaltet die alle zugehörigen Queues, Buffer und Signale.
 
-Öffentliche Schlüssel für die neuen Repositories zur Packetverwaltung hinzufügen
+Öffentliche Schlüssel für die neuen Repositories zur Packetverwaltung hinzufügen:
 
 .. code-block:: none
 
     > wget -O - "https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc" | sudo apt-key add -
 
-Erlang und RabbitMQ Repositiories anmelden
+Erlang und RabbitMQ Repositiories anmelden:
 
 .. code-block:: none
 
@@ -377,21 +395,22 @@ Erlang und RabbitMQ Repositiories anmelden
     deb https://dl.bintray.com/rabbitmq/debian xenial main
     EOF
 
-RabbitMQ Server installieren
+RabbitMQ Server installieren:
 
 .. code-block:: none
 
     > sudo apt-get update
     > sudo apt-get install rabbitmq-server
 
+Quellen:
 
-| http://www.rabbitmq.com/install-debian.html
-| https://www.digitalocean.com/community/tutorials/how-to-install-and-manage-rabbitmq
-| https://tecadmin.net/install-rabbitmq-server-on-ubuntu/
+* http://www.rabbitmq.com/install-debian.html
+* https://www.digitalocean.com/community/tutorials/how-to-install-and-manage-rabbitmq
+* https://tecadmin.net/install-rabbitmq-server-on-ubuntu/
 
 
-| http://www.rabbitmq.com/configure.html
-| http://www.rabbitmq.com/production-checklist.html
+* http://www.rabbitmq.com/configure.html
+* http://www.rabbitmq.com/production-checklist.html
 
 .. code-block:: none
 
@@ -400,6 +419,8 @@ RabbitMQ Server installieren
 
 dramatiq
 ~~~~~~~~
+Dramatiq ist eine Background-Task Bibliothek für Python. Dramatiq kann zusammen mit RabbitMQ für Messages genutzt werden,
+die im Hintergrund verschickt werden sollen.
 
 https://dramatiq.io/v1.4.0/index.html
 
