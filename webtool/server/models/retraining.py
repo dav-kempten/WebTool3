@@ -64,10 +64,15 @@ class Retraining(TimeMixin, models.Model):
     def natural_key(self):
         return self.user.get_username(), self.year, self.order
 
+    def qualification_code(self):
+        return self.qualification.code()
+
     natural_key.dependencies = ['auth.user']
 
     def __str__(self):
-        return "{}'s Fortbildung {}".format(self.user.get_full_name(), self.year)
+        if self.qualification:
+            return "{} Fortbildung {}".format(self.qualification_code(), self.year)
+        return "Fortbildung {}".format(self.year)
 
     class Meta:
         get_latest_by = "updated"

@@ -144,10 +144,13 @@ class UserQualification(TimeMixin, models.Model):
     def natural_key(self):
         return self.user.get_username(), self.qualification.code, self.year
 
+    def code(self):
+        return self.qualification.code
+
     natural_key.dependencies = ['auth.user', 'server.qualification']
 
     def __str__(self):
-        return "{}'s {} von {}".format(self.user.get_full_name(), self.qualification.name, self.year)
+        return "{} von {}".format(self.qualification.name, self.year)
 
     class Meta:
         verbose_name = "Trainer-Qualifikation"
