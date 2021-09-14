@@ -1134,161 +1134,342 @@ Veranstaltungen für Mitglieder meist günstiger sind.
 
 Bearbeitungsstände
 ~~~~~~~~~~~~~~~~~~
+Jeder Veranstaltung ist ein Bearbeitungsstatus zugeordnet. Dabei reicht ein Bearbeitungsstatus von 'In Arbeit' bis
+'Noch nicht buchbar'. Der Bearbeitungsstand entscheidet darüber wie die Veranstaltungen auf der Homepage dargestellt
+werden und ob eine Veranstaltung freigegeben ist oder nicht.
 
 .. code-block:: python
 
-    class ServerState(models.Model):
-        season = models.ForeignKey(ServerSeason)
+    class State(SeasonsMixin, TimeMixin, models.Model):
+        name = fields.TitleField(
+            'Kurzbeschreibung',
+            unique=True,
+            help_text="Bearbeitungsstand",
+        )
 
-        name = models.CharField(max_length=30)
-        description = models.TextField()
+        description = fields.DescriptionField(
+            'Beschreibung',
+            help_text="Beschreibung des Bearbeitungsstandes",
+        )
 
-        default = models.BooleanField()
-        public = models.BooleanField()
-        canceled = models.BooleanField()
-        moved = models.BooleanField()
-        unfeasible = models.BooleanField()
-        done = models.BooleanField()
+        order = fields.OrderField()
 
-        order = models.SmallIntegerField()
+        public = models.BooleanField(
+            'Alle öffentlichen sichtbaren Bearbeitungsstände',
+            blank=True, default=False
+        )
 
-        updated = models.DateTimeField()
-        deprecated = models.BooleanField()
+        default = models.BooleanField(
+            'Der Bearbeitungsstand: "In Arbeit"',
+            blank=True, default=False
+        )
+
+        canceled = models.BooleanField(
+            'Der Bearbeitungsstand: "Ausgefallen"',
+            blank=True, default=False
+        )
+
+        moved = models.BooleanField(
+            'Der Bearbeitungsstand: "Verschoben"',
+            blank=True, default=False
+        )
+
+        unfeasible = models.BooleanField(
+            'Der Bearbeitungsstand: "Noch nicht buchbar"',
+            blank=True, default=False
+        )
+
+        done = models.BooleanField(
+            'Der Bearbeitungsstand: "Durchgeführt"',
+            blank=True, default=False
+        )
 
         class Meta:
-            db_table = 'server_state'
-            unique_together = (('season', 'name'),)
+            get_latest_by = "updated"
+            verbose_name = "Bearbeitungsstand"
+            verbose_name_plural = "Bearbeitungsstände"
+            ordering = ('order', 'name')
 
 Trainer
 ~~~~~~~
+Jedem ``User` kann ein ``Guide``-Objekt zugeordnet werden. Im ``Guide``-Objekt sind alle relevanten Trainer-Daten
+für den internen Gebrauch und die Darstellung auf der Homepage gespeichert. Durch das ``Guide``-Modell sind die
+Veranstaltungen mit den Nutzern verknüpft.
 
 .. code-block:: python
 
-    class ServerGuide(models.Model):
-        season = models.ForeignKey('ServerSeason')
-        user = models.ForeignKey(AuthUser, primary_key=True)
+    class Guide(SeasonsMixin, TimeMixin, models.Model):
+        user = models.OneToOneField(
+            settings.AUTH_USER_MODEL,
+            primary_key=True,
+            verbose_name='Leiter',
+            related_name='guide',
+            on_delete=models.PROTECT,
+        )
 
-        first_name = models.CharField(max_length=30)
-        last_name = models.CharField(max_length=30)
-        profile = postgres.JSONField(blank=True, null=True)
-        portrait = models.CharField(max_length=100)
+        unknown = models.BooleanField(
+            'Unbekannt',
+            blank=True, default=False,
+            help_text='Der unbekannte Guide'
+        )
 
-        email = models.CharField(max_length=254)
-        phone = models.CharField(max_length=75)
-        mobile = models.CharField(max_length=75)
+        profile = postgres.JSONField(
+            'Steckbrief',
+            blank=True, null=True
+        )
 
-        unknown = models.BooleanField()
+        # email is independent from its counterpart in the user model!
 
-        updated = models.DateTimeField()
-        deprecated = models.BooleanField()
+        email = models.EmailField(
+            'eMail',
+            blank=True, default=''
+        )
 
-        class Meta:
-            db_table = 'server_guide'
-            unique_together = (('season', 'first_name', 'last_name'),)
+        # phone, mobile are independent from its counterpart in the profile model!
+
+        phone = models.CharField(
+            'Festnetz',
+            max_length=75,
+            blank=True, default='',
+            help_text='Die Telefonnummer eines Kurs/Touren/Gruppenleiters für Rückfragen'
+        )
+
+        mobile = models.CharField(
+            'Handy',
+            max_length=75,
+            blank=True, default='',
+            help_text='Die Handynummer eines Kurs/Touren/Gruppenleiters für Rückfragen'
+        )
+
+        portrait = models.FileField(
+            'Portrait',
+            blank=True, default='',
+            help_text='Die URL zu einer Datei mit dem Portrait eines Kurs/Touren/Gruppenleiters'
+        )
+
+        class Meta():
+            get_latest_by = "updated"
+            verbose_name = "Tourenleiter"
+            verbose_name_plural = "Tourenleiter"
+            ordering = ('user__last_name', 'user__first_name')
 
 Personalverwaltung
 ------------------
 
 Steckbrief eines Trainers
 ~~~~~~~~~~~~~~~~~~~~~~~~~
+Jedem Nutzer können neben einem Trainerprofil noch weitere Daten zugeordnet werden. Darunter fallen z.B. die
+Mitgliedsnummer ``member_id`` des jeweiligen Nutzers. Im Allgemeinen sind das alles Daten, die hilfreich für die
+Verwaltung des jeweiligen Nutzers sind.
 
 .. code-block:: python
 
-    class ServerProfile(models.Model):
-        user = models.ForeignKey(AuthUser, primary_key=True)
-        sex = models.SmallIntegerField()
-        birth_date = models.DateField(blank=True, null=True)
+    class Profile(TimeMixin, models.Model):
+        user = models.OneToOneField(
+            settings.AUTH_USER_MODEL,
+            primary_key=True,
+            verbose_name='user',
+            related_name='profile',
+            on_delete=models.PROTECT
+        )
 
-        phone = models.CharField(max_length=75)
-        mobile = models.CharField(max_length=75)
+        member_id = models.CharField(
+            'MitgliedsNr',
+            max_length=13,
+            unique=True, null=True, blank=True,
+            help_text="Format:sss-oo-mmmmmm s=Sektionsnummer(008) o=Ortsgruppe(00|01) m=Mitgliedsnummer",
+            validators=[RegexValidator(MEMBER_ID_REGEX, 'Bitte auf den richtigen Aufbau achten')],
+        )
 
-        member_id = models.CharField(unique=True, max_length=13, blank=True, null=True)
-        member_year = models.IntegerField(blank=True, null=True)
-        integral_member = models.BooleanField()
-        member_home = models.CharField(max_length=70)
+        sex = models.PositiveSmallIntegerField(
+            "Geschlecht",
+            choices=SEX_CHOICES,
+            blank=True, default=0,
+            help_text="Biologisches Geschlecht"
+        )
 
-        note = models.TextField()
+        phone = models.CharField(
+            "Telefon",
+            max_length=75,
+            blank=True, default='',
+            help_text="Rufnummer für Nachfragen in Sektionsangelegenheiten",
+        )
 
-        updated = models.DateTimeField()
-        deprecated = models.BooleanField()
+        mobile = models.CharField(
+            "Handy",
+            max_length=75,
+            blank=True, default='',
+            help_text="Rufnummer für die Erreichbarkeit auf Tour",
+        )
+
+        birth_date = models.DateField(
+            "Geburtstag",
+            blank=True, null=True
+        )
+
+        note = models.TextField(
+            "Notizen",
+            blank=True, default='',
+            help_text="Raum für interne Notizen",
+        )
+
+        member_year = models.PositiveIntegerField(
+            "Jahr",
+            default=datetime.now().year,
+            blank=True, null=True,
+            help_text="Jahr der Aufnahme in den AV",
+        )
+
+        integral_member = models.BooleanField(
+            "A-Mitglied",
+            blank=True, default=False
+        )
+
+        # member_home is valid only if integral_member is False
+        # integral_member = False => Retrainings are not possible
+
+        member_home = models.CharField(
+            "Heimatsektion",
+            max_length=70,
+            blank=True, default='',
+            help_text="Heimatsektion für C-Mitglieder"
+        )
 
         class Meta:
-            db_table = 'server_profile'
-
-DAV Ausbildungsgänge
-~~~~~~~~~~~~~~~~~~~~
-
-.. code-block:: python
-
-    class ServerQualification(models.Model):
-        code = models.CharField(unique=True, max_length=10)
-        name = models.CharField(max_length=125)
-        group = models.ForeignKey('ServerQualificationgroup', blank=True, null=True)
-
-        order = models.SmallIntegerField()
-
-        updated = models.DateTimeField()
-        deprecated = models.BooleanField()
-
-        class Meta:
-            db_table = 'server_qualification'
-            unique_together = (('code', 'group'), ('code', 'name'),)
+            get_latest_by = "updated"
+            verbose_name = "Steckbrief"
+            verbose_name_plural = "Steckbriefe"
+            ordering = ('user__last_name', 'user__first_name')
 
 Gruppierung der Qualifikationen
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Die Qualifikationen lassen sich in verschiedene Gruppen einteilen umso die sektionsinterne Struktur besser abbilden zu
+können. Perspektivisch ist das wichtig, wenn es gewünscht wird, die Tour- und Kursgebühren automatisch zu berechnen, da
+hier die einzelnen Gruppensätze hinterlegt werden können.
 
 .. code-block:: python
 
-    class ServerQualificationgroup(models.Model):
-        name = models.CharField(unique=True, max_length=125)
+    class QualificationGroup(TimeMixin, models.Model):
+        name = fields.NameField(
+            help_text="Bezeichnung der Qualifikationsgruppe",
+            unique=True
+        )
 
-        order = models.SmallIntegerField()
-
-        updated = models.DateTimeField()
-        deprecated = models.BooleanField()
+        order = fields.OrderField()
 
         class Meta:
-            db_table = 'server_qualificationgroup'
+            verbose_name = "Qualifikationsgruppe"
+            verbose_name_plural = "Qualifikationsgruppen"
+            ordering = ('order', 'name')
 
 Qualifikationen eines Trainers
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Jeder Trainer hat verschiedene Qualifikationen. Dafür müssen die Qualifikationen mit den Nutzern verknüft werden. Das
+``UserQualification``-Modell ist für die Zuordnung von Nutzer zu den jeweiligen Qualifikationen zuständig. Neben der
+eigentlichen Qualifikation sind hier noch weitere Meta-Daten zur Ausbildung hinterlegt.
 
 .. code-block:: python
 
-    class ServerUserqualification(models.Model):
-        qualification = models.ForeignKey(ServerQualification)
-        user = models.ForeignKey(AuthUser)
+    class UserQualification(TimeMixin, models.Model):
+        user = models.ForeignKey(
+            settings.AUTH_USER_MODEL,
+            db_index=True,
+            related_name='qualification_list',
+            on_delete=models.PROTECT
+        )
 
-        year = models.SmallIntegerField()
+        qualification = models.ForeignKey(
+            'Qualification',
+            db_index=True,
+            related_name='user_list',
+            on_delete=models.PROTECT
+        )
 
-        aspirant = models.BooleanField()
-        inactive = models.BooleanField()
+        aspirant = models.BooleanField(
+            "Anwärter",
+            default=False,
+            help_text="Die Qualifikation wurde noch nicht erworben",
+        )
 
-        note = models.TextField()
+        year = models.PositiveSmallIntegerField(
+            "Jahr",
+            default=defaults.get_default_year,
+            help_text="Das Jahr, in dem die Ausbildung abgeschlossen wurde",
+        )
 
-        updated = models.DateTimeField()
-        deprecated = models.BooleanField()
+        inactive = models.BooleanField(
+            "Keine Fortbildung notwendig",
+            default=False,
+        )
+
+        note = models.TextField(
+            "Notizen",
+            blank=True, default='',
+            help_text="Raum für interne Notizen",
+        )
 
         class Meta:
-            db_table = 'server_userqualification'
-            unique_together = (('user', 'qualification', 'year'),)
+            verbose_name = "Trainer-Qualifikation"
+            verbose_name_plural = "Trainer-Qualifikationen"
+            get_latest_by = "updated"
+            unique_together = ('user', 'qualification', 'year')
+            ordering = ('year', 'qualification__order')
 
 Fortbildungen eines Trainers
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Jeder Trainer hat die Pflicht neben seiner Ausbildung zusätzliche Fortbildungen zu besuchen. Diese Fortbildungen können
+entweder allgemein sein oder sich eine spezifische Ausbildung beziehen. Die Fortbildungen müssen einem Trainer und
+können einer Qualifikation zugeordnet werden. Zusätzlich können noch weitere Daten bezüglich der Fortbildung angegeben
+werden.
 
 .. code-block:: python
 
-    class ServerRetraining(models.Model):
-        qualification = models.ForeignKey('ServerUserqualification', blank=True, null=True)
+    class Retraining(TimeMixin, models.Model):
+        user = models.ForeignKey(
+            settings.AUTH_USER_MODEL,
+            db_index=True,
+            related_name='retraining_list',
+            on_delete=models.PROTECT
+        )
 
-        year = models.IntegerField()
-        specific = models.BooleanField()
+        qualification = models.ForeignKey(
+            'UserQualification',
+            db_index=True,
+            blank=True, null=True,
+            related_name='qualification_list',
+            verbose_name='Qualifikation',
+            help_text="Für fachspezifische Fortbildungen, die dazugehörige Qualifikation",
+            on_delete=models.PROTECT,
+        )
 
-        description = models.TextField()
-        note = models.TextField(blank=True, null=True)
+        year = models.PositiveIntegerField(
+            "Jahr",
+            db_index=True,
+            default=defaults.get_default_year,
+            help_text="Das Jahr, in dem die Fortbildung besucht wurde",
+        )
 
-        updated = models.DateTimeField()
-        deprecated = models.BooleanField()
+        specific = models.BooleanField(
+            "Fachspezifisch",
+            default=False,
+            help_text="Es handelt sich um eine fachspezifische Fortbildung",
+        )
+
+        order = fields.OrderField(blank=False)
+
+        description = models.TextField(
+            "Beschreibung",
+            help_text="Kurze Beschreibung der Fortbildung",
+        )
+
+        note = models.TextField(
+            "Notizen",
+            blank=True, null=True,
+            help_text="Raum für interne Notizen",
+        )
 
         class Meta:
-            db_table = 'server_retraining'
+            get_latest_by = "updated"
+            ordering = ['year', 'order']
+            verbose_name = "Fortbildung"
+            verbose_name_plural = "Fortbildungen"
