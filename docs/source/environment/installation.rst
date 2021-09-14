@@ -148,6 +148,8 @@ GDAL
 
 postgresql
 ----------
+Die zugrunde liegende Datenbank wird vom DBMS ``PostgreSQL`` (kurz Postgres) verwaltet. Postgres ist mit Django
+kompatibel und ermöglicht die Verwaltung relationaler Datenbanken im SQL-Format.
 
 .. code-block:: none
 
@@ -168,6 +170,8 @@ postgresql
 
 Python Packages
 ---------------
+Für die Bereitstellung des Backends benötigen wir noch verschiedene Python-Pakete. Django ist ein quelloffenes Webframework
+mit dem sich die Daten verwalten lassen und das eine eigene RESTful API anbietet.
 
 .. code-block:: none
 
@@ -175,15 +179,14 @@ Python Packages
     > sudo -H pip3.6 install requests
     > sudo -H pip3.6 install django
 
-..
+.. code-block:: none
 
-    auto-apt run ./configure
-    make
-    sudo checkinstall
+    > auto-apt run ./configure
+    > make
+    > sudo checkinstall
 
 Grundlegende Vorbereitungen
 ---------------------------
-
 | See: `Initial Server Setup <https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-16-04>`__
 | See: `How to add and delete Users <https://www.digitalocean.com/community/tutorials/how-to-add-and-delete-users-on-ubuntu-16-04>`__
 | See: `How do i disable ssh login for the root user <https://mediatemple.net/community/products/dv/204643810/how-do-i-disable-ssh-login-for-the-root-user>`__
