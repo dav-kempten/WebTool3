@@ -19,16 +19,23 @@ andere haben einen festen Bezug zu genau einer ``Season`` (Siehe: ``SeasonMixin`
 
 .. code-block:: python
 
-    class ServerSeason(models.Model):
-        name = models.CharField(unique=True, max_length=4)
-        current = models.BooleanField()
-        params = postgres.JSONField(blank=True, null=True)
-
-        updated = models.DateTimeField()
-        deprecated = models.BooleanField()
+    class Season(TimeMixin, models.Model):
+        name = models.SlugField(
+            'Bezeichnung',
+            unique=True, max_length=4,
+            help_text="Jahreszahl als Bezeichnung z.B. 2017"
+        )
+        current = models.BooleanField('Die aktuelle Saison', blank=True, default=False)
+        params = postgres.JSONField(
+            blank=True, null=True,
+            default=defaults.get_default_params
+        )
 
         class Meta:
-            db_table = 'server_season'
+            get_latest_by = "updated"
+            verbose_name = "Saison"
+            verbose_name_plural = "Saisonen"
+            ordering = ('name', )
 
 Das Attribut ``name`` enthält die Jahreszahl (z.B. 2016, 2017 oder 2018, ...).
 Die aktuelle Saison wird mit ``current = True`` gekennzeichnet.
@@ -42,53 +49,100 @@ werden zusammen mit einem Kalender (``Calendar``) verwaltet.
 
 .. code-block:: python
 
-    class ServerCalendar(models.Model):
-        season = models.ForeignKey('ServerSeason', primary_key=True)
-
-        updated = models.DateTimeField()
-        deprecated = models.BooleanField()
-
-        class Meta:
-            db_table = 'server_calendar'
-
-
-    class ServerVacation(models.Model):
-        calendar = models.ForeignKey(ServerCalendar)
-
-        name = models.CharField(max_length=125)
-        start_date = models.DateField()
-        end_date = models.DateField()
-
-        updated = models.DateTimeField()
-        deprecated = models.BooleanField()
+    class Calendar(TimeMixin, models.Model):
+        season = models.OneToOneField(
+            'Season',
+            primary_key=True, verbose_name='Saison', related_name='calendar',
+            on_delete=models.PROTECT,
+            blank=True, default=defaults.get_default_season
+        )
 
         class Meta:
-            db_table = 'server_vacation'
-            unique_together = (('calendar', 'name'),)
+            get_latest_by = "updated"
+            verbose_name = "Kalender"
+            verbose_name_plural = "Kalender"
+            ordering = ('season__name', )
 
 
-    class ServerAnniversary(models.Model):
-        calendar = models.ForeignKey('ServerCalendar')
+    class Vacation(TimeMixin, models.Model):
+        calendar = models.ForeignKey(
+            'Calendar',
+            db_index=True,
+            verbose_name='Kalender', related_name='vacation_list',
+            on_delete=models.PROTECT,
+            blank=True, default=defaults.get_default_calendar
+        )
 
-        name = models.CharField(max_length=125)
-        public_holiday = models.BooleanField()
-        order = models.SmallIntegerField()
-
-        fixed_date = models.CharField(max_length=6)
-
-        day_occurrence = models.IntegerField(blank=True, null=True)
-        weekday = models.IntegerField(blank=True, null=True)
-        month = models.IntegerField(blank=True, null=True)
-
-        easter_offset = models.IntegerField(blank=True, null=True)
-        advent_offset = models.IntegerField(blank=True, null=True)
-
-        updated = models.DateTimeField()
-        deprecated = models.BooleanField()
+        name = fields.NameField( verbose_name='Name', help_text=None)
+        start_date = models.DateField('Beginn')
+        end_date = models.DateField('Ende')
 
         class Meta:
-            db_table = 'server_anniversary'
-            unique_together = (('calendar', 'name'),)
+            get_latest_by = "updated"
+            verbose_name = "Ferien"
+            verbose_name_plural = "Ferien"
+            unique_together = ('calendar', 'name')
+            ordering = ('start_date', 'name')
+
+
+    class Anniversary(TimeMixin, models.Model):
+        calendars = models.ManyToManyField(
+            'Calendar',
+            db_index=True, verbose_name='Kalender',
+            related_name='anniversary_list',
+        )
+
+        name = fields.NameField(verbose_name='Name', help_text=None)
+
+        public_holiday = models.BooleanField(
+            'Arbeitsfrei',
+            blank=True, default=False
+        )
+
+        order = fields.OrderField()
+
+        fixed_date = models.CharField(
+            'Konstante',
+            max_length=6,
+            blank=True, null=True,
+            help_text="Ein festes Datum im Format: TT.MM.",
+        )
+
+        day_occurrence = models.SmallIntegerField(
+            'Zähloffset',
+            choices=OCCURRENCE_CHOICES,
+            blank=True, null=True,
+            help_text="Ein bewegliches Datum, ein bestimmter (erste, zweite, ...) Wochentag im Monat",
+        )
+
+        weekday = models.PositiveSmallIntegerField(
+            'Wochentag',
+            choices=DAY_CHOICES,
+            blank=True, null=True,
+        )
+
+        month = models.PositiveSmallIntegerField(
+            'Monat',
+            choices=MONTH_CHOICES,
+            blank=True, null=True,
+        )
+
+        easter_offset = models.SmallIntegerField(
+            'Osteroffset',
+            blank=True, null=True
+        )
+
+        advent_offset = models.SmallIntegerField(
+            'Adventoffset',
+            blank=True, null=True,
+        )
+
+        class Meta:
+            get_latest_by = "updated"
+            verbose_name = "Gedenktag"
+            verbose_name_plural = "Gedenktage"
+            unique_together = ('name', 'public_holiday')
+            ordering = ('order', 'name')
 
 .. note::
     Fällt der vierte Advent in einem Jahr auf den 24.12. dann wird in der Tabelle ``Anniversary`` das Attribut
@@ -106,51 +160,70 @@ Es gibt Kapitel (``Part``), Unterkapitel (``Section``) und Abschnitte (``Chapter
 
 .. code-block:: python
 
-    class ServerPart(models.Model):
-        season = models.ForeignKey('ServerSeason')
+    class Part(SeasonsMixin, TimeMixin, models.Model):
+        name = fields.NameField(
+            'Bezeichnung',
+            unique=True,
+            help_text="Bezeichnung des Abschnitts",
+        )
 
-        name = models.CharField(max_length=125)
-        description = models.TextField()
-        order = models.SmallIntegerField()
+        description =fields.DescriptionField(
+            'Beschreibung',
+            help_text="Beschreibung des Abschnitts",
+            blank=True, default=''
+        )
 
-        updated = models.DateTimeField()
-        deprecated = models.BooleanField()
-
-        class Meta:
-            db_table = 'server_part'
-            unique_together = (('season', 'name'),)
-
-
-    class ServerSection(models.Model):
-        season = models.ForeignKey(ServerSeason)
-        part = models.ForeignKey(ServerPart)
-
-        name = models.CharField(max_length=125)
-        description = models.TextField()
-        order = models.SmallIntegerField()
-
-        updated = models.DateTimeField()
-        deprecated = models.BooleanField()
+        order = fields.OrderField()
 
         class Meta:
-            db_table = 'server_section'
-            unique_together = (('season', 'part', 'name'),)
+            get_latest_by = "updated"
+            verbose_name = "Abschnitt"
+            verbose_name_plural = "Abschnitte"
+            ordering = ('order', 'name')
 
 
-    class ServerChapter(models.Model):
-        section = models.ForeignKey('ServerSection')
-        season = models.ForeignKey('ServerSeason')
+    class Section(TimeMixin, PartMixin, models.Model):
+        name = fields.NameField(
+            'Bezeichnung',
+            help_text="Bezeichnung des Unterabschnitts",
+        )
 
-        name = models.CharField(max_length=125)
-        description = models.TextField()
-        order = models.SmallIntegerField()
+        description = fields.DescriptionField(
+            'Beschreibung',
+            help_text="Beschreibung des Unterabschnitts",
+            blank=True, default=''
+        )
 
-        updated = models.DateTimeField()
-        deprecated = models.BooleanField()
+        order = fields.OrderField()
 
         class Meta:
-            db_table = 'server_chapter'
-            unique_together = (('season', 'section', 'name'),)
+            get_latest_by = "updated"
+            verbose_name = "Unterabschnitt"
+            verbose_name_plural = "Unterabschnitte"
+            unique_together = ('part', 'name')
+            ordering = ('order', 'name')
+
+
+    class Chapter(TimeMixin, SectionMixin, models.Model):
+
+        name = fields.NameField(
+            'Bezeichnung',
+            help_text="Bezeichnung des Kapitels",
+        )
+
+        description = fields.DescriptionField(
+            'Beschreibung',
+            help_text="Beschreibung des Kapitels",
+            blank=True, default=''
+        )
+
+        order = fields.OrderField()
+
+        class Meta:
+            verbose_name = "Kapitel"
+            verbose_name_plural = "Kapitel"
+            unique_together = ('section', 'name')
+            ordering = ('order', 'name')
 
 Ein Vortrag (``Talk``), ein Gruppentermin (``Session``), ein Kurs (``Instruction``) oder eine
 Gemeinschaftstour (``Tour``) haben ein Attribut ``chapter``, über welches sie einem oder mehreren Abschnitten zugeordnet
@@ -188,42 +261,127 @@ Gemeinschaftstour (``Tour``):
 
 .. code-block:: python
 
-    class ServerEvent(models.Model):
-        season = models.ForeignKey('ServerSeason')
-        instruction = models.ForeignKey('ServerInstruction', blank=True, null=True)
+    class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
+        reference = models.OneToOneField(
+            'Reference',
+            primary_key=True,
+            verbose_name='Buchungscode',related_name='event',
+            on_delete=models.PROTECT,
+        )
 
-        title = models.CharField(max_length=30)
-        name = models.CharField(max_length=125)
-        description = models.TextField()
+        location = fields.LocationField()
 
-        cover = models.CharField(max_length=100)
-        internal = models.BooleanField()
+        reservation_service = models.BooleanField(
+            'Reservierungswunsch für Schulungsraum',
+            db_index=True,
+            blank=True, default=False
+        )
 
-        location = models.CharField(max_length=75)
-        start_date = models.DateField()
-        start_time = models.TimeField(blank=True, null=True)
-        approximate = models.ForeignKey(ServerApproximate, blank=True, null=True)
-        end_date = models.DateField(blank=True, null=True)
-        end_time = models.TimeField(blank=True, null=True)
+        start_date = models.DateField(
+            'Abreisetag',
+            db_index=True
+        )
 
-        link = models.CharField(max_length=200)
-        map = models.CharField(max_length=100)
+        start_time = models.TimeField(
+            'Abreisezeit (Genau)',
+            blank=True, null=True,
+            help_text="Je nach Abreisezeit wird eventuell Urlaub benötigt",
+        )
 
-        distal = models.BooleanField()
-        rendezvous = models.CharField(max_length=75)
-        source = models.CharField(max_length=75)
+        # approximate is valid only if start_time is None
+        approximate = models.ForeignKey(
+            Approximate,
+            db_index=True,
+            verbose_name='Abreisezeit (Ungefähr)',
+            related_name='event_list',
+            blank=True, null=True,
+            help_text="Je nach Abreisezeit wird eventuell Urlaub benötigt",
+            on_delete=models.PROTECT,
+        )
 
-        public_transport = models.BooleanField()
-        distance = models.IntegerField()
-        lea = models.BooleanField()
+        end_date = models.DateField(
+            'Rückkehr',
+            blank=True, null=True,
+            help_text="Nur wenn die Veranstaltung mehr als einen Tag dauert",
+        )
 
-        reference = models.ForeignKey('ServerReference')
+        end_time = models.TimeField(
+            'Rückkehrzeit',
+            blank=True, null=True,
+            help_text="z.B. Ungefähr bei Touren/Kursen - Genau bei Vorträgen",
+        )
 
-        updated = models.DateTimeField()
-        deprecated = models.BooleanField()
+        link = models.URLField(
+            'Beschreibung',
+            blank=True, default='',
+            help_text="Eine URL zur Veranstaltungsbeschreibung auf der Homepage",
+        )
+
+        map = models.FileField(
+            'Kartenausschnitt',
+            blank=True, default='',
+            help_text="Eine URL zu einem Kartenausschnitt des Veranstaltungsgebietes",
+        )
+
+        distal = models.BooleanField(
+            'Mit gemeinsamer Anreise',
+            db_index=True,
+            blank=True, default=False,
+        )
+
+        # rendezvous, source and distance valid only, if distal_event == True
+        rendezvous = fields.LocationField(
+            'Treffpunkt',
+            help_text="Treffpunkt für die Abfahrt z.B. Edelweissparkplatz",
+        )
+
+        source = fields.LocationField(
+            'Ausgangsort',
+            help_text="Treffpunkt vor Ort",
+        )
+
+        public_transport = models.BooleanField(
+            'Öffentliche Verkehrsmittel',
+            db_index=True,
+            blank=True, default=False
+        )
+
+        # distance valid only, if public_transport == False
+        distance = fields.DistanceField()
+
+        # lea valid only, if public_transport == True
+        lea = models.BooleanField(
+            'Low Emission Adventure',
+            db_index=True,
+            blank=True, default=False
+        )
+
+        new = models.BooleanField(
+            'Markierung für Neue Veranstaltungen',
+            db_index=True,
+            blank=True, default=False
+        )
+
+        shuttle_service = models.BooleanField(
+            'Reservierungswunsch für AlpinShuttle',
+            db_index=True,
+            blank=True, default=False
+        )
+
+        instruction = models.ForeignKey(
+            'Instruction',
+            db_index=True,
+            blank=True, null=True,
+            verbose_name='Kurs',
+            related_name='meeting_list',
+            on_delete=models.PROTECT,
+        )
 
         class Meta:
-            db_table = 'server_event'
+            get_latest_by = "updated"
+            verbose_name = "Veranstaltungstermin"
+            verbose_name_plural = "Veranstaltungstermine"
+            ordering = ('start_date', )
 
 Vortrag
 ~~~~~~~
@@ -234,38 +392,57 @@ Vortrag
 
 .. code-block:: python
 
-    class ServerTalk(models.Model):
-        season = models.ForeignKey(ServerSeason)
-        talk = models.ForeignKey(ServerEvent, primary_key=True)
+    class Talk(TimeMixin, StateMixin, ChapterMixin, models.Model):
+        talk = models.OneToOneField(
+            Event,
+            primary_key=True,
+            verbose_name='Vortrag',
+            related_name='talk',
+            on_delete=models.PROTECT,
+        )
 
-        speaker = models.CharField(max_length=125)
-        admission = models.DecimalField(max_digits=6, decimal_places=2)
+        speaker = models.CharField(
+            verbose_name='Referent',
+            max_length=125,
+            blank=True, default='',
+            help_text="Name des Referenten",
+        )
 
-        state = models.ForeignKey(ServerState)
+        admission = fields.AdmissionField(
+            verbose_name='Beitrag für Mitglieder',
+            help_text="Teilnehmerbeitrag in €"
+        )
 
-        updated = models.DateTimeField()
-        deprecated = models.BooleanField()
+        min_quantity = models.PositiveIntegerField(
+            'Min. Tln',
+            blank=True, default=0,
+            help_text="Wieviel Teilnehemr müssen mindestens teilnehmen",
+        )
+
+        max_quantity = models.PositiveIntegerField(
+            'Max. Tln',
+            blank=True, default=0,
+            help_text="Wieviel Teilnehemr können maximal teilnehmen",
+        )
+
+        cur_quantity = models.PositiveIntegerField(
+            'Anmeldungen',
+            blank=True, default=0,
+            help_text="Wieviel Teilnehemr sind aktuell angemeldet",
+        )
+
+        tariffs = models.ManyToManyField(
+            'Tariff',
+            db_index=True,
+            verbose_name='Preisaufschläge',
+            related_name='talk_list',
+        )
 
         class Meta:
-            db_table = 'server_talk'
-
-
-    class ServerTalkChapter(models.Model):
-        talk = models.ForeignKey(ServerTalk)
-        chapter = models.ForeignKey(ServerChapter)
-
-        class Meta:
-            db_table = 'server_talk_chapter'
-            unique_together = (('talk', 'chapter'),)
-
-
-    class ServerTalkTariffs(models.Model):
-        talk = models.ForeignKey(ServerTalk)
-        tariff = models.ForeignKey('ServerTariff')
-
-        class Meta:
-            db_table = 'server_talk_tariffs'
-            unique_together = (('talk', 'tariff'),)
+            get_latest_by = "updated"
+            verbose_name = "Vortrag"
+            verbose_name_plural = "Vortäge"
+            ordering = ('talk__start_date', )
 
 Gruppentermin
 ~~~~~~~~~~~~~
@@ -277,53 +454,65 @@ Gruppentermin
 
 .. code-block:: python
 
-    class ServerSession(models.Model):
-        collective = models.ForeignKey(ServerCollective)
-        session = models.ForeignKey(ServerEvent, primary_key=True)
+    class Session(TimeMixin, GuidedEventMixin, RequirementMixin, EquipmentMixin, StateMixin, ChapterMixin, models.Model):
+        collective = models.ForeignKey(
+            Collective,
+            db_index=True,
+            verbose_name='Gruppe',
+            related_name='session_list',
+            on_delete=models.PROTECT,
+        )
 
-        guide = models.ForeignKey(ServerGuide)
+        categories = models.ManyToManyField(
+            'Category',
+            db_index=True,
+            verbose_name='Weitere Kategorien',
+            related_name='session_list',
+            blank=True,
+        )
 
-        fitness = models.ForeignKey(ServerFitness)
-        skill = models.ForeignKey('ServerSkill')
+        misc_category = models.CharField(
+            'Sonstiges',
+            max_length=75,
+            blank=True, default='',
+            help_text="Kategoriebezeichnung, wenn unter Kategorie „Sonstiges“ gewählt wurde",
+        )
 
-        misc_equipment = models.CharField(max_length=75)
-        speaker = models.CharField(max_length=125)
-        portal = models.CharField(max_length=200)
+        ladies_only = models.BooleanField(
+            'Von Frauen für Frauen',
+            default=False,
+        )
 
-        state = models.ForeignKey('ServerState')
+        session = models.OneToOneField(
+            Event,
+            primary_key=True,
+            verbose_name='Veranstaltung',
+            related_name='session',
+            on_delete=models.PROTECT,
+        )
 
-        updated = models.DateTimeField()
-        deprecated = models.BooleanField()
+        speaker = models.CharField(
+            verbose_name='Referent',
+            max_length=125,
+            blank=True, default='',
+            help_text="Name der/des Referenten",
+            null=True,
+        )
+
+        portal = models.URLField(
+            'Tourenportal',
+            blank=True, default='',
+            help_text="Eine URL zum Tourenportal der Alpenvereine",
+        )
+
+        message = models.TextField(blank=True, default='')
+        comment = models.TextField(blank=True, default='')
 
         class Meta:
-            db_table = 'server_session'
-
-
-    class ServerSessionChapter(models.Model):
-        session = models.ForeignKey(ServerSession)
-        chapter = models.ForeignKey(ServerChapter)
-
-        class Meta:
-            db_table = 'server_session_chapter'
-            unique_together = (('session', 'chapter'),)
-
-
-    class ServerSessionEquipments(models.Model):
-        session = models.ForeignKey(ServerSession)
-        equipment = models.ForeignKey(ServerEquipment)
-
-        class Meta:
-            db_table = 'server_session_equipments'
-            unique_together = (('session', 'equipment'),)
-
-
-    class ServerSessionTeam(models.Model):
-        session = models.ForeignKey(ServerSession)
-        guide = models.ForeignKey(ServerGuide)
-
-        class Meta:
-            db_table = 'server_session_team'
-            unique_together = (('session', 'guide'),)
+            get_latest_by = "updated"
+            verbose_name = "Gruppentermin"
+            verbose_name_plural = "Gruppentermine"
+            ordering = ('session__season__name', 'collective__name', 'session__start_date', )
 
 Kurs
 ~~~~
@@ -336,54 +525,49 @@ Kurs
 
 .. code-block:: python
 
-    class ServerInstruction(models.Model):
-        topic = models.ForeignKey('ServerTopic')
-        instruction = models.ForeignKey(ServerEvent, primary_key=True)
+    class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, ChapterMixin,
+                      QualificationMixin, EquipmentMixin, models.Model):
+    topic = models.ForeignKey(
+            Topic,
+            db_index=True,
+            verbose_name='Inhalt',
+            related_name='instructions',
+            on_delete=models.PROTECT,
+        )
 
-        guide = models.ForeignKey(ServerGuide)
-        ladies_only = models.BooleanField()
+        instruction = models.OneToOneField(
+            Event,
+            primary_key=True,
+            verbose_name='Veranstaltung',
+            related_name='meeting',
+            on_delete=models.PROTECT,
+        )
 
-        admission = models.DecimalField(max_digits=6, decimal_places=2)
-        advances = models.DecimalField(max_digits=6, decimal_places=2)
-        advances_info = models.CharField(max_length=75)
-        extra_charges = models.CharField(max_length=75)
+        ladies_only = models.BooleanField(
+            'Von Frauen für Frauen',
+            blank=True, default=False,
+        )
 
-        min_quantity = models.IntegerField()
-        max_quantity = models.IntegerField()
-        cur_quantity = models.IntegerField()
+        is_special = models.BooleanField(
+            'Spezialkurs',
+            blank=True, default=False,
+            help_text = 'Kreative Kursinhalte'
+        )
 
-        calc_budget = models.DecimalField(max_digits=6, decimal_places=2)
-        real_costs = models.DecimalField(max_digits=6, decimal_places=2)
-        budget_info = postgres.JSONField(blank=True, null=True)
-
-        message = models.TextField()
-        comment = models.TextField()
-
-        state = models.ForeignKey('ServerState')
-
-        updated = models.DateTimeField()
-        deprecated = models.BooleanField()
-
-        class Meta:
-            db_table = 'server_instruction'
-
-
-    class ServerInstructionChapter(models.Model):
-        instruction = models.ForeignKey(ServerInstruction)
-        chapter = models.ForeignKey(ServerChapter)
-
-        class Meta:
-            db_table = 'server_instruction_chapter'
-            unique_together = (('instruction', 'chapter'),)
-
-
-    class ServerInstructionTeam(models.Model):
-        instruction = models.ForeignKey(ServerInstruction)
-        guide = models.ForeignKey(ServerGuide)
+        # category is valid only, if instruction is_special
+        category = models.OneToOneField(
+            'Category',
+            verbose_name='Sonder Kategorie',
+            related_name='special_instruction',
+            blank=True, null=True,
+            on_delete=models.PROTECT,
+        )
 
         class Meta:
-            db_table = 'server_instruction_team'
-            unique_together = (('instruction', 'guide'),)
+            get_latest_by = "updated"
+            verbose_name = "Kurs"
+            verbose_name_plural = "Kurse"
+            ordering = ('instruction__start_date', 'topic__order')
 
 Gemeinschaftstour
 ~~~~~~~~~~~~~~~~~
@@ -397,93 +581,84 @@ Gemeinschaftstour
 
 .. code-block:: python
 
-    class ServerTour(models.Model):
-        season = models.ForeignKey(ServerSeason)
-        deadline = models.ForeignKey(ServerEvent, unique=True)
-        preliminary = models.ForeignKey(ServerEvent, unique=True, blank=True, null=True)
-        info = models.CharField(max_length=75)
-        tour = models.ForeignKey(ServerEvent, primary_key=True)
+    class Tour(TimeMixin, QualificationMixin, EquipmentMixin, GuidedEventMixin, ChapterMixin,
+        AdminMixin, RequirementMixin, AdmissionMixin, models.Model):
+        # Check: categories.season and self.season belongs to the same season!
+        # Check: deadline <= preliminary < tour
+        # Check: tour.category not part of categories
 
-        guide = models.ForeignKey(ServerGuide)
-        preconditions = models.TextField()
-        ladies_only = models.BooleanField()
+        categories = models.ManyToManyField(
+            'Category',
+            db_index=True,
+            verbose_name='Weitere Kategorien',
+            related_name='+',
+            blank=True,
+        )
 
-        skill = models.ForeignKey(ServerSkill)
-        fitness = models.ForeignKey(ServerFitness)
+        # misc_category is only valid if category is '?'
 
-        misc_equipment = models.CharField(max_length=75)
+        misc_category = models.CharField(
+            'Sonstiges',
+            max_length=75,
+            blank=True, default='',
+            help_text="Kategoriebezeichnung, wenn unter Kategorie „Sonstiges“ gewählt wurde",
+        )
 
-        admission = models.DecimalField(max_digits=6, decimal_places=2)
-        advances = models.DecimalField(max_digits=6, decimal_places=2)
-        advances_info = models.CharField(max_length=75)
-        extra_charges = models.CharField(max_length=75)
+        ladies_only = models.BooleanField(
+            'Von Frauen für Frauen',
+            default=False,
+        )
 
-        min_quantity = models.IntegerField()
-        max_quantity = models.IntegerField()
-        cur_quantity = models.IntegerField()
+        youth_on_tour = models.BooleanField(
+            'Jugend on Tour',
+            default=False,
+        )
 
-        misc_category = models.CharField(max_length=75)
-        portal = models.CharField(max_length=200)
+        relaxed = models.BooleanField(
+            'Gemütliche Tour',
+            default=False
+        )
 
-        calc_budget = models.DecimalField(max_digits=6, decimal_places=2)
-        real_costs = models.DecimalField(max_digits=6, decimal_places=2)
-        budget_info = postgres.JSONField(blank=True, null=True)
+        deadline = models.OneToOneField(
+            Event,
+            verbose_name='Anmeldeschluss',
+            related_name='deadline',
+            on_delete=models.PROTECT,
+        )
 
-        message = models.TextField()
-        comment = models.TextField()
+        preliminary = models.OneToOneField(
+            Event,
+            verbose_name='Tourenbesprechung',
+            related_name='preliminary',
+            blank=True, null=True,
+            on_delete=models.SET_NULL,
+        )
 
-        state = models.ForeignKey(ServerState)
+        # info is only valid if preliminary is None
 
-        updated = models.DateTimeField()
-        deprecated = models.BooleanField()
+        info = fields.InfoField(
+            help_text="Informationen, wenn z.B. keine Tourenbesprechung geplant ist.",
+        )
 
-        class Meta:
-            db_table = 'server_tour'
+        tour = models.OneToOneField(
+            Event,
+            primary_key=True,
+            verbose_name='Veranstaltung',
+            related_name='tour',
+            on_delete=models.PROTECT,
+        )
 
-
-    class ServerTourCategories(models.Model):
-        tour = models.ForeignKey(ServerTour)
-        category = models.ForeignKey(ServerCategory)
-
-        class Meta:
-            db_table = 'server_tour_categories'
-            unique_together = (('tour', 'category'),)
-
-
-    class ServerTourChapter(models.Model):
-        tour = models.ForeignKey(ServerTour)
-        chapter = models.ForeignKey(ServerChapter)
-
-        class Meta:
-            db_table = 'server_tour_chapter'
-            unique_together = (('tour', 'chapter'),)
-
-
-    class ServerTourEquipments(models.Model):
-        tour = models.ForeignKey(ServerTour)
-        equipment = models.ForeignKey(ServerEquipment)
-
-        class Meta:
-            db_table = 'server_tour_equipments'
-            unique_together = (('tour', 'equipment'),)
-
-
-    class ServerTourQualifications(models.Model):
-        tour = models.ForeignKey(ServerTour)
-        topic = models.ForeignKey(ServerTopic, models.DO_NOTHIN)
+        portal = models.URLField(
+            'Tourenportal',
+            blank=True, default='',
+            help_text="Eine URL zum Tourenportal der Alpenvereine",
+        )
 
         class Meta:
-            db_table = 'server_tour_qualifications'
-            unique_together = (('tour', 'topic'),)
-
-
-    class ServerTourTeam(models.Model):
-        tour = models.ForeignKey(ServerTour)
-        guide = models.ForeignKey(ServerGuide)
-
-        class Meta:
-            db_table = 'server_tour_team'
-            unique_together = (('tour', 'guide'),)
+            get_latest_by = "updated"
+            verbose_name = "Gemeinschaftstour"
+            verbose_name_plural = "Gemeinschaftstouren"
+            ordering = ('tour__start_date', )
 
 Kennung, Kategorie, Buchungscode
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -497,268 +672,465 @@ Im Sommer werden eben nur Sommersportarten (z.B. Bergtouren oder Touren mit dem 
 
 .. code-block:: python
 
-    class ServerCategory(models.Model):
-        season = models.ForeignKey('ServerSeason')
+    class Category(SeasonsMixin, TimeMixin, models.Model):
+        code = models.CharField(
+            'Kurzzeichen',
+            max_length=3,
+            unique=True,
+            help_text="Kurzzeichen der Kategorie",
+        )
 
-        code = models.CharField(max_length=3)
-        name = models.CharField(max_length=125)
-        order = models.SmallIntegerField()
+        name = fields.NameField(
+            help_text="Bezeichnung der Kategorie",
+        )
 
-        tour = models.BooleanField()
-        talk = models.BooleanField()
-        topic = models.BooleanField()
-        collective = models.BooleanField()
+        order = fields.OrderField()
 
-        winter = models.BooleanField()
-        summer = models.BooleanField()
-        climbing = models.BooleanField()
+        tour = models.BooleanField(
+            'Touren',
+            db_index=True,
+            blank=True, default=False,
+            help_text = 'Kategorie für Touren'
+        )
 
-        updated = models.DateTimeField()
-        deprecated = models.BooleanField()
+        deadline = models.BooleanField(
+            'Anmeldeschluss',
+            db_index=True,
+            blank=True, default=False,
+            help_text = 'Kategorie für den Anmeldeschluss'
+        )
+
+        preliminary = models.BooleanField(
+            'Vorbesprechung',
+            db_index=True,
+            blank=True, default=False,
+            help_text = 'Kategorie für die Vorbesprechung'
+        )
+
+        meeting = models.BooleanField(
+            'Kurstermin',
+            db_index=True,
+            blank=True, default=False,
+            help_text = 'Kategorie für Kurstreffen Theorie/Praxis'
+        )
+
+        talk = models.BooleanField(
+            'Vorträge',
+            db_index=True,
+            blank=True, default=False,
+            help_text = 'Kategorie für Vorträge'
+        )
+
+        topic = models.BooleanField(
+            'Kurse',
+            db_index=True,
+            blank=True, default=False,
+            help_text = 'Kategorie für Kurse'
+        )
+
+        # Check: A collective will define its own set of categories
+
+        collective = models.BooleanField(
+            'Gruppentermine',
+            db_index=True,
+            blank=True, default=False,
+            help_text = 'Kategorie für Gruppentermine'
+        )
+
+        winter = models.BooleanField(
+            'Wintersportart',
+            db_index=True,
+            blank=True, default=False
+        )
+
+        summer = models.BooleanField(
+            'Sommersportart',
+            db_index=True,
+            blank=True, default=False
+        )
+
+        climbing = models.BooleanField(
+            'Klettersportart',
+            blank=True, default=False
+        )
 
         class Meta:
-            db_table = 'server_category'
-            unique_together = (('season', 'code'), ('season', 'code', 'name'),)
+            get_latest_by = "updated"
+            verbose_name = "Kategorie"
+            verbose_name_plural = "Kategorien"
+            unique_together = ('code', 'name')
+            ordering = ('order', 'code', 'name')
 
 
-    class ServerReference(models.Model):
-        season = models.ForeignKey('ServerSeason')
-        category = models.ForeignKey(ServerCategory)
+    class Reference(SeasonMixin, TimeMixin, models.Model):
+        category = models.ForeignKey(
+            'Category',
+            db_index=True,
+            verbose_name='Kategorie',
+            related_name='event_list',
+            on_delete=models.PROTECT,
+        )
 
-        reference = models.SmallIntegerField()
+        reference = models.PositiveSmallIntegerField(
+            verbose_name='Buchungscode',
+            validators=[MaxValueValidator(99, 'Bitte keine Zahlen größer 99 eingeben')]
+        )
 
-        updated = models.DateTimeField()
-        deprecated = models.BooleanField()
+        prefix = models.PositiveSmallIntegerField(
+            verbose_name='Jahreszahl',
+            validators=[MaxValueValidator(9, 'Bitte keine Zahlen größer 9 eingeben')],
+            blank=True, default=defaults.get_default_prefix
+        )
 
         class Meta:
-            db_table = 'server_reference'
-            unique_together = (('season', 'reference', 'category'),)
+            verbose_name = "Buchungscode"
+            verbose_name_plural = "Buchungscodes"
+            unique_together = ('season', 'category', 'prefix', 'reference')
+            ordering = ('season__name', 'category__order', 'prefix', 'reference')
 
 Gruppe
 ~~~~~~
+Innerhalb der Sektion gibt es verschiedene Gruppen(``Collective``). Jede Gruppe setzt sich aus einer Kategorie (``category``) und
+verschiedenen Gruppenleitern (``managers``) zusammen. Die Gruppenleiter sind dabei verschiedene Trainer, die mit der
+Gruppe durch eine Rolle (``Role``) verbunden sind. Die Rollen sind die Verbindung zwischen den Trainern und den Gruppen.
+Die Gruppen umfassen Vereinsorgane und als sowohl auch Kinder-, Jugend- und Erwachsenengruppen.
 
 .. code-block:: python
 
-    class ServerCollective(models.Model):
-        season = models.ForeignKey('ServerSeason')
-        section = models.ForeignKey('ServerSection')
+    class Collective(SeasonsMixin, SectionMixin, TimeMixin, DescriptionMixin, models.Model):
+        category = models.OneToOneField(
+            'Category',
+            primary_key=True,
+            verbose_name='Kategorie',
+            related_name='category_collective',
+            on_delete=models.PROTECT,
+        )
 
-        title = models.CharField(max_length=30)
-        name = models.CharField(max_length=125)
-        description = models.TextField()
+        managers = models.ManyToManyField(
+            Guide, through="Role",
+            db_index=True,
+            verbose_name='Manager',
+            related_name='collectives',
+            blank=True,
+            help_text="Ansprechpartner für die Gruppe",
+        )
 
-        cover = models.CharField(max_length=100)
-        internal = models.BooleanField()
-        order = models.SmallIntegerField()
-
-        updated = models.DateTimeField()
-        deprecated = models.BooleanField()
-
-        class Meta:
-            db_table = 'server_collective'
-            unique_together = (('season', 'title', 'name'),)
-
-
-    class ServerCollectiveCategories(models.Model):
-        collective = models.ForeignKey(ServerCollective)
-        category = models.ForeignKey(ServerCategory)
+        order = fields.OrderField()
 
         class Meta:
-            db_table = 'server_collective_categories'
-            unique_together = (('collective', 'category'),)
+            get_latest_by = "updated"
+            verbose_name = "Gruppe"
+            verbose_name_plural = "Gruppen"
+            unique_together = ('title', 'internal')
+            ordering = ('order', 'name')
 
+    class Role(TimeMixin, models.Model):
+        collective = models.ForeignKey(
+            Collective,
+            db_index=True,
+            verbose_name='Gruppe',
+            related_name='role_list',
+            on_delete=models.CASCADE,
+        )
 
-    class ServerCollectiveManagers(models.Model):
-        collective = models.ForeignKey(ServerCollective)
-        guide = models.ForeignKey('ServerGuide')
+        manager = models.ForeignKey(
+            Guide,
+            db_index=True,
+            verbose_name='Manager',
+            related_name='role_list',
+            on_delete=models.CASCADE,
+        )
+
+        order = fields.OrderField()
+        description = fields.DescriptionField(blank=True, default='')
 
         class Meta:
-            db_table = 'server_collective_managers'
-            unique_together = (('collective', 'guide'),)
+            get_latest_by = "updated"
+            verbose_name = "Aufgabe"
+            verbose_name_plural = "Aufgaben"
+            ordering = ('order', 'manager__user__last_name', 'manager__user__first_name')
 
-Abfahrtzeiten
-~~~~~~~~~~~~~
+Abfahrts- und Ankunftszeiten
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Manchmal ist es nicht möglich eine genaue Abfahrts- oder Ankunftszeit anzugeben. Dafür gibt es das Modell ``Approximate``,
+was eine ungefähre Einordnung der Zeiten ermöglicht. Alternativ ist es bei den einzelnen Touren, Kursen und Gruppenterminen
+auch möglich eine genaue Startzeit einzugeben.
 
 .. code-block:: python
 
-    class ServerApproximate(models.Model):
-        season = models.ForeignKey('ServerSeason')
+    class Approximate(SeasonsMixin, TimeMixin, models.Model):
 
-        name = models.CharField(max_length=30)
-        description = models.TextField()
-        start_time = models.TimeField()
-        default = models.BooleanField()
+        name = fields.TitleField(
+            db_index=True,
+            unique=True,
+            verbose_name='Kurzbeschreibung',
+            help_text="Ungefährer Zeitpunkt",
+        )
 
-        updated = models.DateTimeField()
-        deprecated = models.BooleanField()
+        description = fields.DescriptionField(
+            help_text="Beschreibung des Zeitraums",
+        )
+
+        # Proposals
+        # 'Morgens': '07:00',
+        # 'Vormittags': '09:00',
+        # 'Mittags': '12:00',
+        # 'Nachmittags': '14:00',
+        # 'Abends': '17:00'
+
+        start_time = models.TimeField(
+            'Abreisezeit (ungefähr)',
+            help_text="Für die Kalkulation benötigte zeitliche Grundlage",
+        )
+
+        default = models.BooleanField(
+            'Der initiale Zeitraum',
+            blank=True, default=False
+        )
+
+        def natural_key(self):
+            return self.name,
+
+        natural_key.dependencies = ['server.season']
+
+        def __str__(self):
+            return self.name
 
         class Meta:
-            db_table = 'server_approximate'
-            unique_together = (('season', 'name'),)
+            get_latest_by = "updated"
+            verbose_name = "Ungefährer Zeitpunkt"
+            verbose_name_plural = "Ungefähre Zeitpunkte"
+            ordering = ('start_time', )
 
 Ausrüstung
 ~~~~~~~~~~
+Für verschiedene Veranstaltungen sind unterschiedliche Ausrüstungssets notwendig. Diese Ausrüstungssets sind bei allen
+Touren, Kursen und Gruppenterminen die gleichen. Die Ausrüstungssets haben eine einzigartige Kennung (``code``) und
+Namen (``name``).
 
 .. code-block:: python
 
-    class ServerEquipment(models.Model):
-        season = models.ForeignKey('ServerSeason')
+    class Equipment(SeasonsMixin, TimeMixin, models.Model):
+        code = models.CharField(
+            'Kurzzeichen',
+            unique=True,
+            max_length=10,
+            help_text="Kurzzeichen für die Ausrüstung",
+        )
 
-        code = models.CharField(max_length=10)
-        name = models.CharField(max_length=125)
-        description = models.TextField()
-        default = models.BooleanField()
+        name = fields.NameField(
+            'Bezeichnung',
+            help_text="Bezeichnung der Ausrüstung",
+        )
 
-        updated = models.DateTimeField()
-        deprecated = models.BooleanField()
+        description = fields.DescriptionField(
+            'Beschreibung',
+            help_text="Beschreibung der Ausrüstung",
+        )
+
+        default = models.BooleanField(
+            'Die initiale Ausrüstung',
+            blank=True, default=False
+        )
 
         class Meta:
-            db_table = 'server_equipment'
-            unique_together = (('season', 'name'), ('season', 'code'),)
+            get_latest_by = "updated"
+            verbose_name = "Ausrüstung"
+            verbose_name_plural = "Ausrüstungen"
+            unique_together = ('code', 'name')
+            ordering = ('code', )
 
 Konditionelle Anforderungen
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Das ``Fitness``-Modell hilft bei der Einordung der konditionellen Schwierigkeit einer Tour und eines Kurses. Dabei gibt
+es drei Fitness-Einträge die einer Kategorie zugeordnet werden können. Diese Einordung wird dann auch auf der Homepage
+dargestellt.
 
 .. code-block:: python
 
-    class ServerFitness(models.Model):
-        season = models.ForeignKey('ServerSeason')
+    class Fitness(SeasonsMixin, TimeMixin, models.Model):
+        code = models.CharField(
+            'Kurzbeschreibung',
+            unique=True,
+            max_length=3,
+            help_text="Konditionelle Anforderungen",
+        )
 
-        code = models.CharField(max_length=3)
-        default = models.BooleanField()
+        order = fields.OrderField()
 
-        updated = models.DateTimeField()
-        deprecated = models.BooleanField()
-
-        class Meta:
-            db_table = 'server_fitness'
-            unique_together = (('season', 'code'),)
-
-
-    class ServerFitnessdescription(models.Model):
-        season = models.ForeignKey('ServerSeason')
-
-        fitness = models.ForeignKey(ServerFitness)
-        category = models.ForeignKey(ServerCategory)
-
-        description = models.TextField()
-
-        updated = models.DateTimeField()
-        deprecated = models.BooleanField()
+        default = models.BooleanField(
+            'Die initiale konditionelle Anforderung',
+            blank=True, default=False
+        )
 
         class Meta:
-            db_table = 'server_fitnessdescription'
-            unique_together = (('season', 'fitness', 'category'),)
+            get_latest_by = "updated"
+            verbose_name = "Konditionelle Anforderung"
+            verbose_name_plural = "Konditionelle Anforderungen"
+            ordering = ('order', 'code')
+
+
+    class FitnessDescription(TimeMixin, models.Model):
+        # SeasonMixin is needed only for namespace checking. See unique_together
+        # check: fitness and category belongs to the same season!
+
+        fitness = models.ForeignKey(
+            Fitness,
+            db_index=True,
+            verbose_name='Konditionelle Anforderung',
+            related_name='description_list',
+            on_delete=models.PROTECT,
+        )
+
+        category = models.ForeignKey(
+            Category,
+            db_index=True,
+            verbose_name='Kategorie',
+            related_name='fitness_list',
+            on_delete=models.PROTECT,
+        )
+
+        description = models.TextField(
+            'Beschreibung',
+            help_text="Beschreibung der Konditionelle Anforderung",
+        )
+
+        class Meta:
+            get_latest_by = "updated"
+            unique_together = ('fitness', 'category')
+            verbose_name = "Beschreibung der Konditionelle Anforderung"
+            verbose_name_plural = "Beschreibungen der Konditionelle Anforderungen"
+            ordering = ('fitness__code', 'category__order')
 
 Technische Anforderungen
 ~~~~~~~~~~~~~~~~~~~~~~~~
+Das ``Skill``-Modell hilft bei der Einordung der technischen Schwierigkeit einer Tour und eines Kurses. Dabei gibt
+es drei Skill-Einträge die einer Kategorie zugeordnet werden können. Diese Einordung wird dann auch auf der Homepage
+dargestellt.
 
 .. code-block:: python
 
-    class ServerSkill(models.Model):
-        season = models.ForeignKey(ServerSeason)
+    class Skill(SeasonsMixin, TimeMixin, models.Model):
+        code = models.CharField(
+            'Kurzbeschreibung',
+            unique=True,
+            max_length=3,
+            help_text="Technische Anforderungen",
+        )
 
-        code = models.CharField(max_length=3)
-        default = models.BooleanField()
+        order = fields.OrderField()
 
-        updated = models.DateTimeField()
-        deprecated = models.BooleanField()
-
-        class Meta:
-            db_table = 'server_skill'
-            unique_together = (('season', 'code'),)
-
-
-    class ServerSkilldescription(models.Model):
-        season = models.ForeignKey(ServerSeason)
-
-        skill = models.ForeignKey(ServerSkill)
-        category = models.ForeignKey(ServerCategory)
-
-        description = models.TextField()
-
-        updated = models.DateTimeField()
-        deprecated = models.BooleanField()
+        default = models.BooleanField(
+            'Die initialen technische Anforderungen',
+            blank=True, default=False
+        )
 
         class Meta:
-            db_table = 'server_skilldescription'
-            unique_together = (('season', 'skill', 'category'),)
+            get_latest_by = "updated"
+            verbose_name = "Technische Anforderung"
+            verbose_name_plural = "Technische Anforderungen"
+            ordering = ('order', 'code')
+
+
+    class SkillDescription(TimeMixin, models.Model):
+        # SeasonMixin is needed only for namespace checking. See unique_together
+        # check skill and category belongs to the same season
+
+        skill = models.ForeignKey(
+            Skill,
+            db_index=True,
+            verbose_name='Technische Anforderung',
+            related_name='description_list',
+            on_delete=models.PROTECT,
+        )
+
+        category = models.ForeignKey(
+            Category,
+            db_index=True,
+            verbose_name='Kategorie',
+            related_name='skill_list',
+            on_delete=models.PROTECT,
+        )
+
+        description = models.TextField(
+            'Beschreibung',
+            help_text="Beschreibung der technischen Anforderungen",
+        )
+
+        class Meta:
+            get_latest_by = "updated"
+            unique_together = ('skill', 'category')
+            verbose_name = "Beschreibung der technischen Anforderung"
+            verbose_name_plural = "Beschreibung der technischen Anforderungen"
+            ordering = ('skill__code', 'category__order')
 
 Kursinhalt
 ~~~~~~~~~~
+Das ``Topic``-Modell verbindet die Kategorien mit den Kursen. Dabei unterschieden sich die Topics von Kategorien, dass
+dadurch verschiedene Preisaufschläge für Nicht-Mitglieder, die auch bei Kursen der Sektion teilnehmen dürfen,
+definiert werden können.
 
 .. code-block:: python
 
-    class ServerTopic(models.Model):
-        season = models.ForeignKey(ServerSeason)
-        category = models.ForeignKey(ServerCategory)
+    class Topic(SeasonsMixin, TimeMixin, DescriptionMixin, QualificationMixin, EquipmentMixin, models.Model):
+        category = models.OneToOneField(
+            'Category',
+            primary_key=True,
+            verbose_name='Kategorie',
+            related_name='category_topic',
+            on_delete=models.PROTECT,
+        )
 
-        title = models.CharField(max_length=30)
-        name = models.CharField(max_length=125)
-        description = models.TextField()
-        cover = models.CharField(max_length=100)
+        tariffs = models.ManyToManyField(
+            'Tariff',
+            db_index=True,
+            verbose_name='Preisaufschläge',
+            related_name='tariff_list',
+            blank=True, default=''
+        )
 
-        internal = models.BooleanField()
-
-        misc_equipment = models.CharField(max_length=75)
-        preconditions = models.TextField()
-
-        order = models.SmallIntegerField()
-
-        updated = models.DateTimeField()
-        deprecated = models.BooleanField()
-
-        class Meta:
-            db_table = 'server_topic'
-
-
-    class ServerTopicEquipments(models.Model):
-        topic = models.ForeignKey(ServerTopic)
-        equipment = models.ForeignKey(ServerEquipment)
+        order = fields.OrderField()
 
         class Meta:
-            db_table = 'server_topic_equipments'
-            unique_together = (('topic', 'equipment'),)
-
-
-    class ServerTopicQualifications(models.Model):
-        from_topic = models.ForeignKey(ServerTopic)
-        to_topic = models.ForeignKey(ServerTopic)
-
-        class Meta:
-            db_table = 'server_topic_qualifications'
-            unique_together = (('from_topic', 'to_topic'),)
-
-
-    class ServerTopicTariffs(models.Model):
-        topic = models.ForeignKey(ServerTopic)
-        tariff = models.ForeignKey(ServerTariff)
-
-        class Meta:
-            db_table = 'server_topic_tariffs'
-            unique_together = (('topic', 'tariff'),)
+            get_latest_by = "updated"
+            verbose_name = "Kursinhalt"
+            verbose_name_plural = "Kursinhalte"
+            unique_together = ('title', 'internal')
+            ordering = ('order', 'name')
 
 Preisgruppen
 ~~~~~~~~~~~~
+Die Tariffe erlauben eine Unterscheidung von Preisen für Mitglieder und Nicht-Migliedern, da Kurse und andere
+Veranstaltungen für Mitglieder meist günstiger sind.
 
 .. code-block:: python
 
-    class ServerTariff(models.Model):
-        season = models.ForeignKey(ServerSeason)
+    class Tariff(SeasonMixin, TimeMixin, models.Model):
+        name = fields.NameField(
+            'Bezeichnung',
+            help_text="Bezeichnung der Preisgruppe",
+        )
 
-        name = models.CharField(max_length=125)
-        description = models.TextField()
+        description = fields.DescriptionField(
+            'Beschreibung',
+            help_text="Beschreibung des Preisgruppe",
+            blank=True, default=''
+        )
 
-        multiplier = models.DecimalField(max_digits=6, decimal_places=3)
+        order = fields.OrderField()
 
-        order = models.SmallIntegerField()
-
-        updated = models.DateTimeField()
-        deprecated = models.BooleanField()
+        multiplier = models.DecimalField(
+            'Preisaufschlag',
+            max_digits=6, decimal_places=3,
+            blank=True, default=0.0,
+            help_text='Preisaufschlag auf Mitgliederpreise'
+        )
 
         class Meta:
-            db_table = 'server_tariff'
-            unique_together = (('season', 'name'),)
+            verbose_name = "Preisgruppe"
+            verbose_name_plural = "Preisgruppen"
+            unique_together = ('season', 'name')
+            ordering = ('season__name', 'order', 'name')
 
 Bearbeitungsstände
 ~~~~~~~~~~~~~~~~~~
