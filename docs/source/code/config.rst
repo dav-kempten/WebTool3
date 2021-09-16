@@ -32,6 +32,11 @@ Die Module ``client_router`` und ``frontend_router`` definieren noch die weitere
 
 uWSGI-Konfiguration
 ~~~~~~~~~~~~~~~~~~~
+``uWSGI`` ist ein Open-Source-Projekt, welches einen Anwendungsserver für Webanwendungen bereitstellt. ``uWSGI`` wurde
+nach der Schnittstellen-Spezifikation WSGI benannt und implementiert diese Spezifikation. Im Produktivbetrieb von
+Webapplikationen übermittelt uWSGI die Anfragen vom Webserver (z. B. ``NGINX``) an die Webapplikation und zurück.
+
+Der ``uWSGI``-Service für unseren Django-Webserver muss entsprechend konfiguriert werden:
 
 .. code-block:: python
 
@@ -42,8 +47,11 @@ uWSGI-Konfiguration
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.local")
     application = get_wsgi_application()
 
-Basis-Konfiguration
-~~~~~~~~~~~~~~~~~~~
+Basiskonfiguration
+~~~~~~~~~~~~~~~~~~
+In der Basis-Konfiguration liegen alle Konfigurationen, die sich Produktiv- und Entwicklungssystem teilen. Hier werden
+die für Django nötigen Unterapplikationen (``INSTALLED_APPS``), Middlewares (``MIDDLEWARE``) und Templates (``TEMPLATES``)
+eingebunden.
 
 .. code-block:: python
 
@@ -122,6 +130,11 @@ Basis-Konfiguration
 
     WSGI_APPLICATION = 'config.wsgi.application'
 
+Zusätzlich ist es nötig, auf Grundlage der Umgebungsvariablen und die darunterliegende Datenbank für Django zu konfigurieren.
+Dazu holt man sich die Umgebungsvariablen (``get_env``) des Produktionssystems und parametrisiert die Datenbank.
+
+.. code-block:: python
+
 
     # Database
     # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
@@ -137,6 +150,13 @@ Basis-Konfiguration
         }
     }
 
+Um Performance-Probleme bei Django vorzubeugen, werden die Einträge der Datenbank und der REST-API gecached. Die REST-API
+muss auch noch passend konfiguriert werden. Die REST-API nimmt alle Anfragen bezüglich der Authentifizierung und alle anderen
+HTTP-Requests entgegen.
+
+.. code-block:: python
+
+
     # Cache
     # https://docs.djangoproject.com/en/1.11/topics/cache/#database-caching
     # https://docs.djangoproject.com/en/1.11/ref/settings/#caches
@@ -147,11 +167,6 @@ Basis-Konfiguration
             'LOCATION': 'wt3_cache',
         }
     }
-
-    AUTHENTICATION_BACKENDS = [
-        'server.backend.Backend',
-        'django.contrib.auth.backends.ModelBackend'
-    ]
 
     # http://www.django-rest-framework.org/api-guide/filtering/
 
@@ -167,6 +182,18 @@ Basis-Konfiguration
             'rest_framework.permissions.AllowAny',
         )
     }
+
+Die Authentifizierungsschnittstelle ermöglicht, bei richtigen Daten, den Aufbau einer Session mit dem Django-Server.
+Innerhalb einer Session ist es möglich authentifizierte Requests an den Server zu schicken. Der Django-Server verarbeitet
+die Anfragen dann nach dem hinterlegten Permission-Richtlinien.
+
+.. code-block:: python
+
+
+    AUTHENTICATION_BACKENDS = [
+        'server.backend.Backend',
+        'django.contrib.auth.backends.ModelBackend'
+    ]
 
     # Password validation
     # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
@@ -185,6 +212,13 @@ Basis-Konfiguration
             'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
         },
     ]
+
+Zudem gibt es noch allgemeine Konfigurationen wie die Sprach- und Zeitzoneneinstellungen. Zudem können z.B. für die Nutzung
+eines Backendszugangs die statischen Daten, wie die CSS-Daten, gesammelt und auf dem Server abgelegt werden. Die
+statischen Daten unterstützen einen flüssigeren Ablauf das Backends bei der Ansteuerung durch den Browser.
+
+.. code-block:: python
+
 
     # Internationalization
     # https://docs.djangoproject.com/en/1.11/topics/i18n/
@@ -205,23 +239,13 @@ Basis-Konfiguration
 
     STATIC_URL = '/static/'
 
-
-    # use pip3.6 install django-modeladmin-reorder before using & register app in settings + middleware
-
-    ADMIN_REORDER = (
-        {'app': 'auth', 'models': ('auth.User', 'auth.Group')},
-        {'app': 'server', 'label': 'Kalender', 'models': ('server.Vacation', 'server.Anniversary', 'server.Calendar')},
-        {'app': 'server', 'label': 'Gruppen', 'models': ('server.Collective', 'server.Session')},
-        {'app': 'server', 'label': 'Qualifikationen', 'models': ('server.Qualification', 'server.QualificationGroup')},
-        {'app': 'server', 'label': 'Events', 'models': ('server.Equipment', 'server.Tour', 'server.Category', 'server.CategoryGroup')},
-        {'app': 'server', 'label': 'Instructions', 'models': ('server.Instruction', 'server.Topic',)},
-        'sites'
-    )
-
-Lokal-Konfiguration
-~~~~~~~~~~~~~~~~~~~
+Lokalkonfiguration
+~~~~~~~~~~~~~~~~~~
+Die lokale Konfiguration bestimmt die finale Konfiguration für den Entwicklungsserver unter Django. Hier soll der
+Webserver noch debugbar sein (``DEBUG = True``).
 
 .. code-block:: python
+
 
     from .base import *
 
@@ -235,10 +259,13 @@ Lokal-Konfiguration
     PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
     STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
 
-Live-Konfiguration
-~~~~~~~~~~~~~~~~~~
+Produktivkonfiguration
+~~~~~~~~~~~~~~~~~~~~~~
+Im Gegensatz zu den Lokalkonfigurationen bestimmen die Produktivkonfigurationen den Status des Produktivsystems. Hier
+soll nicht mehr gedebugt werden (``DEBUG = False``) und die statischen Ordner sind fest auf dem Produktivserver festgelegt.
 
 .. code-block:: python
+
 
     from .base import *
 
