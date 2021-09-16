@@ -3,16 +3,16 @@
 Werkzeuge
 =========
 
-* PyCharm_ 2018.3
-* VirtualBox_ 5.2.20
-* Vagrant_ 2.2.0
+* PyCharm_ 2021.2
+* VirtualBox_ 6.1
+* Vagrant_ 2.2.18
 * Ubuntu_ 16.04.3 LTS
 * Python_ 3.6.3
-* pip_ 9.0.1
+* pip_ 21.2.4
 * sphinx_ 1.6.4
-* Django_ 1.11.6
+* Django_ 2.2.24
 * PostgreSQL_ 9.6.5
-* Git_ 2.11.0
+* Git_ 2.7.4
 * GitHub_ (`GitHub Standard Fork & Pull Request Workflow <https://gist.github.com/Chaser324/ce0505fbed06b947d962>`_)
 * `Travis CI`_
 * `Django REST Framework`_ 3.6.3
