@@ -1,6 +1,6 @@
 .. _frontend:
 
-Frontend - Module
-=================
+Frontend - Modul
+================
 
 .. automodule:: frontend

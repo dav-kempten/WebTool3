@@ -1,7 +1,7 @@
 .. _config:
 
-Config - Module
-===============
+Config - Modul
+==============
 Das Config-Module beinhaltet alle Einstellungen, die das Backend betreffen. Hier liegen die Konfigurationen für die lokalen
 sowie produktiven Betrieb des Django-Servers.
 
