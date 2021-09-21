@@ -1,7 +1,7 @@
 .. _server:
 
-Server - Module
-===============
+Server - Modul
+==============
 
 Das Server-Module beinhaltet alle Abschnitte des Backends. Die Abschnitte reichen von Admin-Panel bis zu der REST-API,
 die die Datenbankeinträge zur Verfügung stellt, und den zugehörigen :ref:`Datenbankmodellen<architecture>`.
