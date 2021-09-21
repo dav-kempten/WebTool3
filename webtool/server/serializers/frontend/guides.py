@@ -28,11 +28,11 @@ class GuideListSerializer(serializers.ModelSerializer):
 
 
 class GuideSerializer(serializers.ModelSerializer):
-    id = serializers.PrimaryKeyRelatedField(source='user.pk', read_only=True)
+    id = serializers.PrimaryKeyRelatedField(source='user.pk',read_only=True)
     userName = serializers.CharField(source='user.username', read_only=True)
     firstName = serializers.CharField(source='user.first_name', read_only=True)
     lastName = serializers.CharField(source='user.last_name', read_only=True)
-    profile = serializers.JSONField(read_only=True)
+    profile = serializers.JSONField()
 
     class Meta:
         model = Guide
@@ -44,6 +44,13 @@ class GuideSerializer(serializers.ModelSerializer):
             'profile',
         )
 
-    # def validate(self, data):
+    def validate(self, data):
+        if self.instance is not None:
+            return data
+
     # def create(self, validated_data):
-    # def update(self, instance, validated_data):
+
+    def update(self, instance, validated_data):
+        instance.profile = validated_data.get('profile', instance.profile)
+        instance.save()
+        return instance
