@@ -256,6 +256,10 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
       }
     });
   }
+
+  preview() {
+    console.log(this.instructionSubject.value.value);
+  }
 }
 
 

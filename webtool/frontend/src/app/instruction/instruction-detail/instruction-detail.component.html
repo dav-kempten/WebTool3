@@ -563,7 +563,10 @@
           <p-button label="Zurück"></p-button>
         </a>
       </div>
-      <div class="p-col-12 p-sm-10 p-md-10 p-lg-10" style="text-align: right" *ngIf="!this.instructionOwner.value">
+      <div class="p-col-12 p-sm-1 p-md-1 p-lg-1">
+        <p-button label="Vorschau" (click)="preview()"></p-button>
+      </div>
+      <div class="p-col-12 p-sm-9 p-md-9 p-lg-9" style="text-align: right" *ngIf="!this.instructionOwner.value">
           <button type="text" label="Kurs löschen" (click)="confirm(this.instructionGroup.value.id)" class="ui-button-danger"
                   pButton></button>
       </div>
