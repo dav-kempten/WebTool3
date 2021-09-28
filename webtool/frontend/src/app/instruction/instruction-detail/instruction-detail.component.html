@@ -558,15 +558,15 @@
                   [disabled]="(instructionIndoor.value && instructionOwner.value)"
         ></p-button>
       </div>
-      <div class="p-col-12 p-sm-1 p-md-1 p-lg-1">
+      <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
         <a routerLink="../">
           <p-button label="Zurück"></p-button>
         </a>
       </div>
       <div class="p-col-12 p-sm-1 p-md-1 p-lg-1">
-        <p-button label="Vorschau" (click)="preview()"></p-button>
+        <p-button label="Ausdruck" (click)="preview()"></p-button>
       </div>
-      <div class="p-col-12 p-sm-9 p-md-9 p-lg-9" style="text-align: right" *ngIf="!this.instructionOwner.value">
+      <div class="p-col-12 p-sm-8 p-md-8 p-lg-8" style="text-align: right" *ngIf="!this.instructionOwner.value">
           <button type="text" label="Kurs löschen" (click)="confirm(this.instructionGroup.value.id)" class="ui-button-danger"
                   pButton></button>
       </div>
