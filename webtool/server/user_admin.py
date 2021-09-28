@@ -64,7 +64,7 @@ class UserAdmin(BaseUserAdmin):
                 profile = Profile.objects.get(user=obj)
                 date_list = str(profile.birth_date).split('-')
                 birthdate = date_list[2] + '.' + date_list[1] + '.' + date_list[0]
-            except:
+            except Profile.DoesNotExist:
                 birthdate = ''
             row_list.append(birthdate)
 
