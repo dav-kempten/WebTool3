@@ -3,6 +3,9 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin, Group
 import csv
 import json
 from django.http import HttpResponse
+from icalendar import Calendar, Event
+from datetime import datetime
+
 from server.models.retraining import Retraining
 from server.models.qualification import UserQualification
 from server.models.profile import Profile
@@ -30,11 +33,11 @@ class UserAdmin(BaseUserAdmin):
     inlines = (GuideInline, ProfileInline, QualificationInline, RetrainingInline,)
     ordering = ('last_name', 'first_name')
 
-    actions = ['export_as_csv', 'export_as_json', 'email_for_cleverreach', 'email_as_plain', 'add_to_group_gs', 'add_to_group_summer',
-               'add_to_group_winter', 'add_to_group_climbing', 'add_to_group_youth', 'add_to_group_leberkas',
-               'add_to_group_helpinghands', 'remove_from_gs', 'remove_from_group_summer', 'remove_from_group_winter',
-               'remove_from_group_climbing', 'remove_from_group_youth', 'remove_from_group_leberkas',
-               'remove_from_group_helpinghands', ]
+    actions = ['export_as_csv', 'export_as_json', 'email_for_cleverreach', 'email_as_plain', 'export_birthdays',
+               'add_to_group_gs', 'add_to_group_summer', 'add_to_group_winter', 'add_to_group_climbing',
+               'add_to_group_youth', 'add_to_group_leberkas', 'add_to_group_helpinghands', 'remove_from_gs',
+               'remove_from_group_summer', 'remove_from_group_winter', 'remove_from_group_climbing',
+               'remove_from_group_youth', 'remove_from_group_leberkas', 'remove_from_group_helpinghands', ]
 
     list_filter = ('is_staff', 'is_active', 'groups', QualificationFilter)
 
@@ -134,10 +137,54 @@ class UserAdmin(BaseUserAdmin):
 
         return response
 
+    def export_birthdays(self, request, queryset):
+        cal = Calendar()
+        cal.add('prodid', '-//Webtool Geburtstagsexport//')
+        cal.add('version', '2.0')
+
+        for obj in queryset:
+            try:
+                profile = Profile.objects.get(user=obj)
+
+                ical_event = Event()
+
+                summary = obj.first_name + ' ' + obj.last_name + ' ' \
+                          + str(datetime.today().year + 1 - profile.birth_date.year)\
+                          + '. Geburtstag'
+                ical_event.add('summary', summary)
+
+                dtstart = datetime(
+                    datetime.today().year + 1,
+                    profile.birth_date.month,
+                    profile.birth_date.day,
+                    0, 0, 0
+                )
+
+                dtend = datetime(
+                    datetime.today().year + 1,
+                    profile.birth_date.month,
+                    profile.birth_date.day,
+                    23, 59, 59
+                )
+
+                ical_event.add('dtstart', dtstart)
+                ical_event.add('dtend', dtend)
+
+                cal.add_component(ical_event)
+
+            except (Profile.DoesNotExist, AttributeError):
+                continue
+
+        response = HttpResponse(cal.to_ical(), content_type='text/ics')
+        response['Content-Disposition'] = 'attachment; filename=trainer_geburtstage.ics'
+
+        return response
+
     export_as_csv.short_description = 'Excel-Export'
     export_as_json.short_description = 'JSON-Export'
     email_for_cleverreach.short_description = 'CleverReach-Export'
     email_as_plain.short_description = 'Email-Export'
+    export_birthdays.short_description = 'Geburtstags-Export'
 
     def add_to_group_gs(self, request, queryset):
         group = Group.objects.get(name='Geschäftsstelle')
