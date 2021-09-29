@@ -23,7 +23,7 @@ import {FormArray, FormControl, FormGroup} from '@angular/forms';
 import {UpdateEvent} from '../../core/store/event.actions';
 import {ConfirmationService} from 'primeng/api';
 import {Permission, PermissionLevel} from '../../core/service/permission.service';
-import { font, image } from '../../constants';
+import { font, image } from '../../binaries';
 import { jsPDF } from 'jspdf';
 
 @Component({
@@ -282,16 +282,15 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   }
 
   formatInstructionFields(instruction: Instruction, events: Event[], topic: Topic): string {
-    let pdfString = '';
-    let eventsString = '';
+    let instructionString = ''; let eventsString = '';
 
-    pdfString = pdfString + instruction.reference + '\n';
-    pdfString = pdfString + '\n' + 'Kurs: ' + topic.name + '\n';
-    if (instruction.ladiesOnly) { pdfString = pdfString + 'Kurs von Frauen für Frauen' + '\n'; }
-    pdfString = pdfString + 'Kursbeschreibung: ' +  topic.description + '\n';
-    pdfString = pdfString + 'Teilnehmer (min | max): ' + instruction.minQuantity + ' | ' + instruction.maxQuantity + '\n';
+    instructionString = instructionString + instruction.reference + '\n';
+    instructionString = instructionString + '\n' + 'Kurs: ' + topic.name + '\n';
+    if (instruction.ladiesOnly) { instructionString = instructionString + 'Kurs von Frauen für Frauen' + '\n'; }
+    instructionString = instructionString + 'Kursbeschreibung: ' +  topic.description + '\n';
+    instructionString = instructionString + 'Teilnehmer: ' + instruction.minQuantity + ' - ' + instruction.maxQuantity + '\n';
 
-    eventsString = eventsString + '\n' + 'Termine' + '\n' + '\n';
+    eventsString = eventsString + '\n' + 'Kurstermine:' + '\n' + '\n';
     for (const event of events) {
       eventsString = eventsString + event.title;
       if (!!event.name) { eventsString = eventsString + ' - ' + event.name; }
@@ -309,7 +308,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
       eventsString = eventsString + '\n';
     }
 
-    return pdfString + eventsString;
+    return instructionString + eventsString;
   }
 
   formatDate(date: string): string {
