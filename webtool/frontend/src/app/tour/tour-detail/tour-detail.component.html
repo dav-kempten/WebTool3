@@ -513,10 +513,13 @@
            (click)="saveTour(this.tourGroup.value)"
       ></p-button>
       </div>
-    <div class="p-col-12 p-sm-1 p-md-1 p-lg-1">
+    <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
       <a routerLink="../"><p-button label="Zurück"></p-button></a>
     </div>
-    <div class="p-col-12 p-sm-10 p-md-10 p-lg-10" style="text-align: right" *ngIf="!this.tourOwner.value">
+      <div class="p-col-12 p-sm-1 p-md-1 p-lg-1">
+        <p-button label="Ausdruck" (click)="preview()"></p-button>
+      </div>
+    <div class="p-col-12 p-sm-8 p-md-8 p-lg-8" style="text-align: right" *ngIf="!this.tourOwner.value">
       <button type="text" label="Tour löschen" (click)="confirm(this.tourGroup.value.id)" class="ui-button-danger"
             pButton></button>
     </div>

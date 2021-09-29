@@ -7,7 +7,7 @@ import {Tour} from '../../core/store/tour.model';
 import {ValuesRequested} from '../../core/store/value.actions';
 import {Category} from '../../model/value';
 import {Event} from '../../model/event';
-import {AuthService, User} from '../../core/service/auth.service';
+import {AuthService} from '../../core/service/auth.service';
 import {filter, flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {getTourById} from '../../core/store/tour.selectors';
 import {DeleteTour, RequestTour, UpdateTour, UpsertTour} from '../../core/store/tour.actions';
@@ -15,7 +15,9 @@ import {getCategoryById} from '../../core/store/value.selectors';
 import {getEventsByIds} from '../../core/store/event.selectors';
 import {CreateEvent, UpdateEvent} from '../../core/store/event.actions';
 import {ConfirmationService} from 'primeng/api';
-import {Permission, PermissionLevel} from "../../core/service/permission.service";
+import {Permission, PermissionLevel} from '../../core/service/permission.service';
+import { font, image } from '../../binaries';
+import { jsPDF } from 'jspdf';
 
 @Component({
   selector: 'avk-tour-detail',
@@ -221,6 +223,61 @@ export class TourDetailComponent implements OnInit, OnDestroy {
 
   closeEvent() {
     this.currentEventGroup = undefined;
+  }
+
+  preview(): void {
+    const doc = new jsPDF();
+
+    doc.addFileToVFS('calibri.ttf', font);
+    doc.addFont('calibri.ttf', 'calibri', 'normal');
+    doc.setFont('calibri');
+    doc.setFontSize(13);
+
+    doc.addImage(image, 'JPEG', 110, 0, 100, 50);
+
+    let formattedText = this.formatTourFields(
+      this.tourSubject.value.value,
+      this.eventsSubject.value.value,
+      this.categorySubject.value.value
+    );
+
+    formattedText = doc.splitTextToSize(formattedText, 180);
+
+    doc.text(formattedText, 20, 20);
+    doc.save(this.tourSubject.value.value.reference + '.pdf');
+  }
+
+  formatTourFields(tour: Tour, events: Event[], category: Category): string {
+    let tourString = ''; let eventsString = '';
+
+    tourString = tourString + tour.reference + '\n';
+    tourString = tourString + '\n' + 'Tour: ' + category.name + '\n';
+    if (tour.ladiesOnly) { tourString = tourString + 'Tour von Frauen für Frauen' + '\n'; }
+    tourString = tourString + 'Teilnehmer: ' + tour.minQuantity + ' - ' + tour.maxQuantity + '\n';
+
+    eventsString = eventsString + '\n' + 'Tourtermine:' + '\n' + '\n';
+    for (const event of events) {
+      eventsString = eventsString + event.title;
+      if (!!event.name) { eventsString = eventsString + ' - ' + event.name; }
+      eventsString = eventsString + '\n';
+      eventsString = eventsString + 'Datum: ' + this.formatDate(event.startDate);
+      if (!!event.endDate) { eventsString = eventsString + ' - ' + this.formatDate(event.endDate); }
+      if (!!event.startTime) { eventsString = eventsString + ', ' + event.startTime; }
+      if (!!event.endTime) { eventsString = eventsString + ' - ' + event.endTime; }
+      if (!!event.startTime || !!event.endTime) { eventsString = eventsString + ' Uhr'; }
+      eventsString = eventsString + '\n';
+      if (!!event.description) { eventsString = eventsString + 'Beschreibung: ' + event.description + '\n'; }
+      if (!!event.source) { eventsString = eventsString + 'Ausgangsort: ' + event.source + '\n'; }
+      if (!!event.rendezvous) { eventsString = eventsString + 'Treffpunkt: ' + event.rendezvous + '\n'; }
+      if (!!event.location) { eventsString = eventsString + 'Übernachtungsort: ' + event.location + '\n'; }
+      eventsString = eventsString + '\n';
+    }
+
+    return tourString + eventsString;
+  }
+
+  formatDate(date: string): string {
+    return date.split('-').reverse().join('.');
   }
 }
 
