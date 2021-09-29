@@ -286,20 +286,26 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     let eventsString = '';
 
     pdfString = pdfString + instruction.reference + '\n';
-    pdfString = pdfString + '\n' + 'Kurs: ' + topic.title + '\n';
+    pdfString = pdfString + '\n' + 'Kurs: ' + topic.name + '\n';
     if (instruction.ladiesOnly) { pdfString = pdfString + 'Kurs von Frauen für Frauen' + '\n'; }
     pdfString = pdfString + 'Kursbeschreibung: ' +  topic.description + '\n';
     pdfString = pdfString + 'Teilnehmer (min | max): ' + instruction.minQuantity + ' | ' + instruction.maxQuantity + '\n';
 
-    eventsString = eventsString + '\n' + 'Termine' + '\n';
+    eventsString = eventsString + '\n' + 'Termine' + '\n' + '\n';
     for (const event of events) {
       eventsString = eventsString + event.title;
       if (!!event.name) { eventsString = eventsString + ' - ' + event.name; }
       eventsString = eventsString + '\n';
       eventsString = eventsString + 'Datum: ' + this.formatDate(event.startDate);
       if (!!event.endDate) { eventsString = eventsString + ' - ' + this.formatDate(event.endDate); }
+      if (!!event.startTime) { eventsString = eventsString + ', ' + event.startTime; }
+      if (!!event.endTime) { eventsString = eventsString + ' - ' + event.endTime; }
+      if (!!event.startTime || !!event.endTime) { eventsString = eventsString + ' Uhr'; }
       eventsString = eventsString + '\n';
       if (!!event.description) { eventsString = eventsString + 'Beschreibung: ' + event.description + '\n'; }
+      if (!!event.source) { eventsString = eventsString + 'Ausgangsort: ' + event.source + '\n'; }
+      if (!!event.rendezvous) { eventsString = eventsString + 'Treffpunkt: ' + event.rendezvous + '\n'; }
+      if (!!event.location) { eventsString = eventsString + 'Übernachtungsort: ' + event.location + '\n'; }
       eventsString = eventsString + '\n';
     }
 
@@ -307,9 +313,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
   }
 
   formatDate(date: string): string {
-    const parsedDate = date.split('-');
-    if (parsedDate.length === 3) { return parsedDate[2] + '.' + parsedDate[1] + '.' + parsedDate[0]; }
-    return '';
+    return date.split('-').reverse().join('.');
   }
 }
 
