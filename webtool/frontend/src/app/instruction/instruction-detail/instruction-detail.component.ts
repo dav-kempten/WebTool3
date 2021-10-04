@@ -2,7 +2,7 @@ import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {select, Store} from '@ngrx/store';
 import {AppState, selectRouterDetailId} from '../../app.state';
-import {getCategoryById, getTopicById} from '../../core/store/value.selectors';
+import {getApproximateById, getCategoryById, getTopicById} from '../../core/store/value.selectors';
 import {ValuesRequested} from '../../core/store/value.actions';
 import {
   AddEventInstruction,
@@ -265,54 +265,72 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     doc.addFileToVFS('calibri.ttf', font);
     doc.addFont('calibri.ttf', 'calibri', 'normal');
     doc.setFont('calibri');
-    doc.setFontSize(13);
 
     doc.addImage(image, 'JPEG', 110, 0, 100, 50);
 
-    let formattedText = this.formatInstructionFields(
-      this.instructionSubject.value.value,
-      this.eventsSubject.value.value,
-      this.topicSubject.value.value
-    );
+    this.formatInstructionFields( this.instructionSubject.value.value, doc );
+    this.formatTopicFields( this.topicSubject.value.value, doc );
+    this.formatEventFields( this.eventsSubject.value.value, this.instructionSubject.value.value, this.topicSubject.value.value, doc );
 
-    formattedText = doc.splitTextToSize(formattedText, 180);
-
-    doc.text(formattedText, 20, 20);
     doc.save(this.instructionSubject.value.value.reference + '.pdf');
   }
 
-  formatInstructionFields(instruction: Instruction, events: Event[], topic: Topic): string {
-    let instructionString = ''; let eventsString = '';
+  formatInstructionFields(instruction: Instruction, doc): void {
+    doc.setFontSize(20);
+    doc.text(instruction.reference, 20, 20, {align: 'left'});
 
-    instructionString = instructionString + instruction.reference + '\n';
-    instructionString = instructionString + '\n' + 'Kurs: ' + topic.name + '\n';
-    if (instruction.ladiesOnly) { instructionString = instructionString + 'Kurs von Frauen für Frauen' + '\n'; }
-    instructionString = instructionString + 'Kursbeschreibung: ' +  topic.description + '\n';
-    instructionString = instructionString + 'Teilnehmer: ' + instruction.minQuantity + ' - ' + instruction.maxQuantity + '\n';
-
-    eventsString = eventsString + '\n' + 'Kurstermine:' + '\n' + '\n';
-    for (const event of events) {
-      eventsString = eventsString + event.title;
-      if (!!event.name) { eventsString = eventsString + ' - ' + event.name; }
-      eventsString = eventsString + '\n';
-      eventsString = eventsString + 'Datum: ' + this.formatDate(event.startDate);
-      if (!!event.endDate) { eventsString = eventsString + ' - ' + this.formatDate(event.endDate); }
-      if (!!event.startTime) { eventsString = eventsString + ', ' + event.startTime; }
-      if (!!event.endTime) { eventsString = eventsString + ' - ' + event.endTime; }
-      if (!!event.startTime || !!event.endTime) { eventsString = eventsString + ' Uhr'; }
-      eventsString = eventsString + '\n';
-      if (!!event.description) { eventsString = eventsString + 'Beschreibung: ' + event.description + '\n'; }
-      if (!!event.source) { eventsString = eventsString + 'Ausgangsort: ' + event.source + '\n'; }
-      if (!!event.rendezvous) { eventsString = eventsString + 'Treffpunkt: ' + event.rendezvous + '\n'; }
-      if (!!event.location) { eventsString = eventsString + 'Übernachtungsort: ' + event.location + '\n'; }
-      eventsString = eventsString + '\n';
+    doc.setFontSize(13);
+    if (instruction.ladiesOnly) {
+      doc.text('Teilnehmer: ' + instruction.minQuantity + ' - ' + instruction.maxQuantity + ', Kurs von Frauen für Frauen',
+        20, 35, {align: 'left'});
+    } else {
+      doc.text('Teilnehmer: ' + instruction.minQuantity + ' - ' + instruction.maxQuantity, 20, 35, {align: 'left'});
     }
+  }
 
-    return instructionString + eventsString;
+  formatTopicFields(topic: Topic, doc): void {
+    doc.text(topic.name, 20, 25, {align: 'left'});
+  }
+
+  formatEventFields(events: Event[], instruction: Instruction, topic: Topic, doc): void {
+    const mainEvent: Event = events[0];
+
+    let formattedText: string;
+
+    doc.setFontSize(15);
+    doc.text('Kursdetails', 20, 50, {align: 'left'});
+
+    doc.setFontSize(13);
+    doc.text(mainEvent.name ? mainEvent.title + ' - ' + mainEvent.name : mainEvent.title, 20, 60, {align: 'left'});
+    doc.text(mainEvent.endDate ? this.formatDate(mainEvent.startDate) + ' - ' + this.formatDate(mainEvent.endDate) + ', ' +
+      this.formatTime(mainEvent.startTime, mainEvent.endTime, mainEvent.approximateId) :
+      this.formatDate(mainEvent.startDate) + ', ' + this.formatTime(mainEvent.startTime, mainEvent.endTime, mainEvent.approximateId),
+      20, 70, {align: 'left'});
+    formattedText = doc.splitTextToSize(instruction.isSpecial ? mainEvent.description : topic.description, 175);
+    doc.text(formattedText, 20, 80, {align: 'left'});
+    if (events.length > 1) { doc.text('Weitere Termine: ' + this.formatEvents(events.slice(1, events.length)), 20, 140, {align: 'left'}); }
+
+  }
+
+  formatEvents(events: Event[]): string {
+    return events.map(event => this.formatDate(event.startDate)).join(', ');
   }
 
   formatDate(date: string): string {
     return date.split('-').reverse().join('.');
+  }
+
+  formatTime(startTime: string, endTime: string, approximate: number): string {
+    if (startTime) {
+      const time: string  = endTime ? startTime + ' - ' + endTime : startTime;
+      return time + ' Uhr';
+    } else {
+      let approximateName: string;
+      this.store.pipe(
+        select(getApproximateById(approximate)),
+        map(value => value.name)).subscribe( value => approximateName = value);
+      return approximateName;
+    }
   }
 }
 
