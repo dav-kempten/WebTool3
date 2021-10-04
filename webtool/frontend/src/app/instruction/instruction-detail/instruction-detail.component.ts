@@ -2,7 +2,7 @@ import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {select, Store} from '@ngrx/store';
 import {AppState, selectRouterDetailId} from '../../app.state';
-import {getCategoryById, getTopicById} from '../../core/store/value.selectors';
+import {getApproximateById, getCategoryById, getTopicById} from '../../core/store/value.selectors';
 import {ValuesRequested} from '../../core/store/value.actions';
 import {
   AddEventInstruction,
@@ -23,6 +23,8 @@ import {FormArray, FormControl, FormGroup} from '@angular/forms';
 import {UpdateEvent} from '../../core/store/event.actions';
 import {ConfirmationService} from 'primeng/api';
 import {Permission, PermissionLevel} from '../../core/service/permission.service';
+import { font, image } from '../../binaries';
+import { jsPDF } from 'jspdf';
 
 @Component({
   selector: 'avk-instruction-detail',
@@ -255,6 +257,80 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
         this.store.dispatch(new DeleteInstruction({id: instructionId}));
       }
     });
+  }
+
+  preview(): void {
+    const doc = new jsPDF();
+
+    doc.addFileToVFS('calibri.ttf', font);
+    doc.addFont('calibri.ttf', 'calibri', 'normal');
+    doc.setFont('calibri');
+
+    doc.addImage(image, 'JPEG', 110, 0, 100, 50);
+
+    this.formatInstructionFields( this.instructionSubject.value.value, doc );
+    this.formatTopicFields( this.topicSubject.value.value, doc );
+    this.formatEventFields( this.eventsSubject.value.value, this.instructionSubject.value.value, this.topicSubject.value.value, doc );
+
+    doc.save(this.instructionSubject.value.value.reference + '.pdf');
+  }
+
+  formatInstructionFields(instruction: Instruction, doc): void {
+    doc.setFontSize(20);
+    doc.text(instruction.reference, 20, 20, {align: 'left'});
+
+    doc.setFontSize(13);
+    if (instruction.ladiesOnly) {
+      doc.text('Teilnehmer: ' + instruction.minQuantity + ' - ' + instruction.maxQuantity + ', Kurs von Frauen für Frauen',
+        20, 35, {align: 'left'});
+    } else {
+      doc.text('Teilnehmer: ' + instruction.minQuantity + ' - ' + instruction.maxQuantity, 20, 35, {align: 'left'});
+    }
+  }
+
+  formatTopicFields(topic: Topic, doc): void {
+    doc.text(topic.name, 20, 25, {align: 'left'});
+  }
+
+  formatEventFields(events: Event[], instruction: Instruction, topic: Topic, doc): void {
+    const mainEvent: Event = events[0];
+
+    let formattedText: string;
+
+    doc.setFontSize(15);
+    doc.text('Kursdetails', 20, 50, {align: 'left'});
+
+    doc.setFontSize(13);
+    doc.text(mainEvent.name ? mainEvent.title + ' - ' + mainEvent.name : mainEvent.title, 20, 60, {align: 'left'});
+    doc.text(mainEvent.endDate ? this.formatDate(mainEvent.startDate) + ' - ' + this.formatDate(mainEvent.endDate) + ', ' +
+      this.formatTime(mainEvent.startTime, mainEvent.endTime, mainEvent.approximateId) :
+      this.formatDate(mainEvent.startDate) + ', ' + this.formatTime(mainEvent.startTime, mainEvent.endTime, mainEvent.approximateId),
+      20, 70, {align: 'left'});
+    formattedText = doc.splitTextToSize(instruction.isSpecial ? mainEvent.description : topic.description, 175);
+    doc.text(formattedText, 20, 80, {align: 'left'});
+    if (events.length > 1) { doc.text('Weitere Termine: ' + this.formatEvents(events.slice(1, events.length)), 20, 140, {align: 'left'}); }
+
+  }
+
+  formatEvents(events: Event[]): string {
+    return events.map(event => this.formatDate(event.startDate)).join(', ');
+  }
+
+  formatDate(date: string): string {
+    return date.split('-').reverse().join('.');
+  }
+
+  formatTime(startTime: string, endTime: string, approximate: number): string {
+    if (startTime) {
+      const time: string  = endTime ? startTime + ' - ' + endTime : startTime;
+      return time + ' Uhr';
+    } else {
+      let approximateName: string;
+      this.store.pipe(
+        select(getApproximateById(approximate)),
+        map(value => value.name)).subscribe( value => approximateName = value);
+      return approximateName;
+    }
   }
 }
 

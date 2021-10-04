@@ -7,15 +7,17 @@ import {Tour} from '../../core/store/tour.model';
 import {ValuesRequested} from '../../core/store/value.actions';
 import {Category} from '../../model/value';
 import {Event} from '../../model/event';
-import {AuthService, User} from '../../core/service/auth.service';
+import {AuthService} from '../../core/service/auth.service';
 import {filter, flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {getTourById} from '../../core/store/tour.selectors';
 import {DeleteTour, RequestTour, UpdateTour, UpsertTour} from '../../core/store/tour.actions';
-import {getCategoryById} from '../../core/store/value.selectors';
+import {getApproximateById, getCategoryById} from '../../core/store/value.selectors';
 import {getEventsByIds} from '../../core/store/event.selectors';
 import {CreateEvent, UpdateEvent} from '../../core/store/event.actions';
 import {ConfirmationService} from 'primeng/api';
-import {Permission, PermissionLevel} from "../../core/service/permission.service";
+import {Permission, PermissionLevel} from '../../core/service/permission.service';
+import { font, image } from '../../binaries';
+import { jsPDF } from 'jspdf';
 
 @Component({
   selector: 'avk-tour-detail',
@@ -52,7 +54,7 @@ export class TourDetailComponent implements OnInit, OnDestroy {
   currentEventGroup: FormGroup = undefined;
   eventNumber: number[];
 
-  constructor(private store: Store<AppState>, private authService: AuthService, private confirmationService: ConfirmationService) {  }
+  constructor(private store: Store<AppState>, private authService: AuthService, private confirmationService: ConfirmationService) { }
 
   ngOnInit(): void {
     this.permissionCurrent$ = this.authService.guidePermission$;
@@ -221,6 +223,83 @@ export class TourDetailComponent implements OnInit, OnDestroy {
 
   closeEvent() {
     this.currentEventGroup = undefined;
+  }
+
+  preview(): void {
+    const doc = new jsPDF('p', 'mm', 'a4');
+
+    doc.addFileToVFS('calibri.ttf', font);
+    doc.addFont('calibri.ttf', 'calibri', 'normal');
+    doc.setFont('calibri');
+
+    doc.addImage(image, 'JPEG', 110, 0, 100, 50);
+
+    this.formatTourFields( this.tourSubject.value.value, doc );
+    this.formatCategoryFields( this.categorySubject.value.value, doc );
+    this.formatEventFields( this.eventsSubject.value.value, doc);
+
+    doc.save(this.tourSubject.value.value.reference + '.pdf');
+  }
+
+  formatTourFields(tour: Tour, doc): void {
+    doc.setFontSize(20);
+    doc.text(tour.reference, 20, 20, {align: 'left'});
+
+    doc.setFontSize(13);
+    if (tour.ladiesOnly) {
+      doc.text('Teilnehmer: ' + tour.minQuantity + ' - ' + tour.maxQuantity + ', Tour von Frauen für Frauen', 20, 35, {align: 'left'});
+    } else {
+      doc.text('Teilnehmer: ' + tour.minQuantity + ' - ' + tour.maxQuantity, 20, 35, {align: 'left'});
+    }
+  }
+
+  formatCategoryFields(category: Category, doc): void {
+    doc.text(category.name, 20, 25, {align: 'left'});
+  }
+
+  formatEventFields(events: Event[], doc): void {
+    const tour: Event = events[0]; const deadline: Event = events[1];
+    let preliminary: Event;
+    events.length >= 2 ? preliminary = events[2] : preliminary = null;
+
+    let formattedText: string;
+
+    doc.setFontSize(15);
+    doc.text('Tourdetails', 20, 50, {align: 'left'});
+
+    doc.setFontSize(13);
+    doc.text(tour.name ? tour.title + ' - ' + tour.name : tour.title, 20, 60, {align: 'left'});
+    doc.text(tour.endDate ? this.formatDate(tour.startDate) + ' - ' + this.formatDate(tour.endDate) + ', ' +
+      this.formatTime(tour.startTime, tour.endTime, tour.approximateId) :
+      this.formatDate(tour.startDate) + ', ' + this.formatTime(tour.startTime, tour.endTime, tour.approximateId),
+      20, 70, {align: 'left'});
+    formattedText = doc.splitTextToSize(tour.description, 175);
+    doc.text(formattedText, 20, 80, {align: 'left'});
+    doc.text('Ausgangsort: ' + tour.source, 20, 180, {align: 'left'});
+    doc.text('Treffpunkt: ' + tour.rendezvous, 20, 185, {align: 'left'});
+    doc.text('Übernachtung: ' + tour.location, 20, 190, {align: 'left'});
+
+    doc.text(preliminary ? 'Weitere Termine: ' + this.formatDate(deadline.startDate) + ' (Anmeldeschluss)'
+        + ', ' + this.formatDate(preliminary.startDate) +  ' (Vorbesprechung)' :
+      'Weiterer Termin: ' + this.formatDate(deadline.startDate) + ' (Anmeldeschluss)',
+      20, 210, {align: 'left'});
+  }
+
+  formatDate(date: string): string {
+    return date.split('-').reverse().join('.');
+  }
+
+  formatTime(startTime: string, endTime: string, approximate: number): string {
+    if (startTime) {
+      const time: string  = endTime ? startTime + ' - ' + endTime : startTime;
+      return time + ' Uhr';
+    } else {
+      let approximateName: string;
+      this.store.pipe(
+        select(getApproximateById(approximate)),
+        map(value => value.name)).subscribe( value => approximateName = value);
+      return approximateName;
+    }
   }
 }
 
