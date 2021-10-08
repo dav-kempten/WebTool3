@@ -115,11 +115,11 @@
         <div class="p-grid">
           <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
             <input formControlName="title" id="title" placeholder="Kurztitel" type="text" style='width:100%'
-                   pInputText>
+                   maxlength="30" pInputText>
           </div>
           <div class="p-col-12 p-sm-8 p-md-8 p-lg-8">
             <input formControlName="name" id="name" placeholder="Langtitel" type="text" style='width:100%'
-                   pInputText>
+                   maxlength="125" pInputText>
           </div>
         </div>
 
@@ -182,7 +182,7 @@
           </div>
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
             <input formControlName="rendezvous" id="rendezvous" placeholder="Treffpunkt"
-                   type="text" style="width:100%"
+                   type="text" style="width:100%" maxlength="75"
                    pInputText>
           </div>
         </div>
@@ -269,7 +269,7 @@
     </div>
     <div class="p-col-12 p-sm-8 p-md-8 p-lg-8">
       <input formControlName="miscEquipment" id="miscEquipmentTopic" placeholder="Weitere Ausrüstung"
-             style='width:100%' type="text"
+             style='width:100%' type="text" maxlength="75"
              pInputText>
     </div>
   </div>
