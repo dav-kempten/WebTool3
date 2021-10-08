@@ -277,7 +277,7 @@ class TourSerializer(serializers.ModelSerializer):
         instance.state = validated_data.get('state', instance.state)
         if instance.state.pk == 2:
             self.send_tour_notification(reference=instance.tour.reference.__str__())
-        if instance.state.pk == 4:
+        if instance.state.pk == 4 or 9:
             self.send_tour_kv_notification(instance=instance)
         instance.message = validated_data.get('message', instance.message)
         instance.comment = validated_data.get('comment', instance.comment)
@@ -295,8 +295,11 @@ class TourSerializer(serializers.ModelSerializer):
         )
 
     def send_tour_kv_notification(self, instance=None):
-        team_format = ''
-        equipment_format = ''
+        team_format, equipment_format = '', ''
+        if instance.state.pk == 4:
+            state_format = 'Freigegeben'
+        else:
+            state_format = 'Noch nicht buchbar'
         # Format team-members
         for el in instance.team.all():
             team_format = team_format + el.__str__() + ', '
@@ -307,7 +310,7 @@ class TourSerializer(serializers.ModelSerializer):
         send_mail(
             subject='Tour ' + instance.tour.reference.__str__() + ' KV-Update',
             message='Die Tour ' + instance.tour.reference.__str__()
-                    + ' wurde auf Freigegeben gestellt und kann in den KV übertragen werden:' + '\n'
+                    + ' wurde auf "' + state_format + '" gestellt und kann in den KV übertragen werden:' + '\n'
                     + 'Buchungscode: ' + instance.tour.reference.__str__() + '\n'
                     + 'Kategorie: ' + instance.tour.reference.category.name + '\n'
                     + 'Titel: ' + instance.tour.title + '\n'
