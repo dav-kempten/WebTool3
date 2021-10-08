@@ -74,8 +74,8 @@ class ActivityListSerializer(serializers.ModelSerializer):
 
     def get_detail(self, obj):
         request = self.context['request']
-        if obj.reference.category.code == "SKA":
-            return None
+        # if obj.reference.category.code == "SKA":
+        #     return None
         return reverse('activities-detail', kwargs={'reference': str(obj.reference)}, request=request)
 
     class Meta:
