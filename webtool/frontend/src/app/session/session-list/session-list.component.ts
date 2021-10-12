@@ -37,7 +37,7 @@ export class SessionListComponent implements OnInit, OnDestroy, AfterViewInit {
   permissionHandler$: Observable<boolean>;
   permissionCurrent$: Observable<Permission>;
 
-  private collectiveManagers = new BehaviorSubject<{id: number, managers: number[]}[]>([]);
+  private collectiveManagers = new BehaviorSubject<{id: number, code: string, managers: number[]}[]>([]);
   partNewSession = new BehaviorSubject<string>('');
 
   collectiveId = new FormControl('');
@@ -144,9 +144,7 @@ export class SessionListComponent implements OnInit, OnDestroy, AfterViewInit {
 
     /* Store all manager/collective pair in BehaviourSubject */
     this.collectives$.subscribe(collective => {
-      this.collectiveManagers.next(collective
-        .map(value => ({id: value.id, managers: value.managers}))
-      );
+      this.collectiveManagers.next(collective.map(value => ({id: value.id, code: value.code.toLowerCase(), managers: value.managers})));
     });
   }
 
@@ -165,7 +163,7 @@ export class SessionListComponent implements OnInit, OnDestroy, AfterViewInit {
         if (permission.permissionLevel >= PermissionLevel.coordinator) {
           this.router.navigate(['sessions', session.id]);
         } else if (this.collectiveManagers.value.find(value => value.id === session.collectiveId).managers.includes(permission.guideId)) {
-            this.router.navigate(['sessions', session.id]);
+          this.router.navigate(['sessions', session.id]);
         }
       });
     }
@@ -177,7 +175,8 @@ export class SessionListComponent implements OnInit, OnDestroy, AfterViewInit {
 
   create(collective, date) {
     this.permissionCurrent$.pipe(takeUntil(this.destroySubject)).subscribe( permission => {
-      if (permission.permissionLevel >= PermissionLevel.coordinator) {
+      if (permission.permissionLevel >= PermissionLevel.coordinator ||
+        this.collectiveManagers.value.find(value => value.id === collective).managers.includes(permission.guideId)) {
         this.store.dispatch(new CreateSession({collectiveId: collective, startDate: date}));
         this.display = false;
       }
