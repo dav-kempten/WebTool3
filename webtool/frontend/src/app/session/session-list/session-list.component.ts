@@ -64,6 +64,15 @@ export class SessionListComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit() {
     this.permissionCurrent$ = this.authService.guidePermission$;
 
+    this.permissionHandler$ = this.permissionCurrent$.pipe(
+      takeUntil(this.destroySubject),
+      map(permission => {
+        /* needs refactoring */
+        return this.collectiveManagers.value.some(val => val.managers.some(guide => guide === permission.guideId))
+          || permission.permissionLevel >= PermissionLevel.coordinator;
+      })
+    );
+
     this.part$ = this.store.pipe(
       takeUntil(this.destroySubject),
       select(selectRouterFragment),
@@ -104,13 +113,6 @@ export class SessionListComponent implements OnInit, OnDestroy, AfterViewInit {
           tap(sessions => {
             if (!sessions || !sessions.length) {
               this.store.dispatch(new RequestSessionSummaries());
-            } else {
-              this.permissionHandler$ = this.permissionCurrent$.pipe(
-                takeUntil(this.destroySubject),
-                map(permission => {
-                  return permission.permissionLevel >= PermissionLevel.coordinator;
-                })
-              );
             }
           }),
           map(sessions =>
