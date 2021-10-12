@@ -23,8 +23,8 @@ import {FormArray, FormControl, FormGroup} from '@angular/forms';
 import {UpdateEvent} from '../../core/store/event.actions';
 import {ConfirmationService} from 'primeng/api';
 import {Permission, PermissionLevel} from '../../core/service/permission.service';
-import { font, image } from '../../binaries';
-import { jsPDF } from 'jspdf';
+import {davImage, font} from '../../binaries';
+import {jsPDF} from 'jspdf';
 
 @Component({
   selector: 'avk-instruction-detail',
@@ -266,7 +266,7 @@ export class InstructionDetailComponent implements OnInit, OnDestroy {
     doc.addFont('calibri.ttf', 'calibri', 'normal');
     doc.setFont('calibri');
 
-    doc.addImage(image, 'JPEG', 110, 0, 100, 50);
+    doc.addImage(davImage, 'JPEG', 180, 12, 30, 17);
 
     this.formatInstructionFields( this.instructionSubject.value.value, doc );
     this.formatTopicFields( this.topicSubject.value.value, doc );
