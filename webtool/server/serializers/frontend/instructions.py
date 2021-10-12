@@ -227,9 +227,9 @@ class InstructionSerializer(serializers.ModelSerializer):
         instance.cur_quantity = validated_data.get('cur_quantity', instance.cur_quantity)
         instance.deprecated = validated_data.get('deprecated', instance.deprecated)
         instance.state = validated_data.get('state', instance.state)
-        if instance.state.pk == 2 and not instance.topic.category.climbing:
+        if instance.state == State.objects.get(name='Fertig') and not instance.topic.category.climbing:
             self.send_instruction_notification(reference=instance.instruction.reference.__str__())
-        if instance.state.pk == 4 and not instance.topic.category.climbing:
+        if instance.state in (State.objects.get(name='Freigegeben'), State.objects.get(name='Noch nicht buchbar')) and not instance.topic.category.climbing:
             self.send_instruction_kv_notification(instance=instance)
         instance.comment = validated_data.get('comment', instance.comment)
         instance.message = validated_data.get('message', instance.message)
@@ -247,10 +247,6 @@ class InstructionSerializer(serializers.ModelSerializer):
 
     def send_instruction_kv_notification(self, instance=None):
         team_format, equipment_format, meetings = '', '', ''
-        if instance.state.pk == 4:
-            state_format = 'Freigegeben'
-        else:
-            state_format = 'Noch nicht buchbar'
         # Format team-members
         for el in instance.team.all():
             team_format = team_format + el.__str__() + ', '
@@ -266,7 +262,7 @@ class InstructionSerializer(serializers.ModelSerializer):
         send_mail(
             subject='Kurs ' + instance.instruction.reference.__str__() + ' KV-Update',
             message='Der Kurs ' + instance.instruction.reference.__str__()
-                    + ' wurde auf "' + state_format + '" gestellt und kann in den KV übertragen werden:' + '\n'
+                    + ' wurde auf "' + instance.state.name + '" gestellt und kann in den KV übertragen werden:' + '\n'
                     + 'Buchungscode: ' + instance.instruction.reference.__str__() + '\n'
                     + 'Kategorie: ' + instance.topic.name + '\n'
                     + 'Titel: ' + instance.topic.title + '\n'
