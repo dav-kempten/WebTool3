@@ -277,7 +277,7 @@ class TourSerializer(serializers.ModelSerializer):
         instance.state = validated_data.get('state', instance.state)
         if instance.state.pk == 2:
             self.send_tour_notification(reference=instance.tour.reference.__str__())
-        if instance.state.pk == 4 or 9:
+        if instance.state.pk == 4:
             self.send_tour_kv_notification(instance=instance)
         instance.message = validated_data.get('message', instance.message)
         instance.comment = validated_data.get('comment', instance.comment)

@@ -229,7 +229,7 @@ class InstructionSerializer(serializers.ModelSerializer):
         instance.state = validated_data.get('state', instance.state)
         if instance.state.pk == 2 and not instance.topic.category.climbing:
             self.send_instruction_notification(reference=instance.instruction.reference.__str__())
-        if instance.state.pk == 4 or 9 and not instance.topic.category.climbing:
+        if instance.state.pk == 4 and not instance.topic.category.climbing:
             self.send_instruction_kv_notification(instance=instance)
         instance.comment = validated_data.get('comment', instance.comment)
         instance.message = validated_data.get('message', instance.message)
