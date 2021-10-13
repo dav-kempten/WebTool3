@@ -217,4 +217,7 @@ export class SessionListComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  checkManager(collectives: Collective[], collectiveId: number) {
+    return collectives.some(collective => collective.id === collectiveId);
+  }
 }
