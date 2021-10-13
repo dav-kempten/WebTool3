@@ -5,7 +5,9 @@
       <ng-template pTemplate="caption">
       <div class="p-grid">
         <div class="p-col-12 p-sm-3 p-md-3 p-lg-3" style="text-align: left">
-          <p-button label="Gruppentermin hinzufügen" (onClick)="handleClick()" *ngIf="permissionHandler$ | async" styleClass="ui-button-secondary"></p-button>
+          <p-button label="Gruppentermin hinzufügen" (onClick)="handleClick()" styleClass="ui-button-secondary"
+            *ngIf="(permissionHandler$ | async).staff || (permissionHandler$ | async).manager"
+          ></p-button>
         </div>
         <div class="p-col-12 p-sm-3 p-md-3 p-lg-3" style="text-align: left">
           <i class="pi pi-search" style="margin:4px 4px 0 0" *ngIf="permissionHandler$ | async"></i>
@@ -38,9 +40,10 @@
           <td>{{session.speaker}}</td>
           <td>
             <button pButton type="button" label="Klonen" class="ui-button-info"
-                    (click)="clone(session.id)" *ngIf="permissionHandler$ | async"></button>
+                    (click)="clone(session.id)"
+                    *ngIf="(permissionHandler$ | async).staff || (permissionHandler$ | async).manager"></button>
             <button pButton type="button" label="Löschen" class="ui-button-danger" (click)="confirm(session.id)"
-                    *ngIf="(permissionHandler$ | async) && this.filterFinishedSessions(session.stateId)"></button>
+                    *ngIf="(permissionHandler$ | async).staff && this.filterFinishedSessions(session.stateId)"></button>
           </td>
         </tr>
       </ng-template>
@@ -60,7 +63,9 @@
         <avk-date formControlName="startDate" id="dbeginn" label="Start"></avk-date>
       </div>
     </div>
-    <p-button label="Bestätigen" (onClick)="create(createSession.get('collectiveId').value, createSession.get('startDate').value)"></p-button>
+    <p-button label="Bestätigen"
+              (onClick)="create(createSession.get('collectiveId').value, createSession.get('startDate').value)"
+    ></p-button>
   </p-dialog>
   </form>
 

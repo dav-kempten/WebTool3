@@ -30,14 +30,12 @@ export class SessionListComponent implements OnInit, OnDestroy, AfterViewInit {
   part$: Observable<string>;
   sessions$: Observable<SessionSummary[]>;
   activeItem$: Observable<MenuItem>;
-  collectives$: Observable<Collective[]>;
 
   display = false;
 
-  permissionHandler$: Observable<boolean>;
+  permissionHandler$: Observable<{staff: boolean, manager: boolean, collectives: Collective[]}>;
   permissionCurrent$: Observable<Permission>;
 
-  private collectiveManagers = new BehaviorSubject<{id: number, code: string, managers: number[]}[]>([]);
   partNewSession = new BehaviorSubject<string>('');
 
   collectiveId = new FormControl('');
@@ -66,11 +64,22 @@ export class SessionListComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.permissionHandler$ = this.permissionCurrent$.pipe(
       takeUntil(this.destroySubject),
-      map(permission => {
-        /* needs refactoring */
-        return this.collectiveManagers.value.some(val => val.managers.some(guide => guide === permission.guideId))
-          || permission.permissionLevel >= PermissionLevel.coordinator;
-      })
+      flatMap(permission =>
+        this.store.pipe(
+          takeUntil(this.destroySubject),
+          select(getCollectives),
+          map(collectives => {
+            return {staff: permission.permissionLevel >= PermissionLevel.coordinator,
+              manager: collectives.some(val => val.managers.some(guide => guide === permission.guideId)),
+              collectives: collectives.filter(val => val.managers.includes(permission.guideId))
+            };
+          }),
+          publishReplay(1),
+          refCount()
+        )
+      ),
+      publishReplay(1),
+      refCount()
     );
 
     this.part$ = this.store.pipe(
@@ -133,21 +142,9 @@ export class SessionListComponent implements OnInit, OnDestroy, AfterViewInit {
       refCount()
     );
 
-    this.collectives$ = this.store.pipe(
-      takeUntil(this.destroySubject),
-      select(getCollectives),
-      publishReplay(1),
-      refCount()
-    );
-
     this.part$.subscribe();
     this.activeItem$.subscribe();
     this.sessions$.subscribe();
-
-    /* Store all manager/collective pair in BehaviourSubject */
-    this.collectives$.subscribe(collective => {
-      this.collectiveManagers.next(collective.map(value => ({id: value.id, code: value.code.toLowerCase(), managers: value.managers})));
-    });
   }
 
   ngOnDestroy(): void {
@@ -161,10 +158,8 @@ export class SessionListComponent implements OnInit, OnDestroy, AfterViewInit {
 
   selectSession(session): void {
     if (!!session) {
-      this.permissionCurrent$.pipe(takeUntil(this.destroySubject)).subscribe( permission => {
-        if (permission.permissionLevel >= PermissionLevel.coordinator) {
-          this.router.navigate(['sessions', session.id]);
-        } else if (this.collectiveManagers.value.find(value => value.id === session.collectiveId).managers.includes(permission.guideId)) {
+      this.permissionHandler$.pipe(takeUntil(this.destroySubject)).subscribe( permission => {
+        if (permission.staff || (permission.manager && permission.collectives.some(val => val.id === session.collectiveId))) {
           this.router.navigate(['sessions', session.id]);
         }
       });
@@ -176,9 +171,8 @@ export class SessionListComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   create(collective, date) {
-    this.permissionCurrent$.pipe(takeUntil(this.destroySubject)).subscribe( permission => {
-      if (permission.permissionLevel >= PermissionLevel.coordinator ||
-        this.collectiveManagers.value.find(value => value.id === collective).managers.includes(permission.guideId)) {
+    this.permissionHandler$.pipe(takeUntil(this.destroySubject)).subscribe( permission => {
+      if (permission.staff || (permission.manager && permission.collectives.some(val => val.id === collective))) {
         this.store.dispatch(new CreateSession({collectiveId: collective, startDate: date}));
         this.display = false;
       }
