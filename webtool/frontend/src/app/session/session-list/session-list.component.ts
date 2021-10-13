@@ -35,8 +35,7 @@ export class SessionListComponent implements OnInit, OnDestroy, AfterViewInit {
 
   permissionHandler$: Observable<{staff: boolean, manager: boolean, collectives: Collective[]}>;
   permissionCurrent$: Observable<Permission>;
-
-  partNewSession = new BehaviorSubject<string>('');
+  partNewSession$: Observable<string[]>;
 
   collectiveId = new FormControl('');
   startDate = new FormControl('');
@@ -81,6 +80,14 @@ export class SessionListComponent implements OnInit, OnDestroy, AfterViewInit {
       publishReplay(1),
       refCount()
     );
+
+    this.partNewSession$ = this.permissionHandler$.pipe(
+      takeUntil(this.destroySubject),
+      map(managerCollective => {
+        return managerCollective.collectives.map(val => val.code);
+      }),
+      publishReplay(1),
+      refCount());
 
     this.part$ = this.store.pipe(
       takeUntil(this.destroySubject),
@@ -134,8 +141,7 @@ export class SessionListComponent implements OnInit, OnDestroy, AfterViewInit {
               (part === 'vst' && session.reference.substr(0, 3).toLowerCase() === 'vst') ||
               !part
             )
-          ),
-          tap(() => this.partNewSession.next(part)),
+          )
         )
       ),
       publishReplay(1),
