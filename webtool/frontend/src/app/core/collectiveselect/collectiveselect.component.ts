@@ -12,13 +12,12 @@ import {
 import {ControlValueAccessor, FormControl, FormControlName, FormGroup, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {Dropdown} from 'primeng/dropdown';
 import {BehaviorSubject, Observable, ReplaySubject, Subject, Subscription} from 'rxjs';
-import {Collective as RawCollective} from '../../model/value';
-import {State as CollectiveState} from '../store/collective.reducer';
+import {Collective} from '../../model/value';
 import {stateValidator} from '../dropdown/dropdown.component';
 import {Store} from '@ngrx/store';
 import {AppState} from '../../app.state';
-import {getCollectiveState} from '../store/value.selectors';
-import {delay, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
+import {getCollectives} from '../store/value.selectors';
+import {delay, flatMap, map, publishReplay, refCount, takeUntil} from 'rxjs/operators';
 
 @Component({
   selector: 'avk-collectiveselect',
@@ -36,21 +35,30 @@ export class CollectiveselectComponent implements OnInit, OnDestroy, AfterViewIn
 
   @ViewChild(Dropdown) dropdown: Dropdown;
   @ContentChild(FormControlName) formControlNameRef: FormControlName;
+
   formControl: FormControl;
   delegatedMethodCalls = new ReplaySubject<(_: ControlValueAccessor) => void>();
   delegatedMethodsSubscription: Subscription;
+
   private destroySubject = new Subject<void>();
-  collectiveSubject = new BehaviorSubject<RawCollective[]>(undefined);
-  collectiveSet: any;
+  private collectiveSet = new BehaviorSubject<Collective[]>(null);
 
   originalControl = new FormControl(null);
   choiceControl = new FormControl('');
 
-  formState$: Observable<CollectiveState>;
-  formStateComponent$: Observable<CollectiveState>;
+  formState$: Observable<Collective[]>;
+  formStateComponent$: Observable<Collective[]>;
 
   readonly = false;
   editable = false;
+
+  group = new FormGroup(
+    {
+      original: this.originalControl,
+      choice: this.choiceControl,
+    },
+    [stateValidator]
+  );
 
   @Input()
   set readOnly(value: boolean) {
@@ -63,26 +71,12 @@ export class CollectiveselectComponent implements OnInit, OnDestroy, AfterViewIn
   }
 
   @Input()
-  set setCollective(value) {
-    this.collectiveSet = value;
-    if (this.status.length > 0 && this.collectiveSubject.value !== undefined) {
-      this.preSetCollective(this.status, this.collectiveSet);
-    }
+  set setCollective(value: Collective[]) {
+    this.collectiveSet.next(value);
   }
 
-  group = new FormGroup(
-    {
-      original: this.originalControl,
-      choice: this.choiceControl,
-    },
-    [stateValidator]
-  );
-
-  status: RawCollective[] = new Array(0);
-
-
-  OnChangeWrapper(onChange: (stateIn) => void): (stateOut: RawCollective) => void {
-    return ((state: RawCollective): void => {
+  OnChangeWrapper(onChange: (stateIn) => void): (stateOut: Collective) => void {
+    return ((state: Collective): void => {
       this.formControl.setValue(state);
       this.choiceControl.setValue(state);
       onChange(state.id);
@@ -102,33 +96,27 @@ export class CollectiveselectComponent implements OnInit, OnDestroy, AfterViewIn
   }
 
   writeValue(stateId): void {
-    if (typeof stateId === 'number' && stateId > 0) {
-      for (const el in this.status) {
-        if (stateId === this.status[el].id) {
-          stateId = this.status[el];
-        }
-      }
-    }
     this.delegatedMethodCalls.next(accessor => accessor.writeValue(stateId));
   }
 
   constructor(private store: Store<AppState>) { }
 
   ngOnInit() {
-    this.formState$ = this.store.select(getCollectiveState);
+    this.formState$ = this.store.select(getCollectives);
 
     this.formStateComponent$ = this.formState$.pipe(
       takeUntil(this.destroySubject),
-      tap( state => {
-        Object.keys(state.entities).forEach( key => {
-          this.status.push(state.entities[key]);
-        });
-        this.preSetCollective(this.status, this.collectiveSet);
-      }),
+      flatMap(collectives => this.collectiveSet.pipe(
+        takeUntil(this.destroySubject),
+        map(manCollectives => {
+          return this.preSetCollective(collectives, manCollectives);
+        })
+      )),
       // shareReplay(),
       publishReplay(1),
       refCount()
     );
+
     this.formStateComponent$.subscribe();
   }
 
@@ -144,7 +132,6 @@ export class CollectiveselectComponent implements OnInit, OnDestroy, AfterViewIn
     }
     this.destroySubject.next();
     this.destroySubject.complete();
-    this.collectiveSubject.complete();
   }
 
   ngAfterContentInit(): void {
@@ -153,17 +140,11 @@ export class CollectiveselectComponent implements OnInit, OnDestroy, AfterViewIn
     this.choiceControl.setValue(this.formControl.value);
   }
 
-  preSetCollective(collectiveArray: RawCollective[], value): void {
-    const collectiveSetArray = new Array(0);
-    if (value !== null && value !== undefined) {
-      for (const idxCollective in collectiveArray) {
-        if (collectiveArray[idxCollective].code === value.toUpperCase()) {
-          collectiveSetArray.push(collectiveArray[idxCollective]);
-        }
-      }
-      this.collectiveSubject.next(collectiveSetArray);
+  preSetCollective(collectiveArray: Collective[], codes?: Collective[]): Collective[] {
+    if (codes !== undefined && codes !== null && codes.length > 0) {
+      return collectiveArray.filter(val => codes.includes(val));
     } else {
-      this.collectiveSubject.next(this.status);
+      return collectiveArray;
     }
   }
 

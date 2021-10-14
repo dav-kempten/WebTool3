@@ -1,5 +1,5 @@
 <p-dropdown
-  [options]="collectiveSubject.value"
+  [options]="(this.formStateComponent$ | async)"
   optionLabel="title"
   [readonly]="readonly"
   [editable]="editable"
