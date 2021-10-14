@@ -1,7 +1,7 @@
 import {AfterViewInit, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {select, Store} from '@ngrx/store';
 import {AppState, selectRouterFragment} from '../../app.state';
-import {BehaviorSubject, Observable, Subject} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import {SessionSummary} from '../../model/session';
 import {ConfirmationService, MenuItem} from 'primeng/api';
 import {AuthService} from '../../core/service/auth.service';
@@ -14,7 +14,7 @@ import {CloneSession, CreateSession, DeleteSession, RequestSession} from '../../
 import {getSessionById} from '../../core/store/session.selectors';
 import {Permission, PermissionLevel} from '../../core/service/permission.service';
 import {Collective, getStatesOfGroup, StatesGroup} from '../../model/value';
-import {getCollectiveById, getCollectives} from '../../core/store/value.selectors';
+import {getCollectives} from '../../core/store/value.selectors';
 
 
 @Component({
@@ -35,7 +35,7 @@ export class SessionListComponent implements OnInit, OnDestroy, AfterViewInit {
 
   permissionHandler$: Observable<{staff: boolean, manager: boolean, collectives: Collective[]}>;
   permissionCurrent$: Observable<Permission>;
-  partNewSession$: Observable<string[]>;
+  partNewSession$: Observable<Collective[]>;
 
   collectiveId = new FormControl('');
   startDate = new FormControl('');
@@ -84,7 +84,7 @@ export class SessionListComponent implements OnInit, OnDestroy, AfterViewInit {
     this.partNewSession$ = this.permissionHandler$.pipe(
       takeUntil(this.destroySubject),
       map(managerCollective => {
-        return managerCollective.collectives.map(val => val.code);
+        return managerCollective.collectives;
       }),
       publishReplay(1),
       refCount());
