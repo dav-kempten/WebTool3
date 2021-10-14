@@ -36,6 +36,7 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
   sessionChange$: Observable<Session> = this.sessionChangeSubject.asObservable();
   eventArray$: Observable<FormArray> = this.eventsSubject.asObservable();
   eventChange$: Observable<Event> = this.eventChangeSubject.asObservable();
+  collectiveGroup$: Observable<FormGroup> = this.collectiveSubject.asObservable();
 
   sessionId$: Observable<number>;
   session$: Observable<Session>;
@@ -103,7 +104,7 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
           if (!collective) {
             this.store.dispatch((new ValuesRequested()));
           } else {
-            this.collectiveSubject.next(collectiveGroupFactory(collective));
+            this.collectiveSubject.next(new FormGroup({collective: new FormControl(collective)}));
           }
         })
       )),
@@ -178,7 +179,7 @@ export class SessionDetailComponent implements OnInit, OnDestroy {
 
     this.sessionChange$.pipe(
       takeUntil(this.destroySubject),
-      filter(tour => !!tour),
+      filter(session => !!session),
       publishReplay(1),
       refCount(),
     ).subscribe(

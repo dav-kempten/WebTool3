@@ -56,7 +56,9 @@
       <avk-dropdown formControlName="stateId" id="stateId"></avk-dropdown>
     </div>
     <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-      <avk-collectiveselect formControlName="collectiveId" id="collectiveId" [readOnly]="true" ></avk-collectiveselect>
+      <form [formGroup]="collectiveGroup$ | async">
+        <avk-collectiveselect formControlName="collective" id="collective" [readOnly]="true" ></avk-collectiveselect>
+      </form>
     </div>
   </div>
   </p-card>
