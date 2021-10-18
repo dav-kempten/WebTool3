@@ -169,24 +169,14 @@ export class TourDetailComponent implements OnInit, OnDestroy {
       filter(event => !!event),
       publishReplay(1),
       refCount()
-    ).subscribe(
-      event => this.store.dispatch(
-        new UpdateEvent({event: {id: event.id, changes: {...event}}})
-      )
-    );
+    ).subscribe(event => this.store.dispatch(new UpdateEvent({event: {id: event.id, changes: {...event}}})));
 
     this.tourChange$.pipe(
       takeUntil(this.destroySubject),
       filter(tour => !!tour),
       publishReplay(1),
       refCount(),
-    ).subscribe(
-      tour => {
-        this.store.dispatch(
-          new UpdateTour({tour: {id: tour.id, changes: {...tour}}})
-        );
-      }
-    );
+    ).subscribe(tour => this.store.dispatch(new UpdateTour({tour: {id: tour.id, changes: {...tour}}})));
   }
 
   ngOnDestroy(): void {
