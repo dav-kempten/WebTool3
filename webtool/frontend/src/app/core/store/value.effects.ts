@@ -5,7 +5,7 @@ import {Actions, Effect, ofType} from '@ngrx/effects';
 import {Injectable} from '@angular/core';
 import {ValueService} from '../service/value.service';
 import {ValuesActionTypes, ValuesLoaded, ValuesNotModified} from './value.actions';
-import {Values as RawValues} from '../../model/value';
+import {Collective, Values as RawValues} from '../../model/value';
 import {AppState} from '../../app.state';
 import {AddStates} from './state.actions';
 import {AddCategories} from './category.actions';
@@ -37,7 +37,7 @@ export class ValueEffects {
             this.store.dispatch(new AddSkills({skills: values.skills}));
             this.store.dispatch(new AddFitness({fitness: values.fitness}));
             this.store.dispatch(new AddTopics({topics: values.topics}));
-            this.store.dispatch(new AddCollectives({collectives: values.collectives}));
+            this.store.dispatch(new AddCollectives({collectives: mergeCollectives(values.collectives)}));
             return new ValuesLoaded(values);
           } else {
             return new ValuesNotModified();
@@ -46,4 +46,20 @@ export class ValueEffects {
       );
     })
   );
+}
+
+function mergeCollectives(collectives: Collective[]): Collective[] {
+  const mergeCollectiveArray = new Array(0);
+  let managerIds = new Array(0);
+  /* Store all IDs of collectives in an array */
+  const collectiveIds = Array.from(new Set(collectives.map(el => el.id)));
+  /* Get managers of collectives as Arrays & combine them with the corresponding collectives */
+  for (const collectiveId of collectiveIds) {
+    managerIds = collectives.filter(value => value.id === collectiveId).map(value => value.managers.shift());
+    mergeCollectiveArray.push({
+      ...collectives.find(value => value.id === collectiveId),
+      managers: managerIds.shift() !== undefined ? managerIds : []
+    });
+  }
+  return mergeCollectiveArray;
 }
