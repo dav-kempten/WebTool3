@@ -63,19 +63,17 @@ export class SessionListComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.permissionHandler$ = this.permissionCurrent$.pipe(
       takeUntil(this.destroySubject),
-      flatMap(permission =>
-        this.store.pipe(
-          takeUntil(this.destroySubject),
-          select(getCollectives),
-          map(collectives => {
-            return {staff: permission.permissionLevel >= PermissionLevel.coordinator,
-              manager: collectives.some(val => val.managers.some(guide => guide === permission.guideId)),
-              collectives: collectives.filter(val => val.managers.includes(permission.guideId))
-            };
-          }),
-          publishReplay(1),
-          refCount()
-        )
+      flatMap(permission => this.store.pipe(
+        takeUntil(this.destroySubject),
+        select(getCollectives),
+        map(collectives => {
+          return {staff: permission.permissionLevel >= PermissionLevel.coordinator,
+            manager: collectives.some(val => val.managers.some(guide => guide === permission.guideId)),
+            collectives: collectives.filter(val => val.managers.includes(permission.guideId))
+          };
+        }),
+        publishReplay(1),
+        refCount())
       ),
       publishReplay(1),
       refCount()
