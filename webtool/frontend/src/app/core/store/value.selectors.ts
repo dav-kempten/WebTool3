@@ -66,6 +66,11 @@ export const getCategoryById = (categoryId: number) => createSelector(
   getCategoryState, categoryState => categoryState.entities[categoryId]
 );
 
+export const getCategoriesByIds = (categoryIds: number []) => createSelector(
+  getCategoryState, categoryState => Object.values(categoryState.entities)
+    .filter(category => categoryIds.includes(category.id))
+);
+
 export const getApproximateById = (approximateId: number) => createSelector(
   getApproxState, approximateState => approximateState.entities[approximateId]
 );
