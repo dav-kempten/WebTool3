@@ -5,7 +5,7 @@ import {Actions, Effect, ofType} from '@ngrx/effects';
 import {Injectable} from '@angular/core';
 import {ValueService} from '../service/value.service';
 import {ValuesActionTypes, ValuesLoaded, ValuesNotModified} from './value.actions';
-import {Collective, Values as RawValues} from '../../model/value';
+import {Collective, Topic, Values as RawValues} from '../../model/value';
 import {AppState} from '../../app.state';
 import {AddStates} from './state.actions';
 import {AddCategories} from './category.actions';
@@ -36,7 +36,7 @@ export class ValueEffects {
             this.store.dispatch(new AddEquipments({equipments: values.equipments}));
             this.store.dispatch(new AddSkills({skills: values.skills}));
             this.store.dispatch(new AddFitness({fitness: values.fitness}));
-            this.store.dispatch(new AddTopics({topics: values.topics}));
+            this.store.dispatch(new AddTopics({topics: mergeTopics(values.topics)}));
             this.store.dispatch(new AddCollectives({collectives: mergeCollectives(values.collectives)}));
             return new ValuesLoaded(values);
           } else {
@@ -49,8 +49,8 @@ export class ValueEffects {
 }
 
 function mergeCollectives(collectives: Collective[]): Collective[] {
-  const mergeCollectiveArray = new Array(0);
-  let managerIds = new Array(0);
+  const mergeCollectiveArray = new Array<Collective>(0);
+  let managerIds = new Array<number>(0);
   /* Store all IDs of collectives in an array */
   const collectiveIds = Array.from(new Set(collectives.map(el => el.id)));
   /* Get managers of collectives as Arrays & combine them with the corresponding collectives */
@@ -62,4 +62,24 @@ function mergeCollectives(collectives: Collective[]): Collective[] {
     });
   }
   return mergeCollectiveArray;
+}
+
+function mergeTopics(topics: Topic[]): Topic[] {
+  const mergeTopicArray = new Array<Topic>(0);
+  let equipmentIds = new Array<number>(0);
+  let qualificationIds = new Array<number>(0);
+
+  const topicIds = Array.from(new Set(topics.map(el => el.id)));
+
+  for (const topicId of topicIds) {
+    equipmentIds = topics.filter(value => value.id === topicId).map(value => value.equipmentIds.shift());
+    qualificationIds = topics.filter(value => value.id === topicId).map(value => value.qualificationIds.shift());
+    mergeTopicArray.push({
+      ...topics.find(value => value.id === topicId),
+      equipmentIds: equipmentIds.shift() !== undefined ? Array.from(new Set(equipmentIds)) : [],
+      qualificationIds: equipmentIds.shift() !== undefined ? Array.from(new Set(qualificationIds)) : []
+    });
+  }
+
+  return mergeTopicArray;
 }
