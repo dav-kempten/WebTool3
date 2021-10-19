@@ -19,6 +19,7 @@ import {Store} from '@ngrx/store';
 import {AppState} from '../../app.state';
 import {delay, takeUntil, tap} from 'rxjs/operators';
 import {getApproxState} from '../store/value.selectors';
+import {ApproximatePipe} from './approximate.pipe';
 
 @Component({
   selector: 'avk-approxdropdown',
@@ -27,7 +28,8 @@ import {getApproxState} from '../store/value.selectors';
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => ApproxdropdownComponent),
       multi: true
-    }
+    },
+    ApproximatePipe
   ],
   templateUrl: './approxdropdown.component.html',
   styleUrls: ['./approxdropdown.component.css']
@@ -74,12 +76,9 @@ export class ApproxdropdownComponent implements OnInit, OnDestroy, AfterViewInit
 
    OnChangeWrapper(onChange: (stateIn) => void): (stateOut: RawApprox) => void {
     return ((state: RawApprox): void => {
-      if (state.id === 0) {
-        state = null;
-      }
       this.formControl.setValue(state);
       this.choiceControl.setValue(state);
-      state !== null ? onChange(state.id) : onChange(state);
+      onChange(state.id !== 0 ? state.id : null);
     });
   }
 
@@ -96,18 +95,10 @@ export class ApproxdropdownComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   writeValue(stateId): void {
-    if (typeof stateId === 'number' && stateId >= 0) {
-      for (const el in this.status) {
-        if (stateId === this.status[el].id) {
-          stateId = this.status[stateId];
-        }
-      }
-    }
-
-    this.delegatedMethodCalls.next(accessor => accessor.writeValue(stateId));
+    this.delegatedMethodCalls.next(accessor => accessor.writeValue(this.pipe.transform(stateId)));
   }
 
-  constructor(private store: Store<AppState>) {  }
+  constructor(private store: Store<AppState>, private pipe: ApproximatePipe) {  }
 
   ngOnInit(): void {
     this.formState$ = this.store.select(getApproxState);
