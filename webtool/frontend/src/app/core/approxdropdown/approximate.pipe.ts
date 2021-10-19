@@ -1,6 +1,6 @@
 import {Pipe, PipeTransform} from '@angular/core';
 import {of} from 'rxjs';
-import {filter, map, switchMap, take} from 'rxjs/operators';
+import {filter, switchMap, take} from 'rxjs/operators';
 import {AppState} from '../../app.state';
 import {Store} from '@ngrx/store';
 import {Approximate} from '../../model/value';
