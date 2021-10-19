@@ -24,6 +24,7 @@ import {Store} from '@ngrx/store';
 import {AppState} from '../../app.state';
 import {getCategoryState} from '../store/value.selectors';
 import {delay, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
+import {CategorymultiselectPipe} from './categorymultiselect.pipe';
 
 @Component({
   selector: 'avk-categorymultiselect',
@@ -32,7 +33,8 @@ import {delay, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operator
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => CategoryMultiselectComponent),
       multi: true
-    }
+    },
+    CategorymultiselectPipe
   ],
   templateUrl: './categorymultiselect.component.html',
   styleUrls: ['./categorymultiselect.component.css']
@@ -93,11 +95,7 @@ export class CategoryMultiselectComponent implements OnInit, OnDestroy, AfterVie
     return ((state): void => {
       this.formControl.setValue(state);
       this.choiceControl.setValue(state);
-      const stateNewId: number[] = [];
-      state.forEach(value => {
-        stateNewId.push(value.id);
-      });
-      onChange(stateNewId);
+      onChange(state.map(value => value.id));
     });
   }
 
@@ -114,27 +112,10 @@ export class CategoryMultiselectComponent implements OnInit, OnDestroy, AfterVie
   }
 
   writeValue(categories): void {
-    if (categories.length > 0) {
-      const pushArray = new Array(0);
-      categories.forEach(value => {
-        if (typeof(value) === 'number') {
-          this.status.forEach(valueNumber => {
-            if (value === valueNumber.id) {
-              pushArray.push(valueNumber);
-            }
-          });
-        } else {
-          categories.forEach(valueObject => {
-            pushArray.push(valueObject);
-          });
-        }
-      });
-      categories = pushArray;
-    }
-    this.delegatedMethodCalls.next(accessor => accessor.writeValue(categories));
+    this.delegatedMethodCalls.next(accessor => accessor.writeValue(this.pipe.transform(categories)));
   }
 
-  constructor(private store: Store<AppState>) { }
+  constructor(private store: Store<AppState>, private pipe: CategorymultiselectPipe) { }
 
   ngOnInit(): void {
     this.formState$ = this.store.select(getCategoryState);
