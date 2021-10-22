@@ -26,6 +26,7 @@ import {AppState} from '../../app.state';
 import {selectStatesState} from '../store/value.selectors';
 import {State as StateState} from '../store/state.reducer';
 import {State as RawState} from '../../model/value';
+import {DropdownPipe} from './dropdown.pipe';
 
 @Component({
   selector: 'avk-dropdown',
@@ -34,7 +35,8 @@ import {State as RawState} from '../../model/value';
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => DropdownComponent),
       multi: true
-    }
+    },
+    DropdownPipe
   ],
   templateUrl: './dropdown.component.html',
   styleUrls: ['./dropdown.component.css']
@@ -107,18 +109,10 @@ export class DropdownComponent implements OnInit, OnDestroy, AfterViewInit, Afte
   }
 
   writeValue(stateId): void {
-    if (typeof stateId === 'number' && stateId > 0) {
-      for (const el in this.status) {
-        if (stateId === this.status[el].id) {
-          stateId = this.status[stateId - 1];
-        }
-      }
-    }
-
-    this.delegatedMethodCalls.next(accessor => accessor.writeValue(stateId));
+    this.delegatedMethodCalls.next(accessor => accessor.writeValue(this.pipe.transform(stateId)));
   }
 
-  constructor(private store: Store<AppState>) { }
+  constructor(private store: Store<AppState>, private pipe: DropdownPipe) { }
 
   ngOnInit(): void {
 
