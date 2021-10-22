@@ -84,6 +84,7 @@ import { CategoryMultiselectComponent } from './categorymultiselect/categorymult
 import {ApproximatePipe} from './approxdropdown/approximate.pipe';
 import {CategorymultiselectPipe} from './categorymultiselect/categorymultiselect.pipe';
 import {CategoryselectPipe} from './categoryselect/categoryselect.pipe';
+import {DropdownPipe} from './dropdown/dropdown.pipe';
 
 
 @NgModule({
@@ -92,7 +93,7 @@ import {CategoryselectPipe} from './categoryselect/categoryselect.pipe';
     BreadcrumbComponent, DateRequiredDirective, GuideRequiredDirective, MembernumberComponent, DropdownComponent,
     MultiselectComponent, ApproxdropdownComponent, CategoryselectComponent, DatePipe, TimePipe, SkillselectComponent,
     FitnessselectComponent, QualificationselectComponent, CollectiveselectComponent, SexdropdownComponent, StatePipe,
-    CategoryMultiselectComponent, ApproximatePipe, CategorymultiselectPipe, CategoryselectPipe
+    CategoryMultiselectComponent, ApproximatePipe, CategorymultiselectPipe, CategoryselectPipe, DropdownPipe
   ],
   imports: [
     CommonModule,
@@ -159,7 +160,7 @@ import {CategoryselectPipe} from './categoryselect/categoryselect.pipe';
     DialogModule, CheckboxModule, InputTextModule, InputTextareaModule, DatePipe, TimePipe, SkillselectComponent,
     FitnessselectComponent, QualificationselectComponent, CollectiveselectComponent, CardModule, SexdropdownComponent,
     StatePipe, CategoryMultiselectComponent, ConfirmDialogModule, ApproximatePipe, CategorymultiselectPipe,
-    CategoryselectPipe
+    CategoryselectPipe, DropdownPipe
   ],
   providers: [NamePipe]
 })
