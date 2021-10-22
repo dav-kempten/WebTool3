@@ -20,6 +20,7 @@ import {AppState} from '../../app.state';
 import {getCategoryState} from '../store/value.selectors';
 import {delay, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {Permission, PermissionLevel} from '../service/permission.service';
+import {CategoryselectPipe} from './categoryselect.pipe';
 
 @Component({
   selector: 'avk-categoryselect',
@@ -28,7 +29,8 @@ import {Permission, PermissionLevel} from '../service/permission.service';
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => CategoryselectComponent),
       multi: true
-    }
+    },
+    CategoryselectPipe
   ],
   templateUrl: './categoryselect.component.html',
   styleUrls: ['./categoryselect.component.css']
@@ -120,17 +122,10 @@ export class CategoryselectComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   writeValue(stateId): void {
-    if (typeof stateId === 'number' && stateId > 0) {
-      for (const el in this.status) {
-        if (stateId === this.status[el].id) {
-          stateId = this.status[el];
-        }
-      }
-    }
-    this.delegatedMethodCalls.next(accessor => accessor.writeValue(stateId));
+    this.delegatedMethodCalls.next(accessor => accessor.writeValue(this.pipe.transform(stateId)));
   }
 
-  constructor(private store: Store<AppState>) { }
+  constructor(private store: Store<AppState>, private pipe: CategoryselectPipe) { }
 
   ngOnInit(): void {
     this.formState$ = this.store.select(getCategoryState);
