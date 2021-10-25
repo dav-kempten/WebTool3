@@ -82,3 +82,13 @@ export const getCollectiveById = (collectiveId: number) => createSelector(
 export const getStateById = (stateId: number) => createSelector(
   getStateState, stateState => stateState.entities[stateId]
 );
+
+export const getFitnessById = (stateId: number) => createSelector(
+  getFitnessState, stateFitness => stateFitness.entities[stateId]
+);
+
+export const getFitnessByCategoryAndLevel = (stateCategory: number, stateLevel: number) => createSelector(
+  getFitnessState, stateFitness => Object.values(stateFitness.entities).find(
+    fitness => fitness.categoryId === stateCategory && fitness.level === stateLevel
+  )
+);
