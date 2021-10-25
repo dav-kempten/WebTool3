@@ -19,6 +19,7 @@ import {Store} from '@ngrx/store';
 import {AppState} from '../../app.state';
 import {getSkillState} from '../store/value.selectors';
 import {delay, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
+import {SkillPipe} from './skill.pipe';
 
 @Component({
   selector: 'avk-skillselect',
@@ -27,7 +28,8 @@ import {delay, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => SkillselectComponent),
       multi: true
-    }
+    },
+    SkillPipe
   ],
   templateUrl: './skillselect.component.html',
   styleUrls: ['./skillselect.component.css']
@@ -100,17 +102,12 @@ export class SkillselectComponent implements OnInit, OnDestroy, AfterViewInit, A
   }
 
   writeValue(stateId): void {
-    if (typeof stateId === 'number' && stateId > 0) {
-      for (const el in this.status) {
-        if (stateId === this.status[el].level) {
-          stateId = this.status[stateId - 1];
-        }
-      }
-    }
-    this.delegatedMethodCalls.next(accessor => accessor.writeValue(stateId));
+    this.delegatedMethodCalls.next(accessor => accessor.writeValue(
+      this.pipe.transform({levelId: stateId, categoryId: this.categorySelect})
+    ));
   }
 
-  constructor(private store: Store<AppState>) { }
+  constructor(private store: Store<AppState>, private pipe: SkillPipe) { }
 
   ngOnInit(): void {
     this.formState$ = this.store.select(getSkillState);
