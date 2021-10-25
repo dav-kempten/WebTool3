@@ -26,6 +26,7 @@ import {AppState} from '../../app.state';
 import {Equipment as RawEquipment} from '../../model/value';
 import {State as EquipState} from '../store/equipment.reducer';
 import {getEquipState} from '../store/value.selectors';
+import {MultiselectPipe} from './multiselect.pipe';
 
 @Component({
   selector: 'avk-multiselect',
@@ -34,7 +35,8 @@ import {getEquipState} from '../store/value.selectors';
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => MultiselectComponent),
       multi: true
-    }
+    },
+    MultiselectPipe
   ],
   templateUrl: './multiselect.component.html',
   styleUrls: ['./multiselect.component.css']
@@ -76,11 +78,7 @@ export class MultiselectComponent implements OnInit, AfterViewInit, OnDestroy, A
     return ((choice): void => {
       this.formControl.setValue(choice);
       this.choiceValueControl.setValue(choice);
-      const choiceNewId: number[] = [];
-      choice.forEach(value => {
-        choiceNewId.push(value.id);
-      });
-      onChange(choiceNewId);
+      onChange(choice.map(el => el.id));
     });
   }
 
@@ -97,27 +95,10 @@ export class MultiselectComponent implements OnInit, AfterViewInit, OnDestroy, A
   }
 
   writeValue(choice): void {
-    if (choice.length > 0) {
-      const pushArray = new Array(0);
-      choice.forEach(value => {
-        if (typeof(value) === 'number') {
-          this.statusEquipment.forEach(valueNumber => {
-            if (value === valueNumber.id) {
-              pushArray.push(valueNumber);
-            }
-          });
-        } else {
-          choice.forEach(valueObject => {
-            pushArray.push(valueObject);
-          });
-        }
-      });
-      choice = pushArray;
-    }
-    this.delegatedMethodCalls.next(accessor => accessor.writeValue(choice));
+    this.delegatedMethodCalls.next(accessor => accessor.writeValue(this.pipe.transform(choice)));
   }
 
-  constructor(private store: Store<AppState>) {
+  constructor(private store: Store<AppState>, private pipe: MultiselectPipe) {
     this.formEquipState$ = this.store.select(getEquipState);
 
     this.formEquipState$.pipe(
