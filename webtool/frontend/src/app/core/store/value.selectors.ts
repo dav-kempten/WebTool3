@@ -102,3 +102,8 @@ export const getSkillByCategoryAndLevel = (stateCategory: number, stateLevel: nu
     skill => skill.categoryId === stateCategory && skill.level === stateLevel
   )
 );
+
+export const getEquipmentByIds = (equipmentIds: number []) => createSelector(
+  getEquipState, equipmentState => Object.values(equipmentState.entities)
+    .filter(equipment => equipmentIds.includes(equipment.id))
+);
