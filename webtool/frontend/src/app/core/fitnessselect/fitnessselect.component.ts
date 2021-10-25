@@ -18,6 +18,7 @@ import {Store} from '@ngrx/store';
 import {AppState} from '../../app.state';
 import {getFitnessState} from '../store/value.selectors';
 import {delay, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
+import {FitnessPipe} from './fitness.pipe';
 
 @Component({
   selector: 'avk-fitnessselect',
@@ -26,7 +27,8 @@ import {delay, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => FitnessselectComponent),
       multi: true
-    }
+    },
+    FitnessPipe
   ],
   templateUrl: './fitnessselect.component.html',
   styleUrls: ['./fitnessselect.component.css']
@@ -99,17 +101,12 @@ export class FitnessselectComponent implements OnInit, OnDestroy, AfterViewInit,
   }
 
   writeValue(stateId): void {
-    if (typeof stateId === 'number' && stateId > 0) {
-      for (const el in this.status) {
-        if (stateId === this.status[el].level) {
-          stateId = this.status[stateId - 1];
-        }
-      }
-    }
-    this.delegatedMethodCalls.next(accessor => accessor.writeValue(stateId));
+    this.delegatedMethodCalls.next(accessor => accessor.writeValue(
+      this.pipe.transform({levelId: stateId, categoryId: this.categorySelect})
+    ));
   }
 
-  constructor(private store: Store<AppState>) { }
+  constructor(private store: Store<AppState>, private pipe: FitnessPipe) { }
 
   ngOnInit(): void {
     this.formState$ = this.store.select(getFitnessState);
