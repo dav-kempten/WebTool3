@@ -92,3 +92,13 @@ export const getFitnessByCategoryAndLevel = (stateCategory: number, stateLevel: 
     fitness => fitness.categoryId === stateCategory && fitness.level === stateLevel
   )
 );
+
+export const getSkillById = (stateId: number) => createSelector(
+  getSkillState, stateSkill => stateSkill.entities[stateId]
+);
+
+export const getSkillByCategoryAndLevel = (stateCategory: number, stateLevel: number) => createSelector(
+  getSkillState, stateSkill => Object.values(stateSkill.entities).find(
+    skill => skill.categoryId === stateCategory && skill.level === stateLevel
+  )
+);
