@@ -35,7 +35,7 @@ export class TourListComponent implements OnInit, OnDestroy, AfterViewInit {
 
   partNewTour = new BehaviorSubject<string>('');
 
-  permissionHandler$: Observable<boolean>;
+  permissionHandler$: Observable<{staff: boolean, guide: boolean, id: number}>;
   permissionCurrent$: Observable<Permission>;
 
   categoryIds = new FormControl('');
@@ -68,6 +68,18 @@ export class TourListComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnInit() {
     this.permissionCurrent$ = this.authService.guidePermission$;
+
+    this.permissionHandler$ = this.permissionCurrent$.pipe(
+      takeUntil(this.destroySubject),
+      map(permission => {
+        return { staff: permission.permissionLevel >= PermissionLevel.coordinator,
+          guide: permission.permissionLevel >= PermissionLevel.guide,
+          id: permission.guideId
+        };
+      }),
+      publishReplay(1),
+      refCount()
+    );
 
     this.part$ = this.store.pipe(
       takeUntil(this.destroySubject),
@@ -102,13 +114,6 @@ export class TourListComponent implements OnInit, OnDestroy, AfterViewInit {
           tap(tours => {
             if (!tours || !tours.length) {
               this.store.dispatch(new RequestTourSummaries());
-            } else {
-              this.permissionHandler$ = this.permissionCurrent$.pipe(
-                takeUntil(this.destroySubject),
-                map(permission => {
-                  return permission.permissionLevel >= PermissionLevel.coordinator;
-                })
-              );
             }
           }),
           map(tours =>
