@@ -1,10 +1,10 @@
 import {Pipe, PipeTransform} from '@angular/core';
 import {of} from 'rxjs';
-import {filter, switchMap, take, tap} from 'rxjs/operators';
+import {filter, switchMap} from 'rxjs/operators';
 import {AppState} from '../../app.state';
 import {Store} from '@ngrx/store';
 import {Category} from '../../model/value';
-import {getCategoriesByIds, getCategoryById} from '../store/value.selectors';
+import {getCategoriesByIds} from '../store/value.selectors';
 
 @Pipe({
   name: 'categorymultiselect',
