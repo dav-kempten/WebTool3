@@ -39,7 +39,7 @@
           <td>{{tour.stateId | state}}</td>
           <td>{{tour.minQuantity}} | {{tour.curQuantity}} | {{tour.maxQuantity}}</td>
           <td>
-            <button pButton type="button" label="Klonen" class="ui-button-info" (click)="clone(tour.id)"
+            <button pButton type="button" label="Klonen" class="ui-button-info" (click)="handleClickClone(tour.id)"
                     *ngIf="(permissionHandler$ | async).staff || (tour.guideId === (permissionHandler$ | async).id)"></button>
             <button pButton type="button" label="Löschen" class="ui-button-danger" (click)="confirm(tour.id)"
                     *ngIf="(permissionHandler$ | async).staff && this.filterFinishedTours(tour.stateId)"></button>
@@ -85,6 +85,20 @@
     </div>
     <p-button label="Bestätigen" (onClick)="create(createTour.get('categoryIds').value, createTour.get('startDate').value,
               createTour.get('deadline').value, createTour.get('preliminary').value)"></p-button>
+  </p-dialog>
+  </form>
+
+  <form [formGroup]="cloneTour">
+  <p-dialog header="Tour klonen" [modal]="true" [(visible)]="displayclone" [style]="{width: '600px'}">
+    <div class="p-grid">
+      <div class="p-col-12 p-sm-9 p-md-9 p-lg-9">
+        <avk-date formControlName="startDate" id="dclone" label="Startdatum"></avk-date>
+      </div>
+      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
+        <button pButton type="button" label="Bestätigen" class="ui-button-info"
+                (click)="clone(cloneTour.get('tourId').value, cloneTour.get('startDate').value)" *ngIf="(permissionHandler$ | async).guide"></button>
+      </div>
+    </div>
   </p-dialog>
   </form>
 

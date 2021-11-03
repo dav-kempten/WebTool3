@@ -58,7 +58,7 @@ export class TourEffects {
     ofType<CloneTour>(TourActionTypes.CloneTour),
     map((action: CloneTour) => action.payload),
     switchMap(payload => {
-      return this.tourService.cloneTour(this.tranformTourForCloning(payload.tour)).pipe(
+      return this.tourService.cloneTour(this.tranformTourForCloning(payload.tour, payload.startDate)).pipe(
         map(tour => {
           if (tour.id !== 0) {
             this.router.navigate(['tours', tour.id]);
@@ -216,7 +216,7 @@ export class TourEffects {
     };
   }
 
-  tranformTourForCloning(tourInterface: Tour): RawTour {
+  tranformTourForCloning(tourInterface: Tour, startDate: string): RawTour {
     let tour: any = {};
     let deadline: any = {};
     let preliminary: any = null;

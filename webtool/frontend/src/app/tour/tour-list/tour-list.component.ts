@@ -31,6 +31,7 @@ export class TourListComponent implements OnInit, OnDestroy, AfterViewInit {
   tours$: Observable<TourSummary[]>;
   activeItem$: Observable<MenuItem>;
   display = false;
+  displayclone = false;
   preliminarySelect = false;
 
   partNewTour = new BehaviorSubject<string>('');
@@ -48,6 +49,14 @@ export class TourListComponent implements OnInit, OnDestroy, AfterViewInit {
     startDate: this.startDate,
     deadline: this.deadline,
     preliminary: this.preliminary
+  });
+
+  cloneId = new FormControl(null);
+  cloneDate = new FormControl('');
+
+  cloneTour: FormGroup = new FormGroup({
+    tourId : this.cloneId,
+    startDate: this.cloneDate
   });
 
   menuItems: MenuItem[] = [
@@ -164,6 +173,11 @@ export class TourListComponent implements OnInit, OnDestroy, AfterViewInit {
     this.display = true;
   }
 
+  handleClickClone(tourId) {
+    this.displayclone = true;
+    this.cloneId.setValue(tourId);
+  }
+
   selectPreliminary() {
     this.preliminarySelect = !this.preliminarySelect;
     if (this.preliminarySelect === false) {
@@ -179,7 +193,7 @@ export class TourListComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  clone(tourId) {
+  clone(tourId, startDate) {
     this.store.pipe(
       select(getTourById(tourId)),
       tap(tour => {
@@ -191,9 +205,10 @@ export class TourListComponent implements OnInit, OnDestroy, AfterViewInit {
       first(),
     ).subscribe(
       tour => {
-        this.store.dispatch(new CloneTour({tour}));
+        this.store.dispatch(new CloneTour({tour, startDate}));
       }
     );
+    this.displayclone = false;
   }
 
   confirm(tourId) {
