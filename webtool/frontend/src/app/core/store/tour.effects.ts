@@ -22,6 +22,7 @@ import {getEventsByIds} from './event.selectors';
 import {Event} from '../../model/event';
 import {RequestTourSummaries} from './tour-summary.actions';
 import {Router} from '@angular/router';
+import {EventPipe} from './event.pipe';
 
 function convertDecimal(rawValue: string): number {
   return Number(rawValue);
@@ -31,10 +32,9 @@ function convertDecimal(rawValue: string): number {
   providedIn: 'root'
 })
 export class TourEffects {
-  events$: Observable<Event[]>;
-  private destroySubject = new Subject<void>();
 
-  constructor(private actions$: Actions, private tourService: TourService, private store: Store<AppState>, private router: Router) {}
+  constructor(private actions$: Actions, private tourService: TourService, private store: Store<AppState>, private router: Router,
+              private pipe: EventPipe) {}
 
   @Effect()
   loadTour$: Observable<Action> = this.actions$.pipe(
@@ -58,7 +58,7 @@ export class TourEffects {
     ofType<CloneTour>(TourActionTypes.CloneTour),
     map((action: CloneTour) => action.payload),
     switchMap(payload => {
-      return this.tourService.cloneTour(this.tranformTourForCloning(payload.tour, payload.startDate)).pipe(
+      return this.tourService.cloneTour(this.tranformTourForCloning(payload.tour, payload.startDate, payload.endDate)).pipe(
         map(tour => {
           if (tour.id !== 0) {
             this.router.navigate(['tours', tour.id]);
@@ -179,27 +179,13 @@ export class TourEffects {
   }
 
   tranformTourForSaving(tourInterface: Tour): RawTour {
-    let tour: any = {};
-    let deadline: any = {};
-    let preliminary: any = null;
 
-    this.events$ = this.store.select(getEventsByIds([tourInterface.tourId, tourInterface.deadlineId, tourInterface.preliminaryId])).pipe(
-      takeUntil(this.destroySubject),
-      tap(events => {
-        tour = events[0];
-        deadline = events[1];
-        if (events.length > 2) {
-          preliminary = events[2];
-        }
-      })
-    );
-    this.events$.subscribe();
+    const events = this.pipe.transform([tourInterface.tourId, tourInterface.deadlineId, tourInterface.preliminaryId]);
 
-    delete tourInterface.tourId;
-    delete tourInterface.deadlineId;
-    delete tourInterface.preliminaryId;
-
-    this.destroySubject.complete();
+    const tour = events[0];
+    const deadline = events[1];
+    let preliminary: Event;
+    events.length > 2 ? preliminary = events[2] : preliminary = null;
 
     /* erase distance field of deadline & preliminary  */
     deadline.distance = 0;
@@ -216,38 +202,25 @@ export class TourEffects {
     };
   }
 
-  tranformTourForCloning(tourInterface: Tour, startDate: string): RawTour {
-    let tour: any = {};
-    let deadline: any = {};
-    let preliminary: any = null;
+  tranformTourForCloning(tourInterface: Tour, startDate: string, endDate: string | null): RawTour {
+    const events = this.pipe.transform([tourInterface.tourId, tourInterface.deadlineId, tourInterface.preliminaryId]);
 
-    this.events$ = this.store.select(getEventsByIds([tourInterface.tourId, tourInterface.deadlineId, tourInterface.preliminaryId])).pipe(
-      takeUntil(this.destroySubject),
-      tap(events => {
-        tour = events[0];
-        deadline = events[1];
-        if (events.length > 2) {
-          preliminary = events[2];
-        }
-      })
-    );
-    this.events$.subscribe();
+    const tour = events[0];
+    tour.startDate = startDate;
+    tour.endDate = endDate;
 
-    const subsetTour = {...tourInterface};
-    delete subsetTour.tourId;
-    delete subsetTour.deadlineId;
-    delete subsetTour.preliminaryId;
-
-    this.destroySubject.complete();
+    const deadline = events[1];
+    let preliminary: Event;
+    events.length > 2 ? preliminary = events[2] : preliminary = null;
 
     return {
-      ... subsetTour,
+      ... tourInterface,
       tour,
       deadline,
       preliminary,
-      admission: String(subsetTour.admission),
-      advances: String(subsetTour.advances),
-      extraCharges: String(subsetTour.extraCharges)
+      admission: String(tourInterface.admission),
+      advances: String(tourInterface.advances),
+      extraCharges: String(tourInterface.extraCharges)
     };
   }
 }

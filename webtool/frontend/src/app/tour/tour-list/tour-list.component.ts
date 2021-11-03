@@ -52,11 +52,13 @@ export class TourListComponent implements OnInit, OnDestroy, AfterViewInit {
   });
 
   cloneId = new FormControl(null);
-  cloneDate = new FormControl('');
+  cloneStartDate = new FormControl('');
+  cloneEndDate = new FormControl('');
 
   cloneTour: FormGroup = new FormGroup({
     tourId : this.cloneId,
-    startDate: this.cloneDate
+    startDate: this.cloneStartDate,
+    endDate: this.cloneEndDate
   });
 
   menuItems: MenuItem[] = [
@@ -193,7 +195,7 @@ export class TourListComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  clone(tourId, startDate) {
+  clone(tourId, startDate, endDate) {
     this.store.pipe(
       select(getTourById(tourId)),
       tap(tour => {
@@ -205,7 +207,7 @@ export class TourListComponent implements OnInit, OnDestroy, AfterViewInit {
       first(),
     ).subscribe(
       tour => {
-        this.store.dispatch(new CloneTour({tour, startDate}));
+        this.store.dispatch(new CloneTour({tour, startDate, endDate}));
       }
     );
     this.displayclone = false;

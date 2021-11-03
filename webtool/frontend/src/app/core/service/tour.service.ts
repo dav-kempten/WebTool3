@@ -3,10 +3,8 @@ import {
   catchError,
   first,
   map,
-  publishLast,
   publishReplay,
   refCount,
-  shareReplay,
   takeUntil,
   tap
 } from 'rxjs/operators';
@@ -15,10 +13,6 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse} from '@angular/common/http';
 import {Tour, TourSummary} from '../../model/tour';
 import {Event} from '../../model/event';
-
-interface TourExt extends Tour {
-  category: number;
-}
 
 
 @Injectable({
@@ -196,7 +190,8 @@ export class TourService {
   }
 
   transformTourForCloning(tour: Tour): any {
-    const subsetTour = {...tour};
+    const subsetTour = JSON.parse(JSON.stringify(tour));
+
     delete subsetTour.id;
     delete subsetTour.reference;
     delete subsetTour.tour.id;
@@ -204,6 +199,7 @@ export class TourService {
     if (subsetTour.preliminary !== null) {
       delete subsetTour.preliminary.id;
     }
+
     subsetTour.stateId = 1;
     subsetTour.curQuantity = 0;
 

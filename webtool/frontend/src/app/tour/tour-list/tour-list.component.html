@@ -89,14 +89,22 @@
   </form>
 
   <form [formGroup]="cloneTour">
-  <p-dialog header="Tour klonen" [modal]="true" [(visible)]="displayclone" [style]="{width: '600px'}">
+  <p-dialog header="Tour klonen - Datumseingabe" [modal]="true" [(visible)]="displayclone" [style]="{width: '650px'}">
     <div class="p-grid">
-      <div class="p-col-12 p-sm-9 p-md-9 p-lg-9">
-        <avk-date formControlName="startDate" id="dclone" label="Startdatum"></avk-date>
+      <div class="p-col-12 p-sm-5 p-md-5 p-lg-5">
+        <avk-date formControlName="startDate" id="startclone" label="Startdatum"
+                  [maxInclude]="true" [max]="cloneTour.get('endDate').value"
+        ></avk-date>
       </div>
-      <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
-        <button pButton type="button" label="Bestätigen" class="ui-button-info"
-                (click)="clone(cloneTour.get('tourId').value, cloneTour.get('startDate').value)" *ngIf="(permissionHandler$ | async).guide"></button>
+      <div class="p-col-12 p-sm-5 p-md-5 p-lg-5">
+        <avk-date formControlName="endDate" id="endclone" label="Enddatum"
+                  [minInclude]="true" [min]="cloneTour.get('startDate').value"
+        ></avk-date>
+      </div>
+      <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
+        <button pButton type="button" label="Bestätigen" class="ui-button-info" *ngIf="(permissionHandler$ | async).guide"
+                (click)="clone(cloneTour.get('tourId').value, cloneTour.get('startDate').value, cloneTour.get('endDate').value)">
+        </button>
       </div>
     </div>
   </p-dialog>
