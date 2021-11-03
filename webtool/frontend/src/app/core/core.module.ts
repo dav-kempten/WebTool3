@@ -88,6 +88,7 @@ import {DropdownPipe} from './dropdown/dropdown.pipe';
 import {FitnessPipe} from './fitnessselect/fitness.pipe';
 import {SkillPipe} from './skillselect/skill.pipe';
 import {MultiselectPipe} from './multiselect/multiselect.pipe';
+import {EventPipe} from './store/event.pipe';
 
 
 @NgModule({
@@ -97,7 +98,7 @@ import {MultiselectPipe} from './multiselect/multiselect.pipe';
     MultiselectComponent, ApproxdropdownComponent, CategoryselectComponent, DatePipe, TimePipe, SkillselectComponent,
     FitnessselectComponent, QualificationselectComponent, CollectiveselectComponent, SexdropdownComponent, StatePipe,
     CategoryMultiselectComponent, ApproximatePipe, CategorymultiselectPipe, CategoryselectPipe, DropdownPipe,
-    FitnessPipe, SkillPipe, MultiselectPipe
+    FitnessPipe, SkillPipe, MultiselectPipe, EventPipe
   ],
   imports: [
     CommonModule,
@@ -164,8 +165,8 @@ import {MultiselectPipe} from './multiselect/multiselect.pipe';
     DialogModule, CheckboxModule, InputTextModule, InputTextareaModule, DatePipe, TimePipe, SkillselectComponent,
     FitnessselectComponent, QualificationselectComponent, CollectiveselectComponent, CardModule, SexdropdownComponent,
     StatePipe, CategoryMultiselectComponent, ConfirmDialogModule, ApproximatePipe, CategorymultiselectPipe,
-    CategoryselectPipe, DropdownPipe, FitnessPipe, SkillPipe, MultiselectPipe
+    CategoryselectPipe, DropdownPipe, FitnessPipe, SkillPipe, MultiselectPipe, EventPipe
   ],
-  providers: [NamePipe]
+  providers: [NamePipe, EventPipe]
 })
 export class CoreModule { }
