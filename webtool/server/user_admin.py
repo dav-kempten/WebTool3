@@ -62,11 +62,9 @@ class UserAdmin(BaseUserAdmin):
             # Prepare Birthdate for each User
             try:
                 profile = Profile.objects.get(user=obj)
-                date_list = str(profile.birth_date).split('-')
-                if len(date_list) == 3:
-                    birthdate = date_list[2] + '.' + date_list[1] + '.' + date_list[0]
-                else:
-                    birthdate = ''
+                date_list = str(profile.birth_date or '').split('-')
+                date_list.reverse()
+                birthdate = '.'.join(date_list)
             except Profile.DoesNotExist:
                 birthdate = ''
             row_list.append(birthdate)
