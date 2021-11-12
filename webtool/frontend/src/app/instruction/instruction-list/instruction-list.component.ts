@@ -31,13 +31,14 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
 
   filterDropdown: SelectItem[];
   display = false;
+  displayclone = false;
 
   private destroySubject = new Subject<void>();
   part$: Observable<string>;
   instructions$: Observable<InstructionSummary[]>;
   activeItem$: Observable<MenuItem>;
 
-  permissionHandler$: Observable<boolean>;
+  permissionHandler$: Observable<{staff: boolean, guide: boolean, id: number}>;
   permissionCurrent$: Observable<Permission>;
 
   partNewInstruction = new BehaviorSubject<string>('');
@@ -48,6 +49,16 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
   createInstruction: FormGroup = new FormGroup({
     topicId: this.topicId,
     startDate: this.startDate
+  });
+
+  cloneId = new FormControl(null);
+  cloneStartDate = new FormControl('');
+  cloneEndDate = new FormControl('');
+
+  cloneInstruction: FormGroup = new FormGroup({
+    instructionId: this.cloneId,
+    startDate: this.cloneStartDate,
+    endDate: this.cloneEndDate
   });
 
   menuItems: MenuItem[] = [
@@ -68,6 +79,18 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
 
   ngOnInit() {
     this.permissionCurrent$ = this.authService.guidePermission$;
+
+    this.permissionHandler$ = this.permissionCurrent$.pipe(
+      takeUntil(this.destroySubject),
+      map(permission => {
+        return { staff: permission.permissionLevel >= PermissionLevel.coordinator,
+          guide: permission.permissionLevel >= PermissionLevel.guide,
+          id: permission.guideId
+        };
+      }),
+      publishReplay(1),
+      refCount()
+    );
 
     this.part$ = this.store.pipe(
       takeUntil(this.destroySubject),
@@ -102,13 +125,6 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
           tap(instructions => {
             if (!instructions || !instructions.length) {
               this.store.dispatch(new RequestInstructionSummaries());
-            } else {
-              this.permissionHandler$ = this.permissionCurrent$.pipe(
-                takeUntil(this.destroySubject),
-                map(permission => {
-                  return permission.permissionLevel >= PermissionLevel.coordinator;
-                })
-              );
             }
           }),
           map(instructions =>
@@ -159,6 +175,11 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
     this.display = true;
   }
 
+  handleClickClone(instructionId): void {
+    this.displayclone = true;
+    this.cloneId.setValue(instructionId);
+  }
+
   create(topic, date): void {
     this.permissionCurrent$.pipe(takeUntil(this.destroySubject)).subscribe( permission => {
       const guideId: number = permission.permissionLevel === PermissionLevel.guide ? permission.guideId : null;
@@ -167,7 +188,7 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
     });
   }
 
-  clone(instructionId): void {
+  clone(instructionId, startDate, endDate): void {
     this.store.pipe(
       select(getInstructionById(instructionId)),
       tap(instruction => {
@@ -179,7 +200,7 @@ export class InstructionListComponent implements OnInit, OnDestroy, AfterViewIni
       first(),
     ).subscribe(
       instruction => {
-        this.store.dispatch(new CloneInstruction({instruction}));
+        this.store.dispatch(new CloneInstruction({instruction, startDate, endDate}));
       }
     );
   }

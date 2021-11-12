@@ -131,7 +131,7 @@ export class CreateInstruction implements Action {
 export class CloneInstruction implements Action {
   readonly type = InstructionActionTypes.CloneInstruction;
 
-  constructor(public payload: { instruction: Instruction }) {}
+  constructor(public payload: { instruction: Instruction, startDate: string, endDate: string | null }) {}
 }
 
 export class DeactivateInstruction implements Action {

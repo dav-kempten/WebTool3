@@ -38,10 +38,10 @@
           <td>{{instruction.stateId | state}}</td>
           <td>{{instruction.minQuantity}} | {{instruction.curQuantity}} | {{instruction.maxQuantity}}</td>
           <td>
-            <button pButton type="button" label="Klonen" class="ui-button-info"
-                    (click)="clone(instruction.id)" *ngIf="permissionHandler$ | async"></button>
+            <button pButton type="button" label="Klonen" class="ui-button-info" (click)="handleClickClone(instruction.id)"
+                    *ngIf="(permissionHandler$ | async).staff || (instruction.guideId === (permissionHandler$ | async).id)"></button>
             <button pButton type="button" label="Löschen" class="ui-button-danger" (click)="confirm(instruction.id)"
-                    *ngIf="(permissionHandler$ | async) && this.filterFinishedInstructions(instruction.stateId)"></button>
+                    *ngIf="(permissionHandler$ | async).staff && this.filterFinishedInstructions(instruction.stateId)"></button>
           </td>
         </tr>
       </ng-template>
@@ -69,6 +69,28 @@
       </div>
     </div>
     <p-button label="Bestätigen" (onClick)="create(createInstruction.get('topicId').value, createInstruction.get('startDate').value)"></p-button>
+  </p-dialog>
+  </form>
+
+  <form [formGroup]="cloneInstruction">
+  <p-dialog header="Kurs klonen - Datumseingabe" [modal]="true" [(visible)]="displayclone" [style]="{width: '650px'}">
+    <div class="p-grid">
+      <div class="p-col-12 p-sm-5 p-md-5 p-lg-5">
+        <avk-date formControlName="startDate" id="startclone" label="Startdatum"
+                  [maxInclude]="true" [max]="cloneInstruction.get('endDate').value"
+        ></avk-date>
+      </div>
+      <div class="p-col-12 p-sm-5 p-md-5 p-lg-5">
+        <avk-date formControlName="endDate" id="endclone" label="Enddatum"
+                  [minInclude]="true" [min]="cloneInstruction.get('startDate').value"
+        ></avk-date>
+      </div>
+      <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">
+        <button pButton type="button" label="Bestätigen" class="ui-button-info" *ngIf="(permissionHandler$ | async).guide"
+                (click)="clone(cloneInstruction.get('instructionId').value, cloneInstruction.get('startDate').value, cloneInstruction.get('endDate').value)">
+        </button>
+      </div>
+    </div>
   </p-dialog>
   </form>
 

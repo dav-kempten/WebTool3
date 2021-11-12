@@ -26,6 +26,7 @@ import {Instruction as RawInstruction} from '../../model/instruction';
 import {getEventsByIds} from './event.selectors';
 import {RequestInstructionSummaries} from './instruction-summary.actions';
 import {Router} from '@angular/router';
+import {EventPipe} from './event.pipe';
 
 function convertDecimal(rawValue: string): number {
   return Number(rawValue);
@@ -39,7 +40,7 @@ export class InstructionEffects {
   private destroySubject = new Subject<void>();
 
   constructor(private actions$: Actions, private instructionService: InstructionService, private store: Store<AppState>,
-              private router: Router) {}
+              private router: Router, private pipe: EventPipe) {}
 
   @Effect()
   loadInstruction$: Observable<Action> = this.actions$.pipe(
@@ -63,7 +64,7 @@ export class InstructionEffects {
     ofType<CloneInstruction>(InstructionActionTypes.CloneInstruction),
     map((action: CloneInstruction) => action.payload),
     switchMap(payload => {
-      return this.instructionService.cloneInstruction(this.tranformInstructionForSaving(payload.instruction)).pipe(
+      return this.instructionService.cloneInstruction(this.transformTourForCloning(payload.instruction, payload.startDate, payload.endDate)).pipe(
         map(instruction => {
           if (instruction.id !== 0) {
             this.router.navigate(['instructions', instruction.id]);
@@ -248,6 +249,26 @@ export class InstructionEffects {
       admission: String(subsetInstruction.admission),
       advances: String(subsetInstruction.advances),
       extraCharges: String(subsetInstruction.extraCharges)
+    };
+  }
+
+  transformTourForCloning(instructionInterface: Instruction, startDate: string, endDate: string | null): RawInstruction {
+    const events = this.pipe.transform([instructionInterface.instructionId, ...instructionInterface.meetingIds]);
+
+    const meetings = new Array<Event>(0);
+    events.forEach(event => meetings.push(event));
+
+    const instruction = meetings.shift();
+    instruction.startDate = startDate;
+    !!endDate ? instruction.endDate = endDate : instruction.endDate = null;
+
+    return {
+      ...instructionInterface,
+      instruction,
+      meetings,
+      admission: String(instructionInterface.admission),
+      advances: String(instructionInterface.advances),
+      extraCharges: String(instructionInterface.extraCharges)
     };
   }
 }
