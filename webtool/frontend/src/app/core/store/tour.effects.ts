@@ -18,7 +18,6 @@ import {AppState} from '../../app.state';
 import {AddEvent} from './event.actions';
 import {Tour} from './tour.model';
 import {Tour as RawTour} from '../../model/tour';
-import {getEventsByIds} from './event.selectors';
 import {Event} from '../../model/event';
 import {RequestTourSummaries} from './tour-summary.actions';
 import {Router} from '@angular/router';
@@ -207,7 +206,7 @@ export class TourEffects {
 
     const tour = events[0];
     tour.startDate = startDate;
-    tour.endDate = endDate;
+    !!endDate ? tour.endDate = endDate : tour.endDate = null;
 
     const deadline = events[1];
     let preliminary: Event;
