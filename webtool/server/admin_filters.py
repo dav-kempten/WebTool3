@@ -38,3 +38,26 @@ class GuideTeamFilter(SimpleListFilter):
     def queryset(self, request, queryset):
         if self.value():
             return queryset.filter(Q(guide__user__pk=self.value()) | Q(team__user__pk=self.value()))
+
+
+class ActiveFilter(SimpleListFilter):
+    title = _('Status')
+    parameter_name = 'is_active'
+
+    tuple_list = (
+        ('active', _('Aktiv')),
+        ('inactive', _('Inaktiv')),
+        ('all', _('All')),
+    )
+
+    def lookups(self, request, model_admin):
+        return self.tuple_list
+
+    def queryset(self, request, queryset):
+        if self.value() == 'active':
+            return queryset.filter(is_active=True)
+        elif self.value() == 'inactive':
+            return queryset.filter(is_active=False)
+        elif self.value() == 'all':
+            return queryset.all()
+        return queryset.filter(is_active=True)
