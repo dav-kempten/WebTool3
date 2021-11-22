@@ -117,16 +117,8 @@ class Reference(SeasonMixin, TimeMixin, models.Model):
         if prefix is None:
             prefix = int(season.name[-1])
 
-        cur_references = set(
-            Reference.objects.filter(
-                category=category, prefix=prefix, season=season
-            ).values_list('reference', flat=True)
-        )
-        free_references = REFERENCE_RANGE - cur_references
-        if free_references:
-            reference = Reference.objects.create(
-                season=season, category=category, prefix=prefix, reference=min(free_references)
-            )
+        reference = find_free_references(category=category, prefix=prefix, season=season)
+
         if reference is None:
             category_code = category.code
             category_index = category_code[-1]
@@ -141,3 +133,34 @@ class Reference(SeasonMixin, TimeMixin, models.Model):
             category.seasons.add(season)
             reference = Reference.create_reference(category=category, prefix=prefix, season=season, **kwargs)
         return reference
+
+
+def find_free_references(category=None, prefix=None, season=None):
+    prefix_idx = int(prefix)
+    free_references = set()
+    reference = None
+
+    while True:
+        cur_references = set(
+            Reference.objects.filter(category=category, prefix=prefix_idx, season=season).values_list(
+                'reference',flat=True)
+        )
+
+        free_references = REFERENCE_RANGE - cur_references
+
+        if free_references:
+            break
+
+        # Maintain prefixes between 0 and 9
+        prefix_idx = (prefix_idx + 1) % 10
+
+        if int(prefix) == prefix_idx:
+            reference = None
+            break
+
+    if free_references:
+        reference = Reference.objects.create(
+            season=season, category=category, prefix=prefix_idx, reference=min(free_references)
+        )
+
+    return reference
