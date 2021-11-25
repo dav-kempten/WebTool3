@@ -3,6 +3,7 @@ from django.http import Http404
 from rest_framework import permissions, mixins, viewsets, status
 from django.template.defaultfilters import date
 from rest_framework.response import Response
+from datetime import datetime, date as datetime_date
 
 from server.models import Tour
 from server.serializers.frontend.tours import TourListSerializer, TourSerializer
@@ -40,9 +41,12 @@ class TourViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
     permission_classes = (IsOwnerOrReadOnly, )
 
+    requested_year = datetime.now().year - 1
+
     queryset = (
         Tour.objects
-        .filter(deprecated=False, tour__season__current=True)
+        # .filter(deprecated=False, tour__season__current=True)
+        .filter(deprecated=False, tour__start_date__gte=datetime_date(requested_year, 1, 1))
         # .exclude(state__done=True)
         # .exclude(state__canceled=True)
     )

@@ -3,6 +3,7 @@ from django.http import Http404
 from django.template.defaultfilters import date
 from rest_framework import viewsets, permissions, status, mixins
 from rest_framework.response import Response
+from datetime import datetime, date as datetime_date
 
 from server.models import Instruction
 from server.serializers.frontend.instructions import InstructionListSerializer, InstructionSerializer
@@ -46,9 +47,12 @@ class InstructionViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
     permission_classes = (IsOwnerOrReadOnly, )
 
+    requested_year = datetime.now().year - 1
+
     queryset = (
         Instruction.objects
-        .filter(deprecated=False, instruction__season__current=True)
+        # .filter(deprecated=False, instruction__season__current=True)
+        .filter(deprecated=False, instruction__start_date__gte=datetime_date(requested_year, 1, 1))
         # .exclude(state__done=True)
         # .exclude(state__canceled=True)
     )
