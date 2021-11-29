@@ -6,7 +6,7 @@ import {AppState, selectRouterDetailId} from '../../app.state';
 import {Tour} from '../../core/store/tour.model';
 import {ValuesRequested} from '../../core/store/value.actions';
 import {Category} from '../../model/value';
-import {Event} from '../../model/event';
+import {Event, EventTypeTour} from '../../model/event';
 import {AuthService} from '../../core/service/auth.service';
 import {filter, flatMap, map, publishReplay, refCount, takeUntil, tap} from 'rxjs/operators';
 import {getTourById} from '../../core/store/tour.selectors';
@@ -32,6 +32,7 @@ export class TourDetailComponent implements OnInit, OnDestroy {
   private eventsSubject = new BehaviorSubject<FormArray>(undefined);
   private tourChangeSubject = new BehaviorSubject<Tour>(undefined);
   private eventChangeSubject = new BehaviorSubject<Event>(undefined);
+  selectEventType = new BehaviorSubject<EventTypeTour>({tour: false, deadline: false, preliminary: false});
   tourOwner = new BehaviorSubject<boolean>(undefined);
 
   tourCategory = new BehaviorSubject<string>('');
@@ -189,6 +190,7 @@ export class TourDetailComponent implements OnInit, OnDestroy {
   }
 
   selectEvent(index) {
+    this.selectEventType.next({tour: index.data === 0, deadline: index.data === 1, preliminary: index.data === 2});
     this.eventArray$.subscribe(
       eventArray => this.currentEventGroup = (eventArray.at(index.data)) as FormGroup).unsubscribe();
     this.display = true;

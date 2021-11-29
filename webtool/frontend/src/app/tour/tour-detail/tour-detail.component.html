@@ -137,20 +137,22 @@
         <div class="p-grid">
           <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
             <input formControlName="title" id="title" placeholder="Kurzer, markanter Titel der Tour" type="text" style='width:100%'
-                   maxlength="30" pTooltip="Kurztitel (max. 30 Zeichen) für die Darstellung im Tourenprogramm auf der Homepage" pInputText>
+                   maxlength="30" [readOnly]="!this.selectEventType.value.tour"
+                   pTooltip="Kurztitel (max. 30 Zeichen) für die Darstellung im Tourenprogramm auf der Homepage" pInputText>
           </div>
           <div class="p-col-12 p-sm-8 p-md-8 p-lg-8">
             <input formControlName="name" id="name" placeholder="Längerer, ausführlicher Titel der Tour" type="text" style='width:100%'
-                   maxlength="125" pTooltip="Langtitel (max. 125 Zeichen) für die Detailansicht auf Homepage (kann mit dem Kurztitel übereinstimmen)"
+                   maxlength="125" [readOnly]="!this.selectEventType.value.tour"
+                   pTooltip="Langtitel (max. 125 Zeichen) für die Detailansicht auf Homepage (kann mit dem Kurztitel übereinstimmen)"
                    pInputText>
           </div>
         </div>
 
         <!--Zeitpunkt Event-->
-        <div class="p-grid">
-          <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+        <div class="p-grid" *ngIf="!this.selectEventType.value.deadline">
+          <div class="p-col-12 p-sm-4 p-md-4 p-lg-4" *ngIf="this.selectEventType.value.tour">
             <avk-approxdropdown formControlName="approximateId" id="approx"
-                                [disable]="(!!currentEventGroup.get('startTime').value)||(!!currentEventGroup.get('endTime').value)">
+                                [disable]="(!!currentEventGroup.get('startTime').value) || (!!currentEventGroup.get('endTime').value)">
             </avk-approxdropdown>
           </div>
           <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
@@ -177,7 +179,7 @@
                       pTooltip="Startdatum"
             ></avk-date>
           </div>
-          <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+          <div class="p-col-12 p-sm-4 p-md-4 p-lg-4" *ngIf="this.selectEventType.value.tour">
             <avk-date formControlName="endDate"
                       id="dend" label="Enddatum"
                       [minInclude]="true"
@@ -187,7 +189,9 @@
           </div>
           <div class="p-col-12 p-sm-4 p-md-4 p-lg-4"></div>
         </div>
-        <div class="p-grid">
+
+        <!-- Beschreibung und Sonderzeichen -->
+        <div class="p-grid" *ngIf="this.selectEventType.value.tour">
           <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
             <textarea
                 [rows]="3"
@@ -199,29 +203,29 @@
             ></textarea>
           </div>
         </div>
-        <div class="p-grid">
+        <div class="p-grid" *ngIf="this.selectEventType.value.tour">
           <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
             Sonderzeichen: ● ○ ➘ ➚ „“ ½ ⅓ ⅔ ¼ ¾
           </div>
         </div>
 
         <!--Ziel und Treffpunkt-->
-        <div class="p-grid">
-          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+        <div class="p-grid" *ngIf="!this.selectEventType.value.deadline">
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6" *ngIf="this.selectEventType.value.tour">
             <input formControlName="location" id="location" placeholder="Übernachtungsort (max. 75 Zeichen)"
                    maxlength="75" type="text" style="width:100%"
                    pInputText>
           </div>
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
             <input formControlName="rendezvous" id="rendezvous" placeholder="Treffpunkt (max. 75 Zeichen)"
-                   maxlength="75" type="text" style="width:100%" pTooltip="Treffpunkt für die Abfahrt"
+                   maxlength="75" type="text" style="width:100%" pTooltip="Treffpunkt für die Abfahrt oder Vorbesprechung"
                    pInputText>
           </div>
         </div>
 
-        <!--ReservierungsService-->
+        <!--ReservierungsService & Low-Emission-Adventure -->
         <div class="p-grid">
-          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6" *ngIf="!this.selectEventType.value.deadline">
             <p-checkbox
                 [formControl]="currentEventGroup.get('reservationService')"
                 label="Schulungsraum-Reservierung"
@@ -229,7 +233,7 @@
                 pTooltip="Reservierungswunsch Schulungsraum"
             ></p-checkbox>
           </div>
-          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6" *ngIf="this.selectEventType.value.tour">
             <p-checkbox
                 [formControl]="currentEventGroup.get('lea')"
                 label="Low Emission Adventure"
@@ -239,7 +243,7 @@
         </div>
 
         <!--Distal & Distance-->
-        <div class="p-grid">
+        <div class="p-grid"  *ngIf="this.selectEventType.value.tour">
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
             <p-checkbox
                 [formControl]="currentEventGroup.get('distal')"
@@ -256,8 +260,9 @@
             </div>
           </div>
         </div>
+
         <!--ShuttleService & PublicTransport-->
-        <div class="p-grid">
+        <div class="p-grid" *ngIf="this.selectEventType.value.tour">
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
             <p-checkbox
                 [formControl]="currentEventGroup.get('publicTransport')"
@@ -276,7 +281,7 @@
         </div>
 
         <!--Source, Link & Map-->
-        <div class="p-grid">
+        <div class="p-grid"  *ngIf="this.selectEventType.value.tour">
           <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
             <input formControlName="source" id="source" placeholder="Ausgangsort" maxlength="75"
                    type="text" style="width:100%"

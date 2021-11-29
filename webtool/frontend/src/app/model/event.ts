@@ -21,3 +21,9 @@ export interface Event {
   shuttleService: boolean;
   deprecated?: boolean;
 }
+
+export interface EventTypeTour {
+  tour: boolean;
+  deadline: boolean;
+  preliminary: boolean;
+}
