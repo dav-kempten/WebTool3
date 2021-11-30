@@ -51,14 +51,19 @@ export class ValueEffects {
 function mergeCollectives(collectives: Collective[]): Collective[] {
   const mergeCollectiveArray = new Array<Collective>(0);
   let managerIds = new Array<number>(0);
+
   /* Store all IDs of collectives in an array */
   const collectiveIds = Array.from(new Set(collectives.map(el => el.id)));
+
   /* Get managers of collectives as Arrays & combine them with the corresponding collectives */
   for (const collectiveId of collectiveIds) {
-    managerIds = collectives.filter(value => value.id === collectiveId).map(value => value.managers.shift());
+    managerIds = collectives.filter(value => value.id === collectiveId)
+      .map(value => value.managers.shift())
+      .filter(value => value !== undefined);
+
     mergeCollectiveArray.push({
       ...collectives.find(value => value.id === collectiveId),
-      managers: managerIds.shift() !== undefined ? managerIds : []
+      managers: Array.from(new Set(managerIds))
     });
   }
   return mergeCollectiveArray;
@@ -72,12 +77,18 @@ function mergeTopics(topics: Topic[]): Topic[] {
   const topicIds = Array.from(new Set(topics.map(el => el.id)));
 
   for (const topicId of topicIds) {
-    equipmentIds = topics.filter(value => value.id === topicId).map(value => value.equipmentIds.shift());
-    qualificationIds = topics.filter(value => value.id === topicId).map(value => value.qualificationIds.shift());
+    equipmentIds = topics.filter(value => value.id === topicId)
+      .map(value => value.equipmentIds.shift())
+      .filter(value => value !== undefined);
+
+    qualificationIds = topics.filter(value => value.id === topicId)
+      .map(value => value.qualificationIds.shift())
+      .filter(value => value !== undefined);
+
     mergeTopicArray.push({
       ...topics.find(value => value.id === topicId),
-      equipmentIds: equipmentIds.shift() !== undefined ? Array.from(new Set(equipmentIds)) : [],
-      qualificationIds: equipmentIds.shift() !== undefined ? Array.from(new Set(qualificationIds)) : []
+      equipmentIds: Array.from(new Set(equipmentIds)),
+      qualificationIds: Array.from(new Set(qualificationIds)),
     });
   }
 
