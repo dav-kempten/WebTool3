@@ -1,3 +1,4 @@
+import datetime
 from io import StringIO
 import csv
 
@@ -5,11 +6,15 @@ from django.contrib import admin, messages
 from django.conf.urls import url
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from django.forms import Form, FileField
+from django.forms import Form, FileField, ModelForm
+from django.core.exceptions import ObjectDoesNotExist
 
 from django.contrib.auth.models import Group
+
+import server.models
 from server.models.reference import Reference
 from server.models.profile import Profile
+from server.models.season import Season
 
 from ast import literal_eval
 
@@ -22,6 +27,12 @@ class JsonImportForm(Form):
     json_file = FileField(label='JSON-Datei')
 
 
+class SeasonForm(ModelForm):
+    class Meta:
+        model = Season
+        fields = ['name']
+
+
 class WebtoolAdminSite(admin.AdminSite):
     site_title = 'DAV Allgäu-Kempten'
     change_list_template = 'update_csv.html'
@@ -30,7 +41,8 @@ class WebtoolAdminSite(admin.AdminSite):
         urls = super().get_urls()
         my_urls = [
             url(r'^csv_update/$', self.admin_view(self.csv_update)),
-            url(r'^tpo_update/$', self.admin_view(self.tpo_update))
+            url(r'^tpo_update/$', self.admin_view(self.tpo_update)),
+            url(r'^workload_export/$', self.admin_view(self.workload_export))
         ]
         return my_urls + urls
 
@@ -70,6 +82,23 @@ class WebtoolAdminSite(admin.AdminSite):
         payload = {'form': form}
         return render(
             request, 'tpo_form.html', payload
+        )
+
+    def workload_export(self, request):
+        if request.method == 'POST' and request.user.is_staff:
+            try:
+                decode_binary = request.body.decode('utf-8').split('&')
+                name_year = ''.join([el for el in decode_binary if 'name' in el])
+                year = name_year[len(name_year):name_year.rfind('='):-1][::-1]
+                self.workload_export(year=year)
+            except SyntaxError:
+                messages.error(request, 'Export ist fehlgeschlagen, Jahreszahl nicht zuordbar.')
+            except (server.models.season.Season.DoesNotExist, TypeError):
+                messages.error(request, 'Export ist fehlgeschlagen, Jahreszahl nicht auffindbar, bitte andere Jahreszahl wählen.')
+        form = SeasonForm()
+        payload = {'form': form}
+        return render(
+            request, 'workload_form.html', payload
         )
 
     @staticmethod
@@ -147,3 +176,8 @@ class WebtoolAdminSite(admin.AdminSite):
                 youth.user_set.add(profile_user)
             except:
                pass
+
+    @staticmethod
+    def handle_workload_export(year='2021'):
+        season = Season.objects.get(year=year)
+        # Here comes the rest of workload-export

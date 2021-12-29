@@ -1,0 +1,20 @@
+{% extends 'admin/base_site.html' %}
+{% load i18n static %}
+
+{% block title %}Workload-Export | DAV Allgäu-Kempten{% endblock %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/dashboard.css" %}">{% endblock %}
+
+{% block content %}
+    <div id="content-main">
+        Hier könnt ihr euch die Workload...
+    </div>
+    <br />
+    <div id="content-main">
+        <form method="post" id="workloadForm" novalidate>
+            {{ form.as_p }}
+            {% csrf_token %}
+            <button type="submit">Export</button>
+        </form>
+    </div>
+{% endblock %}
