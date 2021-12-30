@@ -4,17 +4,17 @@ import csv
 
 from django.contrib import admin, messages
 from django.conf.urls import url
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 from django.forms import Form, FileField, ModelForm
-from django.core.exceptions import ObjectDoesNotExist
 
 from django.contrib.auth.models import Group
 
-import server.models
 from server.models.reference import Reference
 from server.models.profile import Profile
 from server.models.season import Season
+from server.models.instruction import Instruction
+from server.models.qualification import UserQualification
 
 from ast import literal_eval
 
@@ -90,10 +90,11 @@ class WebtoolAdminSite(admin.AdminSite):
                 decode_binary = request.body.decode('utf-8').split('&')
                 name_year = ''.join([el for el in decode_binary if 'name' in el])
                 year = name_year[len(name_year):name_year.rfind('='):-1][::-1]
-                self.workload_export(year=year)
+                season = Season.objects.get(name=year)
+                return self.handle_workload_export(year=year)
             except SyntaxError:
                 messages.error(request, 'Export ist fehlgeschlagen, Jahreszahl nicht zuordbar.')
-            except (server.models.season.Season.DoesNotExist, TypeError):
+            except (Season.DoesNotExist, TypeError):
                 messages.error(request, 'Export ist fehlgeschlagen, Jahreszahl nicht auffindbar, bitte andere Jahreszahl wählen.')
         form = SeasonForm()
         payload = {'form': form}
@@ -179,5 +180,42 @@ class WebtoolAdminSite(admin.AdminSite):
 
     @staticmethod
     def handle_workload_export(year='2021'):
-        season = Season.objects.get(year=year)
-        # Here comes the rest of workload-export
+        dstart = year + '-01-01'
+        dend = year + '-12-31'
+
+        # Declaring fields for csv-export
+        field_names = ['last_name', 'first_name']
+        field_names_clear = ['Name', 'Vorname']
+
+        # Additional fields
+        field_names_additional = ['Qualifikation', 'Buchungscode', 'Veranstaltung', 'Bezeichnung', 'Vorbesprechung', 'Startdatum', 'Enddatum']
+
+        response = HttpResponse(content_type='text/csv; charset=latin-1')
+        response['Content-Disposition'] = 'attachment; filename=django_workload.csv'
+        writer = csv.writer(response, delimiter=';')
+
+        writer.writerow(field_names_clear + field_names_additional)
+
+        for i in Instruction.objects\
+                .filter(instruction__start_date__range=[dstart, dend])\
+                .exclude(topic__category__climbing=True)\
+                .order_by('guide'):
+            try:
+                row_list = [getattr(i.guide.user, field) for field in field_names]
+
+                qualification_str = ''
+                for qualification in UserQualification.objects.filter(user=i.guide.user):
+                    qualification_str += qualification.qualification.code + ', '
+                qualification_str = qualification_str[:-2]
+                row_list.append(qualification_str)
+
+                row_list.extend(
+                    [i.instruction.reference, i.topic.category.name, i.instruction.title, '', i.instruction.start_date,
+                     i.instruction.end_date]
+                )
+
+                row = writer.writerow(row_list)
+            except AttributeError:
+                pass
+
+        return response
