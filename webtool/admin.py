@@ -7,6 +7,7 @@ from django.conf.urls import url
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 from django.forms import Form, FileField, ModelForm
+from django.db.models import Q
 
 from django.contrib.auth.models import Group
 
@@ -14,7 +15,9 @@ from server.models.reference import Reference
 from server.models.profile import Profile
 from server.models.season import Season
 from server.models.instruction import Instruction
+from server.models.tour import Tour
 from server.models.qualification import UserQualification
+from server.models.guide import Guide
 
 from ast import literal_eval
 
@@ -95,7 +98,7 @@ class WebtoolAdminSite(admin.AdminSite):
             except SyntaxError:
                 messages.error(request, 'Export ist fehlgeschlagen, Jahreszahl nicht zuordbar.')
             except (Season.DoesNotExist, TypeError):
-                messages.error(request, 'Export ist fehlgeschlagen, Jahreszahl nicht auffindbar, bitte andere Jahreszahl wählen.')
+                messages.error(request, 'Export ist fehlgeschlagen, bitte andere Jahreszahl wählen.')
         form = SeasonForm()
         payload = {'form': form}
         return render(
@@ -176,10 +179,33 @@ class WebtoolAdminSite(admin.AdminSite):
                     profile_user.save()
                 youth.user_set.add(profile_user)
             except:
-               pass
+                pass
 
     @staticmethod
-    def handle_workload_export(year='2021'):
+    def make_export_list(category=None, event=None, guide=None, field_names=None, preliminary=None):
+        row_list = [getattr(guide.user, field) for field in field_names]
+
+        qualification_str = ''
+        for qualification in UserQualification.objects.filter(user=guide.user):
+            qualification_str += qualification.qualification.code + ', '
+        qualification_str = qualification_str[:-2]
+        row_list.append(qualification_str)
+
+        if preliminary:
+            if preliminary.start_date and preliminary.start_time:
+                preliminary_str = str(preliminary.start_date) + ' ' + str(preliminary.start_time)
+            elif preliminary.start_date and not preliminary.start_time:
+                preliminary_str = str(preliminary.start_date)
+        else:
+            preliminary_str = ' '
+
+        row_list.extend(
+            [event.reference, category.name, event.title, preliminary_str, event.start_date, event.end_date]
+        )
+
+        return row_list
+
+    def handle_workload_export(self, year='2021'):
         dstart = year + '-01-01'
         dend = year + '-12-31'
 
@@ -188,34 +214,56 @@ class WebtoolAdminSite(admin.AdminSite):
         field_names_clear = ['Name', 'Vorname']
 
         # Additional fields
-        field_names_additional = ['Qualifikation', 'Buchungscode', 'Veranstaltung', 'Bezeichnung', 'Vorbesprechung', 'Startdatum', 'Enddatum']
+        field_names_additional = ['Qualifikation', 'Buchungscode', 'Veranstaltung', 'Bezeichnung', 'Vorbesprechung',
+                                  'Startdatum', 'Enddatum']
 
         response = HttpResponse(content_type='text/csv; charset=latin-1')
-        response['Content-Disposition'] = 'attachment; filename=django_workload.csv'
+        content_disposition = 'attachment; filename=workload_' + year + '.csv'
+        response['Content-Disposition'] = content_disposition
         writer = csv.writer(response, delimiter=';')
 
         writer.writerow(field_names_clear + field_names_additional)
 
-        for i in Instruction.objects\
-                .filter(instruction__start_date__range=[dstart, dend])\
-                .exclude(topic__category__climbing=True)\
-                .order_by('guide'):
-            try:
-                row_list = [getattr(i.guide.user, field) for field in field_names]
+        for guide in Guide.objects.all():
+            for i in Instruction.objects \
+                    .filter(Q(guide=guide) | Q(team=guide)) \
+                    .exclude(topic__category__climbing=True) \
+                    .filter(instruction__start_date__range=[dstart, dend]):
+                try:
+                    writer.writerow(
+                        self.make_export_list(
+                            category=i.topic.category,
+                            event=i.instruction,
+                            guide=guide,
+                            field_names=field_names
+                        )
+                    )
+                    if i.meeting_list.exists():
+                        for meeting in i.meeting_list.all():
+                            writer.writerow(
+                                self.make_export_list(
+                                    category=i.topic.category,
+                                    event=meeting,
+                                    guide=guide,
+                                    field_names=field_names
+                                )
+                            )
+                except AttributeError:
+                    pass
 
-                qualification_str = ''
-                for qualification in UserQualification.objects.filter(user=i.guide.user):
-                    qualification_str += qualification.qualification.code + ', '
-                qualification_str = qualification_str[:-2]
-                row_list.append(qualification_str)
-
-                row_list.extend(
-                    [i.instruction.reference, i.topic.category.name, i.instruction.title, '', i.instruction.start_date,
-                     i.instruction.end_date]
-                )
-
-                row = writer.writerow(row_list)
-            except AttributeError:
-                pass
-
+            for t in Tour.objects \
+                    .filter(guide=guide) \
+                    .filter(tour__start_date__range=[dstart, dend]):
+                try:
+                    writer.writerow(
+                        self.make_export_list(
+                            category=t.tour.reference.category,
+                            event=t.tour,
+                            guide=guide,
+                            field_names=field_names,
+                            preliminary=t.preliminary
+                        )
+                    )
+                except AttributeError:
+                    pass
         return response
