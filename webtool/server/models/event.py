@@ -593,6 +593,21 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
         if hasattr(self, 'session') and self.session:
             return self.session.details()
 
+    @property
+    def dayfactor(self):
+        """
+        start_time >= midday -> half day
+        start_time - end_time < 4 hours -> half day
+
+        start_time > midday -> whole day
+        start_time - end_time >= 4 hours -> whole day
+
+        :return: half and whole days, which represents the duration of a specific event
+        """
+
+        return None
+
+
     class Meta:
         get_latest_by = "updated"
         verbose_name = "Veranstaltungstermin"
