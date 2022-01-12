@@ -225,35 +225,50 @@ class WebtoolAdminSite(admin.AdminSite):
         writer.writerow(field_names_clear + field_names_additional)
 
         for guide in Guide.objects.all():
-            for i in Instruction.objects \
-                    .filter(Q(guide=guide) | Q(team=guide)) \
-                    .exclude(topic__category__climbing=True) \
-                    .filter(instruction__start_date__range=[dstart, dend]):
+            for i in Instruction.objects\
+                    .filter(Q(guide=guide) | Q(team=guide))\
+                    .filter(instruction__start_date__range=[dstart, dend])\
+                    .distinct():
                 try:
-                    writer.writerow(
-                        self.make_export_list(
-                            category=i.topic.category,
-                            event=i.instruction,
-                            guide=guide,
-                            field_names=field_names
-                        )
-                    )
-                    if i.meeting_list.exists():
-                        for meeting in i.meeting_list.all():
-                            writer.writerow(
-                                self.make_export_list(
-                                    category=i.topic.category,
-                                    event=meeting,
-                                    guide=guide,
-                                    field_names=field_names
-                                )
+                    if i.topic.category.climbing:
+                        # Set end_date of climbing instructions when nothing is defined
+                        if i.meeting_list.exists() and not i.instruction.end_date:
+                            i.instruction.end_date = i.meeting_list.all().latest().start_date
+
+                        writer.writerow(
+                            self.make_export_list(
+                                category=i.topic.category,
+                                event=i.instruction,
+                                guide=guide,
+                                field_names=field_names
                             )
+                        )
+                    else:
+                        writer.writerow(
+                            self.make_export_list(
+                                category=i.topic.category,
+                                event=i.instruction,
+                                guide=guide,
+                                field_names=field_names
+                            )
+                        )
+                        if i.meeting_list.exists():
+                            for meeting in i.meeting_list.all():
+                                writer.writerow(
+                                    self.make_export_list(
+                                        category=i.topic.category,
+                                        event=meeting,
+                                        guide=guide,
+                                        field_names=field_names
+                                    )
+                                )
                 except AttributeError:
                     pass
 
             for t in Tour.objects \
-                    .filter(guide=guide) \
-                    .filter(tour__start_date__range=[dstart, dend]):
+                    .filter(Q(guide=guide) | Q(team=guide)) \
+                    .filter(tour__start_date__range=[dstart, dend])\
+                    .distinct():
                 try:
                     writer.writerow(
                         self.make_export_list(
