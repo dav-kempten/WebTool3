@@ -228,6 +228,7 @@ class WebtoolAdminSite(admin.AdminSite):
             for i in Instruction.objects\
                     .filter(Q(guide=guide) | Q(team=guide))\
                     .filter(instruction__start_date__range=[dstart, dend])\
+                    .filter(state__done=True)\
                     .distinct():
                 try:
                     if i.topic.category.climbing:
@@ -268,6 +269,7 @@ class WebtoolAdminSite(admin.AdminSite):
             for t in Tour.objects \
                     .filter(Q(guide=guide) | Q(team=guide)) \
                     .filter(tour__start_date__range=[dstart, dend])\
+                    .filter(state__done=True)\
                     .distinct():
                 try:
                     writer.writerow(
