@@ -65,6 +65,19 @@ class Guide(SeasonsMixin, TimeMixin, models.Model):
         help_text='Die URL zu einer Datei mit dem Portrait eines Kurs/Touren/Gruppenleiters'
     )
 
+    # addition for clearance certificate of each trainer
+    certificate = models.BooleanField(
+        'Führungszeugnis',
+        default=False,
+        help_text="Der Zustand zur Sichtung des Führungszeugnis eines bestimmten Trainers"
+    )
+
+    certificate_date = models.DateField(
+        'Datum der Sichtung des Führungszeugnis',
+        blank=True, default='',
+        help_text='Das Datum der Sichtung des Führungszeugnis durch einen MA der GS'
+    )
+
     @property
     def name(self):
         return self.user.get_full_name()
