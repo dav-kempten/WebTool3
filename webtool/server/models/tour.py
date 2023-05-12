@@ -61,6 +61,11 @@ class Tour(
         default=False
     )
 
+    mountain_bus = models.BooleanField(
+        'Bergbus',
+        default=False
+    )
+
     deadline = models.OneToOneField(
         Event,
         verbose_name='Anmeldeschluss',
