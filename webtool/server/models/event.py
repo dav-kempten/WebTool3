@@ -523,6 +523,12 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
         return False
 
     @property
+    def mountain_bus(self):
+        if hasattr(self, 'tour') and self.tour:
+            return self.tour.mountain_bus
+        return False
+
+    @property
     def preconditions(self):
         if hasattr(self, 'tour') and self.tour:
             return self.tour.preconditions

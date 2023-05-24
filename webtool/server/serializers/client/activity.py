@@ -20,6 +20,7 @@ class ActivityListSerializer(serializers.ModelSerializer):
     ladiesOnly = serializers.BooleanField(source='ladies_only')
     youthOnTour = serializers.BooleanField(source='youth_on_tour')
     relaxed = serializers.BooleanField()
+    mountainBus = serializers.BooleanField(source='mountain_bus')
     publicTransport = serializers.BooleanField(source='public_transport')
     lowEmissionAdventure = serializers.BooleanField(source='lea')
     detail = serializers.SerializerMethodField()
@@ -32,6 +33,8 @@ class ActivityListSerializer(serializers.ModelSerializer):
             categories = ['Frauen'] + categories
         if obj.relaxed:
             categories = ['Geh\'mütlich'] + categories
+        if obj.mountain_bus:
+            categories = ['Bergbus'] + categories
         if hasattr(obj, 'tour') and obj.tour:
             categories.extend(obj.tour.categories.values_list('name', flat=True))
         elif hasattr(obj, 'session') and obj.session:
@@ -93,7 +96,7 @@ class ActivityListSerializer(serializers.ModelSerializer):
             'division',
             'skill',
             'fitness',
-            'ladiesOnly', 'youthOnTour', 'relaxed',
+            'ladiesOnly', 'youthOnTour', 'relaxed', 'mountainBus',
             'publicTransport', 'lowEmissionAdventure',
             'state',
             'new',
