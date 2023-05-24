@@ -11,6 +11,7 @@ export interface Tour {
   info: string;
   youthOnTour: boolean;
   relaxed: boolean;
+  mountainBus: boolean;
   ladiesOnly: boolean;
   qualificationIds: number[];
   preconditions: string;

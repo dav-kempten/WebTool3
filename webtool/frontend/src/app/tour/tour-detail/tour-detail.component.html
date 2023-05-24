@@ -60,16 +60,22 @@
   </div>
   </p-card>
 
-  <!--Team-->
-  <p-card subheader="Tourenspezifika">
+  <!--Zusatzkategorien-->
+  <p-card subheader="Zusatzkategorien">
   <div class="p-grid">
-    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4" tooltipPosition="left" pTooltip="Zusatzkategorien zusätzlich zur Hauptkategorie">
+    <div class="p-col-12 p-sm-12 p-md-12 p-lg-12" tooltipPosition="left" pTooltip="Zusatzkategorien zusätzlich zur Hauptkategorie">
       <avk-categorymultiselect
           formControlName="categoryIds"
           [readOnly]="false"
           [topicSpecific]="'tour'">
       ></avk-categorymultiselect>
     </div>
+  </div>
+  </p-card>
+
+  <!-- Tourenspezifika -->
+  <p-card subheader="Tourenspezifika">
+  <div class="p-grid">
     <div class="p-col-12 p-sm-3 p-md-3 p-lg-3">
       <p-checkbox
           [formControl]="tourGroup.get('ladiesOnly')"
@@ -84,11 +90,19 @@
           binary="true"
       ></p-checkbox>
     </div>
-    <div class="p-col-12 p-sm-2 p-md-2 p-lg-2" tooltipPosition="left"
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3" tooltipPosition="left"
          pTooltip="Tourenangebote, die sich an all die richten, die gerne etwas gemütlicher in den Bergen unterwegs sein wollen – im Sommer wie im Winter">
       <p-checkbox
           [formControl]="tourGroup.get('relaxed')"
           label="Geh'mütlich"
+          binary="true"
+      ></p-checkbox>
+    </div>
+    <div class="p-col-12 p-sm-3 p-md-3 p-lg-3" tooltipPosition="left"
+         pTooltip="Tourenangebote, die sich mit dem Bergbus erreichen lassen">
+      <p-checkbox
+          [formControl]="tourGroup.get('mountainBus')"
+          label="Bergbus"
           binary="true"
       ></p-checkbox>
     </div>
