@@ -143,7 +143,7 @@
   </form>
   </ng-container>
 
-  <ng-container *ngIf="this.instructionCategory.value !== 'indoor'">
+  <ng-container *ngIf="this.instructionCategory.value == 'summer' || this.instructionCategory.value == 'winter'">
     <!--Zusatzausrüstung-->
     <p-card subheader="Zusatzausrüstung">
       <div class="p-grid">
