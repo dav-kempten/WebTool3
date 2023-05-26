@@ -133,7 +133,7 @@ class WebtoolAdminSite(admin.AdminSite):
                 continue
 
             if kvm:
-                cur_quantity = int(row['GebuchteTN'])
+                cur_quantity = int(row['Gebuchte TN'])
             else:
                 cur_quantity = int(row['Ist Teilnehmer'])
 
