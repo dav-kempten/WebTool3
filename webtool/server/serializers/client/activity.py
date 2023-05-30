@@ -145,7 +145,7 @@ class ActivitySerializer(ActivityListSerializer):
             'fitness',
             'preconditions',
             'equipments',
-            'ladiesOnly', 'youthOnTour', 'relaxed',
+            'ladiesOnly', 'youthOnTour', 'relaxed', 'mountainBus',
             'publicTransport', 'lowEmissionAdventure',
             'state',
             'new',
