@@ -126,7 +126,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'WebTool3.tex', 'WebTool3 Documentation',
-     'Wolfgang Doll', 'manual'),
+     'Johannes Buettner', 'manual'),
 ]
 
 
