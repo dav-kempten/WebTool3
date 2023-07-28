@@ -5,7 +5,7 @@ from django.template.defaultfilters import date, time
 
 from .event import Event
 from .mixins import QualificationMixin, EquipmentMixin, GuidedEventMixin, AdminMixin, SeasonMixin, ChapterMixin
-from .mixins import RequirementMixin, AdmissionMixin
+from .mixins import RequirementMixin, AdmissionMixin, OnlineMixin
 from .time_base import TimeMixin
 from . import fields
 
@@ -19,7 +19,7 @@ class TourManager(models.Manager):
 
 class Tour(
     TimeMixin, QualificationMixin, EquipmentMixin, GuidedEventMixin, ChapterMixin,
-    AdminMixin, RequirementMixin, AdmissionMixin, models.Model
+    AdminMixin, RequirementMixin, AdmissionMixin, OnlineMixin, models.Model
 ):
 
     # Check: categories.season and self.season belongs to the same season!

@@ -5,7 +5,7 @@ from django.db import models
 from . import fields
 from .event import Event
 from .mixins import DescriptionMixin, QualificationMixin, ChapterMixin, SeasonsMixin
-from .mixins import EquipmentMixin, GuidedEventMixin, AdminMixin, AdmissionMixin
+from .mixins import EquipmentMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, OnlineMixin
 
 from .time_base import TimeMixin
 
@@ -63,7 +63,7 @@ class InstructionManager(models.Manager):
 
 
 class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, ChapterMixin,
-                  QualificationMixin, EquipmentMixin, models.Model):
+                  QualificationMixin, EquipmentMixin, OnlineMixin, models.Model):
 
     objects = InstructionManager()
 

@@ -307,3 +307,15 @@ class QualificationMixin(models.Model):
     def qualification_list(self):
         qualifications = list(self.qualifications.all().values_list('category__code', flat=True))
         return ", ".join(qualifications)
+
+
+class OnlineMixin(models.Model):
+    kv_link = models.URLField(
+        'KV-Link',
+        blank=True, default='',
+        max_length=200,
+        help_text='Link zum KV'
+    )
+
+    class Meta:
+        abstract = True
