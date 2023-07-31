@@ -21,6 +21,7 @@ class ActivityListSerializer(serializers.ModelSerializer):
     youthOnTour = serializers.BooleanField(source='youth_on_tour')
     relaxed = serializers.BooleanField()
     mountainBus = serializers.BooleanField(source='mountain_bus')
+    kvLink = serializers.URLField(source='kv_link')
     publicTransport = serializers.BooleanField(source='public_transport')
     lowEmissionAdventure = serializers.BooleanField(source='lea')
     detail = serializers.SerializerMethodField()
@@ -97,6 +98,7 @@ class ActivityListSerializer(serializers.ModelSerializer):
             'skill',
             'fitness',
             'ladiesOnly', 'youthOnTour', 'relaxed', 'mountainBus',
+            'kvLink',
             'publicTransport', 'lowEmissionAdventure',
             'state',
             'new',
@@ -146,6 +148,7 @@ class ActivitySerializer(ActivityListSerializer):
             'preconditions',
             'equipments',
             'ladiesOnly', 'youthOnTour', 'relaxed', 'mountainBus',
+            'kvLink',
             'publicTransport', 'lowEmissionAdventure',
             'state',
             'new',

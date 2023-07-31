@@ -96,6 +96,7 @@ class InstructionSerializer(serializers.ModelSerializer):
     maxQuantity = serializers.IntegerField(source='max_quantity', default=0)
     curQuantity = serializers.IntegerField(source='cur_quantity', default=0)
 
+    kvLink = serializers.URLField(source='kv_link', default='')
     stateId = serializers.PrimaryKeyRelatedField(source='state', required=False, queryset=State.objects.all())
     deprecated = serializers.BooleanField(default=False, required=False)
 
@@ -116,6 +117,7 @@ class InstructionSerializer(serializers.ModelSerializer):
             'qualificationIds', 'preconditions',
             'equipmentIds', 'miscEquipment', 'equipmentService',
             'admission', 'advances', 'advancesInfo', 'extraCharges', 'extraChargesInfo',
+            'kvLink',
             'minQuantity', 'maxQuantity', 'curQuantity',
             'deprecated', 'stateId',
             'message', 'comment'
@@ -227,6 +229,7 @@ class InstructionSerializer(serializers.ModelSerializer):
         instance.cur_quantity = validated_data.get('cur_quantity', instance.cur_quantity)
         instance.deprecated = validated_data.get('deprecated', instance.deprecated)
         instance.state = validated_data.get('state', instance.state)
+        instance.kv_link = validated_data.get('kv_link', instance.kv_link)
         if instance.state == State.objects.get(name='Fertig') and not instance.topic.category.climbing:
             self.send_instruction_notification(reference=instance.instruction.reference.__str__())
         if instance.state in (State.objects.get(name='Freigegeben'), State.objects.get(name='Noch nicht buchbar')) and not instance.topic.category.climbing:

@@ -536,7 +536,6 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
             return self.instruction.kv_link
         return ''
 
-
     @property
     def preconditions(self):
         if hasattr(self, 'tour') and self.tour:
