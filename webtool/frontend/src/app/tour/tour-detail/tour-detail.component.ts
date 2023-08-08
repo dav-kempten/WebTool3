@@ -310,6 +310,7 @@ export function tourGroupFactory(tour: Tour): FormGroup {
     youthOnTour: new FormControl(tour.youthOnTour),
     relaxed: new FormControl(tour.relaxed),
     mountainBus: new FormControl(tour.mountainBus),
+    kvLink: new FormControl(tour.kvLink),
     ladiesOnly: new FormControl(tour.ladiesOnly),
     qualificationIds: new FormControl(tour.qualificationIds),
     preconditions: new FormControl(tour.preconditions),

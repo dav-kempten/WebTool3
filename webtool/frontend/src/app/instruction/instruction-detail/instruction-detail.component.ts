@@ -344,6 +344,7 @@ function instructionGroupFactory(instruction: Instruction): FormGroup {
     topicId: new FormControl(instruction.topicId),
     instructionId: new FormControl(instruction.instructionId),
     meetingIds: new FormControl(instruction.meetingIds),
+    kvLink: new FormControl(instruction.kvLink),
     ladiesOnly: new FormControl(instruction.ladiesOnly),
     isSpecial: new FormControl(instruction.isSpecial),
     categoryId: new FormControl(instruction.categoryId),

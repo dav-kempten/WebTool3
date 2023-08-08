@@ -511,6 +511,21 @@
     </div>
   </p-card>
 
+  <!--Verlinkung KV-->
+  <p-card subheader="Verlinkung KV" *ngIf="!this.instructionOwner.value">
+    <div class="p-grid">
+      <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
+      <textarea
+        [rows]="1"
+        pInputTextarea
+        formControlName="kvLink"
+        placeholder="Link zum KV-Manager (muss die Geschäftsstelle nachtragen, max. 200 Zeichen)"
+        style='width:100%'
+      ></textarea>
+      </div>
+    </div>
+  </p-card>
+
   <!--Bemerkung-->
   <p-card subheader="Bemerkungen">
     <div class="p-grid">
