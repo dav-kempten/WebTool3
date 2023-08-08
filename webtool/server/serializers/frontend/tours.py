@@ -80,7 +80,7 @@ class TourSerializer(serializers.ModelSerializer):
     youthOnTour = serializers.BooleanField(source='youth_on_tour', default=False)
     relaxed = serializers.BooleanField(default=False)
     mountainBus = serializers.BooleanField(source='mountain_bus', default=False)
-    kvLink = serializers.URLField(source='kv_link', default='')
+    kvLink = serializers.URLField(source='kv_link', max_length=200, default='', allow_blank=True)
     miscCategory = serializers.CharField(source='misc_category', max_length=75, default='', allow_blank=True)
     qualificationIds = serializers.PrimaryKeyRelatedField(
         source='qualifications', many=True, default=[], queryset=Topic.objects.all()

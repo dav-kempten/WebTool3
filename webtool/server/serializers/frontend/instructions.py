@@ -96,7 +96,7 @@ class InstructionSerializer(serializers.ModelSerializer):
     maxQuantity = serializers.IntegerField(source='max_quantity', default=0)
     curQuantity = serializers.IntegerField(source='cur_quantity', default=0)
 
-    kvLink = serializers.URLField(source='kv_link', default='')
+    kvLink = serializers.URLField(source='kv_link', max_length=200, default='', allow_blank=True)
     stateId = serializers.PrimaryKeyRelatedField(source='state', required=False, queryset=State.objects.all())
     deprecated = serializers.BooleanField(default=False, required=False)
 
@@ -124,6 +124,7 @@ class InstructionSerializer(serializers.ModelSerializer):
         )
 
     def validate(self, data):
+        print('validate')
         if self.instance is not None:
             # This is the Update case
 
@@ -230,6 +231,7 @@ class InstructionSerializer(serializers.ModelSerializer):
         instance.deprecated = validated_data.get('deprecated', instance.deprecated)
         instance.state = validated_data.get('state', instance.state)
         instance.kv_link = validated_data.get('kv_link', instance.kv_link)
+        print('kv_link: ', validated_data.get('kv_link'))
         if instance.state == State.objects.get(name='Fertig') and not instance.topic.category.climbing:
             self.send_instruction_notification(reference=instance.instruction.reference.__str__())
         if instance.state in (State.objects.get(name='Freigegeben'), State.objects.get(name='Noch nicht buchbar')) and not instance.topic.category.climbing:

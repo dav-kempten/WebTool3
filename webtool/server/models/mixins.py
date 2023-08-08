@@ -313,7 +313,6 @@ class OnlineMixin(models.Model):
     kv_link = models.URLField(
         'KV-Link',
         blank=True, default='',
-        max_length=200,
         help_text='Link zum KV'
     )
 
