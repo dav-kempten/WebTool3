@@ -25,6 +25,7 @@ export interface Instruction {
   topicId: number;
   instruction: Event;
   meetings: Event[];
+  kvLink: string;
   ladiesOnly: boolean;
   isSpecial: boolean;
   categoryId: number | null;

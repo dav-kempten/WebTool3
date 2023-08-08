@@ -6,6 +6,7 @@ export interface Instruction {
   topicId: number; // TopicId
   instructionId: number; // EventId
   meetingIds: number[]; // EventId
+  kvLink: string;
   ladiesOnly: boolean;
   isSpecial: boolean;
   categoryId: number | null;
