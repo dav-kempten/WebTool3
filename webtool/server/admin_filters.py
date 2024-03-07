@@ -2,6 +2,8 @@ from django.contrib.admin import SimpleListFilter
 from django.utils.translation import gettext_lazy as _
 from django.db.models import Q
 
+from datetime import datetime
+
 from server.models import Qualification, Guide
 
 
@@ -47,7 +49,7 @@ class ActiveFilter(SimpleListFilter):
     tuple_list = (
         ('active', _('Aktiv')),
         ('inactive', _('Inaktiv')),
-        ('all', _('All')),
+        ('all', _('Alle')),
     )
 
     def lookups(self, request, model_admin):
@@ -61,3 +63,30 @@ class ActiveFilter(SimpleListFilter):
         elif self.value() == 'all':
             return queryset.all()
         return queryset.filter(is_active=True)
+
+class CertificateFilter(SimpleListFilter):
+    title = _('Führungszeugnis')
+    parameter_name = 'Certificate'
+
+    tuple_list = (
+        ('required', _('Führungszeugnis erforderlich')),
+        ('not required', _('Führungszeugnis nicht erforderlich')),
+        ('deprecated', _('Führungszeugnis abgelaufen')),
+        ('valid', _('Führungszeugnis gültig')),
+        ('all', _('Alle')),
+    )
+
+    def lookups(self, request, model_admin):
+        return self.tuple_list
+
+    def queryset(self, request, queryset):
+        if self.value() == 'required':
+            return queryset.filter(guide__certificate_required=True)
+        elif self.value() == 'not required':
+            return queryset.filter(guide__certificate_required=False)
+        elif self.value() == 'deprecated':
+            return queryset.filter(guide__certificate_required=True).filter(guide__certificate=True).filter(guide__certificate_date__lte=datetime.today())
+        elif self.value() == 'valid':
+            return queryset.filter(guide__certificate_required=True).filter(guide__certificate=True).filter(guide__certificate_date__gt=datetime.today())
+        elif self.value() == 'all':
+            return queryset.all()
