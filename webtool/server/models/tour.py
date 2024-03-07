@@ -437,10 +437,8 @@ class Tour(
                      'title="Stornobedingungen">Stornobedingungen</a>.'
                      '</p>')
 
-        output.write('<p><strong>Hinweis zum Buchungsstand:</strong> Die oben '
-                     'unter „Teilnehmer“ aufgeführten Buchungsstände werden nicht '
-                     'in Echtzeit aktualisiert, so dass die reale Verfügbarkeit '
-                     'abweichen kann. '
-                     'Die Geschäftsstelle gibt euch gerne Auskunft über den aktuellsten Stand</p>')
+        output.write('<p><strong>Hinweis zum Buchungsstand:</strong> Die aktuellen '
++                     'Buchungsstände sind in unserem externen Reservierungsportal einsehbar. '
++                     'Die Geschäftsstelle gibt euch gerne zudem gerne Auskunft über den aktuellsten Stand.</p>')
 
         return output.getvalue()
