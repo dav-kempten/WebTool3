@@ -71,6 +71,7 @@ class CertificateFilter(SimpleListFilter):
     tuple_list = (
         ('required', _('Führungszeugnis erforderlich')),
         ('not required', _('Führungszeugnis nicht erforderlich')),
+        ('deprecate this year', _('Führungszeugnis läuft dieses Jahr aus')),
         ('deprecated', _('Führungszeugnis abgelaufen')),
         ('valid', _('Führungszeugnis gültig')),
         ('all', _('Alle')),
@@ -84,9 +85,23 @@ class CertificateFilter(SimpleListFilter):
             return queryset.filter(guide__certificate_required=True)
         elif self.value() == 'not required':
             return queryset.filter(guide__certificate_required=False)
+        elif self.value() == 'deprecate this year':
+            return (
+                queryset.filter(guide__certificate_required=True)
+                .filter(guide__certificate=True)
+                .filter(guide__certificate_date__lte=datetime(datetime.today().year, 12, 31))
+            )
         elif self.value() == 'deprecated':
-            return queryset.filter(guide__certificate_required=True).filter(guide__certificate=True).filter(guide__certificate_date__lte=datetime.today())
+            return (
+                queryset.filter(guide__certificate_required=True)
+                .filter(guide__certificate=True)
+                .filter(guide__certificate_date__lte=datetime.today())
+            )
         elif self.value() == 'valid':
-            return queryset.filter(guide__certificate_required=True).filter(guide__certificate=True).filter(guide__certificate_date__gt=datetime.today())
+            return (
+                queryset.filter(guide__certificate_required=True)
+                .filter(guide__certificate=True)
+                .filter(guide__certificate_date__gt=datetime.today())
+            )
         elif self.value() == 'all':
             return queryset.all()
