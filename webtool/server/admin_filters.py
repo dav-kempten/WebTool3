@@ -90,6 +90,7 @@ class CertificateFilter(SimpleListFilter):
                 queryset.filter(guide__certificate_required=True)
                 .filter(guide__certificate=True)
                 .filter(guide__certificate_date__lte=datetime(datetime.today().year, 12, 31))
+                .filter(guide__certificate_date__gte=datetime(datetime.today().year, 1, 1))
             )
         elif self.value() == 'deprecated':
             return (
