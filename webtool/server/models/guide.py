@@ -85,6 +85,18 @@ class Guide(SeasonsMixin, TimeMixin, models.Model):
         help_text='Wird ein Führungszeugnis vom Guide benötigt oder nicht'
     )
 
+    contract_required = models.BooleanField(
+        'Trainervertrag unterschrieben',
+        default=False,
+        help_text='Ist ein Trainervertrag vom Guide unterzeichnet oder nicht'
+    )
+
+    contract_date = models.DateField(
+        'Datum der Unterschrift des Trainervertrags',
+        blank=True, default=date.today,
+        help_text='Das Datum des Unterzeichnen des Trainervertrags, eingetragen durch einen MA der GS'
+    )
+
     @property
     def name(self):
         return self.user.get_full_name()
