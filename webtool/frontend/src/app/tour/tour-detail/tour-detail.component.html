@@ -353,7 +353,7 @@
   <p-card subheader="Tourenanforderungen und Ausrüstung">
   <!--Voraussetzung-->
   <div class="p-grid">
-    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4" pTooltip="Benötigte Mindestqualifikation der Teilnehmer" tooltipPosition="left">
+    <div class="p-col-12 p-sm-4 p-md-4 p-lg-4" pTooltip="Benötigte Mindestqualifikation der Teilnehmer*innen" tooltipPosition="left">
       <avk-qualificationselect
           formControlName="qualificationIds"
           id="Qualifikation"
@@ -397,7 +397,7 @@
   </p-card>
 
   <!--Teilnehmer, Besondere Vorraussetzungen-->
-  <p-card subheader="Teilnehmeranzahl">
+  <p-card subheader="Teilnehmer*innenanzahl">
   <div class="p-grid">
     <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
       <avk-membernumber
@@ -426,12 +426,12 @@
   </p-card>
 
   <!--Fahrtkosten, Zusatzkosten, Anzahlung-->
-  <p-card subheader="Teilnehmergebühr, Zusatzkosten, Anzahlung">
+  <p-card subheader="Teilnehmer*innengebühr, Zusatzkosten, Anzahlung">
   <div class="p-grid">
     <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
       <div class="ui-inputgroup">
         <span class="ui-inputgroup-addon">TN-Gebühr</span>
-        <input formControlName="admission" id="admission" placeholder="Teilnehmergebühr" type="number" [min]="0" [max]="999"
+        <input formControlName="admission" id="admission" placeholder="Teilnehmer*innengebühr" type="number" [min]="0" [max]="999"
              maxlength="3" pTooltip="Die TN-Gebühr wird von der Geschäftsstelle entsprechend ergänzt." pInputText>
         <span class="ui-inputgroup-addon">.00</span>
         <span class="ui-inputgroup-addon">€</span>
