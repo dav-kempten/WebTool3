@@ -190,6 +190,10 @@ export class TourEffects {
     deadline.distance = 0;
     if (preliminary) { preliminary.distance = 0; }
 
+    if (tourInterface.admission == null) { tourInterface.admission = 0 }
+    if (tourInterface.advances == null) { tourInterface.advances = 0 }
+    if (tourInterface.extraCharges == null) { tourInterface.extraCharges = 0 }
+
     return {
       ... tourInterface,
       tour,
