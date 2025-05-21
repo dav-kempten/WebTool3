@@ -439,6 +439,6 @@ class Tour(
 
         output.write('<p><strong>Hinweis zum Buchungsstand:</strong> Die aktuellen '
 +                     'Buchungsstände sind in unserem externen Reservierungsportal einsehbar. '
-+                     'Die Geschäftsstelle gibt euch gerne zudem gerne Auskunft über den aktuellsten Stand.</p>')
++                     'Die Geschäftsstelle gibt euch gerne Auskunft über den aktuellsten Stand.</p>')
 
         return output.getvalue()
