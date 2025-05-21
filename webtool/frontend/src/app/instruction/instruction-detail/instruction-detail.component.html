@@ -96,7 +96,7 @@
           </div>
         </div>
         <div class="p-grid">
-          <div class="p-col-12 p-sm-4 p-md-4 p-lg-4" pTooltip="Benötigte Qualifikation der Teilnehmer" tooltipPosition="left">
+          <div class="p-col-12 p-sm-4 p-md-4 p-lg-4" pTooltip="Benötigte Qualifikation der Teilnehmer*innen" tooltipPosition="left">
             <avk-qualificationselect
               formControlName="qualificationIds"
               [readOnly]="true"
@@ -185,7 +185,7 @@
         </div>
       </div>
       <div class="p-grid">
-        <div class="p-col-12 p-sm-4 p-md-4 p-lg-4" pTooltip="Benötigte Qualifikationen der Teilnehmer" tooltipPosition="left">
+        <div class="p-col-12 p-sm-4 p-md-4 p-lg-4" pTooltip="Benötigte Qualifikationen der Teilnehmer*innen" tooltipPosition="left">
           <avk-qualificationselect
             formControlName="qualificationIds"
           ></avk-qualificationselect>
@@ -215,7 +215,7 @@
   </ng-container>
 
   <!--Teilnehmeranzahl-->
-  <p-card subheader="Teilnehmer">
+  <p-card subheader="Teilnehmer*innen">
     <form class="p-grid" [formGroup]="instructionGroup">
       <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
         <avk-membernumber
@@ -451,12 +451,12 @@
 
   <!--Teilnehmergebühr, Vorauszahlung & Zusatzkosten-->
   <!--*ngIf="this.instructionCategory.value !== 'indoor'"-->
-  <p-card subheader="Teilnehmergebühr, Zusatzkosten, Anzahlung">
+  <p-card subheader="Teilnehmer*innengebühr, Zusatzkosten, Anzahlung">
     <div class="p-grid">
       <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
         <div class="ui-inputgroup">
           <span class="ui-inputgroup-addon">TN-Gebühr</span>
-          <input formControlName="admission" id="admission" placeholder="Teilnehmergebühr" type="number" [min]="0" [max]="999"
+          <input formControlName="admission" id="admission" placeholder="Teilnehmer*innengebühr" type="number" [min]="0" [max]="999"
                  maxlength="3" pTooltip="Die TN-Gebühr wird von der Geschäftsstelle entsprechend ergänzt." pInputText>
           <span class="ui-inputgroup-addon">.00</span>
           <span class="ui-inputgroup-addon">€</span>
@@ -570,7 +570,6 @@
       <div class="p-col-12 p-sm-1 p-md-1 p-lg-1" *ngIf="!(instructionOwner.value && (instructionGroup.get('stateId').value > 2))">
         <p-button type="button" label="Speichern"
                   (click)="save(this.instructionGroup.value)"
-                  [disabled]="(instructionIndoor.value && instructionOwner.value)"
         ></p-button>
       </div>
       <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">

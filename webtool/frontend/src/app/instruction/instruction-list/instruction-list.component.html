@@ -57,7 +57,9 @@
             formControlName="topicId"
             id="topicId"
             [seasonSpecific]="this.partNewInstruction.value"
-            [topicSpecific]="'instruction'">
+            [topicSpecific]="'instruction'"
+            [isStaffOrAdmin]="permissionCurrent$ | async"
+        >
         </avk-categoryselect>
       </div>
     </div>

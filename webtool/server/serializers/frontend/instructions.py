@@ -2,7 +2,6 @@
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 from django.core.mail import send_mail
-import math
 
 from server.models import (
     Instruction, Equipment, Guide, Topic, Category, State, Event, get_default_season, get_default_state
@@ -124,7 +123,6 @@ class InstructionSerializer(serializers.ModelSerializer):
         )
 
     def validate(self, data):
-        print('validate')
         if self.instance is not None:
             # This is the Update case
 
@@ -231,7 +229,6 @@ class InstructionSerializer(serializers.ModelSerializer):
         instance.deprecated = validated_data.get('deprecated', instance.deprecated)
         instance.state = validated_data.get('state', instance.state)
         instance.kv_link = validated_data.get('kv_link', instance.kv_link)
-        print('kv_link: ', validated_data.get('kv_link'))
         if instance.state == State.objects.get(name='Fertig') and not instance.topic.category.climbing:
             self.send_instruction_notification(reference=instance.instruction.reference.__str__())
         if instance.state in (State.objects.get(name='Freigegeben'), State.objects.get(name='Noch nicht buchbar')) and not instance.topic.category.climbing:
