@@ -244,7 +244,7 @@ class InstructionSerializer(serializers.ModelSerializer):
             subject='Kurs ' + reference,
             message='Der Kurs ' + reference + ' wurde auf Fertig gestellt und kann geprüft werden.',
             from_email='django@dav-kempten.de',
-            recipient_list=['jojo@dav-kempten.de', 'matthias.keller@dav-kempten.de', 'info@dav-kempten.de']
+            recipient_list=['johannes.buettner@dav-kempten.de', 'matthias.keller@dav-kempten.de', 'kurse@dav-kempten.de']
         )
 
     def send_instruction_kv_notification(self, instance=None):
@@ -283,7 +283,7 @@ class InstructionSerializer(serializers.ModelSerializer):
                     + 'weitere Termine: ' + meetings[:-2] + '\n'
                     + 'Kursort: ' + instance.instruction.location + '\n',
             from_email='django@dav-kempten.de',
-            recipient_list=['jojo@dav-kempten.de', 'info@dav-kempten.de']
+            recipient_list=['johannes.buettner@dav-kempten.de', 'kurse@dav-kempten.de']
         )
 
     @staticmethod

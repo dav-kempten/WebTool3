@@ -296,7 +296,7 @@ class TourSerializer(serializers.ModelSerializer):
             subject='Tour ' + reference,
             message='Die Tour ' + reference + ' wurde auf Fertig gestellt und kann geprüft werden.',
             from_email='django@dav-kempten.de',
-            recipient_list=['jojo@dav-kempten.de', 'matthias.keller@dav-kempten.de', 'info@dav-kempten.de']
+            recipient_list=['johannes.buettner@dav-kempten.de', 'matthias.keller@dav-kempten.de', 'kurse@dav-kempten.de']
         )
 
     def send_tour_kv_notification(self, instance=None):
@@ -331,7 +331,7 @@ class TourSerializer(serializers.ModelSerializer):
                     + 'Treffpunkt: ' + instance.tour.rendezvous + '\n'
                     + 'Tourziel: ' + instance.tour.location + '\n',
             from_email='django@dav-kempten.de',
-            recipient_list=['jojo@dav-kempten.de', 'info@dav-kempten.de']
+            recipient_list=['johannes.buettner@dav-kempten.de', 'kurse@dav-kempten.de']
         )
 
     @staticmethod
