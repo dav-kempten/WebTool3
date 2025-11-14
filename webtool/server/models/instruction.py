@@ -173,7 +173,7 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
             )
         ]
         if self.advances:
-            advances = "<strong>Vorauszahlung:</strong> {} €{}".format(
+            advances = "<strong>Anzahlung:</strong> {} €{}".format(
                 int(self.advances), " für {}".format(self.advances_info) if self.advances_info else ''
             )
             lines.append(advances)
@@ -194,16 +194,6 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
             lines.append('<strong>Organisation:</strong> {}'.format(guides))
         output.write('<br />'.join(lines))
         output.write('</p>')
-
-        if self.advances:
-            output.write('<div class="additional">')
-            advances = (
-                "<p>Im Teilnehmerbeitrag von {} € ist eine Vorauszahlung von {} € enthalten. "
-                "Diese Vorauszahlung wird bei Stornierung der Teilnahme nur zurückerstattet, wenn der freigewordene "
-                "Platz wieder besetzt werden kann.</p>"
-            ).format(self.admission, int(self.advances))
-            output.write(advances)
-            output.write('</div>')
 
         output.write('<p>Es gelten unsere '
                      '<a href="/aktivitaeten/teilnahmebedingungen/" '
@@ -230,7 +220,7 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
             Vorbesprechung: {preliminary_date}, {preliminary_time} Uhr
             Toureninformation: {info}
             Organisation: {guides}
-            Vorauszahlung: {advances} € {advances_info}
+            Anzahlung: {advances} € {advances_info}
             Teilnehmergebühr: {admission} € {admission_info}
             Zusatzkosten: {extra_charges} € {extra_charges_info}
             Fahrtkostenbeteiligung: ca. {travel_cost} € für {distance} km

@@ -451,7 +451,7 @@
     </p-dialog>
   </ng-container>
 
-  <!--Teilnehmergebühr, Vorauszahlung & Zusatzkosten-->
+  <!--Teilnehmergebühr, Anzahlung & Zusatzkosten-->
   <!--*ngIf="this.instructionCategory.value !== 'indoor'"-->
   <p-card subheader="Teilnehmer*innengebühr, Zusatzkosten, Anzahlung">
     <div class="p-grid">
@@ -466,18 +466,18 @@
       </div>
       <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
         <div class="ui-inputgroup">
-          <span class="ui-inputgroup-addon">Vorauszahlung</span>
-          <input formControlName="advances" id="advances" placeholder="Vorauszahlung" type="number" [min]="0" [max]="999"
-                 maxlength="3" pTooltip="Anzahlungen für den Kurs, Hütten, Liftkarten etc." pInputText>
+          <span class="ui-inputgroup-addon">Zusatzkosten</span>
+          <input formControlName="extraCharges" id="extraCharges" placeholder="Zusatzkosten" type="number" [min]="0" [max]="999"
+                 maxlength="3" pTooltip="Zusatzkosten wie Maut, Übernachtungen etc." pInputText>
           <span class="ui-inputgroup-addon">.00</span>
           <span class="ui-inputgroup-addon">€</span>
         </div>
       </div>
       <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
         <div class="ui-inputgroup">
-          <span class="ui-inputgroup-addon">Zusatzkosten</span>
-          <input formControlName="extraCharges" id="extraCharges" placeholder="Zusatzkosten" type="number" [min]="0" [max]="999"
-                 maxlength="3" pTooltip="Zusatzkosten wie Maut, Übernachtungen etc." pInputText>
+          <span class="ui-inputgroup-addon">Anzahlung</span>
+          <input formControlName="advances" id="advances" placeholder="Anzahlung" type="number" [min]="0" [max]="999"
+                 maxlength="3" pTooltip="Anzahlungen für den Kurs, Hütten, Liftkarten etc." pInputText>
           <span class="ui-inputgroup-addon">.00</span>
           <span class="ui-inputgroup-addon">€</span>
         </div>
@@ -491,23 +491,23 @@
       <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
       <textarea
         [rows]="2"
-        formControlName="advancesInfo"
-        placeholder="Vorauszahlung Details"
-        style='width:100%'
-        maxlength="75"
-        pTooltip="Aufstellung der Anzahlung"
-        pInputTextarea
-      ></textarea>
-      </div>
-      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-      <textarea
-        [rows]="2"
         formControlName="extraChargesInfo"
         pInputTextarea
         placeholder="Zusatzkosten Details"
         style='width:100%'
         maxlength="75"
         pTooltip="Aufstellung der Zusatzkosten"
+      ></textarea>
+      </div>
+      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <textarea
+        [rows]="2"
+        formControlName="advancesInfo"
+        placeholder="Anzahlung Details"
+        style='width:100%'
+        maxlength="75"
+        pTooltip="Aufstellung der Anzahlung"
+        pInputTextarea
       ></textarea>
       </div>
     </div>
