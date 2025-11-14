@@ -138,7 +138,8 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
                 output.write('<div class="additional">')
                 output.write(
                     "<p>Für die Teilnahme an diesem Kurs ist die Beherrschung folgender "
-                    "Kursinhalte Voraussetzung: {}</p>".format(
+                    "Kursinhalte Voraussetzung: <b>{}</b>. Die entsprechenden Kurse mit verwandten "
+                    "Kursinhalten müssen nicht in unserer Sektion absolviert worden sein.</p>".format(
                         ', '.join([q for q in qs])
                     )
                 )
