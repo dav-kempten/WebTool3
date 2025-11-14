@@ -227,12 +227,11 @@ class InstructionSerializer(serializers.ModelSerializer):
         instance.max_quantity = validated_data.get('max_quantity', instance.max_quantity)
         instance.cur_quantity = validated_data.get('cur_quantity', instance.cur_quantity)
         instance.deprecated = validated_data.get('deprecated', instance.deprecated)
+        if (instance.state == State.objects.get(name='In Arbeit') and
+            validated_data.get('state', instance.state) == State.objects.get(name='Fertig')):
+            self.send_instruction_notification(reference=instance.instruction.reference.__str__())
         instance.state = validated_data.get('state', instance.state)
         instance.kv_link = validated_data.get('kv_link', instance.kv_link)
-        if instance.state == State.objects.get(name='Fertig') and not instance.topic.category.climbing:
-            self.send_instruction_notification(reference=instance.instruction.reference.__str__())
-        if instance.state in (State.objects.get(name='Freigegeben'), State.objects.get(name='Noch nicht buchbar')) and not instance.topic.category.climbing:
-            self.send_instruction_kv_notification(instance=instance)
         instance.comment = validated_data.get('comment', instance.comment)
         instance.message = validated_data.get('message', instance.message)
         instance.save()
@@ -245,45 +244,6 @@ class InstructionSerializer(serializers.ModelSerializer):
             message='Der Kurs ' + reference + ' wurde auf Fertig gestellt und kann geprüft werden.',
             from_email='django@dav-kempten.de',
             recipient_list=['johannes.buettner@dav-kempten.de', 'matthias.keller@dav-kempten.de', 'kurse@dav-kempten.de']
-        )
-
-    def send_instruction_kv_notification(self, instance=None):
-        team_format, equipment_format, meetings = '', '', ''
-        # Format team-members
-        for el in instance.team.all():
-            team_format = team_format + el.__str__() + ', '
-        # Format equipments
-        for el in instance.topic.equipments.all():
-            equipment_format = equipment_format + el.__str__() + ', '
-        for el in instance.equipments.all():
-            equipment_format = equipment_format + el.__str__() + ', '
-        # Format meetings
-        for el in instance.meeting_list.all():
-            meetings = meetings + el.title + ' ' + el.short_date(with_year=True) + ' ' + self.time_format(event=el) + '; '
-
-        send_mail(
-            subject='Kurs ' + instance.instruction.reference.__str__() + ' KV-Update',
-            message='Der Kurs ' + instance.instruction.reference.__str__()
-                    + ' wurde auf "' + instance.state.name + '" gestellt und kann in den KV übertragen werden:' + '\n'
-                    + 'Buchungscode: ' + instance.instruction.reference.__str__() + '\n'
-                    + 'Kategorie: ' + instance.topic.name + '\n'
-                    + 'Titel: ' + instance.topic.title + '\n'
-                    + 'TN-Betrag: ' + str(instance.admission) + '\n'
-                    + 'Anzahlung: ' + str(instance.advances) + '\n'
-                    + 'Min TN: ' + str(instance.min_quantity) + '\n'
-                    + 'Geplante TN: ' + str(instance.max_quantity) + '\n'
-                    + 'Ausrüstung: ' + equipment_format[:-2] + '\n'
-                    + 'Zusatzausrüstung: ' + self.misc_equipment_format(instruction=instance) + '\n'
-                    + 'Organisation: ' + self.guide_format(guide=instance.guide) + '\n'
-                    + 'Team: ' + team_format[:-2] + '\n'
-                    + 'Anreise: ' + str(instance.instruction.distance) + '\n'
-                    + 'Praxistermin: ' + instance.instruction.short_date(with_year=True) + '\n'
-                    + 'Praxistermin Uhrzeit: ' + self.approximation_time_format(event=instance.instruction) + '\n'
-                    + 'Praxistermin Treffpunkt Abfahrt: ' + instance.instruction.rendezvous + '\n'
-                    + 'weitere Termine: ' + meetings[:-2] + '\n'
-                    + 'Kursort: ' + instance.instruction.location + '\n',
-            from_email='django@dav-kempten.de',
-            recipient_list=['johannes.buettner@dav-kempten.de', 'kurse@dav-kempten.de']
         )
 
     @staticmethod

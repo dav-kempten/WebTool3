@@ -279,11 +279,10 @@ class TourSerializer(serializers.ModelSerializer):
         instance.max_quantity = validated_data.get('max_quantity', instance.max_quantity)
         instance.cur_quantity = validated_data.get('cur_quantity', instance.cur_quantity)
         instance.deprecated = validated_data.get('deprecated', instance.deprecated)
-        instance.state = validated_data.get('state', instance.state)
-        if instance.state == State.objects.get(name='Fertig'):
+        if (instance.state == State.objects.get(name='In Arbeit') and
+            validated_data.get('state', instance.state) == State.objects.get(name='Fertig')):
             self.send_tour_notification(reference=instance.tour.reference.__str__())
-        if instance.state in (State.objects.get(name='Freigegeben'), State.objects.get(name='Noch nicht buchbar')):
-            self.send_tour_kv_notification(instance=instance)
+        instance.state = validated_data.get('state', instance.state)
         instance.message = validated_data.get('message', instance.message)
         instance.comment = validated_data.get('comment', instance.comment)
         instance.save()
@@ -297,41 +296,6 @@ class TourSerializer(serializers.ModelSerializer):
             message='Die Tour ' + reference + ' wurde auf Fertig gestellt und kann geprüft werden.',
             from_email='django@dav-kempten.de',
             recipient_list=['johannes.buettner@dav-kempten.de', 'matthias.keller@dav-kempten.de', 'kurse@dav-kempten.de']
-        )
-
-    def send_tour_kv_notification(self, instance=None):
-        team_format, equipment_format = '', ''
-        # Format team-members
-        for el in instance.team.all():
-            team_format = team_format + el.__str__() + ', '
-        # Format equipments
-        for el in instance.equipments.all():
-            equipment_format = equipment_format + el.__str__() + ', '
-
-        send_mail(
-            subject='Tour ' + instance.tour.reference.__str__() + ' KV-Update',
-            message='Die Tour ' + instance.tour.reference.__str__()
-                    + ' wurde auf "' + instance.state.name + '" gestellt und kann in den KV übertragen werden:' + '\n'
-                    + 'Buchungscode: ' + instance.tour.reference.__str__() + '\n'
-                    + 'Kategorie: ' + instance.tour.reference.category.name + '\n'
-                    + 'Titel: ' + instance.tour.title + '\n'
-                    + 'TN-Betrag: ' + str(instance.admission) + '\n'
-                    + 'Anzahlung: ' + str(instance.advances) + '\n'
-                    + 'Min TN: ' + str(instance.min_quantity) + '\n'
-                    + 'Geplante TN: ' + str(instance.max_quantity) + '\n'
-                    + 'Ausrüstung: ' + equipment_format[:-2] + '\n'
-                    + 'Zusatzausrüstung: ' + instance.misc_equipment + '\n'
-                    + 'Organisation: ' + self.guide_format(guide=instance.guide) + '\n'
-                    + 'Team: ' + team_format[:-2] + '\n'
-                    + 'Anreise: ' + str(instance.tour.distance) + '\n'
-                    + 'Buchbar bis: ' + instance.deadline.short_date(with_year=True) + '\n'
-                    + 'Tourtermin: ' + instance.tour.short_date(with_year=True) + '\n'
-                    + 'Tourtermin Uhrzeit: ' + self.approximation_time_format(event=instance.tour) + '\n'
-                    + 'Vorbesprechung: ' + self.preliminary_format(instance=instance) + '\n'
-                    + 'Treffpunkt: ' + instance.tour.rendezvous + '\n'
-                    + 'Tourziel: ' + instance.tour.location + '\n',
-            from_email='django@dav-kempten.de',
-            recipient_list=['johannes.buettner@dav-kempten.de', 'kurse@dav-kempten.de']
         )
 
     @staticmethod
