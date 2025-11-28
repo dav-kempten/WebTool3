@@ -162,7 +162,7 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
             output.write('<p><strong>Weitere Termine:</strong><br />')
             output.write('<br />'.join([e.appointment() for e in self.meeting_list.all()]))
             output.write('<br /><br />')
-            output.write('<strong>Obacht!<\strong> Alle Theorieteile sind verpflichtend und Voraussetzung für die '
+            output.write('<strong>Obacht!</strong> Alle Theorieteile sind verpflichtend und Voraussetzung für die '
                          'Teilnahme an den Praxisterminen. Die Theorieteile müssen in Präsenz wahrgenommen werden, '
                          'sofern nichts anderes in der Beschreibung steht.')
             output.write('</p>')
