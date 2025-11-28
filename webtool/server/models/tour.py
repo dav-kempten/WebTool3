@@ -428,8 +428,8 @@ class Tour(
                      'title="Stornobedingungen">Stornobedingungen</a>.'
                      '</p>')
 
-        output.write('<p><strong>Hinweis zum Buchungsstand:</strong> Die aktuellen '
-+                     'Buchungsstände sind in unserem externen Reservierungsportal einsehbar. '
-+                     'Die Geschäftsstelle gibt euch gerne Auskunft über den aktuellsten Stand.</p>')
+        output.write('<p><strong>Hinweis:</strong> Spezielle Fragen zu Touren & Kursen kannst du unter '
+                     '<strong>kurse@dav-kempten.de</strong> stellen. Bitte gib hierbei immer den '
+                     '<strong>Buchungscode</strong> der entsprechenden Veranstaltung mit an.</p>')
 
         return output.getvalue()
