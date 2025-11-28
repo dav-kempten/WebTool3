@@ -550,7 +550,9 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
     @property
     def equipments(self):
         equipments = Equipment.objects.none()
+        equipments_topic = Equipment.objects.none()
         misc = ''
+        misc_topic = ''
         if hasattr(self, 'tour') and self.tour:
             equipments = self.tour.equipments
             misc = self.tour.misc_equipment
