@@ -2,6 +2,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin, Group
 
 import csv
 import json
+import hashlib
 from django.http import HttpResponse
 from icalendar import Calendar, Event
 from datetime import datetime
@@ -170,6 +171,12 @@ class UserAdmin(BaseUserAdmin):
 
                 ical_event.add('dtstart', dtstart)
                 ical_event.add('dtend', dtend)
+
+                # uid = %JahrErstellung%DAVKEMPTEN%Nachname%Hash@webtool.dav-kempten.de
+                birth_code = f'{profile.birth_date.month}:{profile.birth_date.day}'.encode("utf-8")
+                user_hash = hashlib.sha1(birth_code).hexdigest()
+                uid = f'{datetime.today().year}DAVKEMPTEN{obj.last_name}{user_hash[:8]}@webtool.dav-kempten.de'
+                ical_event.add('uid', uid)
 
                 cal.add_component(ical_event)
 
