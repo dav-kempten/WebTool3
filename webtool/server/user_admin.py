@@ -151,19 +151,19 @@ class UserAdmin(BaseUserAdmin):
                 ical_event = Event()
 
                 summary = obj.first_name + ' ' + obj.last_name + ' ' \
-                          + str(datetime.today().year + 1 - profile.birth_date.year)\
+                          + str(datetime.today().year - profile.birth_date.year)\
                           + '. Geburtstag'
                 ical_event.add('summary', summary)
 
                 dtstart = datetime(
-                    datetime.today().year + 1,
+                    datetime.today().year,
                     profile.birth_date.month,
                     profile.birth_date.day,
                     0, 0, 0
                 )
 
                 dtend = datetime(
-                    datetime.today().year + 1,
+                    datetime.today().year,
                     profile.birth_date.month,
                     profile.birth_date.day,
                     23, 59, 59
