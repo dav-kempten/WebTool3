@@ -7,7 +7,11 @@ export class DatePipe implements PipeTransform {
 
   constructor() {}
 
-  transform(isoDate: string): string {
+  transform(isoDate: string | null): string {
+    if (!isoDate) {
+      return '';
+    }
+
     return isoDate.split('-').reverse().join('.');
   }
 }

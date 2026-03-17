@@ -3,6 +3,7 @@ export interface InstructionSummary {
   reference: string;
   title: string;
   startDate: string;
+  endDate: string | null;
   guideId: number;
   guide: string;
   ladiesOnly: boolean;

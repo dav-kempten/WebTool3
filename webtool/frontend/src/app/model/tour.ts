@@ -5,6 +5,7 @@ export interface TourSummary {
   reference: string;
   title: string;
   startDate: string;
+  endDate: string | null;
   guideId: number;
   ladiesOnly: boolean;
   winter: boolean;
