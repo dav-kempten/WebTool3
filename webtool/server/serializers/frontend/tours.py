@@ -14,6 +14,7 @@ class TourListSerializer(serializers.ModelSerializer):
     reference = serializers.CharField(source='tour.reference.__str__', read_only=True)  # ? #
     title = serializers.SerializerMethodField()
     startDate = serializers.DateField(source='tour.start_date', read_only=True)
+    endDate = serializers.DateField(source='tour.end_date', read_only=True)
     guideId = serializers.PrimaryKeyRelatedField(source='guide_id', read_only=True)
     ladiesOnly = serializers.BooleanField(source='ladies_only', read_only=True)
     winter = serializers.BooleanField(source='tour.reference.category.winter', read_only=True)
@@ -32,6 +33,7 @@ class TourListSerializer(serializers.ModelSerializer):
             'reference',
             'title',
             'startDate',
+            'endDate',
             'guideId',
             'ladiesOnly',
             'winter',

@@ -15,6 +15,7 @@ class InstructionListSerializer(serializers.ModelSerializer):
     reference = serializers.CharField(source='instruction.reference.__str__', read_only=True)
     title = serializers.SerializerMethodField()
     startDate = serializers.DateField(source='instruction.start_date', read_only=True)
+    endDate = serializers.DateField(source='instruction.end_date', read_only=True)
     guideId = serializers.PrimaryKeyRelatedField(source='guide_id', read_only=True)
     ladiesOnly = serializers.BooleanField(source='ladies_only', read_only=True)
     winter = serializers.BooleanField(source='instruction.reference.category.winter', read_only=True)
@@ -33,6 +34,7 @@ class InstructionListSerializer(serializers.ModelSerializer):
             'reference',
             'title',
             'startDate',
+            'endDate',
             'guideId',
             'ladiesOnly',
             'winter',
