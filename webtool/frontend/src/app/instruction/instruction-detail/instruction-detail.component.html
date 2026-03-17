@@ -60,7 +60,7 @@
           binary="true"
         ></p-checkbox>
       </div>
-      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4" *ngIf="this.instructionCategory.value !== 'indoor'">
+      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
         <p-checkbox
           [formControl]="instructionGroup.get('isSpecial')"
           label="Spezialkurs"
@@ -153,7 +153,7 @@
             formControlName="equipmentIds"
           ></avk-multiselect>
         </div>
-        <div class="p-col-12 p-sm-4 p-md-4 p-lg-4" *ngIf="this.instructionCategory.value !== 'indoor'">
+        <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
           <p-checkbox
             [formControl]="instructionGroup.get('equipmentService')"
             label="Reservierungswunsch für Ausrüstungsservice"
@@ -302,7 +302,7 @@
 
         <!--Zeitpunkt Event-->
         <div class="p-grid">
-          <div class="p-col-12 p-sm-4 p-md-4 p-lg-4" *ngIf="this.instructionCategory.value !== 'indoor'">
+          <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
             <avk-approxdropdown formControlName="approximateId" id="approx"
                                 [disable]="(!!currentEventGroup.get('startTime').value)||(!!currentEventGroup.get('endTime').value)">
             </avk-approxdropdown>
@@ -374,7 +374,7 @@
         </div>
 
         <!--ReservierungsService-->
-        <div class="p-grid" *ngIf="this.instructionCategory.value !== 'indoor'">
+        <div class="p-grid">
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
             <p-checkbox
               [formControl]="currentEventGroup.get('reservationService')"
@@ -383,7 +383,7 @@
               pTooltip="Reservierungswunsch Schulungsraum"
             ></p-checkbox>
           </div>
-          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6" *ngIf="this.instructionCategory.value !== 'indoor'">
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
             <p-checkbox
               [formControl]="currentEventGroup.get('lea')"
               label="Low Emission Adventure"
@@ -393,7 +393,7 @@
         </div>
 
         <!--Distal & Distance-->
-        <div class="p-grid" *ngIf="this.instructionCategory.value !== 'indoor'">
+        <div class="p-grid">
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
             <p-checkbox
               [formControl]="currentEventGroup.get('distal')"
@@ -403,7 +403,7 @@
           </div>
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
             <div class="ui-inputgroup">
-              <span class="ui-inputgroup-addon">Anreise</span>
+              <span class="ui-inputgroup-addon">Fahrtstrecke</span>
               <input formControlName="distance" id="distance" type="number" min="0" max="9999"
                      pTooltip="Gesamtfahrtstrecke des Kurstermins" pInputText>
               <span class="ui-inputgroup-addon">Km</span>
@@ -411,7 +411,7 @@
           </div>
         </div>
         <!--ShuttleService & PublicTransport-->
-        <div class="p-grid" *ngIf="this.instructionCategory.value !== 'indoor'">
+        <div class="p-grid">
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
             <p-checkbox
               [formControl]="currentEventGroup.get('publicTransport')"
@@ -430,7 +430,7 @@
         </div>
 
         <!--Source, Link & Map-->
-        <div class="p-grid" *ngIf="this.instructionCategory.value !== 'indoor'">
+        <div class="p-grid">
           <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
             <input formControlName="source" id="source" placeholder="Ausgangsort" maxlength="75"
                    type="text" style="width:100%"
@@ -485,7 +485,7 @@
     </div>
 
     <!--Zusatzkosten & Advances Details-->
-    <div class="p-grid" *ngIf="this.instructionCategory.value !== 'indoor'">
+    <div class="p-grid">
       <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
       </div>
       <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
