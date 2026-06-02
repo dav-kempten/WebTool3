@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import hashlib
-from collections import Iterable
+from collections.abc import Iterable
 from decimal import Decimal
 
 from django.template.defaultfilters import date

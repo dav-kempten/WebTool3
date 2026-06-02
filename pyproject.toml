@@ -1,0 +1,17 @@
+[project]
+name = "webtool"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "django",
+    'django-jazzmin',
+    'djangorestframework',
+    'django-filter',
+    'django-cors-headers',
+    'django-modeladmin-reorder',
+    "psycopg2-binary>=2.9.12",
+    "django-environ>=0.13.0",
+    "icalendar>=7.1.2",
+]

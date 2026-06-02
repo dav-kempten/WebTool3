@@ -3,7 +3,7 @@ from io import StringIO
 import csv
 
 from django.contrib import admin, messages
-from django.conf.urls import url
+from django.urls import path, re_path
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 from django.forms import Form, FileField, ModelForm
@@ -43,9 +43,9 @@ class WebtoolAdminSite(admin.AdminSite):
     def get_urls(self):
         urls = super().get_urls()
         my_urls = [
-            url(r'^csv_update/$', self.admin_view(self.csv_update)),
-            url(r'^tpo_update/$', self.admin_view(self.tpo_update)),
-            url(r'^workload_export/$', self.admin_view(self.workload_export))
+            re_path('^csv_update/$', self.admin_view(self.csv_update), name='csv_update'),
+            re_path('^tpo_update/$', self.admin_view(self.tpo_update), name='tpo_update'),
+            re_path('^workload_export/$', self.admin_view(self.workload_export), name='workload_export'),
         ]
         return my_urls + urls
 

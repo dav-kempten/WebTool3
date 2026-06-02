@@ -2,7 +2,6 @@
 import datetime
 
 from django.db import models
-from django.contrib.postgres import fields as postgres
 from django.db.models import Q
 
 from .time_base import TimeMixin
@@ -31,7 +30,7 @@ class Season(TimeMixin, models.Model):
         blank=True, default=False
     )
 
-    params = postgres.JSONField(
+    params = models.JSONField(
         blank=True, null=True,
         default=defaults.get_default_params,
     )

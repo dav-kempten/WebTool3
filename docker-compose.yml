@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  # Database-Service
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: webtool
+      POSTGRES_USER: djcode
+      POSTGRES_PASSWORD: ${DJCODE_DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  # Django Webtool
+  web:
+    build: .  # Use dockerfile in same folder
+    command: python webtool/manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/webtool  # Transfers the code in the container
+    ports:
+      - "8000:8000" # localhost:8000
+    env_file:
+     - .env
+    depends_on:
+      - db  # App is running if db is running
+    develop:
+      watch:
+          - action: sync
+            path: ./webtool/
+            target: /app/webtool
+          - action: rebuild
+            path: pyproject.toml
+
+
+volumes:
+  postgres_data:

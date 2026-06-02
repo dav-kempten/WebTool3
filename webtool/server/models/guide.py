@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
 from django.db import models
-from django.contrib.postgres import fields as postgres
 
 from .mixins import SeasonsMixin
 from .time_base import TimeMixin
@@ -32,7 +31,7 @@ class Guide(SeasonsMixin, TimeMixin, models.Model):
         help_text='Der unbekannte Guide'
     )
 
-    profile = postgres.JSONField(
+    profile = models.JSONField(
         'Steckbrief',
         blank=True, null=True
     )
