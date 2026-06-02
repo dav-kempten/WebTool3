@@ -138,7 +138,8 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
                 output.write('<div class="additional">')
                 output.write(
                     "<p>Für die Teilnahme an diesem Kurs ist die Beherrschung folgender "
-                    "Kursinhalte Voraussetzung: {}</p>".format(
+                    "Kursinhalte Voraussetzung: <b>{}</b>. Die entsprechenden Kurse mit verwandten "
+                    "Kursinhalten müssen nicht in unserer Sektion absolviert worden sein.</p>".format(
                         ', '.join([q for q in qs])
                     )
                 )
@@ -160,6 +161,10 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
         if self.meeting_list.exists():
             output.write('<p><strong>Weitere Termine:</strong><br />')
             output.write('<br />'.join([e.appointment() for e in self.meeting_list.all()]))
+            output.write('<br /><br />')
+            output.write('<strong>Obacht!</strong> Alle Theorieteile sind verpflichtend und Voraussetzung für die '
+                         'Teilnahme an den Praxisterminen. Die Theorieteile müssen in Präsenz wahrgenommen werden, '
+                         'sofern nichts anderes in der Beschreibung steht.')
             output.write('</p>')
 
         if not self.is_special and self.instruction.description:
@@ -173,7 +178,7 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
             )
         ]
         if self.advances:
-            advances = "<strong>Vorauszahlung:</strong> {} €{}".format(
+            advances = "<strong>Anzahlung:</strong> {} €{}".format(
                 int(self.advances), " für {}".format(self.advances_info) if self.advances_info else ''
             )
             lines.append(advances)
@@ -195,16 +200,6 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
         output.write('<br />'.join(lines))
         output.write('</p>')
 
-        if self.advances:
-            output.write('<div class="additional">')
-            advances = (
-                "<p>Im Teilnehmerbeitrag von {} € ist eine Vorauszahlung von {} € enthalten. "
-                "Diese Vorauszahlung wird bei Stornierung der Teilnahme nur zurückerstattet, wenn der freigewordene "
-                "Platz wieder besetzt werden kann.</p>"
-            ).format(self.admission, int(self.advances))
-            output.write(advances)
-            output.write('</div>')
-
         output.write('<p>Es gelten unsere '
                      '<a href="/aktivitaeten/teilnahmebedingungen/" '
                      'title="Teilnahmebedingungen">Teilnahme-</a>'
@@ -213,11 +208,9 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
                      'title="Stornobedingungen">Stornobedingungen</a>.'
                      '</p>')
 
-        output.write('<p><strong>Hinweis zum Buchungsstand:</strong> Die oben '
-                     'unter „Teilnehmer“ aufgeführten Buchungsstände werden nicht '
-                     'in Echtzeit aktualisiert, so dass die reale Verfügbarkeit '
-                     'abweichen kann. '
-                     'Die Geschäftsstelle gibt euch gerne Auskunft über den aktuellsten Stand</p>')
+        output.write('<p><strong>Hinweis:</strong> Spezielle Fragen zu Touren & Kursen kannst du unter '
+                     '<strong>kurse@dav-kempten.de</strong> stellen. Bitte gib hierbei immer den '
+                     '<strong>Buchungscode</strong> der entsprechenden Veranstaltung mit an.</p>')
 
         return output.getvalue()
 
@@ -232,7 +225,7 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
             Vorbesprechung: {preliminary_date}, {preliminary_time} Uhr
             Toureninformation: {info}
             Organisation: {guides}
-            Vorauszahlung: {advances} € {advances_info}
+            Anzahlung: {advances} € {advances_info}
             Teilnehmergebühr: {admission} € {admission_info}
             Zusatzkosten: {extra_charges} € {extra_charges_info}
             Fahrtkostenbeteiligung: ca. {travel_cost} € für {distance} km

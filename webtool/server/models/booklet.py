@@ -239,19 +239,19 @@ class Booklet(TimeMixin, models.Model):
 
                 if advances:
                     reason = f' für {advances_info}' if advances_info else ''
-                    lines.append(f'\\textbf{{Vorauszahlung:}} \EUR{{{int(advances)}}}{cls.texify(reason)}')
+                    lines.append(f'\\textbf{{Vorauszahlung:}} \\EUR{{{int(advances)}}}{cls.texify(reason)}')
 
                 if admission:
-                    lines.append(f'\\textbf{{Teilnehmergebühr:}} \EUR{{{int(admission)}}}')
+                    lines.append(f'\\textbf{{Teilnehmergebühr:}} \\EUR{{{int(admission)}}}')
 
                 if extra_charges:
                     reason = f' für {extra_charges_info}' if extra_charges_info else ''
-                    lines.append(f'\\textbf{{Zusatzkosten:}} \EUR{{{int(extra_charges)}}}{cls.texify(reason)}')
+                    lines.append(f'\\textbf{{Zusatzkosten:}} \\EUR{{{int(extra_charges)}}}{cls.texify(reason)}')
 
                 if distance:
                     lines.append(
                         f'\\textbf{{Fahrtkostenbeteiligung:}} '
-                        f'ca. \EUR{{{int(0.07 * float(distance))}}} für ungefähr {distance} km'
+                        f'ca. \\EUR{{{int(0.07 * float(distance))}}} für ungefähr {distance} km'
                     )
 
                 if guides:
@@ -263,7 +263,7 @@ class Booklet(TimeMixin, models.Model):
 
                 if advances:
                     s.write(
-                        f'Im Teilnehmerbeitrag von \EUR{{{int(admission)}}} ist eine Vorauszahlung von \EUR{{{int(advances)}}} enthalten. '
+                        f'Im Teilnehmerbeitrag von \\EUR{{{int(admission)}}} ist eine Vorauszahlung von \\EUR{{{int(advances)}}} enthalten. '
                         f'Diese Vorauszahlung wird bei Stornierung der Teilnahme nur zurückerstattet, wenn der freigewordene '
                         f'Platz wieder besetzt werden kann.\\par\n'
                     )

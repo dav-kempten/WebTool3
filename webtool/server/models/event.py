@@ -532,8 +532,8 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
     def kv_link(self):
         if hasattr(self, 'tour') and self.tour:
             return self.tour.kv_link
-        if hasattr(self, 'instruction') and self.instruction:
-            return self.instruction.kv_link
+        if hasattr(self, 'meeting') and self.meeting:
+            return self.meeting.kv_link
         return ''
 
     @property
@@ -550,26 +550,32 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
     @property
     def equipments(self):
         equipments = Equipment.objects.none()
+        equipments_topic = Equipment.objects.none()
         misc = ''
+        misc_topic = ''
         if hasattr(self, 'tour') and self.tour:
             equipments = self.tour.equipments
             misc = self.tour.misc_equipment
         if hasattr(self, 'meeting') and self.meeting:
-            if self.meeting.is_special:
-                equipments = self.meeting.equipments
-                misc = self.meeting.misc_equipment
-            else:
-                equipments = self.meeting.topic.equipments
-                misc = self.meeting.topic.misc_equipment
+            equipments = self.meeting.equipments
+            misc = self.meeting.misc_equipment
+            equipments_topic = self.meeting.topic.equipments
+            misc_topic = self.meeting.topic.misc_equipment
         if hasattr(self, 'session') and self.session:
             equipments = self.session.equipments
             misc = self.session.misc_equipment
         equipment_list = []
         for equipment in equipments.all():
             equipment_list.append(dict(code=equipment.code, name=equipment.name))
+        for equipment in equipments_topic.all():
+            equipment_list.append(dict(code=equipment.code, name=equipment.name))
         equipments = {}
         if equipment_list:
             equipments.update(dict(list=equipment_list))
+        if misc and misc_topic:
+            misc = misc + ', ' + misc_topic
+        if not misc and misc_topic:
+            misc = misc_topic
         if misc:
             equipments.update(dict(misc=misc))
         return equipments if equipments else None

@@ -33,7 +33,11 @@
       <ng-template pTemplate="body" let-tour>
         <tr [pSelectableRow]="tour">
           <td>{{tour.reference}}</td>
-          <td>{{tour.startDate | date}}</td>
+          <td>{{tour.startDate | date}}
+            <ng-container *ngIf="tour.endDate">
+              - {{ tour.endDate | date }}
+            </ng-container>
+          </td>
           <td>{{tour.title}}</td>
           <td>{{tour.guide}}</td>
           <td>{{tour.stateId | state}}</td>

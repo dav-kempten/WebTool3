@@ -2,6 +2,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin, Group
 
 import csv
 import json
+import hashlib
 from django.http import HttpResponse
 from icalendar import Calendar, Event
 from datetime import datetime
@@ -11,7 +12,7 @@ from server.models.qualification import UserQualification
 from server.models.profile import Profile
 
 from server.inlines import GuideInline, ProfileInline, QualificationInline, RetrainingInline
-from server.admin_filters import QualificationFilter, ActiveFilter
+from server.admin_filters import QualificationFilter, ActiveFilter, CertificateFilter
 
 
 class UserAdmin(BaseUserAdmin):
@@ -39,7 +40,7 @@ class UserAdmin(BaseUserAdmin):
                'remove_from_group_summer', 'remove_from_group_winter', 'remove_from_group_climbing',
                'remove_from_group_youth', 'remove_from_group_leberkas', 'remove_from_group_helpinghands', ]
 
-    list_filter = ('is_staff', ActiveFilter, 'groups', QualificationFilter)
+    list_filter = ('is_staff', ActiveFilter, 'groups', QualificationFilter, CertificateFilter)
 
     def export_as_csv(self, request, queryset):
         meta = self.model._meta
@@ -150,19 +151,19 @@ class UserAdmin(BaseUserAdmin):
                 ical_event = Event()
 
                 summary = obj.first_name + ' ' + obj.last_name + ' ' \
-                          + str(datetime.today().year + 1 - profile.birth_date.year)\
+                          + str(datetime.today().year - profile.birth_date.year)\
                           + '. Geburtstag'
                 ical_event.add('summary', summary)
 
                 dtstart = datetime(
-                    datetime.today().year + 1,
+                    datetime.today().year,
                     profile.birth_date.month,
                     profile.birth_date.day,
                     0, 0, 0
                 )
 
                 dtend = datetime(
-                    datetime.today().year + 1,
+                    datetime.today().year,
                     profile.birth_date.month,
                     profile.birth_date.day,
                     23, 59, 59
@@ -170,6 +171,12 @@ class UserAdmin(BaseUserAdmin):
 
                 ical_event.add('dtstart', dtstart)
                 ical_event.add('dtend', dtend)
+
+                # uid = %JahrErstellung%DAVKEMPTEN%Nachname%Hash@webtool.dav-kempten.de
+                birth_code = f'{profile.birth_date.month}:{profile.birth_date.day}'.encode("utf-8")
+                user_hash = hashlib.sha1(birth_code).hexdigest()
+                uid = f'{datetime.today().year}DAVKEMPTEN{obj.last_name}{user_hash[:8]}@webtool.dav-kempten.de'
+                ical_event.add('uid', uid)
 
                 cal.add_component(ical_event)
 

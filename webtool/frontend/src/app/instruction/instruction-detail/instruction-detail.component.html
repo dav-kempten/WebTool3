@@ -60,7 +60,7 @@
           binary="true"
         ></p-checkbox>
       </div>
-      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4" *ngIf="this.instructionCategory.value !== 'indoor'">
+      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
         <p-checkbox
           [formControl]="instructionGroup.get('isSpecial')"
           label="Spezialkurs"
@@ -96,7 +96,7 @@
           </div>
         </div>
         <div class="p-grid">
-          <div class="p-col-12 p-sm-4 p-md-4 p-lg-4" pTooltip="Benötigte Qualifikation der Teilnehmer" tooltipPosition="left">
+          <div class="p-col-12 p-sm-4 p-md-4 p-lg-4" pTooltip="Benötigte Qualifikation der Teilnehmer*innen" tooltipPosition="left">
             <avk-qualificationselect
               formControlName="qualificationIds"
               [readOnly]="true"
@@ -153,7 +153,7 @@
             formControlName="equipmentIds"
           ></avk-multiselect>
         </div>
-        <div class="p-col-12 p-sm-4 p-md-4 p-lg-4" *ngIf="this.instructionCategory.value !== 'indoor'">
+        <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
           <p-checkbox
             [formControl]="instructionGroup.get('equipmentService')"
             label="Reservierungswunsch für Ausrüstungsservice"
@@ -168,10 +168,12 @@
       </div>
       <div class="p-grid">
         <div class="p-col-12 p-sm-12 p-md-12 p-lg-12">
-          Hier geht's zur Detailansicht unserer Ausrüsungslisten für Touren und Kurse:
-          <a href="https://www.dav-kempten.de/programm/equipment" target="_blank">
-            DAV Kempten-Allgäu Ausrüstungslisten
+          Benötigst du Ausrüstung für deine angebotenen Kurse? Fülle gerne das anhängende
+          <a href="https://www.dav-kempten.de/fileadmin/downloads/Trainerabfrage_f%C3%BCr_Kursmaterial_05.25_neu__2_.pdf"
+             target="_blank">
+            Formular
           </a>
+          aus und sende es an <b>kurse@dav-kempten.de</b>
         </div>
       </div>
     </p-card>
@@ -185,7 +187,7 @@
         </div>
       </div>
       <div class="p-grid">
-        <div class="p-col-12 p-sm-4 p-md-4 p-lg-4" pTooltip="Benötigte Qualifikationen der Teilnehmer" tooltipPosition="left">
+        <div class="p-col-12 p-sm-4 p-md-4 p-lg-4" pTooltip="Benötigte Qualifikationen der Teilnehmer*innen" tooltipPosition="left">
           <avk-qualificationselect
             formControlName="qualificationIds"
           ></avk-qualificationselect>
@@ -215,7 +217,7 @@
   </ng-container>
 
   <!--Teilnehmeranzahl-->
-  <p-card subheader="Teilnehmer">
+  <p-card subheader="Teilnehmer*innen">
     <form class="p-grid" [formGroup]="instructionGroup">
       <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
         <avk-membernumber
@@ -300,7 +302,7 @@
 
         <!--Zeitpunkt Event-->
         <div class="p-grid">
-          <div class="p-col-12 p-sm-4 p-md-4 p-lg-4" *ngIf="this.instructionCategory.value !== 'indoor'">
+          <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
             <avk-approxdropdown formControlName="approximateId" id="approx"
                                 [disable]="(!!currentEventGroup.get('startTime').value)||(!!currentEventGroup.get('endTime').value)">
             </avk-approxdropdown>
@@ -372,7 +374,7 @@
         </div>
 
         <!--ReservierungsService-->
-        <div class="p-grid" *ngIf="this.instructionCategory.value !== 'indoor'">
+        <div class="p-grid">
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
             <p-checkbox
               [formControl]="currentEventGroup.get('reservationService')"
@@ -381,7 +383,7 @@
               pTooltip="Reservierungswunsch Schulungsraum"
             ></p-checkbox>
           </div>
-          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6" *ngIf="this.instructionCategory.value !== 'indoor'">
+          <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
             <p-checkbox
               [formControl]="currentEventGroup.get('lea')"
               label="Low Emission Adventure"
@@ -391,7 +393,7 @@
         </div>
 
         <!--Distal & Distance-->
-        <div class="p-grid" *ngIf="this.instructionCategory.value !== 'indoor'">
+        <div class="p-grid">
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
             <p-checkbox
               [formControl]="currentEventGroup.get('distal')"
@@ -401,7 +403,7 @@
           </div>
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
             <div class="ui-inputgroup">
-              <span class="ui-inputgroup-addon">Anreise</span>
+              <span class="ui-inputgroup-addon">Fahrtstrecke</span>
               <input formControlName="distance" id="distance" type="number" min="0" max="9999"
                      pTooltip="Gesamtfahrtstrecke des Kurstermins" pInputText>
               <span class="ui-inputgroup-addon">Km</span>
@@ -409,7 +411,7 @@
           </div>
         </div>
         <!--ShuttleService & PublicTransport-->
-        <div class="p-grid" *ngIf="this.instructionCategory.value !== 'indoor'">
+        <div class="p-grid">
           <div class="p-col-12 p-sm-6 p-md-6 p-lg-6">
             <p-checkbox
               [formControl]="currentEventGroup.get('publicTransport')"
@@ -428,7 +430,7 @@
         </div>
 
         <!--Source, Link & Map-->
-        <div class="p-grid" *ngIf="this.instructionCategory.value !== 'indoor'">
+        <div class="p-grid">
           <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
             <input formControlName="source" id="source" placeholder="Ausgangsort" maxlength="75"
                    type="text" style="width:100%"
@@ -449,24 +451,15 @@
     </p-dialog>
   </ng-container>
 
-  <!--Teilnehmergebühr, Vorauszahlung & Zusatzkosten-->
+  <!--Teilnehmergebühr, Anzahlung & Zusatzkosten-->
   <!--*ngIf="this.instructionCategory.value !== 'indoor'"-->
-  <p-card subheader="Teilnehmergebühr, Zusatzkosten, Anzahlung">
+  <p-card subheader="Teilnehmer*innengebühr, Zusatzkosten, Anzahlung">
     <div class="p-grid">
       <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
         <div class="ui-inputgroup">
           <span class="ui-inputgroup-addon">TN-Gebühr</span>
-          <input formControlName="admission" id="admission" placeholder="Teilnehmergebühr" type="number" [min]="0" [max]="999"
+          <input formControlName="admission" id="admission" placeholder="Teilnehmer*innengebühr" type="number" [min]="0" [max]="999"
                  maxlength="3" pTooltip="Die TN-Gebühr wird von der Geschäftsstelle entsprechend ergänzt." pInputText>
-          <span class="ui-inputgroup-addon">.00</span>
-          <span class="ui-inputgroup-addon">€</span>
-        </div>
-      </div>
-      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-        <div class="ui-inputgroup">
-          <span class="ui-inputgroup-addon">Vorauszahlung</span>
-          <input formControlName="advances" id="advances" placeholder="Vorauszahlung" type="number" [min]="0" [max]="999"
-                 maxlength="3" pTooltip="Anzahlungen für den Kurs, Hütten, Liftkarten etc." pInputText>
           <span class="ui-inputgroup-addon">.00</span>
           <span class="ui-inputgroup-addon">€</span>
         </div>
@@ -480,22 +473,20 @@
           <span class="ui-inputgroup-addon">€</span>
         </div>
       </div>
+      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+        <div class="ui-inputgroup">
+          <span class="ui-inputgroup-addon">Anzahlung</span>
+          <input formControlName="advances" id="advances" placeholder="Anzahlung" type="number" [min]="0" [max]="999"
+                 maxlength="3" pTooltip="Anzahlungen für den Kurs, Hütten, Liftkarten etc." pInputText>
+          <span class="ui-inputgroup-addon">.00</span>
+          <span class="ui-inputgroup-addon">€</span>
+        </div>
+      </div>
     </div>
 
     <!--Zusatzkosten & Advances Details-->
-    <div class="p-grid" *ngIf="this.instructionCategory.value !== 'indoor'">
+    <div class="p-grid">
       <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-      </div>
-      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
-      <textarea
-        [rows]="2"
-        formControlName="advancesInfo"
-        placeholder="Vorauszahlung Details"
-        style='width:100%'
-        maxlength="75"
-        pTooltip="Aufstellung der Anzahlung"
-        pInputTextarea
-      ></textarea>
       </div>
       <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
       <textarea
@@ -506,6 +497,17 @@
         style='width:100%'
         maxlength="75"
         pTooltip="Aufstellung der Zusatzkosten"
+      ></textarea>
+      </div>
+      <div class="p-col-12 p-sm-4 p-md-4 p-lg-4">
+      <textarea
+        [rows]="2"
+        formControlName="advancesInfo"
+        placeholder="Anzahlung Details"
+        style='width:100%'
+        maxlength="75"
+        pTooltip="Aufstellung der Anzahlung"
+        pInputTextarea
       ></textarea>
       </div>
     </div>
@@ -570,7 +572,6 @@
       <div class="p-col-12 p-sm-1 p-md-1 p-lg-1" *ngIf="!(instructionOwner.value && (instructionGroup.get('stateId').value > 2))">
         <p-button type="button" label="Speichern"
                   (click)="save(this.instructionGroup.value)"
-                  [disabled]="(instructionIndoor.value && instructionOwner.value)"
         ></p-button>
       </div>
       <div class="p-col-12 p-sm-2 p-md-2 p-lg-2">

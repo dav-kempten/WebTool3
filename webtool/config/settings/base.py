@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 import os
 from django.core.exceptions import ImproperlyConfigured
 
+from .jazzmin import JAZZMIN_SETTINGS, JAZZMIN_UI_TWEAKS
+
 
 def get_env(name):
     try:
@@ -36,8 +38,7 @@ SECRET_KEY = get_env('DJCODE_SECRET_KEY')
 # Application definition
 
 INSTALLED_APPS = [
-    'jet.dashboard',
-    'jet',
+    'jazzmin',
     'apps.WebtoolAdminConfig',
     'django.contrib.sites',
     'django.contrib.redirects',
@@ -46,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.staticfiles',
     'django.contrib.messages',
+    'django.contrib.postgres',
     'rest_framework',
     'django_filters',
     'corsheaders',
@@ -98,6 +100,9 @@ DATABASES = {
         'NAME': get_env('DJCODE_DB_NAME'),
         'USER': get_env('DJCODE_DB_USER'),
         'PASSWORD': get_env('DJCODE_DB_PASSWORD'),
+        'OPTIONS': {
+            'charset': 'utf8mb4',
+        },
     }
 }
 
@@ -158,9 +163,6 @@ LANGUAGE_CODE = 'de-DE'
 TIME_ZONE = 'Europe/Berlin'
 
 USE_I18N = True
-
-USE_L10N = True
-
 USE_TZ = True
 
 
@@ -181,9 +183,3 @@ ADMIN_REORDER = (
     {'app': 'server', 'label': 'Instructions', 'models': ('server.Instruction', 'server.Topic',)},
     'sites'
 )
-
-JET_DEFAULT_THEME = 'light-green'
-
-JET_SIDE_MENU_COMPACT = True
-
-JET_INDEX_DASHBOARD = 'dashboard.CustomIndexDashboard'

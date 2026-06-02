@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
 from django.db import models
-from django.contrib.postgres import fields as postgres
 
 from .mixins import SeasonsMixin
 from .time_base import TimeMixin
+from datetime import date
 
 
 class GuideManager(models.Manager):
@@ -31,7 +31,7 @@ class Guide(SeasonsMixin, TimeMixin, models.Model):
         help_text='Der unbekannte Guide'
     )
 
-    profile = postgres.JSONField(
+    profile = models.JSONField(
         'Steckbrief',
         blank=True, null=True
     )
@@ -73,9 +73,27 @@ class Guide(SeasonsMixin, TimeMixin, models.Model):
     )
 
     certificate_date = models.DateField(
-        'Datum der Sichtung des Führungszeugnis',
-        blank=True, default='',
-        help_text='Das Datum der Sichtung des Führungszeugnis durch einen MA der GS'
+        'Datum des Ablaufs des Führungszeugnis',
+        blank=True, default=date.today,
+        help_text='Das Datum des Ablaufs des Führungszeugnis, eingetragen durch einen MA der GS'
+    )
+
+    certificate_required = models.BooleanField(
+        'Führungszeugnis benötigt',
+        default=False,
+        help_text='Wird ein Führungszeugnis vom Guide benötigt oder nicht'
+    )
+
+    contract_required = models.BooleanField(
+        'Trainervertrag unterschrieben',
+        default=False,
+        help_text='Ist ein Trainervertrag vom Guide unterzeichnet oder nicht'
+    )
+
+    contract_date = models.DateField(
+        'Datum der Unterschrift des Trainervertrags',
+        blank=True, default=date.today,
+        help_text='Das Datum des Unterzeichnen des Trainervertrags, eingetragen durch einen MA der GS'
     )
 
     @property

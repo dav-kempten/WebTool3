@@ -34,7 +34,7 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
         # User is only allowed to perform actions on own objects,
         # expect DELETE-Requests.
         if obj.guide is not None and obj.guide.user == request.user and request.method == 'PUT' \
-                and not obj.topic.category.climbing:
+                and (obj.topic.category.winter or obj.topic.category.summer):
             # Only allow requests if tour and request is on stateId = 2 or less
             if obj.state.pk <= 2 and 'stateId' in request.data and request.data['stateId'] <= 2:
                 # Users are not allowed to change guideId

@@ -227,7 +227,7 @@ export class CategoryselectComponent implements OnInit, OnDestroy, AfterViewInit
     let categoryStatusArray = new Array(0);
     if (!isStaff) {
       for (const idxCategory in categoryArray) {
-        if (!categoryArray[idxCategory].indoor) {
+        if (categoryArray[idxCategory].winter || categoryArray[idxCategory].summer) {
           categoryStatusArray.push(categoryArray[idxCategory]);
         }
       }

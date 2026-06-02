@@ -21,13 +21,14 @@ class Command(BaseCommand):
 
         season = Season.objects.get(current=True)
 
+        published = season.state_list.get(name='Veröffentlicht')
         canceled = season.state_list.get(name='Ausgefallen')
         completed = season.state_list.get(name='Durchgeführt')
         not_touch = (canceled.id, completed.id)
 
         today = datetime.date.today()
 
-        for instruction in Instruction.objects.filter(topic__seasons=season).exclude(state_id__in=not_touch):
+        for instruction in Instruction.objects.filter(topic__seasons=season, state_id=published):
             event = instruction.instruction
             event_done = ((event.end_date is None and event.start_date < today) or
                           (event.end_date and event.end_date < today))
@@ -38,7 +39,7 @@ class Command(BaseCommand):
                 for event in instruction.meeting_list.all():
                     event.save()
 
-        for tour in Tour.objects.filter(tour__season=season).exclude(state_id__in=not_touch):
+        for tour in Tour.objects.filter(tour__season=season, state_id=published):
             event = tour.tour
             event_done = ((event.end_date is None and event.start_date < today) or
                           (event.end_date and event.end_date < today))
@@ -50,7 +51,7 @@ class Command(BaseCommand):
                     tour.preliminary.save()
                 tour.tour.save()
 
-        for talk in Talk.objects.filter(talk__season=season).exclude(state_id__in=not_touch):
+        for talk in Talk.objects.filter(talk__season=season, state_id=published):
             event = talk.talk
             event_done = ((event.end_date is None and event.start_date < today) or
                           (event.end_date and event.end_date < today))
@@ -59,7 +60,7 @@ class Command(BaseCommand):
                 talk.save()
                 talk.talk.save()
 
-        for session in Session.objects.filter(collective__seasons=season).exclude(state_id__in=not_touch):
+        for session in Session.objects.filter(collective__seasons=season, state_id=published):
             event = session.session
             event_done = ((event.end_date is None and event.start_date < today) or
                           (event.end_date and event.end_date < today))

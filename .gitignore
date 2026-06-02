@@ -15,6 +15,10 @@ __pycache__/
 .dicts/
 .dic
 .idea/
+.vagrant
+*.iso
+.env
+Vagrantfile
 
 
 # angular-test #
@@ -49,9 +53,12 @@ personaldaten_json.py
 *.mp4
 *.ogg
 *.sh
+*.ico
 
 webtool/sslin.df.eu.cer
 webtool/static/rest_framework/
 webtool/static/admin/
 webtool/config/settings/static/
 webtool/*.log
+
+Archive

@@ -242,6 +242,10 @@ export class InstructionEffects {
     /* Erase distance of meetings before saving */
     meetings.forEach(meeting => { meeting.distance = 0; });
 
+    if (subsetInstruction.admission == null) { subsetInstruction.admission = 0 }
+    if (subsetInstruction.advances == null) { subsetInstruction.advances = 0 }
+    if (subsetInstruction.extraCharges == null) { subsetInstruction.extraCharges = 0 }
+
     return {
       ... subsetInstruction,
       instruction,

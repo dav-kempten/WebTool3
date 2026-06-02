@@ -22,6 +22,7 @@ class ActivityListSerializer(serializers.ModelSerializer):
     relaxed = serializers.BooleanField()
     mountainBus = serializers.BooleanField(source='mountain_bus')
     kvLink = serializers.URLField(source='kv_link')
+    tourLink = serializers.URLField(source='link')
     publicTransport = serializers.BooleanField(source='public_transport')
     lowEmissionAdventure = serializers.BooleanField(source='lea')
     detail = serializers.SerializerMethodField()
@@ -98,7 +99,7 @@ class ActivityListSerializer(serializers.ModelSerializer):
             'skill',
             'fitness',
             'ladiesOnly', 'youthOnTour', 'relaxed', 'mountainBus',
-            'kvLink',
+            'kvLink', 'tourLink',
             'publicTransport', 'lowEmissionAdventure',
             'state',
             'new',

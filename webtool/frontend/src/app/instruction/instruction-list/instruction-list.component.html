@@ -32,7 +32,11 @@
       <ng-template pTemplate="body" let-instruction>
         <tr [pSelectableRow]="instruction">
           <td>{{instruction.reference}}</td>
-          <td>{{instruction.startDate | date}}</td>
+          <td>{{instruction.startDate | date}}
+            <ng-container *ngIf="instruction.endDate">
+              - {{ instruction.endDate | date }}
+            </ng-container>
+          </td>
           <td>{{instruction.title}}</td>
           <td>{{instruction.guide}}</td>
           <td>{{instruction.stateId | state}}</td>
@@ -57,7 +61,9 @@
             formControlName="topicId"
             id="topicId"
             [seasonSpecific]="this.partNewInstruction.value"
-            [topicSpecific]="'instruction'">
+            [topicSpecific]="'instruction'"
+            [isStaffOrAdmin]="permissionCurrent$ | async"
+        >
         </avk-categoryselect>
       </div>
     </div>

@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from django.db import models
-from django.contrib.postgres import fields as postgres
 
 from . import fields, defaults
 
@@ -168,7 +167,7 @@ class AdminMixin(StateMixin, models.Model):
         help_text="Tatsächlicher Betrag in €, der vom Team in Summe abgerechnet wurde",
     )
 
-    budget_info = postgres.JSONField(blank=True, null=True)  # JSON data as base for calculation of budget
+    budget_info = models.JSONField(blank=True, null=True)  # JSON data as base for calculation of budget
     message = models.TextField(blank=True, default='')  # Info vom Guide an Referat
     comment = models.TextField(blank=True, default='')  # Interna!
 
