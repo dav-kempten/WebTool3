@@ -2,6 +2,7 @@
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import date
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.response import Response
 
@@ -35,7 +36,8 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
     ).exclude(
         session__isnull=False, session__state__public=False
     ).distinct()
-    filter_class = ActivityFilter
+    filterset_class = ActivityFilter
+    filter_backends = [DjangoFilterBackend]
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())

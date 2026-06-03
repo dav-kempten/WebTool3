@@ -59,7 +59,7 @@ class ActivityFilter(filters.FilterSet):
         if value in ("tour", "topic", "collective", "talk"):
             return queryset.filter(**{"reference__category__{}".format(value): True}).exclude(deprecated=True)
         else:
-            Event.objects.none()
+            return queryset.none()
 
     def division_filter(self, queryset, name, value):
         queryset = queryset.exclude(deprecated=True)
@@ -69,19 +69,19 @@ class ActivityFilter(filters.FilterSet):
             return queryset.filter(reference__category__climbing=True)
         elif value == "misc":
             return queryset.filter(
-                reference__category__winter=False,
-                reference__category__summer=False,
-                reference__category__climbing=False,
+                reference__category__winter = False,
+                reference__category__summer = False,
+                reference__category__climbing = False,
             )
         else:
-            Event.objects.none()
+            return queryset.none()
 
     def category_filter(self, queryset, name, value):
         queryset = queryset.exclude(deprecated=True)
         try:
             category = Category.objects.get(code__iexact=value)
         except Category.DoesNotExist:
-            return Event.objects.none()
+            return queryset.none()
         return queryset.filter(
             Q(reference__category=category) |
             Q(tour__categories=category) |
@@ -94,7 +94,7 @@ class ActivityFilter(filters.FilterSet):
         try:
             group = CategoryGroup.objects.get(pk=value)
         except CategoryGroup.DoesNotExist:
-            return Event.objects.none()
+            return queryset.none()
         return queryset.filter(
             Q(reference__category__in=group.categories.all()) |
             Q(meeting__category__in=group.categories.all())
@@ -105,7 +105,7 @@ class ActivityFilter(filters.FilterSet):
         try:
             guide = Guide.objects.get(user__username__iexact=value)
         except Guide.DoesNotExist:
-            return Event.objects.none()
+            return queryset.none()
         return queryset.filter(
             Q(tour__guide=guide) |
             Q(meeting__guide=guide) |
@@ -117,7 +117,7 @@ class ActivityFilter(filters.FilterSet):
         try:
             guide = Guide.objects.get(user__username__iexact=value)
         except Guide.DoesNotExist:
-            return Event.objects.none()
+            return queryset.none()
         return queryset.filter(
             Q(tour__team=guide) |
             Q(meeting__team=guide) |
@@ -134,7 +134,7 @@ class ActivityFilter(filters.FilterSet):
                 this_year = this_year + 1
             return queryset.filter(start_date__month=value, start_date__year=this_year)
         else:
-            Event.objects.none()
+            return queryset.none()
 
     def ladies_only_filter(self, queryset, name, value):
         queryset = queryset.exclude(deprecated=True)
@@ -172,7 +172,7 @@ class ActivityFilter(filters.FilterSet):
             try:
                 public = State.objects.get(done=False, moved=False, canceled=False, unfeasible=False, public=True)
             except State.DoesNotExist:
-                return Event.objects.none()
+                return queryset.none()
             return queryset.filter(
                 Q(tour__state=public) |
                 Q(meeting__state=public) |
@@ -187,7 +187,7 @@ class ActivityFilter(filters.FilterSet):
                 Q(**{"talk__state__{}".format(value): True})
             ).distinct()
         else:
-            Event.objects.none()
+            return queryset.none()
 
     def open_filter(self, queryset, name, value):
         queryset = queryset.exclude(deprecated=True)
