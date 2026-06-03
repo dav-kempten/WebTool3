@@ -100,9 +100,6 @@ DATABASES = {
         'NAME': get_env('DJCODE_DB_NAME'),
         'USER': get_env('DJCODE_DB_USER'),
         'PASSWORD': get_env('DJCODE_DB_PASSWORD'),
-        'OPTIONS': {
-            'charset': 'utf8mb4',
-        },
     }
 }
 
