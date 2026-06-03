@@ -2,7 +2,7 @@
 name = "webtool"
 version = "0.1.0"
 description = "Add your description here"
-readme = "README.md"
+readme = "README.rst"
 requires-python = ">=3.12"
 dependencies = [
     "django",
@@ -14,4 +14,9 @@ dependencies = [
     "psycopg2-binary>=2.9.12",
     "django-environ>=0.13.0",
     "icalendar>=7.1.2",
+]
+
+[project.optional-dependencies]
+prod = [
+    "uwsgi>=2.0.20; sys_platform == 'linux'",
 ]
