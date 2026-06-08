@@ -30,7 +30,7 @@ class GuideListSerializer(serializers.ModelSerializer):
         extra_kwargs = {'id': {'lookup_field': 'username'}}
 
     def get_job(self, obj):
-        profile = json.loads(obj.profile, encoding='utf-8') if obj.profile else None
+        profile = json.loads(obj.profile) if obj.profile else None
         if profile:
             return profile.get('job')
         return None
