@@ -2,6 +2,7 @@
 from django.template.defaultfilters import date
 from rest_framework import viewsets
 from rest_framework.response import Response
+from django_filters.rest_framework import DjangoFilterBackend
 
 from server.models import Collective
 from server.serializers.client import CollectiveSerializer, CollectiveListSerializer
@@ -12,7 +13,8 @@ class CollectiveViewSet(viewsets.ReadOnlyModelViewSet):
 
     lookup_field = "category__code"
     lookup_url_kwarg = "code"
-    filter_class = CollectiveFilter
+    filterset_class = CollectiveFilter
+    filter_backends = [DjangoFilterBackend]
 
     queryset = Collective.objects.filter(seasons__current=True).exclude(deprecated=True)
     search_fields = ('name',)
