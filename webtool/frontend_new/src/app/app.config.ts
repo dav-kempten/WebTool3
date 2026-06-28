@@ -6,20 +6,21 @@ import { provideRouter, withComponentInputBinding } from '@angular/router';
 import {
   provideHttpClient,
   withXsrfConfiguration,
-  withInterceptorsFromDi,
+  withInterceptors,
 } from '@angular/common/http';
 import { providePrimeNG } from 'primeng/config';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import Aura from '@primeuix/themes/aura';
 
 import { routes } from './app.routes';
+import { csrfInterceptor } from './core/interceptors/csrf.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes, withComponentInputBinding()),
     provideHttpClient(
-      withInterceptorsFromDi(),
+      withInterceptors([csrfInterceptor]),
       withXsrfConfiguration({
         cookieName: 'csrftoken',
         headerName: 'X-CSRFToken',

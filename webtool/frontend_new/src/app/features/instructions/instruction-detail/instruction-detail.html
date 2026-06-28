@@ -11,7 +11,7 @@
       <p-card header="Kursformular">
         <p class="avk-hint">Bearbeite hier deinen Kurs. Unklare Felder kannst du leer lassen.</p>
         @if (autoSave.lastSaved()) {
-          <p-message severity="success" [text]="'Automatisch gespeichert um ' + (autoSave.lastSaved() | date: 'HH:mm:ss')" />
+          <p-message severity="success">Automatisch gespeichert um {{ autoSave.lastSaved() | date: 'HH:mm:ss' }}</p-message>
         }
       </p-card>
 
@@ -40,15 +40,27 @@
           </div>
           <div class="avk-field">
             <label>Team</label>
-            <p-multiselect formControlName="teamIds" [options]="nameOptions()" optionLabel="label" optionValue="id" [filter]="true" filterBy="label" [disabled]="locked()" />
+            <p-multiselect formControlName="teamIds" [options]="nameOptions()" optionLabel="label" optionValue="id" [filter]="true" filterBy="label" [disabled]="locked()"></p-multiselect>
           </div>
         </div>
       </p-card>
 
       <p-card subheader="Kursspezifika">
         <div class="avk-checkbox-row">
-          <p-checkbox formControlName="ladiesOnly" [binary]="true" label="Kurs von Frauen für Frauen" />
-          <p-checkbox formControlName="isSpecial" [binary]="true" label="Sonderkurs" />
+          <div class="flex items-center gap-2">
+            <p-checkbox
+              formControlName="ladiesOnly"
+              [binary]="true"
+              inputId="ladiesOnlyCheckbox" />
+            <label for="ladiesOnlyCheckbox">Kurs von Frauen für Frauen</label>
+          </div>
+          <div class="flex items-center gap-2">
+            <p-checkbox
+              formControlName="isSpecial"
+              [binary]="true"
+              inputId="isSpecialCheckbox" />
+            <label for="isSpecialCheckbox">Sonderkurs</label>
+          </div>
         </div>
       </p-card>
 
@@ -85,7 +97,7 @@
         <div class="avk-grid-2">
           <div class="avk-field">
             <label>Mindestqualifikation</label>
-            <p-multiselect formControlName="qualificationIds" [options]="qualificationOptions()" optionLabel="title" optionValue="id" [disabled]="locked()" />
+            <p-multiselect formControlName="qualificationIds" [options]="qualificationOptions()" optionLabel="title" optionValue="id" [disabled]="locked()"></p-multiselect>
           </div>
           <div class="avk-field">
             <label>Spezielle Voraussetzungen</label>
@@ -95,7 +107,7 @@
         <div class="avk-grid-3">
           <div class="avk-field">
             <label>Ausrüstung</label>
-            <p-multiselect formControlName="equipmentIds" [options]="equipmentOptions()" optionLabel="name" optionValue="id" [disabled]="locked()" />
+            <p-multiselect formControlName="equipmentIds" [options]="equipmentOptions()" optionLabel="name" optionValue="id" [disabled]="locked()"></p-multiselect>
           </div>
           <div class="avk-field">
             <label>Zusätzliche Ausrüstung</label>
@@ -111,15 +123,15 @@
         <div class="avk-grid-3">
           <div class="avk-field">
             <label>Mindestens</label>
-            <p-inputnumber formControlName="minQuantity" [min]="0" [disabled]="locked()" />
+            <p-inputnumber formControlName="minQuantity" [min]="0" [disabled]="locked()"></p-inputnumber>
           </div>
           <div class="avk-field">
             <label>Maximal</label>
-            <p-inputnumber formControlName="maxQuantity" [min]="0" [disabled]="locked()" />
+            <p-inputnumber formControlName="maxQuantity" [min]="0" [disabled]="locked()"></p-inputnumber>
           </div>
           <div class="avk-field">
             <label>Aktuell</label>
-            <p-inputnumber formControlName="curQuantity" [min]="0" [disabled]="locked()" />
+            <p-inputnumber formControlName="curQuantity" [min]="0" [disabled]="locked()"></p-inputnumber>
           </div>
         </div>
       </p-card>
@@ -128,15 +140,15 @@
         <div class="avk-grid-3">
           <div class="avk-field">
             <label>TN-Gebühr (€)</label>
-            <p-inputnumber formControlName="admission" [min]="0" [max]="999" [disabled]="locked()" />
+            <p-inputnumber formControlName="admission" [min]="0" [max]="999" [disabled]="locked()"></p-inputnumber>
           </div>
           <div class="avk-field">
             <label>Zusatzkosten (€)</label>
-            <p-inputnumber formControlName="extraCharges" [min]="0" [max]="999" [disabled]="locked()" />
+            <p-inputnumber formControlName="extraCharges" [min]="0" [max]="999" [disabled]="locked()"></p-inputnumber>
           </div>
           <div class="avk-field">
             <label>Anzahlung (€)</label>
-            <p-inputnumber formControlName="advances" [min]="0" [max]="999" [disabled]="locked()" />
+            <p-inputnumber formControlName="advances" [min]="0" [max]="999" [disabled]="locked()"></p-inputnumber>
           </div>
         </div>
         <div class="avk-grid-2">
@@ -217,11 +229,11 @@
         <div class="avk-grid-2">
           <div class="avk-field">
             <label>Startdatum</label>
-            <p-datepicker formControlName="startDate" dateFormat="dd.mm.yy" appendTo="body" />
+            <p-datepicker formControlName="startDate" dateFormat="dd.mm.yy" appendTo="body"></p-datepicker>
           </div>
           <div class="avk-field">
             <label>Enddatum</label>
-            <p-datepicker formControlName="endDate" dateFormat="dd.mm.yy" appendTo="body" />
+            <p-datepicker formControlName="endDate" dateFormat="dd.mm.yy" appendTo="body"></p-datepicker>
           </div>
         </div>
         <div class="avk-grid-2">

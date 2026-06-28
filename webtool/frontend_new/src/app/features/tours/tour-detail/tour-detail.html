@@ -17,7 +17,7 @@
           sollst, kannst du leer lassen.
         </p>
         @if (autoSave.lastSaved()) {
-          <p-message severity="success" [text]="'Automatisch gespeichert um ' + (autoSave.lastSaved() | date: 'HH:mm:ss')" />
+          <p-message severity="success">Automatisch gespeichert um {{ autoSave.lastSaved() | date: 'HH:mm:ss' }}</p-message>
         }
       </p-card>
 
