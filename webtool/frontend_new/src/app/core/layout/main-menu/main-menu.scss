@@ -1,0 +1,53 @@
+:host {
+  display: block;
+}
+
+.avk-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 1.15rem;
+  padding-right: 1rem;
+
+  i {
+    font-size: 1.3rem;
+  }
+}
+
+.avk-user {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.avk-dialog-hint {
+  margin: 0 0 1rem;
+  font-size: 0.85rem;
+  opacity: 0.75;
+}
+
+.avk-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+
+  input {
+    width: 100%;
+  }
+}
+
+.avk-input-error {
+  border-color: var(--p-red-400, #f87171) !important;
+  background: var(--p-red-50, #fef2f2);
+}
+
+.avk-error-text {
+  display: block;
+  margin-bottom: 0.75rem;
+  color: var(--p-red-500, #ef4444);
+}
+
+:host ::ng-deep .w-full {
+  width: 100%;
+}

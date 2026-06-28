@@ -1,0 +1,26 @@
+<section class="avk-page">
+  <header class="avk-dashboard-header">
+    <h1>WebTool – DAV Allgäu-Kempten</h1>
+    @if (isLoggedIn()) {
+      <p>Willkommen zurück, {{ user().firstName }}!</p>
+    } @else {
+      <p>Bitte melde dich an, um Veranstaltungen zu bearbeiten.</p>
+    }
+  </header>
+
+  <div class="avk-dashboard-grid">
+    @for (tile of tiles; track tile.link) {
+      <a [routerLink]="tile.link" class="avk-tile">
+        <p-card>
+          <div class="avk-tile-body">
+            <i [class]="tile.icon"></i>
+            <div>
+              <h2>{{ tile.label }}</h2>
+              <p>{{ tile.description }}</p>
+            </div>
+          </div>
+        </p-card>
+      </a>
+    }
+  </div>
+</section>

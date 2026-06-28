@@ -1,0 +1,140 @@
+<section class="avk-page">
+  <div class="avk-list-toolbar">
+    <p-selectButton
+      [options]="partOptions"
+      [ngModel]="part()"
+      (onChange)="setPart($event.value)"
+      optionLabel="label"
+      optionValue="value"
+      [allowEmpty]="false"
+    />
+    <span class="avk-spacer"></span>
+    @if (canAdd()) {
+      <p-button label="Kurs hinzufügen" icon="pi pi-plus" severity="secondary" (onClick)="openCreate()" />
+    }
+  </div>
+
+  <p-table
+    #dt
+    [value]="rows()"
+    [paginator]="true"
+    [rows]="20"
+    [rowsPerPageOptions]="[20, 50, 100]"
+    [globalFilterFields]="['reference', 'title', 'guide']"
+    dataKey="id"
+    styleClass="p-datatable-sm p-datatable-striped"
+  >
+    <ng-template #caption>
+      <div class="avk-table-caption">
+        <span class="p-input-icon-left">
+          <i class="pi pi-search"></i>
+          <input
+            pInputText
+            type="text"
+            maxlength="50"
+            placeholder="Kursfilter"
+            (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+          />
+        </span>
+        <p-select
+          [options]="stateGroupOptions"
+          [ngModel]="stateGroup()"
+          (onChange)="stateGroup.set($event.value)"
+          optionLabel="label"
+          optionValue="value"
+        />
+      </div>
+    </ng-template>
+
+    <ng-template #header>
+      <tr>
+        <th>Buchungscode</th>
+        <th>Datum</th>
+        <th>Bezeichnung</th>
+        <th>Kursleiter</th>
+        <th>Status</th>
+        <th>Belegung (Min|Akt|Max)</th>
+        <th>Aktionen</th>
+      </tr>
+    </ng-template>
+
+    <ng-template #body let-row>
+      <tr>
+        <td (click)="select(row)" class="avk-link-cell">{{ row.reference }}</td>
+        <td (click)="select(row)" class="avk-link-cell">
+          {{ row.startDate | date: 'dd.MM.yyyy' }}
+          @if (row.endDate) {
+            – {{ row.endDate | date: 'dd.MM.yyyy' }}
+          }
+        </td>
+        <td (click)="select(row)" class="avk-link-cell">{{ row.title }}</td>
+        <td>{{ row.guide }}</td>
+        <td>{{ row.stateName }}</td>
+        <td>{{ row.minQuantity }} | {{ row.curQuantity }} | {{ row.maxQuantity }}</td>
+        <td>
+          <div class="avk-row-actions">
+            @if (canModify(row)) {
+              <p-button label="Klonen" size="small" severity="info" (onClick)="openClone(row)" />
+            }
+            @if (canDelete(row)) {
+              <p-button label="Löschen" size="small" severity="danger" (onClick)="confirmDelete(row)" />
+            }
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template #emptymessage>
+      <tr><td colspan="7" class="avk-empty">Keine Kurse gefunden.</td></tr>
+    </ng-template>
+  </p-table>
+</section>
+
+<p-dialog
+  header="Neuer Kurs"
+  [modal]="true"
+  [visible]="showCreate()"
+  (visibleChange)="showCreate.set($event)"
+  [style]="{ width: '32rem' }"
+>
+  <form [formGroup]="createForm" class="avk-dialog-form">
+    <div class="avk-field">
+      <label>Thema</label>
+      <p-select
+        formControlName="topicId"
+        [options]="topics()"
+        optionLabel="title"
+        optionValue="id"
+        [filter]="true"
+        filterBy="title"
+        placeholder="Thema wählen"
+        appendTo="body"
+      />
+    </div>
+    <div class="avk-field">
+      <label>Startdatum</label>
+      <p-datepicker formControlName="startDate" dateFormat="dd.mm.yy" appendTo="body" />
+    </div>
+    <p-button label="Bestätigen" (onClick)="create()" [disabled]="createForm.invalid" />
+  </form>
+</p-dialog>
+
+<p-dialog
+  header="Kurs klonen"
+  [modal]="true"
+  [visible]="showClone()"
+  (visibleChange)="showClone.set($event)"
+  [style]="{ width: '32rem' }"
+>
+  <form [formGroup]="cloneForm" class="avk-dialog-form">
+    <div class="avk-field">
+      <label>Startdatum</label>
+      <p-datepicker formControlName="startDate" dateFormat="dd.mm.yy" appendTo="body" />
+    </div>
+    <div class="avk-field">
+      <label>Enddatum (optional)</label>
+      <p-datepicker formControlName="endDate" dateFormat="dd.mm.yy" appendTo="body" />
+    </div>
+    <p-button label="Bestätigen" (onClick)="clone()" [disabled]="cloneForm.invalid" />
+  </form>
+</p-dialog>

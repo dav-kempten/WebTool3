@@ -1,0 +1,88 @@
+.avk-detail-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.avk-hint {
+  margin: 0 0 0.75rem;
+  opacity: 0.75;
+}
+
+.avk-warn {
+  margin: 0;
+  color: var(--p-red-500, #ef4444);
+}
+
+.avk-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.avk-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.avk-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+
+  input,
+  textarea,
+  p-select,
+  p-multiselect,
+  p-inputnumber,
+  p-datepicker {
+    width: 100%;
+  }
+
+  label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    opacity: 0.8;
+  }
+}
+
+.avk-field-checkbox {
+  justify-content: flex-end;
+}
+
+.avk-checkbox-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  align-items: center;
+}
+
+.avk-full {
+  width: 100%;
+}
+
+.avk-link-cell {
+  cursor: pointer;
+}
+
+.avk-detail-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0 2rem;
+}
+
+.avk-spacer {
+  flex: 1 1 auto;
+}
+
+.avk-event-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+:host ::ng-deep .w-full {
+  width: 100%;
+}
