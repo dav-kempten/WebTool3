@@ -11,9 +11,10 @@ dependencies = [
     'django-filter',
     'django-cors-headers',
     'django-modeladmin-reorder',
-    "psycopg2-binary>=2.9.12",
-    "django-environ>=0.13.0",
-    "icalendar>=7.1.2",
+    'psycopg2-binary>=2.9.12',
+    'django-environ>=0.13.0',
+    'icalendar>=7.1.2',
+    'debugpy'
 ]
 
 [project.optional-dependencies]
