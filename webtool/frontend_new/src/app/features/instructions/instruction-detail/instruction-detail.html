@@ -47,14 +47,14 @@
 
       <p-card subheader="Kursspezifika">
         <div class="avk-checkbox-row">
-          <div class="flex items-center gap-2">
+          <div class="avk-checkbox-item">
             <p-checkbox
               formControlName="ladiesOnly"
               [binary]="true"
               inputId="ladiesOnlyCheckbox" />
             <label for="ladiesOnlyCheckbox">Kurs von Frauen für Frauen</label>
           </div>
-          <div class="flex items-center gap-2">
+          <div class="avk-checkbox-item">
             <p-checkbox
               formControlName="isSpecial"
               [binary]="true"
@@ -116,12 +116,10 @@
             <input pInputText formControlName="miscEquipment" maxlength="75" [disabled]="locked()" />
           </div>
           <div class="avk-field avk-field-checkbox">
-            <p-checkbox formControlName="equipmentService" [binary]="true" label="Ausrüstungsservice gewünscht" />
-            <!--<p-checkbox
-              formControlName="equipmentService"
-              [binary]="true"
-              inputId="equipmentService" />
-            <label for="equipmentService">Ausrüstungsservice gewünscht</label>-->
+            <div class="avk-checkbox-item">
+              <p-checkbox formControlName="equipmentService" [binary]="true" inputId="equipmentServiceCheckbox" />
+              <label for="equipmentServiceCheckbox">Ausrüstungsservice gewünscht</label>
+            </div>
           </div>
         </div>
       </p-card>

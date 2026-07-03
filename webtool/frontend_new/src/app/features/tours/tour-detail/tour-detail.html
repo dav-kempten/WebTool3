@@ -86,10 +86,22 @@
 
       <p-card subheader="Tourenspezifika">
         <div class="avk-checkbox-row">
-          <p-checkbox formControlName="ladiesOnly" [binary]="true" label="Touren von Frauen für Frauen" />
-          <p-checkbox formControlName="youthOnTour" [binary]="true" label="Jugend on Tour" />
-          <p-checkbox formControlName="relaxed" [binary]="true" label="Geh'mütlich" />
-          <p-checkbox formControlName="mountainBus" [binary]="true" label="Bergbus" />
+          <div class="avk-checkbox-item">
+            <p-checkbox formControlName="ladiesOnly" [binary]="true" inputId="ladiesOnlyCheckbox" />
+            <label for="ladiesOnlyCheckbox">Touren von Frauen für Frauen</label>
+          </div>
+          <div class="avk-checkbox-item">
+            <p-checkbox formControlName="youthOnTour" [binary]="true" inputId="youthOnTourCheckbox" />
+            <label for="youthOnTourCheckbox">Jugend on Tour</label>
+          </div>
+          <div class="avk-checkbox-item">
+            <p-checkbox formControlName="relaxed" [binary]="true" inputId="relaxedCheckbox" />
+            <label for="relaxedCheckbox">Geh'mütlich</label>
+          </div>
+          <div class="avk-checkbox-item">
+            <p-checkbox formControlName="mountainBus" [binary]="true" inputId="mountainBusCheckbox" />
+            <label for="mountainBusCheckbox">Bergbus</label>
+          </div>
         </div>
       </p-card>
 
@@ -181,7 +193,10 @@
             <input pInputText formControlName="miscEquipment" maxlength="75" [disabled]="locked()" />
           </div>
           <div class="avk-field avk-field-checkbox">
-            <p-checkbox formControlName="equipmentService" [binary]="true" label="Ausrüstungsservice gewünscht" />
+            <div class="avk-checkbox-item">
+              <p-checkbox formControlName="equipmentService" [binary]="true" inputId="equipmentServiceCheckbox" />
+              <label for="equipmentServiceCheckbox">Ausrüstungsservice gewünscht</label>
+            </div>
           </div>
         </div>
       </p-card>
@@ -351,18 +366,33 @@
           </div>
 
           <div class="avk-checkbox-row">
-            <p-checkbox formControlName="reservationService" [binary]="true" label="Schulungsraum-Reservierung" />
+            <div class="avk-checkbox-item">
+              <p-checkbox formControlName="reservationService" [binary]="true" inputId="reservationServiceCheckbox" />
+              <label for="reservationServiceCheckbox">Schulungsraum-Reservierung</label>
+            </div>
             @if (selectedKind() === 'tour') {
-              <p-checkbox formControlName="lea" [binary]="true" label="Low Emission Adventure" />
+              <div class="avk-checkbox-item">
+                <p-checkbox formControlName="lea" [binary]="true" inputId="leaCheckbox" />
+                <label for="leaCheckbox">Low Emission Adventure</label>
+              </div>
             }
           </div>
         }
 
         @if (selectedKind() === 'tour') {
           <div class="avk-checkbox-row">
-            <p-checkbox formControlName="distal" [binary]="true" label="Gemeinschaftsanreise" />
-            <p-checkbox formControlName="publicTransport" [binary]="true" label="Öffentliche Anreise" />
-            <p-checkbox formControlName="shuttleService" [binary]="true" label="Alpin-Shuttle" />
+            <div class="avk-checkbox-item">
+              <p-checkbox formControlName="distal" [binary]="true" inputId="distalCheckbox" />
+              <label for="distalCheckbox">Gemeinschaftsanreise</label>
+            </div>
+            <div class="avk-checkbox-item">
+              <p-checkbox formControlName="publicTransport" [binary]="true" inputId="publicTransportCheckbox" />
+              <label for="publicTransportCheckbox">Öffentliche Anreise</label>
+            </div>
+            <div class="avk-checkbox-item">
+              <p-checkbox formControlName="shuttleService" [binary]="true" inputId="shuttleServiceCheckbox" />
+              <label for="shuttleServiceCheckbox">Alpin-Shuttle</label>
+            </div>
           </div>
           <div class="avk-grid-3">
             <div class="avk-field">

@@ -47,7 +47,10 @@
           </div>
         </div>
         <div class="avk-checkbox-row">
-          <p-checkbox formControlName="ladiesOnly" [binary]="true" label="Von Frauen für Frauen" />
+          <div class="avk-checkbox-item">
+            <p-checkbox formControlName="ladiesOnly" [binary]="true" inputId="ladiesOnlyCheckbox" />
+            <label for="ladiesOnlyCheckbox">Von Frauen für Frauen</label>
+          </div>
         </div>
       </p-card>
 

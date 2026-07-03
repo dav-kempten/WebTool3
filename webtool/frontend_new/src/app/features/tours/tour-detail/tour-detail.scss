@@ -58,6 +58,19 @@
   align-items: center;
 }
 
+.avk-checkbox-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  label {
+    font-size: inherit;
+    font-weight: normal;
+    opacity: 1;
+    cursor: pointer;
+  }
+}
+
 .avk-full {
   width: 100%;
 }
