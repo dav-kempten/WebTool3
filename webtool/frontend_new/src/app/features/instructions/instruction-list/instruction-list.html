@@ -10,7 +10,7 @@
     />
     <span class="avk-spacer"></span>
     @if (canAdd()) {
-      <p-button label="Kurs hinzufügen" icon="pi pi-plus" severity="secondary" (onClick)="openCreate()" />
+      <p-button label="Kurs hinzufügen" icon="pi pi-plus" severity="secondary" (onClick)="showCreate.set(true)" />
     }
   </div>
 
@@ -90,34 +90,7 @@
   </p-table>
 </section>
 
-<p-dialog
-  header="Neuer Kurs"
-  [modal]="true"
-  [visible]="showCreate()"
-  (visibleChange)="showCreate.set($event)"
-  [style]="{ width: '32rem' }"
->
-  <form [formGroup]="createForm" class="avk-dialog-form">
-    <div class="avk-field">
-      <label>Thema</label>
-      <p-select
-        formControlName="topicId"
-        [options]="topics()"
-        optionLabel="title"
-        optionValue="id"
-        [filter]="true"
-        filterBy="title"
-        placeholder="Thema wählen"
-        appendTo="body"
-      />
-    </div>
-    <div class="avk-field">
-      <label>Startdatum</label>
-      <p-datepicker formControlName="startDate" dateFormat="dd.mm.yy" appendTo="body" />
-    </div>
-    <p-button label="Bestätigen" (onClick)="create()" [disabled]="createForm.invalid" />
-  </form>
-</p-dialog>
+<avk-instruction-create-dialog [(visible)]="showCreate" />
 
 <p-dialog
   header="Kurs klonen"

@@ -20,6 +20,7 @@ import { PermissionLevel } from '../../../core/services/permission';
 import { States, StatesGroup, getStatesOfGroup } from '../../../models/value';
 import { InstructionSummary } from '../../../models/instruction';
 import { toIsoDate } from '../../../shared/util/date';
+import { InstructionCreateDialog } from '../../../shared/dialogs/instruction-create-dialog/instruction-create-dialog';
 
 interface InstructionRow extends InstructionSummary {
   stateName: string;
@@ -40,6 +41,7 @@ interface InstructionRow extends InstructionSummary {
     SelectButtonModule,
     DatePickerModule,
     InputTextModule,
+    InstructionCreateDialog,
   ],
   templateUrl: './instruction-list.html',
   styleUrl: '../../tours/tour-list/tour-list.scss',
@@ -99,13 +101,8 @@ export class InstructionList implements OnInit {
       .map((t) => ({ ...t, stateName: stateMap.get(t.stateId)?.state ?? '' }));
   });
 
-  // create dialog
+  // create dialog (shared component)
   readonly showCreate = signal(false);
-  readonly createForm = this.fb.group({
-    topicId: this.fb.control<number | null>(null),
-    startDate: this.fb.control<Date | null>(null),
-  });
-  readonly topics = computed(() => this.values.topics());
 
   // clone dialog
   readonly showClone = signal(false);
@@ -143,26 +140,6 @@ export class InstructionList implements OnInit {
     if (this.canModify(row)) {
       void this.router.navigate(['/instructions', row.id]);
     }
-  }
-
-  openCreate(): void {
-    this.createForm.reset();
-    this.showCreate.set(true);
-  }
-
-  create(): void {
-    const value = this.createForm.getRawValue();
-    if (!value.topicId || !value.startDate) {
-      return;
-    }
-    const perm = this.permission();
-    this.instructions.create({
-      topicId: value.topicId,
-      startDate: toIsoDate(value.startDate)!,
-      guideId:
-        perm.permissionLevel === PermissionLevel.guide ? (perm.guideId ?? null) : null,
-    });
-    this.showCreate.set(false);
   }
 
   openClone(row: InstructionSummary): void {

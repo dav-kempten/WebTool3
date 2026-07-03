@@ -10,7 +10,6 @@ import { DialogModule } from 'primeng/dialog';
 import { SelectModule } from 'primeng/select';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { DatePickerModule } from 'primeng/datepicker';
-import { ToggleButtonModule } from 'primeng/togglebutton';
 import { InputTextModule } from 'primeng/inputtext';
 import { ConfirmationService } from 'primeng/api';
 
@@ -25,6 +24,7 @@ import {
 } from '../../../models/value';
 import { TourSummary } from '../../../models/tour';
 import { toIsoDate } from '../../../shared/util/date';
+import { TourCreateDialog } from '../../../shared/dialogs/tour-create-dialog/tour-create-dialog';
 
 interface TourRow extends TourSummary {
   stateName: string;
@@ -44,8 +44,8 @@ interface TourRow extends TourSummary {
     SelectModule,
     SelectButtonModule,
     DatePickerModule,
-    ToggleButtonModule,
     InputTextModule,
+    TourCreateDialog,
   ],
   templateUrl: './tour-list.html',
   styleUrl: './tour-list.scss',
@@ -105,19 +105,8 @@ export class TourList implements OnInit {
       .map((t) => ({ ...t, stateName: stateMap.get(t.stateId)?.state ?? '' }));
   });
 
-  // --- create dialog ---
+  // --- create dialog (shared component) ---
   readonly showCreate = signal(false);
-  readonly preliminaryEnabled = signal(false);
-  readonly createForm = this.fb.group({
-    categoryId: this.fb.control<number | null>(null),
-    startDate: this.fb.control<Date | null>(null),
-    deadline: this.fb.control<Date | null>(null),
-    preliminary: this.fb.control<Date | null>(null),
-  });
-
-  readonly tourCategories = computed(() =>
-    this.values.categories().filter((c) => c.tour),
-  );
 
   // --- clone dialog ---
   readonly showClone = signal(false);
@@ -155,31 +144,6 @@ export class TourList implements OnInit {
     if (this.canModify(tour)) {
       void this.router.navigate(['/tours', tour.id]);
     }
-  }
-
-  openCreate(): void {
-    this.createForm.reset();
-    this.preliminaryEnabled.set(false);
-    this.showCreate.set(true);
-  }
-
-  create(): void {
-    const value = this.createForm.getRawValue();
-    if (!value.categoryId || !value.startDate || !value.deadline) {
-      return;
-    }
-    const perm = this.permission();
-    this.tours.create({
-      categoryId: value.categoryId,
-      startDate: toIsoDate(value.startDate)!,
-      deadline: toIsoDate(value.deadline)!,
-      preliminary: this.preliminaryEnabled()
-        ? toIsoDate(value.preliminary)
-        : null,
-      guideId:
-        perm.permissionLevel === PermissionLevel.guide ? (perm.guideId ?? null) : null,
-    });
-    this.showCreate.set(false);
   }
 
   openClone(tour: TourSummary): void {

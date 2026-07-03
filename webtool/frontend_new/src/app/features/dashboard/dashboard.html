@@ -22,5 +22,33 @@
         </p-card>
       </a>
     }
+
+    @if (canCreate()) {
+      <button type="button" class="avk-tile avk-tile-action" (click)="showCreateTour.set(true)">
+        <p-card>
+          <div class="avk-tile-body">
+            <i class="pi pi-plus-circle"></i>
+            <div>
+              <h2>Neue Tour</h2>
+              <p>Eine neue Tour mit den wichtigsten Angaben anlegen.</p>
+            </div>
+          </div>
+        </p-card>
+      </button>
+      <button type="button" class="avk-tile avk-tile-action" (click)="showCreateInstruction.set(true)">
+        <p-card>
+          <div class="avk-tile-body">
+            <i class="pi pi-plus-circle"></i>
+            <div>
+              <h2>Neuer Kurs</h2>
+              <p>Einen neuen Kurs mit den wichtigsten Angaben anlegen.</p>
+            </div>
+          </div>
+        </p-card>
+      </button>
+    }
   </div>
 </section>
+
+<avk-tour-create-dialog [(visible)]="showCreateTour" />
+<avk-instruction-create-dialog [(visible)]="showCreateInstruction" />

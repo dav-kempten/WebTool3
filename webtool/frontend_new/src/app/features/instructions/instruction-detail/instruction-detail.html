@@ -97,7 +97,8 @@
         <div class="avk-grid-2">
           <div class="avk-field">
             <label>Mindestqualifikation</label>
-            <p-multiselect formControlName="qualificationIds" [options]="qualificationOptions()" optionLabel="title" optionValue="id" [disabled]="locked()"></p-multiselect>
+            <p-multiselect formControlName="qualificationIds" [options]="qualificationOptions()" optionLabel="title"
+                           optionValue="id" [disabled]="locked()"></p-multiselect>
           </div>
           <div class="avk-field">
             <label>Spezielle Voraussetzungen</label>
@@ -107,7 +108,8 @@
         <div class="avk-grid-3">
           <div class="avk-field">
             <label>Ausrüstung</label>
-            <p-multiselect formControlName="equipmentIds" [options]="equipmentOptions()" optionLabel="name" optionValue="id" [disabled]="locked()"></p-multiselect>
+            <p-multiselect formControlName="equipmentIds" [options]="equipmentOptions()" optionLabel="name"
+                           optionValue="id" [disabled]="locked()"></p-multiselect>
           </div>
           <div class="avk-field">
             <label>Zusätzliche Ausrüstung</label>
@@ -115,6 +117,11 @@
           </div>
           <div class="avk-field avk-field-checkbox">
             <p-checkbox formControlName="equipmentService" [binary]="true" label="Ausrüstungsservice gewünscht" />
+            <!--<p-checkbox
+              formControlName="equipmentService"
+              [binary]="true"
+              inputId="equipmentService" />
+            <label for="equipmentService">Ausrüstungsservice gewünscht</label>-->
           </div>
         </div>
       </p-card>

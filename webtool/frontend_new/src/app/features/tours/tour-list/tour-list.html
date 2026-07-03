@@ -14,7 +14,7 @@
         label="Tour hinzufügen"
         icon="pi pi-plus"
         severity="secondary"
-        (onClick)="openCreate()"
+        (onClick)="showCreate.set(true)"
       />
     }
   </div>
@@ -109,51 +109,7 @@
 </section>
 
 <!-- Create dialog -->
-<p-dialog
-  header="Neue Tour"
-  [modal]="true"
-  [visible]="showCreate()"
-  (visibleChange)="showCreate.set($event)"
-  [style]="{ width: '32rem' }"
->
-  <form [formGroup]="createForm" class="avk-dialog-form">
-    <div class="avk-field">
-      <label>Tourenart</label>
-      <p-select
-        formControlName="categoryId"
-        [options]="tourCategories()"
-        optionLabel="name"
-        optionValue="id"
-        placeholder="Kategorie wählen"
-        appendTo="body"
-      />
-    </div>
-    <div class="avk-field">
-      <label>Startdatum</label>
-      <p-datepicker formControlName="startDate" dateFormat="dd.mm.yy" appendTo="body" />
-    </div>
-    <div class="avk-field">
-      <label>Anmeldeschluss</label>
-      <p-datepicker formControlName="deadline" dateFormat="dd.mm.yy" appendTo="body" />
-    </div>
-    <div class="avk-field">
-      <p-toggleButton
-        [ngModel]="preliminaryEnabled()"
-        [ngModelOptions]="{ standalone: true }"
-        (onChange)="preliminaryEnabled.set($event.checked)"
-        onLabel="Vorbesprechung entfernen"
-        offLabel="Vorbesprechung hinzufügen"
-      />
-    </div>
-    @if (preliminaryEnabled()) {
-      <div class="avk-field">
-        <label>Vorbesprechung</label>
-        <p-datepicker formControlName="preliminary" dateFormat="dd.mm.yy" appendTo="body" />
-      </div>
-    }
-    <p-button label="Bestätigen" (onClick)="create()" [disabled]="createForm.invalid" />
-  </form>
-</p-dialog>
+<avk-tour-create-dialog [(visible)]="showCreate" />
 
 <!-- Clone dialog -->
 <p-dialog

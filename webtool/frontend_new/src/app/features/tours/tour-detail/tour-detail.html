@@ -68,7 +68,7 @@
               [filter]="true"
               filterBy="label"
               [disabled]="locked()"
-            />
+            ></p-multiselect>
           </div>
         </div>
       </p-card>
@@ -81,7 +81,7 @@
           optionValue="id"
           styleClass="w-full"
           [disabled]="locked()"
-        />
+        ></p-multiselect>
       </p-card>
 
       <p-card subheader="Tourenspezifika">
@@ -158,7 +158,7 @@
               optionLabel="title"
               optionValue="id"
               [disabled]="locked()"
-            />
+            ></p-multiselect>
           </div>
           <div class="avk-field">
             <label>Spezielle Voraussetzungen</label>
@@ -174,7 +174,7 @@
               optionLabel="name"
               optionValue="id"
               [disabled]="locked()"
-            />
+            ></p-multiselect>
           </div>
           <div class="avk-field">
             <label>Zusätzliche Ausrüstung</label>
@@ -190,15 +190,15 @@
         <div class="avk-grid-3">
           <div class="avk-field">
             <label>Mindestens</label>
-            <p-inputnumber formControlName="minQuantity" [min]="0" [disabled]="locked()" />
+            <p-inputnumber formControlName="minQuantity" [min]="0" [disabled]="locked()"></p-inputnumber>
           </div>
           <div class="avk-field">
             <label>Maximal</label>
-            <p-inputnumber formControlName="maxQuantity" [min]="0" [disabled]="locked()" />
+            <p-inputnumber formControlName="maxQuantity" [min]="0" [disabled]="locked()"></p-inputnumber>
           </div>
           <div class="avk-field">
             <label>Aktuell</label>
-            <p-inputnumber formControlName="curQuantity" [min]="0" [disabled]="locked()" />
+            <p-inputnumber formControlName="curQuantity" [min]="0" [disabled]="locked()"></p-inputnumber>
           </div>
         </div>
       </p-card>
@@ -207,15 +207,15 @@
         <div class="avk-grid-3">
           <div class="avk-field">
             <label>TN-Gebühr (€)</label>
-            <p-inputnumber formControlName="admission" [min]="0" [max]="999" [disabled]="locked()" />
+            <p-inputnumber formControlName="admission" [min]="0" [max]="999" [disabled]="locked()"></p-inputnumber>
           </div>
           <div class="avk-field">
             <label>Zusatzkosten (€)</label>
-            <p-inputnumber formControlName="extraCharges" [min]="0" [max]="999" [disabled]="locked()" />
+            <p-inputnumber formControlName="extraCharges" [min]="0" [max]="999" [disabled]="locked()"></p-inputnumber>
           </div>
           <div class="avk-field">
             <label>Anzahlung (€)</label>
-            <p-inputnumber formControlName="advances" [min]="0" [max]="999" [disabled]="locked()" />
+            <p-inputnumber formControlName="advances" [min]="0" [max]="999" [disabled]="locked()"></p-inputnumber>
           </div>
         </div>
         <div class="avk-grid-2">
@@ -318,12 +318,12 @@
         <div class="avk-grid-2">
           <div class="avk-field">
             <label>Startdatum</label>
-            <p-datepicker formControlName="startDate" dateFormat="dd.mm.yy" appendTo="body" />
+            <p-datepicker formControlName="startDate" dateFormat="dd.mm.yy" appendTo="body"></p-datepicker>
           </div>
           @if (selectedKind() === 'tour') {
             <div class="avk-field">
               <label>Enddatum</label>
-              <p-datepicker formControlName="endDate" dateFormat="dd.mm.yy" appendTo="body" />
+              <p-datepicker formControlName="endDate" dateFormat="dd.mm.yy" appendTo="body"></p-datepicker>
             </div>
           }
         </div>
@@ -367,7 +367,7 @@
           <div class="avk-grid-3">
             <div class="avk-field">
               <label>Anreise (km)</label>
-              <p-inputnumber formControlName="distance" [min]="0" [max]="9999" />
+              <p-inputnumber formControlName="distance" [min]="0" [max]="9999"></p-inputnumber>
             </div>
             <div class="avk-field">
               <label>Ausgangsort</label>

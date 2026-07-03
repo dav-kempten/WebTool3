@@ -1,0 +1,17 @@
+.avk-dialog-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 18rem;
+}
+
+.avk-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+
+  p-select,
+  p-datepicker {
+    width: 100%;
+  }
+}
