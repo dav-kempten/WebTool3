@@ -117,7 +117,13 @@ export class TourDetail {
   // --- option lists ---
   readonly stateOptions = computed(() => {
     const states = this.values.states();
-    return this.isOwner() ? states.filter((s) => s.id <= 2) : states;
+    if (!this.isOwner()) {
+      return states;
+    }
+    // Owners may only pick In Arbeit/Fertig, but the current state must stay
+    // in the list so the (locked) select can still display e.g. "Veröffentlicht".
+    const currentId = this.tour()?.stateId;
+    return states.filter((s) => s.id <= 2 || s.id === currentId);
   });
   readonly skillOptions = computed(() =>
     this.values.skills().filter((s) => s.categoryId === this.tour()?.categoryId),

@@ -134,7 +134,13 @@ export class InstructionDetail {
 
   readonly stateOptions = computed(() => {
     const states = this.values.states();
-    return this.isOwner() ? states.filter((s) => s.id <= 2) : states;
+    if (!this.isOwner()) {
+      return states;
+    }
+    // Owners may only pick In Arbeit/Fertig, but the current state must stay
+    // in the list so the (locked) select can still display e.g. "Veröffentlicht".
+    const currentId = this.instruction()?.stateId;
+    return states.filter((s) => s.id <= 2 || s.id === currentId);
   });
   readonly equipmentOptions = this.values.equipments;
   readonly qualificationOptions = this.values.topics;
