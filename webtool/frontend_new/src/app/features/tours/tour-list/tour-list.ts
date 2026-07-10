@@ -15,6 +15,7 @@ import { ConfirmationService } from 'primeng/api';
 
 import { ToursStore } from '../../../core/stores/tours.store';
 import { ValuesStore } from '../../../core/stores/values.store';
+import { NamesStore } from '../../../core/stores/names.store';
 import { AuthService } from '../../../core/services/auth.service';
 import { PermissionLevel } from '../../../core/services/permission';
 import {
@@ -53,6 +54,7 @@ interface TourRow extends TourSummary {
 export class TourList implements OnInit {
   private tours = inject(ToursStore);
   private values = inject(ValuesStore);
+  private names = inject(NamesStore);
   private auth = inject(AuthService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
@@ -85,6 +87,7 @@ export class TourList implements OnInit {
     const part = this.part();
     const group = getStatesOfGroup(this.stateGroup());
     const stateMap = this.values.stateById();
+    const nameMap = this.names.nameById();
     const perm = this.permission();
 
     return this.tours
@@ -102,7 +105,14 @@ export class TourList implements OnInit {
           ? perm.guideId === t.guideId
           : true,
       )
-      .map((t) => ({ ...t, stateName: stateMap.get(t.stateId)?.state ?? '' }));
+      .map((t) => {
+        const name = nameMap.get(t.guideId);
+        return {
+          ...t,
+          stateName: stateMap.get(t.stateId)?.state ?? '',
+          guide: name ? `${name.firstName} ${name.lastName}` : '',
+        };
+      });
   });
 
   // --- create dialog (shared component) ---
@@ -119,6 +129,7 @@ export class TourList implements OnInit {
   ngOnInit(): void {
     this.tours.loadSummaries();
     this.values.loadValues();
+    this.names.loadNames();
   }
 
   setPart(value: string | null): void {

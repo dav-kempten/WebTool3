@@ -15,6 +15,7 @@ import { ConfirmationService } from 'primeng/api';
 
 import { InstructionsStore } from '../../../core/stores/instructions.store';
 import { ValuesStore } from '../../../core/stores/values.store';
+import { NamesStore } from '../../../core/stores/names.store';
 import { AuthService } from '../../../core/services/auth.service';
 import { PermissionLevel } from '../../../core/services/permission';
 import { States, StatesGroup, getStatesOfGroup } from '../../../models/value';
@@ -49,6 +50,7 @@ interface InstructionRow extends InstructionSummary {
 export class InstructionList implements OnInit {
   private instructions = inject(InstructionsStore);
   private values = inject(ValuesStore);
+  private names = inject(NamesStore);
   private auth = inject(AuthService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
@@ -81,6 +83,7 @@ export class InstructionList implements OnInit {
     const part = this.part();
     const group = getStatesOfGroup(this.stateGroup());
     const stateMap = this.values.stateById();
+    const nameMap = this.names.nameById();
     const perm = this.permission();
 
     return this.instructions
@@ -98,7 +101,14 @@ export class InstructionList implements OnInit {
           ? perm.guideId === t.guideId
           : true,
       )
-      .map((t) => ({ ...t, stateName: stateMap.get(t.stateId)?.state ?? '' }));
+      .map((t) => {
+        const name = nameMap.get(t.guideId);
+        return {
+          ...t,
+          stateName: stateMap.get(t.stateId)?.state ?? '',
+          guide: name ? `${name.firstName} ${name.lastName}` : '',
+        };
+      });
   });
 
   // create dialog (shared component)
@@ -115,6 +125,7 @@ export class InstructionList implements OnInit {
   ngOnInit(): void {
     this.instructions.loadSummaries();
     this.values.loadValues();
+    this.names.loadNames();
   }
 
   setPart(value: string | null): void {
