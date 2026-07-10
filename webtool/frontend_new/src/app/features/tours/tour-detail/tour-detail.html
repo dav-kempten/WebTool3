@@ -139,10 +139,12 @@
         <div class="avk-grid-2">
           <div class="avk-field">
             <label>Technik</label>
+            <!-- Values API "id" is the SkillDescription pk; the Skill pk the
+                 backend expects equals "level" (1=△, 2=△△, 3=△△△). -->
             <p-select
               formControlName="skillId"
               [options]="skillOptions()"
-              optionLabel="code"
+              optionLabel="description"
               optionValue="level"
               [disabled]="locked()"
             />
@@ -152,7 +154,7 @@
             <p-select
               formControlName="fitnessId"
               [options]="fitnessOptions()"
-              optionLabel="code"
+              optionLabel="description"
               optionValue="level"
               [disabled]="locked()"
             />
