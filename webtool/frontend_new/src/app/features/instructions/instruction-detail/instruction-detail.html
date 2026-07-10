@@ -93,6 +93,41 @@
         </p-table>
       </p-card>
 
+      @if (topic(); as t) {
+        @if (!instruction()?.isSpecial) {
+          <p-card subheader="Kursdetails aus dem Kursthema">
+            <p class="avk-hint">
+              Diese Voraussetzungen und die Beschreibung sind bereits im Kursthema
+              „{{ t.title }}“ hinterlegt und müssen unten nicht erneut eingetragen werden.
+            </p>
+            <div class="avk-grid-2">
+              <div class="avk-field">
+                <label>Mindestqualifikation (Kursthema)</label>
+                <input pInputText [value]="topicQualificationNames()" readonly />
+              </div>
+              <div class="avk-field">
+                <label>Zusätzliche Anforderungen (Kursthema)</label>
+                <input pInputText [value]="t.preconditions" readonly />
+              </div>
+            </div>
+            <div class="avk-grid-2">
+              <div class="avk-field">
+                <label>Ausrüstung (Kursthema)</label>
+                <input pInputText [value]="topicEquipmentNames()" readonly />
+              </div>
+              <div class="avk-field">
+                <label>Zusatzausrüstung (Kursthema)</label>
+                <input pInputText [value]="t.miscEquipment" readonly />
+              </div>
+            </div>
+            <div class="avk-field">
+              <label>Beschreibung (Kursthema)</label>
+              <textarea pTextarea [value]="t.description" rows="3" readonly class="avk-full"></textarea>
+            </div>
+          </p-card>
+        }
+      }
+
       <p-card subheader="Anforderungen und Ausrüstung">
         <div class="avk-grid-2">
           <div class="avk-field">

@@ -40,6 +40,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { PermissionLevel } from '../../../core/services/permission';
 import { AutoSaveService } from '../../../core/services/auto-save.service';
 import { PdfExportService } from '../../../core/services/pdf-export.service';
+import { BreadcrumbService } from '../../../core/layout/breadcrumb.service';
 import { Tour } from '../../../models/tour';
 import { Event } from '../../../models/event';
 import { fromIsoDate, toIsoDate } from '../../../shared/util/date';
@@ -84,6 +85,7 @@ export class TourDetail {
   private fb = inject(FormBuilder);
   private destroyRef = inject(DestroyRef);
   private pdf = inject(PdfExportService);
+  private breadcrumb = inject(BreadcrumbService);
   readonly autoSave = inject(AutoSaveService);
 
   private readonly tourId = computed(() => Number(this.id()));
@@ -179,6 +181,11 @@ export class TourDetail {
         form: () => this.form(),
         save: () => this.persist(true),
       });
+    });
+
+    // Show the tour's reference code (e.g. "VHF-601") instead of "#id" in the breadcrumb.
+    effect(() => {
+      this.breadcrumb.setDetailTitle(this.tour()?.reference || null);
     });
   }
 

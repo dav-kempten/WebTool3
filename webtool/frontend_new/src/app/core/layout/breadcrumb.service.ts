@@ -1,4 +1,4 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
 import {
   ActivatedRouteSnapshot,
   NavigationEnd,
@@ -10,15 +10,32 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 /**
  * Builds the breadcrumb trail from the active route tree using each route's
- * `data.breadcrumb`. A leaf route carrying an `:id` param is labelled `#id`,
- * mirroring the behaviour of the old NgRx router serializer.
+ * `data.breadcrumb`. A leaf route carrying an `:id` param is labelled `#id`
+ * until the detail page reports the entity's short title via
+ * `setDetailTitle()`, which then replaces the `#id` crumb.
  */
 @Injectable({ providedIn: 'root' })
 export class BreadcrumbService {
   private router = inject(Router);
 
   readonly home: MenuItem = { icon: 'pi pi-home', routerLink: '/dashboard' };
-  readonly items = signal<MenuItem[]>([]);
+  private readonly routeItems = signal<MenuItem[]>([]);
+  private readonly detailTitle = signal<string | null>(null);
+
+  readonly items = computed<MenuItem[]>(() => {
+    const items = this.routeItems();
+    const title = this.detailTitle();
+    const last = items[items.length - 1];
+    if (!title || !last?.label?.startsWith('#')) {
+      return items;
+    }
+    return [...items.slice(0, -1), { ...last, label: title }];
+  });
+
+  /** Called by detail pages once the entity is loaded; cleared on navigation. */
+  setDetailTitle(title: string | null): void {
+    this.detailTitle.set(title);
+  }
 
   constructor() {
     this.router.events
@@ -26,7 +43,10 @@ export class BreadcrumbService {
         filter((event): event is NavigationEnd => event instanceof NavigationEnd),
         takeUntilDestroyed(),
       )
-      .subscribe(() => this.items.set(this.build()));
+      .subscribe(() => {
+        this.detailTitle.set(null);
+        this.routeItems.set(this.build());
+      });
   }
 
   private build(): MenuItem[] {

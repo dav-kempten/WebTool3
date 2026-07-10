@@ -37,6 +37,7 @@ import { EventsStore } from '../../../core/stores/events.store';
 import { AuthService } from '../../../core/services/auth.service';
 import { PermissionLevel } from '../../../core/services/permission';
 import { AutoSaveService } from '../../../core/services/auto-save.service';
+import { BreadcrumbService } from '../../../core/layout/breadcrumb.service';
 import { Instruction } from '../../../models/instruction';
 import { Event } from '../../../models/event';
 import { fromIsoDate, toIsoDate } from '../../../shared/util/date';
@@ -76,6 +77,7 @@ export class InstructionDetail {
   private confirm = inject(ConfirmationService);
   private fb = inject(FormBuilder);
   private destroyRef = inject(DestroyRef);
+  private breadcrumb = inject(BreadcrumbService);
   readonly autoSave = inject(AutoSaveService);
 
   private readonly instructionId = computed(() => Number(this.id()));
@@ -85,6 +87,29 @@ export class InstructionDetail {
   readonly topic = computed(() =>
     this.values.topicById().get(this.instruction()?.topicId ?? -1),
   );
+  /** Read-only view of the requirements already defined on the topic. */
+  readonly topicQualificationNames = computed(() => {
+    const topic = this.topic();
+    if (!topic) {
+      return '';
+    }
+    const byId = this.values.topicById();
+    return topic.qualificationIds
+      .map((id) => byId.get(id)?.title)
+      .filter(Boolean)
+      .join(', ');
+  });
+  readonly topicEquipmentNames = computed(() => {
+    const topic = this.topic();
+    if (!topic) {
+      return '';
+    }
+    const byId = this.values.equipmentById();
+    return topic.equipmentIds
+      .map((id) => byId.get(id)?.name)
+      .filter(Boolean)
+      .join(', ');
+  });
   readonly isIndoor = computed(
     () => this.values.categoryById().get(this.instruction()?.categoryId ?? -1)?.indoor ?? false,
   );
@@ -154,6 +179,11 @@ export class InstructionDetail {
         form: () => this.form(),
         save: () => this.persist(true),
       });
+    });
+
+    // Show the course's reference code (e.g. "VHF-601") instead of "#id" in the breadcrumb.
+    effect(() => {
+      this.breadcrumb.setDetailTitle(this.instruction()?.reference || null);
     });
   }
 
