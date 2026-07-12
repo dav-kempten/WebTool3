@@ -24,13 +24,13 @@ CORS_ORIGIN_ALLOW_ALL = False
 CORS_URLS_REGEX = r'^/api/.*$'
 
 CORS_ORIGIN_WHITELIST = (
-    'www.dav-kempten.de',
-    'www.dav-kempten-neue-hoempage.de',
-    'dav-kempten-neue-hoempage.de',
-    'dav-kempten.de',
+    'https://dav-kempten.de',
+    'https://*.dav-kempten.de',
+    'https://dav-kempten-neue-homepage.de',
+    'https://*.dav-kempten-neue-homepage.de',
 )
 
-CSRF_TRUSTED_ORIGINS = ['.dav-kempten.de']
+CSRF_TRUSTED_ORIGINS = ['https://*.dav-kempten.de']
 CSRF_COOKIE_SECURE = True
 
 STATIC_ROOT = '/var/www/webtool/static'

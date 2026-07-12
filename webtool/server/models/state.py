@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+git # -*- coding: utf-8 -*-
 from django.db import models
 
 from .mixins import SeasonsMixin

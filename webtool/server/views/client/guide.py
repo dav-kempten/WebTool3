@@ -2,6 +2,7 @@
 from django.template.defaultfilters import date
 from rest_framework import viewsets
 from rest_framework.response import Response
+from django_filters.rest_framework import DjangoFilterBackend
 
 from server.models import Guide
 from server.serializers.client import GuideSerializer, GuideListSerializer
@@ -15,7 +16,8 @@ class GuideViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = Guide.objects.filter(seasons__current=True, user__is_active=True).exclude(deprecated=True)
     search_fields = ('user__last_name', 'user__first_name')
-    filter_class = GuideFilter
+    filterset_class = GuideFilter
+    filter_backends = [DjangoFilterBackend]
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())

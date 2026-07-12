@@ -1,0 +1,17 @@
+:host {
+  display: block;
+  min-height: 100%;
+}
+
+.avk-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--p-content-background, #fff);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 8%);
+}
+
+.avk-main {
+  display: block;
+  padding-bottom: 3rem;
+}

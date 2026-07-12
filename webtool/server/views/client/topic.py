@@ -2,6 +2,7 @@
 from django.template.defaultfilters import date
 from rest_framework import viewsets
 from rest_framework.response import Response
+from django_filters.rest_framework import DjangoFilterBackend
 
 from server.models import Topic
 from server.serializers.client import TopicSerializer, TopicListSerializer
@@ -15,7 +16,8 @@ class TopicViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = Topic.objects.filter(seasons__current=True).exclude(deprecated=True)
     search_fields = ('name',)
-    filter_class = TopicFilter
+    filterset_class = TopicFilter
+    filter_backends = [DjangoFilterBackend]
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())

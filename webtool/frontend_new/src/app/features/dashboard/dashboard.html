@@ -1,0 +1,96 @@
+<section class="avk-page">
+  <header class="avk-dashboard-header">
+    <h1>WebTool – DAV Allgäu-Kempten</h1>
+    @if (isLoggedIn()) {
+      <p>Willkommen zurück, {{ user().firstName }}!</p>
+    } @else {
+      <p>Bitte melde dich an, um Veranstaltungen zu bearbeiten.</p>
+    }
+  </header>
+
+  <div class="avk-dashboard-grid">
+    @for (tile of tiles; track tile.link) {
+      <a [routerLink]="tile.link" class="avk-tile">
+        <p-card>
+          <div class="avk-tile-body">
+            <i [class]="tile.icon"></i>
+            <div>
+              <h2>{{ tile.label }}</h2>
+              <p>{{ tile.description }}</p>
+            </div>
+          </div>
+        </p-card>
+      </a>
+    }
+
+    @if (canCreate()) {
+      <button type="button" class="avk-tile avk-tile-action" (click)="showCreateTour.set(true)">
+        <p-card>
+          <div class="avk-tile-body">
+            <i class="pi pi-plus-circle"></i>
+            <div>
+              <h2>Neue Tour</h2>
+              <p>Eine neue Tour mit den wichtigsten Angaben anlegen.</p>
+            </div>
+          </div>
+        </p-card>
+      </button>
+      <button type="button" class="avk-tile avk-tile-action" (click)="showCreateInstruction.set(true)">
+        <p-card>
+          <div class="avk-tile-body">
+            <i class="pi pi-plus-circle"></i>
+            <div>
+              <h2>Neuer Kurs</h2>
+              <p>Einen neuen Kurs mit den wichtigsten Angaben anlegen.</p>
+            </div>
+          </div>
+        </p-card>
+      </button>
+    }
+  </div>
+
+  @if (showMyEvents()) {
+    <div class="avk-dashboard-my">
+      <p-card subheader="Meine Touren">
+        @if (myTours().length) {
+          <ul class="avk-my-events">
+            @for (row of myTours(); track row.id) {
+              <li>
+                <a [routerLink]="['/tours', row.id]">
+                  <span class="avk-my-ref">{{ row.reference }}</span>
+                  <span class="avk-my-title">{{ row.title }}</span>
+                  <span class="avk-my-date">{{ row.startDate | date: 'dd.MM.yyyy' }}</span>
+                  <span class="avk-my-state">{{ row.stateName }}</span>
+                </a>
+              </li>
+            }
+          </ul>
+        } @else {
+          <p class="avk-my-empty">Keine Touren in Bearbeitung oder veröffentlicht.</p>
+        }
+      </p-card>
+
+      <p-card subheader="Meine Kurse">
+        @if (myInstructions().length) {
+          <ul class="avk-my-events">
+            @for (row of myInstructions(); track row.id) {
+              <li>
+                <a [routerLink]="['/instructions', row.id]">
+                  <span class="avk-my-ref">{{ row.reference }}</span>
+                  <span class="avk-my-title">{{ row.title }}</span>
+                  <span class="avk-my-date">{{ row.startDate | date: 'dd.MM.yyyy' }}</span>
+                  <span class="avk-my-state">{{ row.stateName }}</span>
+                </a>
+              </li>
+            }
+          </ul>
+        } @else {
+          <p class="avk-my-empty">Keine Kurse in Bearbeitung oder veröffentlicht.</p>
+        }
+      </p-card>
+    </div>
+  }
+</section>
+
+<avk-tour-create-dialog [(visible)]="showCreateTour" />
+<avk-instruction-create-dialog [(visible)]="showCreateInstruction" />

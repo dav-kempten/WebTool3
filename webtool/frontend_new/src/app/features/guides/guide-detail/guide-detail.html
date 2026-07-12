@@ -1,0 +1,24 @@
+@if (!canView()) {
+  <section class="avk-page">
+    <p-card header="Trainerprofil – Zugriff verboten">
+      <p>Sie sind nicht berechtigt, dieses Profil zu sehen.</p>
+      <a routerLink="/trainers"><p-button label="Zurück" /></a>
+    </p-card>
+  </section>
+} @else if (guide(); as g) {
+  <section class="avk-page">
+    <p-card [header]="g.firstName + ' ' + g.lastName">
+      <p class="avk-muted">@{{ g.username }}</p>
+      @if (g.profile) {
+        <p class="avk-profile">{{ g.profile }}</p>
+      } @else {
+        <p class="avk-muted">Kein Profiltext hinterlegt.</p>
+      }
+      <a routerLink="/trainers"><p-button label="Zurück" severity="secondary" /></a>
+    </p-card>
+  </section>
+} @else {
+  <section class="avk-page">
+    <p-card><p>Profil wird geladen …</p></p-card>
+  </section>
+}
