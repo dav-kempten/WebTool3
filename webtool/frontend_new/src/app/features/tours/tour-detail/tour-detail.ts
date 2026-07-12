@@ -265,7 +265,8 @@ export class TourDetail {
     });
 
     group.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((value) => {
-      this.events.updateEvent(event.id, {
+      // Route through the store so the list summary updates immediately too.
+      this.tours.updateEventLocal(event.id, {
         ...(value as Partial<Event>),
         startDate: toIsoDate(value.startDate) ?? '',
         endDate: toIsoDate(value.endDate),

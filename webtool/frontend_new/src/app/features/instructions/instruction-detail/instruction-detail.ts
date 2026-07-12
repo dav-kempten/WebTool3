@@ -271,7 +271,8 @@ export class InstructionDetail {
       return;
     }
     const value = form.getRawValue();
-    this.events.updateEvent(this.selectedEventId, {
+    // Route through the store so the list summary updates immediately too.
+    this.instructions.updateEventLocal(this.selectedEventId, {
       ...value,
       startDate: toIsoDate(value.startDate) ?? '',
       endDate: toIsoDate(value.endDate),

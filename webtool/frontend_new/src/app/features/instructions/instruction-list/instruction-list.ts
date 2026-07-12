@@ -123,7 +123,9 @@ export class InstructionList implements OnInit {
   });
 
   ngOnInit(): void {
-    this.instructions.loadSummaries();
+    // ensureSummaries: a hard reload here would overwrite locally synced,
+    // not-yet-saved detail edits; every save refreshes the summaries anyway.
+    this.instructions.ensureSummaries();
     this.values.loadValues();
     this.names.loadNames();
   }

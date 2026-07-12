@@ -127,7 +127,9 @@ export class TourList implements OnInit {
   });
 
   ngOnInit(): void {
-    this.tours.loadSummaries();
+    // ensureSummaries: a hard reload here would overwrite locally synced,
+    // not-yet-saved detail edits; every save refreshes the summaries anyway.
+    this.tours.ensureSummaries();
     this.values.loadValues();
     this.names.loadNames();
   }

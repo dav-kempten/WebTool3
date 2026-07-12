@@ -9,6 +9,13 @@ const JSON_HEADERS = new HttpHeaders({
   'Accept-Language': 'de',
 });
 
+/**
+ * The backend list/detail responses carry "Cache-Control: public, max-age=86400",
+ * so the browser would happily serve day-old data to reloads after a save.
+ * Force revalidation on every GET.
+ */
+const READ_HEADERS = JSON_HEADERS.set('Cache-Control', 'no-cache').set('Pragma', 'no-cache');
+
 export interface CreateTourPayload {
   categoryId: number;
   startDate: string;
@@ -23,7 +30,7 @@ export class TourService {
 
   getTourSummaries(): Observable<TourSummary[]> {
     return this.http
-      .get<TourSummary[]>('/api/frontend/tours/', { headers: JSON_HEADERS })
+      .get<TourSummary[]>('/api/frontend/tours/', { headers: READ_HEADERS })
       .pipe(catchError(() => of([] as TourSummary[])));
   }
 
@@ -33,7 +40,7 @@ export class TourService {
       return of(null);
     }
     return this.http
-      .get<RawTour>(`/api/frontend/tours/${id}/`, { headers: JSON_HEADERS })
+      .get<RawTour>(`/api/frontend/tours/${id}/`, { headers: READ_HEADERS })
       .pipe(catchError(() => of(null)));
   }
 

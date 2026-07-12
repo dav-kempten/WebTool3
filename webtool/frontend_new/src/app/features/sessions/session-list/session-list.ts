@@ -117,7 +117,9 @@ export class SessionList implements OnInit {
   });
 
   ngOnInit(): void {
-    this.sessions.loadSummaries();
+    // ensureSummaries: a hard reload here would overwrite locally synced,
+    // not-yet-saved detail edits; every save refreshes the summaries anyway.
+    this.sessions.ensureSummaries();
     this.values.loadValues();
     this.names.loadNames();
   }

@@ -66,6 +66,24 @@ export const SessionsStore = signalStore(
       return { ...flat, session };
     }
 
+    /**
+     * Mirrors the summary-visible subset of a local edit into the list row,
+     * so the list views update immediately instead of after the next save.
+     */
+    function syncSummary(id: number, changes: Partial<SessionSummary>): void {
+      const defined = Object.fromEntries(
+        Object.entries(changes).filter(([, value]) => value !== undefined),
+      );
+      if (Object.keys(defined).length === 0) {
+        return;
+      }
+      patchState(store, {
+        summaries: store
+          .summaries()
+          .map((s) => (s.id === id ? { ...s, ...defined } : s)),
+      });
+    }
+
     const loadSummaries = rxMethod<void>(
       pipe(
         switchMap(() =>
@@ -195,6 +213,12 @@ export const SessionsStore = signalStore(
       loadSession,
       updateLocal(id: number, changes: Partial<Session>): void {
         patchState(store, updateEntity({ id, changes }));
+        syncSummary(id, {
+          guideId: changes.guideId,
+          speaker: changes.speaker,
+          ladiesOnly: changes.ladiesOnly,
+          stateId: changes.stateId,
+        } as Partial<SessionSummary>);
       },
       updateEventLocal(id: number, changes: Partial<Event>): void {
         eventsStore.updateEvent(id, changes);

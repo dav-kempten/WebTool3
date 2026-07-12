@@ -21,6 +21,7 @@ import {
   CreateInstructionPayload,
 } from '../services/instruction.service';
 import { EventsStore } from './events.store';
+import { ValuesStore } from './values.store';
 import {
   Instruction,
   InstructionSummary,
@@ -47,6 +48,7 @@ export const InstructionsStore = signalStore(
   withMethods((store) => {
     const service = inject(InstructionService);
     const eventsStore = inject(EventsStore);
+    const valuesStore = inject(ValuesStore);
     const router = inject(Router);
     const messages = inject(MessageService);
 
@@ -123,6 +125,24 @@ export const InstructionsStore = signalStore(
         advances: String(raw.advances ?? 0),
         extraCharges: String(raw.extraCharges ?? 0),
       };
+    }
+
+    /**
+     * Mirrors the summary-visible subset of a local edit into the list row,
+     * so the list views update immediately instead of after the next save.
+     */
+    function syncSummary(id: number, changes: Partial<InstructionSummary>): void {
+      const defined = Object.fromEntries(
+        Object.entries(changes).filter(([, value]) => value !== undefined),
+      );
+      if (Object.keys(defined).length === 0) {
+        return;
+      }
+      patchState(store, {
+        summaries: store
+          .summaries()
+          .map((s) => (s.id === id ? { ...s, ...defined } : s)),
+      });
     }
 
     const loadSummaries = rxMethod<void>(
@@ -300,9 +320,37 @@ export const InstructionsStore = signalStore(
       loadInstruction,
       updateLocal(id: number, changes: Partial<Instruction>): void {
         patchState(store, updateEntity({ id, changes }));
+        // List title mirrors the backend rule: special courses are titled
+        // after their main event, regular ones after the topic.
+        const entity = store.entityMap()[id];
+        let title: string | undefined;
+        if (entity && changes.isSpecial !== undefined) {
+          title = changes.isSpecial
+            ? (eventsStore.entityMap()[entity.instructionId]?.title ?? '')
+            : (valuesStore.topicById().get(entity.topicId)?.name ?? '');
+        }
+        syncSummary(id, {
+          title,
+          guideId: changes.guideId,
+          ladiesOnly: changes.ladiesOnly,
+          minQuantity: changes.minQuantity,
+          maxQuantity: changes.maxQuantity,
+          curQuantity: changes.curQuantity,
+          stateId: changes.stateId,
+        } as Partial<InstructionSummary>);
       },
       updateEventLocal(id: number, changes: Partial<Event>): void {
         eventsStore.updateEvent(id, changes);
+        // Only the main course event feeds the summary; its title counts only
+        // for special courses (regular ones are titled after the topic).
+        const instruction = store.entities().find((i) => i.instructionId === id);
+        if (instruction) {
+          syncSummary(instruction.id, {
+            title: instruction.isSpecial ? changes.title : undefined,
+            startDate: changes.startDate,
+            endDate: changes.endDate,
+          } as Partial<InstructionSummary>);
+        }
       },
       create,
       cloneById,

@@ -113,6 +113,24 @@ export const ToursStore = signalStore(
       };
     }
 
+    /**
+     * Mirrors the summary-visible subset of a local edit into the list row,
+     * so the list views update immediately instead of after the next save.
+     */
+    function syncSummary(id: number, changes: Partial<TourSummary>): void {
+      const defined = Object.fromEntries(
+        Object.entries(changes).filter(([, value]) => value !== undefined),
+      );
+      if (Object.keys(defined).length === 0) {
+        return;
+      }
+      patchState(store, {
+        summaries: store
+          .summaries()
+          .map((s) => (s.id === id ? { ...s, ...defined } : s)),
+      });
+    }
+
     const loadSummaries = rxMethod<void>(
       pipe(
         switchMap(() =>
@@ -248,9 +266,27 @@ export const ToursStore = signalStore(
       /** Live edit buffer: mirror form changes into the entity without a network call. */
       updateLocal(id: number, changes: Partial<Tour>): void {
         patchState(store, updateEntity({ id, changes }));
+        syncSummary(id, {
+          guideId: changes.guideId,
+          ladiesOnly: changes.ladiesOnly,
+          youthOnTour: changes.youthOnTour,
+          minQuantity: changes.minQuantity,
+          maxQuantity: changes.maxQuantity,
+          curQuantity: changes.curQuantity,
+          stateId: changes.stateId,
+        } as Partial<TourSummary>);
       },
       updateEventLocal(id: number, changes: Partial<Event>): void {
         eventsStore.updateEvent(id, changes);
+        // Only the main tour event feeds the summary (title/date columns).
+        const tour = store.entities().find((t) => t.tourId === id);
+        if (tour) {
+          syncSummary(tour.id, {
+            title: changes.title,
+            startDate: changes.startDate,
+            endDate: changes.endDate,
+          } as Partial<TourSummary>);
+        }
       },
       create,
       cloneById,

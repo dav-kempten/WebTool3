@@ -13,6 +13,9 @@ const JSON_HEADERS = new HttpHeaders({
   'Accept-Language': 'de',
 });
 
+/** Backend GETs carry max-age=86400 — force revalidation (see tour.service.ts). */
+const READ_HEADERS = JSON_HEADERS.set('Cache-Control', 'no-cache').set('Pragma', 'no-cache');
+
 export interface CreateInstructionPayload {
   topicId: number;
   startDate: string;
@@ -25,7 +28,7 @@ export class InstructionService {
 
   getInstructionSummaries(): Observable<InstructionSummary[]> {
     return this.http
-      .get<InstructionSummary[]>('/api/frontend/instructions/', { headers: JSON_HEADERS })
+      .get<InstructionSummary[]>('/api/frontend/instructions/', { headers: READ_HEADERS })
       .pipe(catchError(() => of([] as InstructionSummary[])));
   }
 
@@ -34,7 +37,7 @@ export class InstructionService {
       return of(null);
     }
     return this.http
-      .get<RawInstruction>(`/api/frontend/instructions/${id}/`, { headers: JSON_HEADERS })
+      .get<RawInstruction>(`/api/frontend/instructions/${id}/`, { headers: READ_HEADERS })
       .pipe(catchError(() => of(null)));
   }
 

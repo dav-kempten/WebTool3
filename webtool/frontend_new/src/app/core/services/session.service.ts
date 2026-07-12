@@ -9,6 +9,9 @@ const JSON_HEADERS = new HttpHeaders({
   'Accept-Language': 'de',
 });
 
+/** Backend GETs carry max-age=86400 — force revalidation (see tour.service.ts). */
+const READ_HEADERS = JSON_HEADERS.set('Cache-Control', 'no-cache').set('Pragma', 'no-cache');
+
 export interface CreateSessionPayload {
   collectiveId: number;
   startDate: string;
@@ -20,7 +23,7 @@ export class SessionService {
 
   getSessionSummaries(): Observable<SessionSummary[]> {
     return this.http
-      .get<SessionSummary[]>('/api/frontend/sessions/', { headers: JSON_HEADERS })
+      .get<SessionSummary[]>('/api/frontend/sessions/', { headers: READ_HEADERS })
       .pipe(catchError(() => of([] as SessionSummary[])));
   }
 
@@ -29,7 +32,7 @@ export class SessionService {
       return of(null);
     }
     return this.http
-      .get<RawSession>(`/api/frontend/sessions/${id}/`, { headers: JSON_HEADERS })
+      .get<RawSession>(`/api/frontend/sessions/${id}/`, { headers: READ_HEADERS })
       .pipe(catchError(() => of(null)));
   }
 
