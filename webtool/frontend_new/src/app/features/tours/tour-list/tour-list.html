@@ -32,8 +32,8 @@
   >
     <ng-template #caption>
       <div class="avk-table-caption">
-        <span class="p-input-icon-left">
-          <i class="pi pi-search"></i>
+        <p-iconfield iconPosition="left">
+          <p-inputicon styleClass="pi pi-search" />
           <input
             pInputText
             type="text"
@@ -41,7 +41,7 @@
             placeholder="Tourenfilter"
             (input)="dt.filterGlobal($any($event.target).value, 'contains')"
           />
-        </span>
+        </p-iconfield>
         <p-select
           [options]="stateGroupOptions"
           [ngModel]="stateGroup()"
@@ -59,7 +59,7 @@
         <th>Bezeichnung</th>
         <th>Tourenleiter</th>
         <th>Status</th>
-        <th>Belegung (Min|Akt|Max)</th>
+        <th class="avk-center-cell">Belegung (Min|Akt|Max)</th>
         <th>Aktionen</th>
       </tr>
     </ng-template>
@@ -76,7 +76,7 @@
         <td (click)="selectTour(tour)" class="avk-link-cell">{{ tour.title }}</td>
         <td>{{ tour.guide }}</td>
         <td>{{ tour.stateName }}</td>
-        <td>{{ tour.minQuantity }} | {{ tour.curQuantity }} | {{ tour.maxQuantity }}</td>
+        <td class="avk-center-cell">{{ tour.minQuantity }} | {{ tour.curQuantity }} | {{ tour.maxQuantity }}</td>
         <td>
           <div class="avk-row-actions">
             @if (canModify(tour)) {

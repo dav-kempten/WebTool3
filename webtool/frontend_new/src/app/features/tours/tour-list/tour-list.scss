@@ -25,6 +25,31 @@
   cursor: pointer;
 }
 
+.avk-center-cell {
+  text-align: center;
+}
+
+/*
+ * Roomier table rows. The fixed height keeps rows the same size whether or
+ * not the action buttons (Klonen/Löschen) are rendered — e.g. when logged out.
+ */
+:host ::ng-deep .p-datatable {
+  .p-datatable-thead > tr > th {
+    padding: 0.85rem 1rem;
+    white-space: nowrap;
+  }
+
+  .p-datatable-tbody > tr > td {
+    padding: 0.5rem 1rem;
+    height: 3.4rem;
+    vertical-align: middle;
+  }
+
+  .p-datatable-tbody > tr:hover > td {
+    background: var(--p-content-hover-background, rgba(0, 0, 0, 0.04));
+  }
+}
+
 .avk-row-actions {
   display: flex;
   gap: 0.4rem;

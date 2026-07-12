@@ -26,8 +26,8 @@
   >
     <ng-template #caption>
       <div class="avk-table-caption">
-        <span class="p-input-icon-left">
-          <i class="pi pi-search"></i>
+        <p-iconfield iconPosition="left">
+          <p-inputicon styleClass="pi pi-search" />
           <input
             pInputText
             type="text"
@@ -35,7 +35,7 @@
             placeholder="Kursfilter"
             (input)="dt.filterGlobal($any($event.target).value, 'contains')"
           />
-        </span>
+        </p-iconfield>
         <p-select
           [options]="stateGroupOptions"
           [ngModel]="stateGroup()"
@@ -53,7 +53,7 @@
         <th>Bezeichnung</th>
         <th>Kursleiter</th>
         <th>Status</th>
-        <th>Belegung (Min|Akt|Max)</th>
+        <th class="avk-center-cell">Belegung (Min|Akt|Max)</th>
         <th>Aktionen</th>
       </tr>
     </ng-template>
@@ -70,7 +70,7 @@
         <td (click)="select(row)" class="avk-link-cell">{{ row.title }}</td>
         <td>{{ row.guide }}</td>
         <td>{{ row.stateName }}</td>
-        <td>{{ row.minQuantity }} | {{ row.curQuantity }} | {{ row.maxQuantity }}</td>
+        <td class="avk-center-cell">{{ row.minQuantity }} | {{ row.curQuantity }} | {{ row.maxQuantity }}</td>
         <td>
           <div class="avk-row-actions">
             @if (canModify(row)) {

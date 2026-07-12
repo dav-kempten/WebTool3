@@ -11,6 +11,8 @@ import { SelectModule } from 'primeng/select';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { DatePickerModule } from 'primeng/datepicker';
 import { InputTextModule } from 'primeng/inputtext';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 import { ConfirmationService } from 'primeng/api';
 
 import { InstructionsStore } from '../../../core/stores/instructions.store';
@@ -42,6 +44,8 @@ interface InstructionRow extends InstructionSummary {
     SelectButtonModule,
     DatePickerModule,
     InputTextModule,
+    IconFieldModule,
+    InputIconModule,
     InstructionCreateDialog,
   ],
   templateUrl: './instruction-list.html',

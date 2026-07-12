@@ -10,6 +10,8 @@ import { SelectModule } from 'primeng/select';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { DatePickerModule } from 'primeng/datepicker';
 import { InputTextModule } from 'primeng/inputtext';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 import { ConfirmationService } from 'primeng/api';
 
 import { SessionsStore } from '../../../core/stores/sessions.store';
@@ -41,6 +43,8 @@ interface SessionRow extends SessionSummary {
     SelectButtonModule,
     DatePickerModule,
     InputTextModule,
+    IconFieldModule,
+    InputIconModule,
   ],
   templateUrl: './session-list.html',
   styleUrl: '../../tours/tour-list/tour-list.scss',

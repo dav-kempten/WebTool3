@@ -11,6 +11,8 @@ import { SelectModule } from 'primeng/select';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { DatePickerModule } from 'primeng/datepicker';
 import { InputTextModule } from 'primeng/inputtext';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 import { ConfirmationService } from 'primeng/api';
 
 import { ToursStore } from '../../../core/stores/tours.store';
@@ -46,6 +48,8 @@ interface TourRow extends TourSummary {
     SelectButtonModule,
     DatePickerModule,
     InputTextModule,
+    IconFieldModule,
+    InputIconModule,
     TourCreateDialog,
   ],
   templateUrl: './tour-list.html',
