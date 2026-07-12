@@ -103,7 +103,10 @@ export class SessionDetail {
   });
 
   readonly stateOptions = this.values.states;
-  readonly categoryOptions = this.values.categories;
+  /** Only tour categories — instruction/collective categories don't apply here. */
+  readonly categoryOptions = computed(() =>
+    this.values.categories().filter((c) => c.tour),
+  );
   readonly equipmentOptions = this.values.equipments;
   readonly approximateOptions = this.values.approximates;
   readonly nameOptions = computed(() =>
