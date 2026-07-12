@@ -57,8 +57,14 @@ export class Dashboard implements OnInit {
   readonly showCreateInstruction = signal(false);
 
   private readonly guideId = computed(() => this.auth.permission().guideId);
-  /** Own-events lists are shown to every logged-in user with a guide profile. */
-  readonly showMyEvents = computed(() => this.guideId() != null);
+  /**
+   * Own-events lists are for users who lead tours/courses themselves (guides,
+   * coordinators). Staff/admins only manage and approve — no lists for them.
+   */
+  readonly showMyEvents = computed(() => {
+    const perm = this.auth.permission();
+    return perm.guideId != null && perm.permissionLevel < PermissionLevel.staff;
+  });
 
   readonly myTours = computed<MyEventRow[]>(() =>
     this.toRows(this.tours.summaries()),
