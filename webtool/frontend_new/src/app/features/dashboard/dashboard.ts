@@ -38,13 +38,13 @@ export class Dashboard {
       label: 'Touren',
       icon: 'pi pi-globe',
       link: '/tours',
-      description: 'Gemeinschaftstouren planen und verwalten.',
+      description: 'Gemeinschaftstouren einsehen und ändern.',
     },
     {
       label: 'Kurse',
-      icon: 'pi pi-comments',
+      icon: 'pi pi-graduation-cap',
       link: '/instructions',
-      description: 'Aus- und Fortbildungen organisieren.',
+      description: 'Aus- und Fortbildungen verwalten.',
     },
     {
       label: 'Gruppen',
@@ -56,7 +56,7 @@ export class Dashboard {
       label: 'Events',
       icon: 'pi pi-bookmark',
       link: '/talks',
-      description: 'Vorträge und Veranstaltungen ankündigen.',
+      description: '[Im Aufbau] Vorträge und Veranstaltungen ankündigen.',
     },
   ];
 }

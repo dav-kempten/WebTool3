@@ -60,7 +60,9 @@ export class BreadcrumbService {
         url += `/${segment}`;
       }
       const label = route.data?.['breadcrumb'] as string | undefined;
-      if (label && segment !== 'dashboard') {
+      // Empty-path children (the list routes) inherit the parent's breadcrumb
+      // data — skip them, otherwise "Touren > Touren" appears.
+      if (label && segment && segment !== 'dashboard') {
         crumbs.push({ label, routerLink: url });
       }
       if (route.params?.['id'] && crumbs.length) {
