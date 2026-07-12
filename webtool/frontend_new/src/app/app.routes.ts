@@ -73,24 +73,13 @@ export const routes: Routes = [
       import('./features/coming-soon/coming-soon').then((m) => m.ComingSoon),
     data: { breadcrumb: 'Events' },
   },
+  // Guide list/detail exist under features/guides but are parked until the
+  // Trainer area is ready — route shows the ComingSoon placeholder meanwhile.
   {
     path: 'trainers',
+    loadComponent: () =>
+      import('./features/coming-soon/coming-soon').then((m) => m.ComingSoon),
     data: { breadcrumb: 'Trainer' },
-    children: [
-      {
-        path: '',
-        loadComponent: () =>
-          import('./features/guides/guide-list/guide-list').then((m) => m.GuideList),
-        pathMatch: 'full',
-      },
-      {
-        path: ':id',
-        loadComponent: () =>
-          import('./features/guides/guide-detail/guide-detail').then(
-            (m) => m.GuideDetail,
-          ),
-      },
-    ],
   },
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
   {

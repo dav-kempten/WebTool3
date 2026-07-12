@@ -129,17 +129,20 @@
       }
 
       <p-card subheader="Anforderungen und Ausrüstung">
-        <div class="avk-grid-2">
-          <div class="avk-field">
-            <label>Mindestqualifikation</label>
-            <p-multiselect formControlName="qualificationIds" [options]="qualificationOptions()" optionLabel="title"
-                           optionValue="id" [disabled]="locked()"></p-multiselect>
+        @if (instruction()?.isSpecial) {
+          <!-- Regular courses inherit these requirements from the topic (card above). -->
+          <div class="avk-grid-2">
+            <div class="avk-field">
+              <label>Mindestqualifikation</label>
+              <p-multiselect formControlName="qualificationIds" [options]="qualificationOptions()" optionLabel="title"
+                             optionValue="id" [disabled]="locked()"></p-multiselect>
+            </div>
+            <div class="avk-field">
+              <label>Spezielle Voraussetzungen</label>
+              <input pInputText formControlName="preconditions" [disabled]="locked()" />
+            </div>
           </div>
-          <div class="avk-field">
-            <label>Spezielle Voraussetzungen</label>
-            <input pInputText formControlName="preconditions" [disabled]="locked()" />
-          </div>
-        </div>
+        }
         <div class="avk-grid-3">
           <div class="avk-field">
             <label>Ausrüstung</label>
@@ -214,7 +217,7 @@
       </p-card>
 
       <p-card subheader="Nachricht an die Geschäftsstelle (intern)">
-        <textarea pTextarea formControlName="message" rows="3" class="avk-full"></textarea>
+        <textarea pTextarea formControlName="message" rows="5" class="avk-full"></textarea>
       </p-card>
 
       <div class="avk-detail-actions">
