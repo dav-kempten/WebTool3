@@ -44,7 +44,20 @@ export const ValuesStore = signalStore(
     skills: computed<Skill[]>(() => store.values()?.skills ?? []),
     fitness: computed<Fitness[]>(() => store.values()?.fitness ?? []),
     topics: computed<Topic[]>(() => store.values()?.topics ?? []),
-    collectives: computed<Collective[]>(() => store.values()?.collectives ?? []),
+    collectives: computed<Collective[]>(() => {
+      // The values endpoint fans out one row per manager (M2M in values_list),
+      // so a collective with n managers arrives n times. Merge them back.
+      const merged = new Map<number, Collective>();
+      for (const collective of store.values()?.collectives ?? []) {
+        const existing = merged.get(collective.id);
+        if (existing) {
+          existing.managers = [...new Set([...existing.managers, ...collective.managers])];
+        } else {
+          merged.set(collective.id, { ...collective, managers: [...collective.managers] });
+        }
+      }
+      return Array.from(merged.values());
+    }),
   })),
   withComputed((store) => ({
     stateById: computed(() => byId(store.states())),

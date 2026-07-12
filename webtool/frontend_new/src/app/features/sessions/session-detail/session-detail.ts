@@ -32,6 +32,7 @@ import { EventsStore } from '../../../core/stores/events.store';
 import { AuthService } from '../../../core/services/auth.service';
 import { PermissionLevel } from '../../../core/services/permission';
 import { AutoSaveService } from '../../../core/services/auto-save.service';
+import { BreadcrumbService } from '../../../core/layout/breadcrumb.service';
 import { Session } from '../../../models/session';
 import { fromIsoDate, toIsoDate } from '../../../shared/util/date';
 
@@ -69,6 +70,7 @@ export class SessionDetail {
   private confirm = inject(ConfirmationService);
   private fb = inject(FormBuilder);
   private destroyRef = inject(DestroyRef);
+  private breadcrumb = inject(BreadcrumbService);
   readonly autoSave = inject(AutoSaveService);
 
   private readonly sessionId = computed(() => Number(this.id()));
@@ -125,6 +127,11 @@ export class SessionDetail {
       if (id && !this.session()) {
         this.sessions.loadSession(id);
       }
+    });
+
+    // Show the session's reference code instead of "#id" in the breadcrumb.
+    effect(() => {
+      this.breadcrumb.setDetailTitle(this.session()?.reference || null);
     });
 
     effect(() => {

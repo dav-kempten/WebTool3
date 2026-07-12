@@ -20,7 +20,7 @@
     [paginator]="true"
     [rows]="20"
     [rowsPerPageOptions]="[20, 50, 100]"
-    [globalFilterFields]="['reference', 'title', 'speaker']"
+    [globalFilterFields]="['reference', 'title', 'leader']"
     dataKey="id"
     styleClass="p-datatable-sm p-datatable-striped"
   >
@@ -50,7 +50,7 @@
       <tr>
         <th>Buchungscode</th>
         <th>Bezeichnung</th>
-        <th>Referent</th>
+        <th>Leitung</th>
         <th>Status</th>
         <th>Aktionen</th>
       </tr>
@@ -60,7 +60,7 @@
       <tr>
         <td (click)="select(row)" class="avk-link-cell">{{ row.reference }}</td>
         <td (click)="select(row)" class="avk-link-cell">{{ row.title }}</td>
-        <td>{{ row.speaker }}</td>
+        <td>{{ row.leader }}</td>
         <td>{{ row.stateName }}</td>
         <td>
           <div class="avk-row-actions">

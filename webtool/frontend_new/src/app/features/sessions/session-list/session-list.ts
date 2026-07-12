@@ -14,6 +14,7 @@ import { ConfirmationService } from 'primeng/api';
 
 import { SessionsStore } from '../../../core/stores/sessions.store';
 import { ValuesStore } from '../../../core/stores/values.store';
+import { NamesStore } from '../../../core/stores/names.store';
 import { AuthService } from '../../../core/services/auth.service';
 import { PermissionLevel } from '../../../core/services/permission';
 import { States, StatesGroup, getStatesOfGroup } from '../../../models/value';
@@ -22,6 +23,8 @@ import { toIsoDate } from '../../../shared/util/date';
 
 interface SessionRow extends SessionSummary {
   stateName: string;
+  /** Guide name; falls back to the external speaker if no guide is set. */
+  leader: string;
 }
 
 @Component({
@@ -45,6 +48,7 @@ interface SessionRow extends SessionSummary {
 export class SessionList implements OnInit {
   private sessions = inject(SessionsStore);
   private values = inject(ValuesStore);
+  private names = inject(NamesStore);
   private auth = inject(AuthService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
@@ -90,12 +94,20 @@ export class SessionList implements OnInit {
     const part = this.part();
     const group = getStatesOfGroup(this.stateGroup());
     const stateMap = this.values.stateById();
+    const nameMap = this.names.nameById();
 
     return this.sessions
       .summaries()
       .filter((s) => !part || s.reference.slice(0, 3).toLowerCase() === part)
       .filter((s) => group.includes(s.stateId))
-      .map((s) => ({ ...s, stateName: stateMap.get(s.stateId)?.state ?? '' }));
+      .map((s) => {
+        const name = nameMap.get(s.guideId);
+        return {
+          ...s,
+          stateName: stateMap.get(s.stateId)?.state ?? '',
+          leader: name ? `${name.firstName} ${name.lastName}` : (s.speaker ?? ''),
+        };
+      });
   });
 
   readonly showCreate = signal(false);
@@ -107,6 +119,7 @@ export class SessionList implements OnInit {
   ngOnInit(): void {
     this.sessions.loadSummaries();
     this.values.loadValues();
+    this.names.loadNames();
   }
 
   setPart(value: string | null): void {
