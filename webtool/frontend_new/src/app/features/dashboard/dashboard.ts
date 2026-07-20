@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { CardModule } from 'primeng/card';
@@ -39,7 +39,7 @@ const MY_EVENT_STATES: number[] = getStatesOfGroup(StatesGroup.Active);
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
-export class Dashboard implements OnInit {
+export class Dashboard {
   private auth = inject(AuthService);
   private tours = inject(ToursStore);
   private instructions = inject(InstructionsStore);
@@ -100,12 +100,18 @@ export class Dashboard implements OnInit {
       }));
   }
 
-  ngOnInit(): void {
-    if (this.showMyEvents()) {
-      this.values.loadValues();
-      this.tours.ensureSummaries();
-      this.instructions.ensureSummaries();
-    }
+  constructor() {
+    // The dashboard is mounted once at app start, before login — a one-shot
+    // ngOnInit check ran too early (permission()/guideId still anonymous) and
+    // never re-ran once the login dialog resolved. React to the signal instead
+    // so the lists appear as soon as showMyEvents() flips to true post-login.
+    effect(() => {
+      if (this.showMyEvents()) {
+        this.values.loadValues();
+        this.tours.ensureSummaries();
+        this.instructions.ensureSummaries();
+      }
+    });
   }
 
   readonly tiles: DashboardTile[] = [
