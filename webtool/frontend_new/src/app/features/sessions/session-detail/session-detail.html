@@ -26,7 +26,7 @@
           </div>
           <div class="avk-field">
             <label>Gruppe</label>
-            <input pInputText [value]="collective()?.title ?? ''" readonly />
+            <input pInputText [value]="collective()?.title ?? ''" readonly pTooltip="Auswahl der Gruppe des Gruppentermins" />
           </div>
         </div>
       </p-card>
@@ -35,11 +35,11 @@
         <div class="avk-grid-3">
           <div class="avk-field">
             <label>Leiter</label>
-            <p-select formControlName="guideId" [options]="nameOptions()" optionLabel="label" optionValue="id" [filter]="true" filterBy="label" [showClear]="true" />
+            <p-select formControlName="guideId" [options]="nameOptions()" optionLabel="label" optionValue="id" [filter]="true" filterBy="label" [showClear]="true" pTooltip="Gruppenleiter eingeben und auswählen (Nachname Vorname)" />
           </div>
           <div class="avk-field">
             <label>Team</label>
-            <p-multiselect formControlName="teamIds" [options]="nameOptions()" optionLabel="label" optionValue="id" [filter]="true" filterBy="label" />
+            <p-multiselect formControlName="teamIds" [options]="nameOptions()" optionLabel="label" optionValue="id" [filter]="true" filterBy="label" pTooltip="Mitorganisatoren des Gruppentermins" />
           </div>
           <div class="avk-field">
             <label>Referent (extern)</label>
@@ -128,7 +128,7 @@
         <div class="avk-grid-3">
           <div class="avk-field">
             <label>Tageszeit (ca.)</label>
-            <p-select formControlName="approximateId" [options]="approximateOptions()" optionLabel="name" optionValue="id" [showClear]="true" appendTo="body" />
+            <p-select formControlName="approximateId" [options]="approximateOptions()" optionLabel="name" optionValue="id" [showClear]="true" appendTo="body" pTooltip="Ungefähre Startzeit (wenn keine genaue Zeit angegeben werden kann)" />
           </div>
           <div class="avk-field">
             <label>Startzeit</label>

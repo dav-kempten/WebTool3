@@ -22,6 +22,7 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { CheckboxModule } from 'primeng/checkbox';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
+import { TooltipModule } from 'primeng/tooltip';
 import { MessageModule } from 'primeng/message';
 import { ConfirmationService } from 'primeng/api';
 
@@ -53,6 +54,7 @@ import { fromIsoDate, toIsoDate } from '../../../shared/util/date';
     CheckboxModule,
     InputTextModule,
     TextareaModule,
+    TooltipModule,
     MessageModule,
   ],
   providers: [AutoSaveService],

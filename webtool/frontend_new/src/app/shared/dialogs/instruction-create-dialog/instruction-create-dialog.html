@@ -18,11 +18,17 @@
         filterBy="title"
         placeholder="Thema wählen"
         appendTo="body"
+        pTooltip="Kurskategorie"
       />
     </div>
     <div class="avk-field">
       <label>Startdatum</label>
-      <p-datepicker formControlName="startDate" dateFormat="dd.mm.yy" appendTo="body" />
+      <p-datepicker
+        formControlName="startDate"
+        dateFormat="dd.mm.yy"
+        appendTo="body"
+        pTooltip="Starttermin des Haupttermins (z.B. Praxiswochenende)"
+      />
     </div>
     <p-button label="Bestätigen" (onClick)="create()" [disabled]="form.invalid" />
   </form>

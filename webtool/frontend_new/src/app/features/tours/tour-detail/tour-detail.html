@@ -25,7 +25,7 @@
         <div class="avk-grid-3">
           <div class="avk-field">
             <label>Buchungsnummer</label>
-            <input pInputText formControlName="reference" readonly pTooltip="Nicht änderbar" />
+            <input pInputText formControlName="reference" readonly pTooltip="Buchungscode (nicht änderbar)" />
           </div>
           <div class="avk-field">
             <label>Status</label>
@@ -35,11 +35,12 @@
               optionLabel="state"
               optionValue="id"
               [disabled]="locked()"
+              pTooltip="Bearbeitungsstatus"
             />
           </div>
           <div class="avk-field">
             <label>Tourenart</label>
-            <input pInputText [value]="category()?.name ?? ''" readonly />
+            <input pInputText [value]="category()?.name ?? ''" readonly pTooltip="Hauptkategorie der Tour" />
           </div>
         </div>
       </p-card>
@@ -56,6 +57,7 @@
               [filter]="true"
               filterBy="label"
               [disabled]="locked()"
+              pTooltip="Tourenleiter eingeben und auswählen (Nachname Vorname)"
             />
           </div>
           <div class="avk-field">
@@ -68,6 +70,7 @@
               [filter]="true"
               filterBy="label"
               [disabled]="locked()"
+              pTooltip="Mitorganisatoren der Tour"
             ></p-multiselect>
           </div>
         </div>
@@ -81,6 +84,7 @@
           optionValue="id"
           styleClass="w-full"
           [disabled]="locked()"
+          pTooltip="Zusatzkategorien zusätzlich zur Hauptkategorie"
         ></p-multiselect>
       </p-card>
 
@@ -94,11 +98,14 @@
             <p-checkbox formControlName="youthOnTour" [binary]="true" inputId="youthOnTourCheckbox" />
             <label for="youthOnTourCheckbox">Jugend on Tour</label>
           </div>
-          <div class="avk-checkbox-item">
+          <div
+            class="avk-checkbox-item"
+            pTooltip="Tourenangebote, die sich an all die richten, die gerne etwas gemütlicher in den Bergen unterwegs sein wollen – im Sommer wie im Winter"
+          >
             <p-checkbox formControlName="relaxed" [binary]="true" inputId="relaxedCheckbox" />
             <label for="relaxedCheckbox">Geh'mütlich</label>
           </div>
-          <div class="avk-checkbox-item">
+          <div class="avk-checkbox-item" pTooltip="Tourenangebote, die sich mit dem Bergbus erreichen lassen">
             <p-checkbox formControlName="mountainBus" [binary]="true" inputId="mountainBusCheckbox" />
             <label for="mountainBusCheckbox">Bergbus</label>
           </div>
@@ -131,7 +138,13 @@
       <p-card subheader="Zusätzliche Toureninformationen">
         <div class="avk-field">
           <label>Info</label>
-          <input pInputText formControlName="info" maxlength="75" [disabled]="locked()" />
+          <input
+            pInputText
+            formControlName="info"
+            maxlength="75"
+            [disabled]="locked()"
+            pTooltip="Tourenabsprache per E-Mail etc. (max. 75 Zeichen)"
+          />
         </div>
       </p-card>
 
@@ -147,6 +160,7 @@
               optionLabel="description"
               optionValue="level"
               [disabled]="locked()"
+              pTooltip="Technikanforderungen der Tour (*/**/***) vgl. Karabiner auf der Homepage"
             />
           </div>
           <div class="avk-field">
@@ -157,6 +171,7 @@
               optionLabel="description"
               optionValue="level"
               [disabled]="locked()"
+              pTooltip="Konditionsanforderungen der Tour (*/**/***) vgl. Bergsymbole auf der Homepage"
             />
           </div>
         </div>
@@ -172,11 +187,17 @@
               optionLabel="title"
               optionValue="id"
               [disabled]="locked()"
+              pTooltip="Benötigte Mindestqualifikation der Teilnehmer*innen"
             ></p-multiselect>
           </div>
           <div class="avk-field">
             <label>Spezielle Voraussetzungen</label>
-            <input pInputText formControlName="preconditions" [disabled]="locked()" />
+            <input
+              pInputText
+              formControlName="preconditions"
+              [disabled]="locked()"
+              pTooltip="Spezielle Voraussetzungen"
+            />
           </div>
         </div>
         <div class="avk-grid-3">
@@ -188,11 +209,18 @@
               optionLabel="name"
               optionValue="id"
               [disabled]="locked()"
+              pTooltip="Benötigte Ausrüstungssets"
             ></p-multiselect>
           </div>
           <div class="avk-field">
             <label>Zusätzliche Ausrüstung</label>
-            <input pInputText formControlName="miscEquipment" maxlength="75" [disabled]="locked()" />
+            <input
+              pInputText
+              formControlName="miscEquipment"
+              maxlength="75"
+              [disabled]="locked()"
+              pTooltip="Ergänzungsfeld für Ausrüstung, die in keinem Ausrüstungsset ist"
+            />
           </div>
           <div class="avk-field avk-field-checkbox">
             <div class="avk-checkbox-item">
@@ -224,25 +252,55 @@
         <div class="avk-grid-3">
           <div class="avk-field">
             <label>TN-Gebühr (€)</label>
-            <p-inputnumber formControlName="admission" [min]="0" [max]="999" [disabled]="locked()"></p-inputnumber>
+            <p-inputnumber
+              formControlName="admission"
+              [min]="0"
+              [max]="999"
+              [disabled]="locked()"
+              pTooltip="Die TN-Gebühr wird von der Geschäftsstelle entsprechend ergänzt."
+            ></p-inputnumber>
           </div>
           <div class="avk-field">
             <label>Zusatzkosten (€)</label>
-            <p-inputnumber formControlName="extraCharges" [min]="0" [max]="999" [disabled]="locked()"></p-inputnumber>
+            <p-inputnumber
+              formControlName="extraCharges"
+              [min]="0"
+              [max]="999"
+              [disabled]="locked()"
+              pTooltip="Zusatzkosten wie Maut, Übernachtungen etc."
+            ></p-inputnumber>
           </div>
           <div class="avk-field">
             <label>Anzahlung (€)</label>
-            <p-inputnumber formControlName="advances" [min]="0" [max]="999" [disabled]="locked()"></p-inputnumber>
+            <p-inputnumber
+              formControlName="advances"
+              [min]="0"
+              [max]="999"
+              [disabled]="locked()"
+              pTooltip="Anzahlungen für die Tour, Hütten, Liftkarten etc."
+            ></p-inputnumber>
           </div>
         </div>
         <div class="avk-grid-2">
           <div class="avk-field">
             <label>Zusatzkosten Details</label>
-            <textarea pTextarea formControlName="extraChargesInfo" rows="2" maxlength="75"></textarea>
+            <textarea
+              pTextarea
+              formControlName="extraChargesInfo"
+              rows="2"
+              maxlength="75"
+              pTooltip="Aufstellung der Zusatzkosten"
+            ></textarea>
           </div>
           <div class="avk-field">
             <label>Anzahlung Details</label>
-            <textarea pTextarea formControlName="advancesInfo" rows="2" maxlength="75"></textarea>
+            <textarea
+              pTextarea
+              formControlName="advancesInfo"
+              rows="2"
+              maxlength="75"
+              pTooltip="Aufstellung der Anzahlung"
+            ></textarea>
           </div>
         </div>
       </p-card>
@@ -297,11 +355,21 @@
           <div class="avk-grid-2">
             <div class="avk-field">
               <label>Kurztitel</label>
-              <input pInputText formControlName="title" maxlength="30" />
+              <input
+                pInputText
+                formControlName="title"
+                maxlength="30"
+                pTooltip="Kurztitel (max. 30 Zeichen) für die Darstellung im Tourenprogramm auf der Homepage"
+              />
             </div>
             <div class="avk-field">
               <label>Langtitel</label>
-              <input pInputText formControlName="name" maxlength="125" />
+              <input
+                pInputText
+                formControlName="name"
+                maxlength="125"
+                pTooltip="Langtitel (max. 125 Zeichen) für die Detailansicht auf Homepage (kann mit dem Kurztitel übereinstimmen)"
+              />
             </div>
           </div>
         }
@@ -318,16 +386,17 @@
                   optionValue="id"
                   [showClear]="true"
                   appendTo="body"
+                  pTooltip="Ungefähre Startzeit (wenn keine genaue Zeit angegeben werden kann)"
                 />
               </div>
             }
             <div class="avk-field">
               <label>Startzeit</label>
-              <input pInputText formControlName="startTime" placeholder="HH:MM" />
+              <input pInputText formControlName="startTime" placeholder="HH:MM" pTooltip="Startzeit" />
             </div>
             <div class="avk-field">
               <label>Endzeit</label>
-              <input pInputText formControlName="endTime" placeholder="HH:MM" />
+              <input pInputText formControlName="endTime" placeholder="HH:MM" pTooltip="Endzeit" />
             </div>
           </div>
         }
@@ -335,12 +404,22 @@
         <div class="avk-grid-2">
           <div class="avk-field">
             <label>Startdatum</label>
-            <p-datepicker formControlName="startDate" dateFormat="dd.mm.yy" appendTo="body"></p-datepicker>
+            <p-datepicker
+              formControlName="startDate"
+              dateFormat="dd.mm.yy"
+              appendTo="body"
+              pTooltip="Startdatum"
+            ></p-datepicker>
           </div>
           @if (selectedKind() === 'tour') {
             <div class="avk-field">
               <label>Enddatum</label>
-              <p-datepicker formControlName="endDate" dateFormat="dd.mm.yy" appendTo="body"></p-datepicker>
+              <p-datepicker
+                formControlName="endDate"
+                dateFormat="dd.mm.yy"
+                appendTo="body"
+                pTooltip="Enddatum (nur angeben wenn die Veranstaltung länger als einen Tag dauert)"
+              ></p-datepicker>
             </div>
           }
         </div>
@@ -363,12 +442,17 @@
             }
             <div class="avk-field">
               <label>Treffpunkt</label>
-              <input pInputText formControlName="rendezvous" maxlength="75" />
+              <input
+                pInputText
+                formControlName="rendezvous"
+                maxlength="75"
+                pTooltip="Treffpunkt für die Abfahrt oder Vorbesprechung"
+              />
             </div>
           </div>
 
           <div class="avk-checkbox-row">
-            <div class="avk-checkbox-item">
+            <div class="avk-checkbox-item" pTooltip="Reservierungswunsch Schulungsraum">
               <p-checkbox formControlName="reservationService" [binary]="true" inputId="reservationServiceCheckbox" />
               <label for="reservationServiceCheckbox">Schulungsraum-Reservierung</label>
             </div>
@@ -391,7 +475,7 @@
               <p-checkbox formControlName="publicTransport" [binary]="true" inputId="publicTransportCheckbox" />
               <label for="publicTransportCheckbox">Öffentliche Anreise</label>
             </div>
-            <div class="avk-checkbox-item">
+            <div class="avk-checkbox-item" pTooltip="Reservierungswunsch für das Alpin-Shuttle">
               <p-checkbox formControlName="shuttleService" [binary]="true" inputId="shuttleServiceCheckbox" />
               <label for="shuttleServiceCheckbox">Alpin-Shuttle</label>
             </div>
@@ -399,7 +483,12 @@
           <div class="avk-grid-3">
             <div class="avk-field">
               <label>Anreise (km)</label>
-              <p-inputnumber formControlName="distance" [min]="0" [max]="9999"></p-inputnumber>
+              <p-inputnumber
+                formControlName="distance"
+                [min]="0"
+                [max]="9999"
+                pTooltip="Gesamtfahrtstrecke der Veranstaltung"
+              ></p-inputnumber>
             </div>
             <div class="avk-field">
               <label>Ausgangsort</label>
@@ -407,7 +496,7 @@
             </div>
             <div class="avk-field">
               <label>Tourenportal-Link</label>
-              <input pInputText formControlName="link" maxlength="200" />
+              <input pInputText formControlName="link" maxlength="200" pTooltip="z.B. Alpenvereinaktiv, Outdooractive etc." />
             </div>
           </div>
           <div class="avk-field">

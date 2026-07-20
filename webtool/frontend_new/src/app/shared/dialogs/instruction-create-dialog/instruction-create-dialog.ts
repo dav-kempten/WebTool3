@@ -11,6 +11,7 @@ import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { SelectModule } from 'primeng/select';
 import { DatePickerModule } from 'primeng/datepicker';
+import { TooltipModule } from 'primeng/tooltip';
 
 import { InstructionsStore } from '../../../core/stores/instructions.store';
 import { ValuesStore } from '../../../core/stores/values.store';
@@ -31,6 +32,7 @@ import { toIsoDate } from '../../util/date';
     DialogModule,
     SelectModule,
     DatePickerModule,
+    TooltipModule,
   ],
   templateUrl: './instruction-create-dialog.html',
   styleUrl: '../tour-create-dialog/tour-create-dialog.scss',

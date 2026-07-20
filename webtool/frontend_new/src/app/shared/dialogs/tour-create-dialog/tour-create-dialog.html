@@ -16,15 +16,21 @@
         optionValue="id"
         placeholder="Kategorie wählen"
         appendTo="body"
+        pTooltip="Tourkategorie"
       />
     </div>
     <div class="avk-field">
       <label>Startdatum</label>
-      <p-datepicker formControlName="startDate" dateFormat="dd.mm.yy" appendTo="body" />
+      <p-datepicker formControlName="startDate" dateFormat="dd.mm.yy" appendTo="body" pTooltip="Datum des Starts der Tour" />
     </div>
     <div class="avk-field">
       <label>Anmeldeschluss</label>
-      <p-datepicker formControlName="deadline" dateFormat="dd.mm.yy" appendTo="body" />
+      <p-datepicker
+        formControlName="deadline"
+        dateFormat="dd.mm.yy"
+        appendTo="body"
+        pTooltip="Datum des Anmeldeschlusses (normalerweise ca. 1 Woche vorher)"
+      />
     </div>
     <div class="avk-field">
       <p-toggleButton
@@ -38,7 +44,12 @@
     @if (preliminaryEnabled()) {
       <div class="avk-field">
         <label>Vorbesprechung</label>
-        <p-datepicker formControlName="preliminary" dateFormat="dd.mm.yy" appendTo="body" />
+        <p-datepicker
+          formControlName="preliminary"
+          dateFormat="dd.mm.yy"
+          appendTo="body"
+          pTooltip="Datum der Vorbesprechung (normalerweise ein paar Tage vorher)"
+        />
       </div>
     }
     <p-button label="Bestätigen" (onClick)="create()" [disabled]="form.invalid" />

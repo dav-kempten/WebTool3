@@ -27,6 +27,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { TextareaModule } from 'primeng/textarea';
+import { TooltipModule } from 'primeng/tooltip';
 import { MessageModule } from 'primeng/message';
 import { ConfirmationService } from 'primeng/api';
 
@@ -60,6 +61,7 @@ import { fromIsoDate, toIsoDate } from '../../../shared/util/date';
     InputTextModule,
     InputNumberModule,
     TextareaModule,
+    TooltipModule,
     MessageModule,
   ],
   providers: [AutoSaveService],
