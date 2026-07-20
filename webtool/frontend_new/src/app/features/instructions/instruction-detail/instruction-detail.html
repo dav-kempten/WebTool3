@@ -243,18 +243,16 @@
   >
     @if (selectedEventForm(); as ef) {
       <form [formGroup]="ef" class="avk-event-form">
-        @if (selectedIsMain()) {
-          <div class="avk-grid-2">
-            <div class="avk-field">
-              <label>Kurztitel</label>
-              <input pInputText formControlName="title" maxlength="30" pTooltip="Kurztitel (z.B. Praxistag 1, max. 30 Zeichen) für die Ansicht im Kursprogramm auf der Homepage" />
-            </div>
-            <div class="avk-field">
-              <label>Langtitel</label>
-              <input pInputText formControlName="name" maxlength="125" pTooltip="Langtitel (max. 125 Zeichen) für die Detailansicht auf der Homepage" />
-            </div>
+        <div class="avk-grid-2">
+          <div class="avk-field">
+            <label>Kurztitel</label>
+            <input pInputText formControlName="title" maxlength="30" pTooltip="Kurztitel (z.B. Praxistag 1, max. 30 Zeichen) für die Ansicht im Kursprogramm auf der Homepage" />
           </div>
-        }
+          <div class="avk-field">
+            <label>Langtitel</label>
+            <input pInputText formControlName="name" maxlength="125" pTooltip="Langtitel (max. 125 Zeichen) für die Detailansicht auf der Homepage" />
+          </div>
+        </div>
         <div class="avk-grid-3">
           <div class="avk-field">
             <label>Tageszeit (ca.)</label>
