@@ -20,13 +20,15 @@ import { SessionService, CreateSessionPayload } from '../services/session.servic
 import { EventsStore } from './events.store';
 import { Session, SessionSummary, RawSession } from '../../models/session';
 import { Event } from '../../models/event';
+import { SaveError, describeSaveErrorPath } from '../../shared/util/save-error';
 
 interface SessionsState {
   summaries: SessionSummary[];
   summariesLoaded: boolean;
+  lastSaveErrors: SaveError[];
 }
 
-const initial: SessionsState = { summaries: [], summariesLoaded: false };
+const initial: SessionsState = { summaries: [], summariesLoaded: false, lastSaveErrors: [] };
 
 export const SessionsStore = signalStore(
   { providedIn: 'root' },
@@ -179,9 +181,9 @@ export const SessionsStore = signalStore(
       pipe(
         switchMap(({ session, silent }) =>
           service.upsertSession(session.id, buildSaveBody(session)).pipe(
-            tap((raw) => {
-              if (raw) {
-                patchState(store, setEntity(rawToEntity(raw)));
+            tap(({ data, errors }) => {
+              if (data) {
+                patchState(store, setEntity(rawToEntity(data)), { lastSaveErrors: [] });
                 loadSummaries();
                 if (!silent) {
                   messages.add({
@@ -190,11 +192,15 @@ export const SessionsStore = signalStore(
                     detail: 'Der Gruppentermin wurde gespeichert.',
                   });
                 }
-              } else if (!silent) {
+              } else {
+                patchState(store, { lastSaveErrors: errors });
                 messages.add({
                   severity: 'error',
                   summary: 'Speichern fehlgeschlagen',
-                  detail: 'Bitte erneut versuchen oder die Seite neu laden.',
+                  detail: errors.length
+                    ? `Fehlerhafte Felder: ${errors.map((e) => describeSaveErrorPath(e.path)).join(', ')}`
+                    : 'Bitte erneut versuchen oder die Seite neu laden.',
+                  life: 10000,
                 });
               }
             }),

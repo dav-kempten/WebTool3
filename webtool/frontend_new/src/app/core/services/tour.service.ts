@@ -1,8 +1,9 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Observable, catchError, map, of } from 'rxjs';
 import { RawTour, Tour, TourSummary } from '../../models/tour';
 import { Event } from '../../models/event';
+import { SaveResult, toSaveError } from '../../shared/util/save-error';
 
 const JSON_HEADERS = new HttpHeaders({
   Accept: 'application/json',
@@ -70,10 +71,11 @@ export class TourService {
   }
 
   /** `body` is a fully assembled RawTour (nested events, decimal strings). */
-  upsertTour(id: number, body: unknown): Observable<RawTour | null> {
-    return this.http
-      .put<RawTour>(`/api/frontend/tours/${id}/`, body)
-      .pipe(catchError(() => of(null)));
+  upsertTour(id: number, body: unknown): Observable<SaveResult<RawTour>> {
+    return this.http.put<RawTour>(`/api/frontend/tours/${id}/`, body).pipe(
+      map((data) => ({ data, errors: [] }) as SaveResult<RawTour>),
+      catchError((error: HttpErrorResponse) => of(toSaveError<RawTour>(error))),
+    );
   }
 
   deleteTour(id: number): Observable<boolean> {

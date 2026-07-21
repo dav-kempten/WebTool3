@@ -9,8 +9,11 @@
   <section class="avk-page">
     <form [formGroup]="fg" class="avk-detail-form">
       <p-card header="Gruppentermin">
-        @if (autoSave.lastSaved()) {
+        @if (autoSave.lastSaved() && !saveErrorSummary()) {
           <p-message severity="success">Automatisch gespeichert um {{ autoSave.lastSaved() | date: 'HH:mm:ss' }}</p-message>
+        }
+        @if (saveErrorSummary()) {
+          <p-message severity="error">Speichern fehlgeschlagen bei: {{ saveErrorSummary() }}</p-message>
         }
       </p-card>
 

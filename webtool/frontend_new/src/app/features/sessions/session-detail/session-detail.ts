@@ -37,6 +37,7 @@ import { BreadcrumbService } from '../../../core/layout/breadcrumb.service';
 import { Session } from '../../../models/session';
 import { fromIsoDate, toIsoDate, tomorrow } from '../../../shared/util/date';
 import { timeFormatValidator } from '../../../shared/util/validators';
+import { describeSaveErrorPath } from '../../../shared/util/save-error';
 
 @Component({
   selector: 'avk-session-detail',
@@ -82,6 +83,14 @@ export class SessionDetail {
   );
   readonly collective = computed(() =>
     this.values.collectiveById().get(this.session()?.collectiveId ?? -1),
+  );
+
+  /** Field labels from the most recent failed save, for an inline hint next to the auto-save status. */
+  readonly saveErrorSummary = computed(() =>
+    this.sessions
+      .lastSaveErrors()
+      .map((e) => describeSaveErrorPath(e.path))
+      .join(', '),
   );
 
   private readonly permission = this.auth.permission;

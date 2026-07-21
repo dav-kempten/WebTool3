@@ -28,13 +28,19 @@ import {
   RawInstruction,
 } from '../../models/instruction';
 import { Event } from '../../models/event';
+import { SaveError, describeSaveErrorPath } from '../../shared/util/save-error';
 
 interface InstructionsState {
   summaries: InstructionSummary[];
   summariesLoaded: boolean;
+  lastSaveErrors: SaveError[];
 }
 
-const initial: InstructionsState = { summaries: [], summariesLoaded: false };
+const initial: InstructionsState = {
+  summaries: [],
+  summariesLoaded: false,
+  lastSaveErrors: [],
+};
 
 const toNumber = (v: string | number | null | undefined) => Number(v ?? 0);
 
@@ -240,9 +246,9 @@ export const InstructionsStore = signalStore(
       pipe(
         switchMap(({ instruction, silent }) =>
           service.upsertInstruction(instruction.id, buildSaveBody(instruction)).pipe(
-            tap((raw) => {
-              if (raw) {
-                patchState(store, setEntity(rawToEntity(raw)));
+            tap(({ data, errors }) => {
+              if (data) {
+                patchState(store, setEntity(rawToEntity(data)), { lastSaveErrors: [] });
                 loadSummaries();
                 if (!silent) {
                   messages.add({
@@ -251,11 +257,15 @@ export const InstructionsStore = signalStore(
                     detail: 'Der Kurs wurde erfolgreich gespeichert.',
                   });
                 }
-              } else if (!silent) {
+              } else {
+                patchState(store, { lastSaveErrors: errors });
                 messages.add({
                   severity: 'error',
                   summary: 'Speichern fehlgeschlagen',
-                  detail: 'Bitte erneut versuchen oder die Seite neu laden.',
+                  detail: errors.length
+                    ? `Fehlerhafte Felder: ${errors.map((e) => describeSaveErrorPath(e.path)).join(', ')}`
+                    : 'Bitte erneut versuchen oder die Seite neu laden.',
+                  life: 10000,
                 });
               }
             }),
@@ -280,9 +290,18 @@ export const InstructionsStore = signalStore(
             );
           });
           return service.upsertInstruction(instruction.id, body).pipe(
-            tap((raw) => {
-              if (raw) {
-                patchState(store, setEntity(rawToEntity(raw)));
+            tap(({ data, errors }) => {
+              if (data) {
+                patchState(store, setEntity(rawToEntity(data)));
+              } else {
+                messages.add({
+                  severity: 'error',
+                  summary: 'Kurstermin hinzufügen fehlgeschlagen',
+                  detail: errors.length
+                    ? `Fehlerhafte Felder: ${errors.map((e) => describeSaveErrorPath(e.path)).join(', ')}`
+                    : 'Bitte erneut versuchen oder die Seite neu laden.',
+                  life: 10000,
+                });
               }
             }),
           );
@@ -300,9 +319,18 @@ export const InstructionsStore = signalStore(
             }
           });
           return service.upsertInstruction(instruction.id, body).pipe(
-            tap((raw) => {
-              if (raw) {
-                patchState(store, setEntity(rawToEntity(raw)));
+            tap(({ data, errors }) => {
+              if (data) {
+                patchState(store, setEntity(rawToEntity(data)));
+              } else {
+                messages.add({
+                  severity: 'error',
+                  summary: 'Kurstermin entfernen fehlgeschlagen',
+                  detail: errors.length
+                    ? `Fehlerhafte Felder: ${errors.map((e) => describeSaveErrorPath(e.path)).join(', ')}`
+                    : 'Bitte erneut versuchen oder die Seite neu laden.',
+                  life: 10000,
+                });
               }
             }),
           );

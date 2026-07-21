@@ -16,8 +16,11 @@
           Willkommen im Tourenformular! Felder, von denen du nicht weißt wie du sie füllen
           sollst, kannst du leer lassen.
         </p>
-        @if (autoSave.lastSaved()) {
+        @if (autoSave.lastSaved() && !saveErrorSummary()) {
           <p-message severity="success">Automatisch gespeichert um {{ autoSave.lastSaved() | date: 'HH:mm:ss' }}</p-message>
+        }
+        @if (saveErrorSummary()) {
+          <p-message severity="error">Speichern fehlgeschlagen bei: {{ saveErrorSummary() }}</p-message>
         }
       </p-card>
 

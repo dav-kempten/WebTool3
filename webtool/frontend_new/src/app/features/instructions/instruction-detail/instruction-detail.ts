@@ -43,6 +43,7 @@ import { Instruction } from '../../../models/instruction';
 import { Event } from '../../../models/event';
 import { fromIsoDate, toIsoDate, tomorrow } from '../../../shared/util/date';
 import { timeFormatValidator } from '../../../shared/util/validators';
+import { describeSaveErrorPath } from '../../../shared/util/save-error';
 
 @Component({
   selector: 'avk-instruction-detail',
@@ -89,6 +90,14 @@ export class InstructionDetail {
   );
   readonly topic = computed(() =>
     this.values.topicById().get(this.instruction()?.topicId ?? -1),
+  );
+
+  /** Field labels from the most recent failed save, for an inline hint next to the auto-save status. */
+  readonly saveErrorSummary = computed(() =>
+    this.instructions
+      .lastSaveErrors()
+      .map((e) => describeSaveErrorPath(e.path))
+      .join(', '),
   );
   /** Read-only view of the requirements already defined on the topic. */
   readonly topicQualificationNames = computed(() => {

@@ -1,8 +1,9 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Observable, catchError, map, of } from 'rxjs';
 import { Session, SessionSummary, RawSession } from '../../models/session';
 import { Event } from '../../models/event';
+import { SaveResult, toSaveError } from '../../shared/util/save-error';
 
 const JSON_HEADERS = new HttpHeaders({
   Accept: 'application/json',
@@ -52,10 +53,11 @@ export class SessionService {
       .pipe(catchError(() => of({ id: 0 } as Session)));
   }
 
-  upsertSession(id: number, body: unknown): Observable<RawSession | null> {
-    return this.http
-      .put<RawSession>(`/api/frontend/sessions/${id}/`, body)
-      .pipe(catchError(() => of(null)));
+  upsertSession(id: number, body: unknown): Observable<SaveResult<RawSession>> {
+    return this.http.put<RawSession>(`/api/frontend/sessions/${id}/`, body).pipe(
+      map((data) => ({ data, errors: [] }) as SaveResult<RawSession>),
+      catchError((error: HttpErrorResponse) => of(toSaveError<RawSession>(error))),
+    );
   }
 
   deleteSession(id: number): Observable<boolean> {

@@ -20,13 +20,15 @@ import { TourService, CreateTourPayload } from '../services/tour.service';
 import { EventsStore } from './events.store';
 import { RawTour, Tour, TourSummary } from '../../models/tour';
 import { Event } from '../../models/event';
+import { SaveError, describeSaveErrorPath } from '../../shared/util/save-error';
 
 interface ToursState {
   summaries: TourSummary[];
   summariesLoaded: boolean;
+  lastSaveErrors: SaveError[];
 }
 
-const initial: ToursState = { summaries: [], summariesLoaded: false };
+const initial: ToursState = { summaries: [], summariesLoaded: false, lastSaveErrors: [] };
 
 function toNumber(value: string | number | null | undefined): number {
   return Number(value ?? 0);
@@ -231,9 +233,9 @@ export const ToursStore = signalStore(
       pipe(
         switchMap(({ tour, silent }) =>
           tourService.upsertTour(tour.id, buildSaveBody(tour)).pipe(
-            tap((raw) => {
-              if (raw) {
-                patchState(store, setEntity(rawToEntity(raw)));
+            tap(({ data, errors }) => {
+              if (data) {
+                patchState(store, setEntity(rawToEntity(data)), { lastSaveErrors: [] });
                 loadSummaries();
                 if (!silent) {
                   messages.add({
@@ -242,11 +244,15 @@ export const ToursStore = signalStore(
                     detail: 'Die Tour wurde erfolgreich gespeichert.',
                   });
                 }
-              } else if (!silent) {
+              } else {
+                patchState(store, { lastSaveErrors: errors });
                 messages.add({
                   severity: 'error',
                   summary: 'Speichern fehlgeschlagen',
-                  detail: 'Bitte erneut versuchen oder die Seite neu laden.',
+                  detail: errors.length
+                    ? `Fehlerhafte Felder: ${errors.map((e) => describeSaveErrorPath(e.path)).join(', ')}`
+                    : 'Bitte erneut versuchen oder die Seite neu laden.',
+                  life: 10000,
                 });
               }
             }),

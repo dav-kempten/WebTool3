@@ -45,6 +45,7 @@ import { Tour } from '../../../models/tour';
 import { Event } from '../../../models/event';
 import { fromIsoDate, toIsoDate, tomorrow } from '../../../shared/util/date';
 import { timeFormatValidator } from '../../../shared/util/validators';
+import { describeSaveErrorPath } from '../../../shared/util/save-error';
 
 type EventKind = 'tour' | 'deadline' | 'preliminary';
 
@@ -93,6 +94,14 @@ export class TourDetail {
   readonly tour = computed<Tour | undefined>(() => this.tours.tourById()[this.tourId()]);
   readonly category = computed(() =>
     this.values.categoryById().get(this.tour()?.categoryId ?? -1),
+  );
+
+  /** Field labels from the most recent failed save, for an inline hint next to the auto-save status. */
+  readonly saveErrorSummary = computed(() =>
+    this.tours
+      .lastSaveErrors()
+      .map((e) => describeSaveErrorPath(e.path))
+      .join(', '),
   );
 
   // --- permissions ---

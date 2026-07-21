@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Observable, catchError, map, of } from 'rxjs';
 import {
   Instruction,
@@ -7,6 +7,7 @@ import {
   RawInstruction,
 } from '../../models/instruction';
 import { Event } from '../../models/event';
+import { SaveResult, toSaveError } from '../../shared/util/save-error';
 
 const JSON_HEADERS = new HttpHeaders({
   Accept: 'application/json',
@@ -59,10 +60,11 @@ export class InstructionService {
       .pipe(catchError(() => of({ id: 0 } as Instruction)));
   }
 
-  upsertInstruction(id: number, body: unknown): Observable<RawInstruction | null> {
-    return this.http
-      .put<RawInstruction>(`/api/frontend/instructions/${id}/`, body)
-      .pipe(catchError(() => of(null)));
+  upsertInstruction(id: number, body: unknown): Observable<SaveResult<RawInstruction>> {
+    return this.http.put<RawInstruction>(`/api/frontend/instructions/${id}/`, body).pipe(
+      map((data) => ({ data, errors: [] }) as SaveResult<RawInstruction>),
+      catchError((error: HttpErrorResponse) => of(toSaveError<RawInstruction>(error))),
+    );
   }
 
   deleteInstruction(id: number): Observable<boolean> {
