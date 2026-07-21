@@ -142,11 +142,11 @@
         <div class="avk-grid-2">
           <div class="avk-field">
             <label>Startdatum</label>
-            <p-datepicker formControlName="startDate" dateFormat="dd.mm.yy" appendTo="body" />
+            <p-datepicker formControlName="startDate" dateFormat="dd.mm.yy" appendTo="body" [minDate]="minDate" />
           </div>
           <div class="avk-field">
             <label>Enddatum</label>
-            <p-datepicker formControlName="endDate" dateFormat="dd.mm.yy" appendTo="body" />
+            <p-datepicker formControlName="endDate" dateFormat="dd.mm.yy" appendTo="body" [minDate]="minDate" />
           </div>
         </div>
         <div class="avk-grid-2">

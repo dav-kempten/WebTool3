@@ -24,7 +24,7 @@ import { ToursStore } from '../../../core/stores/tours.store';
 import { ValuesStore } from '../../../core/stores/values.store';
 import { AuthService } from '../../../core/services/auth.service';
 import { PermissionLevel } from '../../../core/services/permission';
-import { toIsoDate } from '../../util/date';
+import { toIsoDate, tomorrow } from '../../util/date';
 
 /**
  * "Neue Tour" dialog with the minimal inputs (Tourenart, Startdatum,
@@ -54,6 +54,8 @@ export class TourCreateDialog implements OnInit {
   private fb = inject(FormBuilder);
 
   readonly visible = model(false);
+
+  readonly minDate = tomorrow();
 
   readonly preliminaryEnabled = signal(false);
   readonly form = this.fb.group({

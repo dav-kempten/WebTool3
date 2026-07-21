@@ -17,7 +17,7 @@ import { InstructionsStore } from '../../../core/stores/instructions.store';
 import { ValuesStore } from '../../../core/stores/values.store';
 import { AuthService } from '../../../core/services/auth.service';
 import { PermissionLevel } from '../../../core/services/permission';
-import { toIsoDate } from '../../util/date';
+import { toIsoDate, tomorrow } from '../../util/date';
 
 /**
  * "Neuer Kurs" dialog with the minimal inputs (Thema, Startdatum). On success
@@ -44,6 +44,8 @@ export class InstructionCreateDialog implements OnInit {
   private fb = inject(FormBuilder);
 
   readonly visible = model(false);
+
+  readonly minDate = tomorrow();
 
   readonly form = this.fb.group({
     topicId: this.fb.control<number | null>(null, Validators.required),

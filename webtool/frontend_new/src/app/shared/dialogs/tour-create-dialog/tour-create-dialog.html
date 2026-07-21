@@ -21,7 +21,13 @@
     </div>
     <div class="avk-field">
       <label>Startdatum</label>
-      <p-datepicker formControlName="startDate" dateFormat="dd.mm.yy" appendTo="body" pTooltip="Datum des Starts der Tour" />
+      <p-datepicker
+        formControlName="startDate"
+        dateFormat="dd.mm.yy"
+        appendTo="body"
+        [minDate]="minDate"
+        pTooltip="Datum des Starts der Tour"
+      />
     </div>
     <div class="avk-field">
       <label>Anmeldeschluss</label>
@@ -29,6 +35,7 @@
         formControlName="deadline"
         dateFormat="dd.mm.yy"
         appendTo="body"
+        [minDate]="minDate"
         pTooltip="Datum des Anmeldeschlusses (normalerweise ca. 1 Woche vorher)"
       />
     </div>
@@ -48,6 +55,7 @@
           formControlName="preliminary"
           dateFormat="dd.mm.yy"
           appendTo="body"
+          [minDate]="minDate"
           pTooltip="Datum der Vorbesprechung (normalerweise ein paar Tage vorher)"
         />
       </div>

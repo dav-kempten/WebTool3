@@ -408,6 +408,7 @@
               formControlName="startDate"
               dateFormat="dd.mm.yy"
               appendTo="body"
+              [minDate]="minDate"
               pTooltip="Startdatum"
             ></p-datepicker>
           </div>
@@ -418,6 +419,7 @@
                 formControlName="endDate"
                 dateFormat="dd.mm.yy"
                 appendTo="body"
+                [minDate]="minDate"
                 pTooltip="Enddatum (nur angeben wenn die Veranstaltung länger als einen Tag dauert)"
               ></p-datepicker>
             </div>

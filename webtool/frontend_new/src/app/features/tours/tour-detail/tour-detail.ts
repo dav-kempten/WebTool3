@@ -43,7 +43,8 @@ import { PdfExportService } from '../../../core/services/pdf-export.service';
 import { BreadcrumbService } from '../../../core/layout/breadcrumb.service';
 import { Tour } from '../../../models/tour';
 import { Event } from '../../../models/event';
-import { fromIsoDate, toIsoDate } from '../../../shared/util/date';
+import { fromIsoDate, toIsoDate, tomorrow } from '../../../shared/util/date';
+import { timeFormatValidator } from '../../../shared/util/validators';
 
 type EventKind = 'tour' | 'deadline' | 'preliminary';
 
@@ -152,6 +153,7 @@ export class TourDetail {
   private built = false;
 
   // --- event dialog ---
+  readonly minDate = tomorrow();
   readonly showEvent = signal(false);
   readonly selectedKind = signal<EventKind>('tour');
   selectedEventForm = signal<FormGroup | undefined>(undefined);
@@ -247,10 +249,10 @@ export class TourDetail {
       name: [event.name],
       description: [event.description],
       startDate: [fromIsoDate(event.startDate)],
-      startTime: [event.startTime],
+      startTime: [event.startTime, timeFormatValidator()],
       approximateId: [event.approximateId],
       endDate: [fromIsoDate(event.endDate)],
-      endTime: [event.endTime],
+      endTime: [event.endTime, timeFormatValidator()],
       rendezvous: [event.rendezvous],
       location: [event.location],
       reservationService: [event.reservationService],

@@ -27,6 +27,14 @@ export function toIsoDate(value: Date | string | null | undefined): string | nul
   return `${y}-${m}-${d}`;
 }
 
+/** Local midnight of the day after today, for `[minDate]` bindings that must exclude today. */
+export function tomorrow(): Date {
+  const date = new Date();
+  date.setHours(0, 0, 0, 0);
+  date.setDate(date.getDate() + 1);
+  return date;
+}
+
 /** `2024-07-15` -> `15.07.2024` for display. */
 export function formatIsoDateDe(value: string | null | undefined): string {
   if (!value) {

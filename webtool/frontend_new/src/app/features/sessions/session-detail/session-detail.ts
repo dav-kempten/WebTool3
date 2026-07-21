@@ -35,7 +35,8 @@ import { PermissionLevel } from '../../../core/services/permission';
 import { AutoSaveService } from '../../../core/services/auto-save.service';
 import { BreadcrumbService } from '../../../core/layout/breadcrumb.service';
 import { Session } from '../../../models/session';
-import { fromIsoDate, toIsoDate } from '../../../shared/util/date';
+import { fromIsoDate, toIsoDate, tomorrow } from '../../../shared/util/date';
+import { timeFormatValidator } from '../../../shared/util/validators';
 
 @Component({
   selector: 'avk-session-detail',
@@ -121,6 +122,7 @@ export class SessionDetail {
   form = signal<FormGroup | undefined>(undefined);
   private built = false;
 
+  readonly minDate = tomorrow();
   readonly showEvent = signal(false);
   eventForm = signal<FormGroup | undefined>(undefined);
 
@@ -201,10 +203,10 @@ export class SessionDetail {
         name: [event.name],
         description: [event.description],
         startDate: [fromIsoDate(event.startDate)],
-        startTime: [event.startTime],
+        startTime: [event.startTime, timeFormatValidator()],
         approximateId: [event.approximateId],
         endDate: [fromIsoDate(event.endDate)],
-        endTime: [event.endTime],
+        endTime: [event.endTime, timeFormatValidator()],
         rendezvous: [event.rendezvous],
         location: [event.location],
       }),
