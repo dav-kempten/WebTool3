@@ -70,7 +70,7 @@ type EventKind = 'tour' | 'deadline' | 'preliminary';
   ],
   providers: [AutoSaveService],
   templateUrl: './tour-detail.html',
-  styleUrl: './tour-detail.scss',
+  styleUrl: '../../../shared/styles/detail-page.scss',
 })
 export class TourDetail {
   /** Route param bound via withComponentInputBinding(). */

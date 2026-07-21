@@ -35,7 +35,7 @@ import { toIsoDate } from '../../util/date';
     TooltipModule,
   ],
   templateUrl: './instruction-create-dialog.html',
-  styleUrl: '../tour-create-dialog/tour-create-dialog.scss',
+  styleUrl: '../../styles/create-dialog.scss',
 })
 export class InstructionCreateDialog implements OnInit {
   private instructions = inject(InstructionsStore);

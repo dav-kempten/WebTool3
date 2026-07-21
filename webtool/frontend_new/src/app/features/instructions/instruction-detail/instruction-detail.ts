@@ -66,7 +66,7 @@ import { fromIsoDate, toIsoDate } from '../../../shared/util/date';
   ],
   providers: [AutoSaveService],
   templateUrl: './instruction-detail.html',
-  styleUrl: '../../tours/tour-detail/tour-detail.scss',
+  styleUrl: '../../../shared/styles/detail-page.scss',
 })
 export class InstructionDetail {
   readonly id = input.required<string>();

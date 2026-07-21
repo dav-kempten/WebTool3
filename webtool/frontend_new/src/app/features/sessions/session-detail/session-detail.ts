@@ -59,7 +59,7 @@ import { fromIsoDate, toIsoDate } from '../../../shared/util/date';
   ],
   providers: [AutoSaveService],
   templateUrl: './session-detail.html',
-  styleUrl: '../../tours/tour-detail/tour-detail.scss',
+  styleUrl: '../../../shared/styles/detail-page.scss',
 })
 export class SessionDetail {
   readonly id = input.required<string>();

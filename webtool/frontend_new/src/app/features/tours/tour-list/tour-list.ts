@@ -53,7 +53,7 @@ interface TourRow extends TourSummary {
     TourCreateDialog,
   ],
   templateUrl: './tour-list.html',
-  styleUrl: './tour-list.scss',
+  styleUrl: '../../../shared/styles/list-page.scss',
 })
 export class TourList implements OnInit {
   private tours = inject(ToursStore);

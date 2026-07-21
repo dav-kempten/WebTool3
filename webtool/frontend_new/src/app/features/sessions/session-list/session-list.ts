@@ -49,7 +49,7 @@ interface SessionRow extends SessionSummary {
     TooltipModule,
   ],
   templateUrl: './session-list.html',
-  styleUrl: '../../tours/tour-list/tour-list.scss',
+  styleUrl: '../../../shared/styles/list-page.scss',
 })
 export class SessionList implements OnInit {
   private sessions = inject(SessionsStore);

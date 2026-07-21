@@ -49,7 +49,7 @@ interface InstructionRow extends InstructionSummary {
     InstructionCreateDialog,
   ],
   templateUrl: './instruction-list.html',
-  styleUrl: '../../tours/tour-list/tour-list.scss',
+  styleUrl: '../../../shared/styles/list-page.scss',
 })
 export class InstructionList implements OnInit {
   private instructions = inject(InstructionsStore);

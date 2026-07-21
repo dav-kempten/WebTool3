@@ -45,7 +45,7 @@ import { toIsoDate } from '../../util/date';
     TooltipModule,
   ],
   templateUrl: './tour-create-dialog.html',
-  styleUrl: './tour-create-dialog.scss',
+  styleUrl: '../../styles/create-dialog.scss',
 })
 export class TourCreateDialog implements OnInit {
   private tours = inject(ToursStore);

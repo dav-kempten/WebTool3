@@ -13,7 +13,7 @@ import { GuideSummary } from '../../../models/guide';
   standalone: true,
   imports: [RouterModule, TableModule, InputTextModule],
   templateUrl: './guide-list.html',
-  styleUrl: '../../tours/tour-list/tour-list.scss',
+  styleUrl: '../../../shared/styles/list-page.scss',
 })
 export class GuideList implements OnInit {
   private guides = inject(GuidesStore);
