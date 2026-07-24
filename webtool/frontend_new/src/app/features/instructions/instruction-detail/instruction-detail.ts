@@ -41,7 +41,12 @@ import { AutoSaveService } from '../../../core/services/auto-save.service';
 import { BreadcrumbService } from '../../../core/layout/breadcrumb.service';
 import { Instruction } from '../../../models/instruction';
 import { Event } from '../../../models/event';
-import { fromIsoDate, toIsoDate, tomorrow } from '../../../shared/util/date';
+import {
+  fromIsoDate,
+  relaxedMinDate,
+  toIsoDate,
+  tomorrow,
+} from '../../../shared/util/date';
 import { timeFormatValidator } from '../../../shared/util/validators';
 import { describeSaveErrorPath } from '../../../shared/util/save-error';
 
@@ -168,7 +173,8 @@ export class InstructionDetail {
   /** Id of the course the form was last built for; rebuilds when navigating to a different course. */
   private builtId: number | null = null;
 
-  readonly minDate = tomorrow();
+  /** See tour-detail: relaxed for events that already lie in the past. */
+  readonly minDate = signal<Date>(tomorrow());
   readonly showEvent = signal(false);
   readonly selectedIsMain = signal(false);
   selectedEventForm = signal<FormGroup | undefined>(undefined);
@@ -262,6 +268,7 @@ export class InstructionDetail {
   selectEvent(event: Event, index: number): void {
     this.selectedIsMain.set(index === 0);
     this.selectedEventId = event.id;
+    this.minDate.set(relaxedMinDate(fromIsoDate(event.startDate)));
     this.selectedEventForm.set(
       this.fb.group({
         title: [event.title],

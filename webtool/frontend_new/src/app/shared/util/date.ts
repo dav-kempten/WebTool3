@@ -35,6 +35,17 @@ export function tomorrow(): Date {
   return date;
 }
 
+/**
+ * Lower bound for a date picker that edits an *existing* date: normally
+ * tomorrow, but never later than the value already stored. PrimeNG renders a
+ * value below `minDate` as an empty field, so a stricter bound would silently
+ * hide the dates of past events.
+ */
+export function relaxedMinDate(current: Date | null | undefined): Date {
+  const floor = tomorrow();
+  return current && current < floor ? current : floor;
+}
+
 /** `2024-07-15` -> `15.07.2024` for display. */
 export function formatIsoDateDe(value: string | null | undefined): string {
   if (!value) {

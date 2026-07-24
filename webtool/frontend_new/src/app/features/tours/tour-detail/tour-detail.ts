@@ -43,7 +43,12 @@ import { PdfExportService } from '../../../core/services/pdf-export.service';
 import { BreadcrumbService } from '../../../core/layout/breadcrumb.service';
 import { Tour } from '../../../models/tour';
 import { Event } from '../../../models/event';
-import { fromIsoDate, toIsoDate, tomorrow } from '../../../shared/util/date';
+import {
+  fromIsoDate,
+  relaxedMinDate,
+  toIsoDate,
+  tomorrow,
+} from '../../../shared/util/date';
 import { timeFormatValidator } from '../../../shared/util/validators';
 import { describeSaveErrorPath } from '../../../shared/util/save-error';
 
@@ -163,7 +168,13 @@ export class TourDetail {
   private builtId: number | null = null;
 
   // --- event dialog ---
-  readonly minDate = tomorrow();
+  /**
+   * Lower bound for the dialog's date fields. New dates may not be put in the
+   * past, but an existing event that already lies in the past has to keep
+   * showing its own date: PrimeNG blanks out any value below `minDate`
+   * (`formatDateTime`), which looked as if the dialog dropped the date.
+   */
+  readonly minDate = signal<Date>(tomorrow());
   readonly showEvent = signal(false);
   readonly selectedKind = signal<EventKind>('tour');
   selectedEventForm = signal<FormGroup | undefined>(undefined);
@@ -360,7 +371,9 @@ export class TourDetail {
     this.selectedKind.set(
       index === 0 ? 'tour' : index === 1 ? 'deadline' : 'preliminary',
     );
-    this.selectedEventForm.set(array.at(index) as FormGroup);
+    const group = array.at(index) as FormGroup;
+    this.minDate.set(relaxedMinDate(group.get('startDate')?.value));
+    this.selectedEventForm.set(group);
     this.showEvent.set(true);
   }
 
