@@ -39,6 +39,7 @@ function extractSaveErrors(body: unknown, path: string[] = []): SaveError[] {
 /** German labels for the field/event keys used across tour, instruction and session forms. */
 const FIELD_LABELS: Record<string, string> = {
   nonFieldErrors: 'Allgemein',
+  non_field_errors: 'Allgemein',
   detail: 'Allgemein',
   guideId: 'Leiter',
   teamIds: 'Team',
@@ -93,4 +94,11 @@ export function describeSaveErrorPath(path: string[]): string {
     }
   }
   return parts.join(' – ');
+}
+
+/** e.g. `"Allgemein: preliminary is not defined"` — label plus the raw DRF message. */
+export function describeSaveError(error: SaveError): string {
+  const label = describeSaveErrorPath(error.path);
+  const message = error.messages.join('; ');
+  return message ? `${label}: ${message}` : label;
 }

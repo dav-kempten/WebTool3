@@ -20,7 +20,7 @@ import { TourService, CreateTourPayload } from '../services/tour.service';
 import { EventsStore } from './events.store';
 import { RawTour, Tour, TourSummary } from '../../models/tour';
 import { Event } from '../../models/event';
-import { SaveError, describeSaveErrorPath } from '../../shared/util/save-error';
+import { SaveError, describeSaveError } from '../../shared/util/save-error';
 
 interface ToursState {
   summaries: TourSummary[];
@@ -71,10 +71,13 @@ export const ToursStore = signalStore(
     }
 
     /** Reassembles the wire payload for a PUT save from the current entity + events. */
-    function buildSaveBody(tour: Tour): unknown {
+    function buildSaveBody(
+      tour: Tour,
+      mutate?: (events: { tourEvent: Event; deadline: Event; preliminary: Event | null }) => void,
+    ): unknown {
       const [tourEvent, deadline, preliminary] = eventsStore
         .eventsByIds([tour.tourId, tour.deadlineId, tour.preliminaryId])
-        .map((event) => ({ ...event }));
+        .map((event) => ({ ...event })) as [Event, Event, Event | undefined];
 
       if (deadline) {
         deadline.distance = 0;
@@ -83,11 +86,16 @@ export const ToursStore = signalStore(
         preliminary.distance = 0;
       }
 
+      const events = { tourEvent, deadline, preliminary: preliminary ?? null };
+      if (mutate) {
+        mutate(events);
+      }
+
       return {
         ...tour,
-        tour: tourEvent,
-        deadline,
-        preliminary: preliminary ?? null,
+        tour: events.tourEvent,
+        deadline: events.deadline,
+        preliminary: events.preliminary,
         admission: String(tour.admission ?? 0),
         advances: String(tour.advances ?? 0),
         extraCharges: String(tour.extraCharges ?? 0),
@@ -250,7 +258,7 @@ export const ToursStore = signalStore(
                   severity: 'error',
                   summary: 'Speichern fehlgeschlagen',
                   detail: errors.length
-                    ? `Fehlerhafte Felder: ${errors.map((e) => describeSaveErrorPath(e.path)).join(', ')}`
+                    ? `Fehlerhafte Felder: ${errors.map((e) => describeSaveError(e)).join(', ')}`
                     : 'Bitte erneut versuchen oder die Seite neu laden.',
                   life: 10000,
                 });
@@ -258,6 +266,66 @@ export const ToursStore = signalStore(
             }),
           ),
         ),
+      ),
+    );
+
+    const addPreliminary = rxMethod<Tour>(
+      pipe(
+        switchMap((tour) => {
+          const body = buildSaveBody(tour, (events) => {
+            events.preliminary = { startDate: events.tourEvent.startDate } as Event;
+          });
+          return tourService.upsertTour(tour.id, body).pipe(
+            tap(({ data, errors }) => {
+              if (data) {
+                patchState(store, setEntity(rawToEntity(data)), { lastSaveErrors: [] });
+              } else {
+                patchState(store, { lastSaveErrors: errors });
+                messages.add({
+                  severity: 'error',
+                  summary: 'Vorbesprechung hinzufügen fehlgeschlagen',
+                  detail: errors.length
+                    ? `Fehlerhafte Felder: ${errors.map((e) => describeSaveError(e)).join(', ')}`
+                    : 'Bitte erneut versuchen oder die Seite neu laden.',
+                  life: 10000,
+                });
+              }
+            }),
+          );
+        }),
+      ),
+    );
+
+    /**
+     * Marks the preliminary event deprecated instead of deleting the row, so a
+     * later re-add reuses the same server-side event (see addPreliminary).
+     */
+    const removePreliminary = rxMethod<Tour>(
+      pipe(
+        switchMap((tour) => {
+          const body = buildSaveBody(tour, (events) => {
+            if (events.preliminary) {
+              events.preliminary = { ...events.preliminary, deprecated: true };
+            }
+          });
+          return tourService.upsertTour(tour.id, body).pipe(
+            tap(({ data, errors }) => {
+              if (data) {
+                patchState(store, setEntity(rawToEntity(data)), { lastSaveErrors: [] });
+              } else {
+                patchState(store, { lastSaveErrors: errors });
+                messages.add({
+                  severity: 'error',
+                  summary: 'Vorbesprechung entfernen fehlgeschlagen',
+                  detail: errors.length
+                    ? `Fehlerhafte Felder: ${errors.map((e) => describeSaveError(e)).join(', ')}`
+                    : 'Bitte erneut versuchen oder die Seite neu laden.',
+                  life: 10000,
+                });
+              }
+            }),
+          );
+        }),
       ),
     );
 
@@ -298,6 +366,8 @@ export const ToursStore = signalStore(
       cloneById,
       remove,
       save,
+      addPreliminary,
+      removePreliminary,
     };
   }),
 );

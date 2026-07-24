@@ -159,7 +159,8 @@ export class TourDetail {
   // --- forms ---
   form = signal<FormGroup | undefined>(undefined);
   eventForms = signal<FormArray | undefined>(undefined);
-  private built = false;
+  /** Id of the tour the forms were last built for; rebuilds when navigating to a different tour. */
+  private builtId: number | null = null;
 
   // --- event dialog ---
   readonly minDate = tomorrow();
@@ -178,10 +179,11 @@ export class TourDetail {
       }
     });
 
-    // Build the editable forms once the entity (and its events) are available.
+    // Build the editable forms once the entity (and its events) are available,
+    // and rebuild if the route navigates to a different tour.
     effect(() => {
       const tour = this.tour();
-      if (!tour || this.built) {
+      if (!tour || this.builtId === tour.id) {
         return;
       }
       const events = this.events.eventsByIds([
@@ -192,12 +194,31 @@ export class TourDetail {
       if (events.length === 0) {
         return;
       }
-      this.built = true;
+      this.builtId = tour.id;
       this.buildForms(tour, events);
       this.autoSave.start({
         form: () => this.form(),
         save: () => this.persist(true),
       });
+    });
+
+    // Keep the (optional) preliminary form slot in sync with tour.preliminaryId,
+    // since it can be added/removed after the initial forms were built above.
+    effect(() => {
+      const array = this.eventForms();
+      const tour = this.tour();
+      if (!array || !tour) {
+        return;
+      }
+      const hasSlot = array.length === 3;
+      if (tour.preliminaryId != null && !hasSlot) {
+        const [preliminaryEvent] = this.events.eventsByIds([tour.preliminaryId]);
+        if (preliminaryEvent) {
+          array.push(this.buildEventForm(preliminaryEvent));
+        }
+      } else if (tour.preliminaryId == null && hasSlot) {
+        array.removeAt(2);
+      }
     });
 
     // Show the tour's reference code (e.g. "VHF-601") instead of "#id" in the breadcrumb.
@@ -299,6 +320,30 @@ export class TourDetail {
       tour.preliminaryId,
     ]);
   });
+
+  readonly hasPreliminary = computed(() => this.tour()?.preliminaryId != null);
+
+  addPreliminary(): void {
+    const tour = this.tour();
+    if (tour) {
+      this.tours.addPreliminary(tour);
+    }
+  }
+
+  removePreliminary(): void {
+    const tour = this.tour();
+    if (!tour) {
+      return;
+    }
+    this.confirm.confirm({
+      header: 'Vorbesprechung entfernen',
+      message: 'Die Vorbesprechung entfernen?',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Entfernen',
+      rejectLabel: 'Abbrechen',
+      accept: () => this.tours.removePreliminary(tour),
+    });
+  }
 
   approximateName(id: number | null): string {
     if (id == null) {

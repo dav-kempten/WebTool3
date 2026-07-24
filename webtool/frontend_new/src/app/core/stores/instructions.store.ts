@@ -28,7 +28,7 @@ import {
   RawInstruction,
 } from '../../models/instruction';
 import { Event } from '../../models/event';
-import { SaveError, describeSaveErrorPath } from '../../shared/util/save-error';
+import { SaveError, describeSaveError } from '../../shared/util/save-error';
 
 interface InstructionsState {
   summaries: InstructionSummary[];
@@ -263,7 +263,7 @@ export const InstructionsStore = signalStore(
                   severity: 'error',
                   summary: 'Speichern fehlgeschlagen',
                   detail: errors.length
-                    ? `Fehlerhafte Felder: ${errors.map((e) => describeSaveErrorPath(e.path)).join(', ')}`
+                    ? `Fehlerhafte Felder: ${errors.map((e) => describeSaveError(e)).join(', ')}`
                     : 'Bitte erneut versuchen oder die Seite neu laden.',
                   life: 10000,
                 });
@@ -298,7 +298,7 @@ export const InstructionsStore = signalStore(
                   severity: 'error',
                   summary: 'Kurstermin hinzufügen fehlgeschlagen',
                   detail: errors.length
-                    ? `Fehlerhafte Felder: ${errors.map((e) => describeSaveErrorPath(e.path)).join(', ')}`
+                    ? `Fehlerhafte Felder: ${errors.map((e) => describeSaveError(e)).join(', ')}`
                     : 'Bitte erneut versuchen oder die Seite neu laden.',
                   life: 10000,
                 });
@@ -327,7 +327,7 @@ export const InstructionsStore = signalStore(
                   severity: 'error',
                   summary: 'Kurstermin entfernen fehlgeschlagen',
                   detail: errors.length
-                    ? `Fehlerhafte Felder: ${errors.map((e) => describeSaveErrorPath(e.path)).join(', ')}`
+                    ? `Fehlerhafte Felder: ${errors.map((e) => describeSaveError(e)).join(', ')}`
                     : 'Bitte erneut versuchen oder die Seite neu laden.',
                   life: 10000,
                 });

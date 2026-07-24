@@ -165,7 +165,8 @@ export class InstructionDetail {
   );
 
   form = signal<FormGroup | undefined>(undefined);
-  private built = false;
+  /** Id of the course the form was last built for; rebuilds when navigating to a different course. */
+  private builtId: number | null = null;
 
   readonly minDate = tomorrow();
   readonly showEvent = signal(false);
@@ -185,14 +186,14 @@ export class InstructionDetail {
 
     effect(() => {
       const instruction = this.instruction();
-      if (!instruction || this.built) {
+      if (!instruction || this.builtId === instruction.id) {
         return;
       }
       const main = this.events.entityMap()[instruction.instructionId];
       if (!main) {
         return;
       }
-      this.built = true;
+      this.builtId = instruction.id;
       this.buildForm(instruction);
       this.autoSave.start({
         form: () => this.form(),

@@ -120,19 +120,36 @@
           Erster Termin ist die <b>Tour</b>, zweiter der <b>Anmeldeschluss</b>, optional dritter
           die <b>Vorbesprechung</b>. Zum Bearbeiten auf einen Termin klicken.
         </p>
+        @if (!hasPreliminary() && !locked()) {
+          <div class="avk-toolbar-gap" style="margin-bottom: 0.75rem">
+            <p-button
+              label="Vorbesprechung hinzufügen"
+              icon="pi pi-plus"
+              size="small"
+              severity="secondary"
+              (onClick)="addPreliminary()"
+            />
+          </div>
+        }
         <p-table [value]="eventRows()" styleClass="p-datatable-sm">
           <ng-template #header>
             <tr>
               <th>Datum</th>
               <th>Uhrzeit</th>
               <th>Beschreibung</th>
+              <th></th>
             </tr>
           </ng-template>
           <ng-template #body let-event let-i="rowIndex">
-            <tr class="avk-link-cell" (click)="selectEvent(i)">
-              <td>{{ event.startDate | date: 'dd.MM.yyyy' }}</td>
-              <td>{{ event.startTime || approximateName(event.approximateId) }}</td>
-              <td>{{ event.name }}</td>
+            <tr>
+              <td class="avk-link-cell" (click)="selectEvent(i)">{{ event.startDate | date: 'dd.MM.yyyy' }}</td>
+              <td class="avk-link-cell" (click)="selectEvent(i)">{{ event.startTime || approximateName(event.approximateId) }}</td>
+              <td class="avk-link-cell" (click)="selectEvent(i)">{{ event.name }}</td>
+              <td>
+                @if (i === 2 && !locked()) {
+                  <p-button icon="pi pi-trash" size="small" severity="danger" [text]="true" (onClick)="removePreliminary()" />
+                }
+              </td>
             </tr>
           </ng-template>
         </p-table>

@@ -18,7 +18,7 @@ services:
     build: .  # Use dockerfile in same folder
     command: python -m debugpy --listen 0.0.0.0:5678 webtool/manage.py runserver 0.0.0.0:8000
     volumes:
-      - .:/webtool  # Transfers the code in the container
+      - .:/WebTool3  # Transfers the code in the container (matches Dockerfile WORKDIR)
     ports:
       - "8000:8000" # localhost:8000
       - "5678:5678"
@@ -30,7 +30,7 @@ services:
       watch:
           - action: sync
             path: ./webtool/
-            target: /app/webtool
+            target: /WebTool3/webtool
           - action: rebuild
             path: pyproject.toml
 

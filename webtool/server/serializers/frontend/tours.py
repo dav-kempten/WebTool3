@@ -140,6 +140,13 @@ class TourSerializer(serializers.ModelSerializer):
             'message', 'comment'
         )
 
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        # A removed preliminary is kept (and reused on re-add) but hidden from the frontend.
+        if instance.preliminary_id and instance.preliminary.deprecated:
+            data['preliminary'] = None
+        return data
+
     def validate(self, data):
         if self.instance is not None:
             # This is the Update case
@@ -171,9 +178,10 @@ class TourSerializer(serializers.ModelSerializer):
             preliminary_data = data.get('preliminary')
             if preliminary_data is not None:
                 preliminary_instance = preliminary_data.get('pk')
-                if preliminary_instance is None:
-                    raise serializers.ValidationError("preliminary is not defined")
-                elif preliminary_instance.pk != tour.preliminary_id:
+                # No id means "add a preliminary" — valid whether none exists yet,
+                # a previous one was removed, or (idempotently) one is already
+                # active. Only a mismatched id is rejected.
+                if preliminary_instance is not None and preliminary_instance.pk != tour.preliminary_id:
                     raise serializers.ValidationError("Wrong preliminary Id")
 
         return data
@@ -250,8 +258,30 @@ class TourSerializer(serializers.ModelSerializer):
             update_event(deadline, deadline_data, self.context)
         preliminary_data = validated_data.get('preliminary')
         if preliminary_data is not None:
-            preliminary = Event.objects.get(pk=preliminary_data.get('pk'))
-            update_event(preliminary, preliminary_data, self.context)
+            if preliminary_data.get('pk') is not None:
+                preliminary = Event.objects.get(pk=preliminary_data.get('pk'))
+                update_event(preliminary, preliminary_data, self.context)
+            elif instance.preliminary_id is None or instance.preliminary.deprecated:
+                if instance.preliminary_id is None:
+                    # First time a preliminary is added after tour creation.
+                    preliminary_event = create_event(
+                        preliminary_data,
+                        dict(category=None, season=get_default_season(), type=dict(preliminary=True)),
+                    )
+                    instance.preliminary = preliminary_event
+                else:
+                    # Re-adding after a removal — reuse the same (deprecated) event
+                    # row instead of creating a new one every time it's toggled.
+                    preliminary_event = instance.preliminary
+                    update_event(preliminary_event, preliminary_data, self.context)
+                update_event(
+                    preliminary_event,
+                    dict(
+                        title="VB " + str(instance.tour.reference),
+                        name="Vorbesprechung " + str(instance.tour.reference),
+                    ),
+                    self.context,
+                )
         instance.info = validated_data.get('info', instance.info)
         instance.ladies_only = validated_data.get('ladies_only', instance.ladies_only)
         instance.youth_on_tour = validated_data.get('youth_on_tour', instance.youth_on_tour)
