@@ -56,6 +56,16 @@ a {
   align-items: center;
 }
 
+/*
+ * Group headers in grouped selects (Sommer/Winter/Jugend) should read as
+ * captions rather than selectable entries. Global on purpose: the select
+ * overlay is rendered with appendTo="body", outside any component's styles.
+ */
+.p-select-option-group {
+  color: var(--p-text-muted-color, #6b7280);
+  font-size: 0.85rem;
+}
+
 .p-datepicker-input {
   font-size: 1.05rem;
 }

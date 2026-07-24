@@ -13,6 +13,7 @@ import { SelectModule } from 'primeng/select';
 import { DatePickerModule } from 'primeng/datepicker';
 import { TooltipModule } from 'primeng/tooltip';
 
+import { Topic } from '../../../models/value';
 import { InstructionsStore } from '../../../core/stores/instructions.store';
 import { ValuesStore } from '../../../core/stores/values.store';
 import { AuthService } from '../../../core/services/auth.service';
@@ -53,17 +54,28 @@ export class InstructionCreateDialog implements OnInit {
   });
 
   /**
-   * Only topics that run outdoors are bookable here. `Topic.category` is a
-   * primary-key one-to-one on the backend, so a topic's id *is* its category's
-   * id. Mixed categories (e.g. summer + indoor) stay — the exclusion targets
-   * pure indoor offerings only.
+   * Grouped by season. `Topic.category` is a primary-key one-to-one on the
+   * backend, so a topic's id *is* its category's id. Pure indoor topics match
+   * neither group and therefore drop out — mixed ones (e.g. summer + indoor)
+   * stay, since only *pure* indoor offerings are meant to be excluded.
    */
-  readonly topics = computed(() => {
+  readonly topicGroups = computed(() => {
     const categoryById = this.values.categoryById();
-    return this.values.topics().filter((topic) => {
+    const summer: Topic[] = [];
+    const winter: Topic[] = [];
+    for (const topic of this.values.topics()) {
       const category = categoryById.get(topic.id);
-      return !!category && (category.summer || category.winter);
-    });
+      if (category?.summer) {
+        summer.push(topic);
+      } else if (category?.winter) {
+        winter.push(topic);
+      }
+    }
+    const byTitle = (a: Topic, b: Topic) => a.title.localeCompare(b.title, 'de');
+    return [
+      { label: 'Sommer', items: summer.sort(byTitle) },
+      { label: 'Winter', items: winter.sort(byTitle) },
+    ].filter((group) => group.items.length > 0);
   });
 
   /**

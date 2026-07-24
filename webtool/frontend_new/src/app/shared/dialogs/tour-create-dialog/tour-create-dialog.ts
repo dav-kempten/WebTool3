@@ -20,6 +20,7 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { TooltipModule } from 'primeng/tooltip';
 
+import { Category } from '../../../models/value';
 import { ToursStore } from '../../../core/stores/tours.store';
 import { ValuesStore } from '../../../core/stores/values.store';
 import { AuthService } from '../../../core/services/auth.service';
@@ -65,9 +66,28 @@ export class TourCreateDialog implements OnInit {
     preliminary: this.fb.control<Date | null>(null),
   });
 
-  readonly tourCategories = computed(() =>
-    this.values.categories().filter((c) => c.tour),
-  );
+  /**
+   * Grouped by season so the 19 categories stay scannable. "Jugend" is not a
+   * flag of its own — the backend derives youth tours from the category name
+   * (`'Jugend' in category.name`, tours.py), so the same rule is used here to
+   * keep both sides in sync.
+   */
+  readonly categoryGroups = computed(() => {
+    const isYouth = (category: Category) => category.name.includes('Jugend');
+    const byName = (a: Category, b: Category) => a.name.localeCompare(b.name, 'de');
+    const categories = this.values.categories().filter((c) => c.tour);
+    return [
+      {
+        label: 'Sommer',
+        items: categories.filter((c) => c.summer && !isYouth(c)).sort(byName),
+      },
+      {
+        label: 'Winter',
+        items: categories.filter((c) => c.winter && !isYouth(c)).sort(byName),
+      },
+      { label: 'Jugend', items: categories.filter(isYouth).sort(byName) },
+    ].filter((group) => group.items.length > 0);
+  });
 
   /**
    * Reset on dialog open via (onShow). Deliberately NOT an effect() on

@@ -11,7 +11,10 @@
       <label>Thema</label>
       <p-select
         formControlName="topicId"
-        [options]="topics()"
+        [options]="topicGroups()"
+        [group]="true"
+        optionGroupLabel="label"
+        optionGroupChildren="items"
         optionLabel="title"
         optionValue="id"
         [filter]="true"

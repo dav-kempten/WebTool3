@@ -11,7 +11,10 @@
       <label>Tourenart</label>
       <p-select
         formControlName="categoryId"
-        [options]="tourCategories()"
+        [options]="categoryGroups()"
+        [group]="true"
+        optionGroupLabel="label"
+        optionGroupChildren="items"
         optionLabel="name"
         optionValue="id"
         placeholder="Kategorie wählen"
