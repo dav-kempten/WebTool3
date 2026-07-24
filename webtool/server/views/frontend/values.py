@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import hashlib
-from collections.abc import Iterable
 from decimal import Decimal
 
 from django.template.defaultfilters import date
@@ -122,34 +121,50 @@ class _Values(object):
             .values_list('pk', 'fitness__code', 'category_id', 'category__code', 'description')
         ]
 
+    # NB: many-to-many fields must not go into values_list() — the join emits one
+    # row per related object, so an entry with n qualifications was returned n
+    # times, each row carrying only a single id instead of the full list.
+    # prefetch_related() loads them in a separate query and keeps one row each.
+
     def _get_topics(self):
         self._updated = max(self._updated, Topic.objects.latest().updated)
         return [
             dict(
-                id=a, code=b, title=c, name=d, description=e, preconditions=f,
-                qualificationIds=list(g) if isinstance(g, Iterable) else [g] if g else [],
-                equipmentIds=list(h) if isinstance(h, Iterable) else [h] if h else [],
-                miscEquipment=i
+                id=topic.pk,
+                code=topic.category.code,
+                title=topic.title,
+                name=topic.name,
+                description=topic.description,
+                preconditions=topic.preconditions,
+                qualificationIds=[q.pk for q in topic.qualifications.all()],
+                equipmentIds=[e.pk for e in topic.equipments.all()],
+                miscEquipment=topic.misc_equipment,
             )
-            for (a, b, c, d, e, f, g, h, i) in Topic.objects
+            for topic in Topic.objects
             .exclude(deprecated=True)
             .filter(seasons=self._season)
-            .values_list(
-                'pk', 'category__code', 'title', 'name', 'description',
-                'preconditions', 'qualifications', 'equipments', 'misc_equipment'
-            )
+            .select_related('category')
+            .prefetch_related('qualifications', 'equipments')
+            .distinct()
         ]
 
     def _get_collectives(self):
         self._updated = max(self._updated, Collective.objects.latest().updated)
         return [
-            dict(id=a, code=b, title=c, name=d,
-                 managers=list(e) if isinstance(e, Iterable) else [e] if e else [],
-                 description=f)
-            for (a, b, c, d, e, f) in Collective.objects
+            dict(
+                id=collective.pk,
+                code=collective.category.code,
+                title=collective.title,
+                name=collective.name,
+                managers=[m.pk for m in collective.managers.all()],
+                description=collective.description,
+            )
+            for collective in Collective.objects
             .exclude(deprecated=True)
             .filter(seasons=self._season)
-            .values_list('pk', 'category__code', 'title', 'name', 'managers', 'description')
+            .select_related('category')
+            .prefetch_related('managers')
+            .distinct()
         ]
 
     def _get_tour_data(self):

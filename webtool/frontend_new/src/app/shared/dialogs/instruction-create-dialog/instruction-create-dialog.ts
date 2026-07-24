@@ -52,7 +52,19 @@ export class InstructionCreateDialog implements OnInit {
     startDate: this.fb.control<Date | null>(null, Validators.required),
   });
 
-  readonly topics = computed(() => this.values.topics());
+  /**
+   * Only topics that run outdoors are bookable here. `Topic.category` is a
+   * primary-key one-to-one on the backend, so a topic's id *is* its category's
+   * id. Mixed categories (e.g. summer + indoor) stay — the exclusion targets
+   * pure indoor offerings only.
+   */
+  readonly topics = computed(() => {
+    const categoryById = this.values.categoryById();
+    return this.values.topics().filter((topic) => {
+      const category = categoryById.get(topic.id);
+      return !!category && (category.summer || category.winter);
+    });
+  });
 
   /**
    * Reset on dialog open via (onShow). Deliberately NOT an effect() on

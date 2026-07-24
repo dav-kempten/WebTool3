@@ -8,13 +8,16 @@ const JSON_HEADERS = new HttpHeaders({
   'Accept-Language': 'de',
 });
 
+/** Backend GETs carry max-age=86400 — force revalidation (see tour.service.ts). */
+const READ_HEADERS = JSON_HEADERS.set('Cache-Control', 'no-cache').set('Pragma', 'no-cache');
+
 @Injectable({ providedIn: 'root' })
 export class GuideService {
   private http = inject(HttpClient);
 
   getGuideSummaries(): Observable<GuideSummary[]> {
     return this.http
-      .get<GuideSummary[]>('/api/frontend/guides/', { headers: JSON_HEADERS })
+      .get<GuideSummary[]>('/api/frontend/guides/', { headers: READ_HEADERS })
       .pipe(catchError(() => of([] as GuideSummary[])));
   }
 
@@ -23,7 +26,7 @@ export class GuideService {
       return of(null);
     }
     return this.http
-      .get<Guide>(`/api/frontend/guides/${id}/`, { headers: JSON_HEADERS })
+      .get<Guide>(`/api/frontend/guides/${id}/`, { headers: READ_HEADERS })
       .pipe(catchError(() => of(null)));
   }
 }

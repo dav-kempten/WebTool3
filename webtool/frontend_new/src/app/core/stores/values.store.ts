@@ -45,8 +45,9 @@ export const ValuesStore = signalStore(
     fitness: computed<Fitness[]>(() => store.values()?.fitness ?? []),
     topics: computed<Topic[]>(() => store.values()?.topics ?? []),
     collectives: computed<Collective[]>(() => {
-      // The values endpoint fans out one row per manager (M2M in values_list),
-      // so a collective with n managers arrives n times. Merge them back.
+      // Safety net: the values endpoint used to fan out one row per manager
+      // (M2M in values_list). Fixed server-side, but kept so an older backend
+      // still yields one entry per collective rather than duplicates.
       const merged = new Map<number, Collective>();
       for (const collective of store.values()?.collectives ?? []) {
         const existing = merged.get(collective.id);

@@ -8,13 +8,16 @@ const JSON_HEADERS = new HttpHeaders({
   'Accept-Language': 'de',
 });
 
+/** Backend GETs carry max-age=86400 — force revalidation (see tour.service.ts). */
+const READ_HEADERS = JSON_HEADERS.set('Cache-Control', 'no-cache').set('Pragma', 'no-cache');
+
 @Injectable({ providedIn: 'root' })
 export class NameService {
   private http = inject(HttpClient);
 
   getNames(): Observable<Name[]> {
     return this.http
-      .get<Name[]>('/api/frontend/names/', { headers: JSON_HEADERS })
+      .get<Name[]>('/api/frontend/names/', { headers: READ_HEADERS })
       .pipe(catchError(() => of([] as Name[])));
   }
 }
