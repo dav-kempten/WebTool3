@@ -10,6 +10,7 @@ import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
 import { RawUser } from '../../../models/user';
 import { AuthService } from '../../services/auth.service';
+import { BreadcrumbBar } from '../breadcrumb-bar/breadcrumb-bar';
 
 @Component({
   selector: 'avk-main-menu',
@@ -23,6 +24,7 @@ import { AuthService } from '../../services/auth.service';
     InputTextModule,
     ButtonModule,
     TooltipModule,
+    BreadcrumbBar,
   ],
   templateUrl: './main-menu.html',
   styleUrl: './main-menu.scss',

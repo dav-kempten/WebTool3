@@ -51,3 +51,19 @@
 :host ::ng-deep .w-full {
   width: 100%;
 }
+
+/*
+ * Centre the nav items between the brand/breadcrumb and the user area.
+ * The theme pushes the #end slot right via `margin-left: auto`; that has to be
+ * dropped, otherwise its auto margin competes with the list's own for the free
+ * space and the list ends up left of centre.
+ */
+:host ::ng-deep .p-menubar:not(.p-menubar-mobile) {
+  .p-menubar-root-list {
+    margin-inline: auto;
+  }
+
+  .p-menubar-end {
+    margin-left: 0;
+  }
+}

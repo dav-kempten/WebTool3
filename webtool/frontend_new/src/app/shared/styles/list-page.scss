@@ -34,6 +34,23 @@
  * not the action buttons (Klonen/Löschen) are rendered — e.g. when logged out.
  */
 :host ::ng-deep .p-datatable {
+  /*
+   * Rounded card look against the grey page background. The radius sits on the
+   * header and paginator rather than on an `overflow: hidden` root, which would
+   * clip the paginator's rows-per-page overlay when it opens downwards.
+   */
+  border-radius: var(--avk-surface-radius, 0.75rem);
+
+  .p-datatable-header {
+    border-top-left-radius: inherit;
+    border-top-right-radius: inherit;
+  }
+
+  .p-datatable-paginator-bottom {
+    border-bottom-left-radius: inherit;
+    border-bottom-right-radius: inherit;
+  }
+
   .p-datatable-thead > tr > th {
     padding: 0.85rem 1rem;
     white-space: nowrap;

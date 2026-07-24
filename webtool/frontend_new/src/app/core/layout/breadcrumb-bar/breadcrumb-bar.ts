@@ -8,6 +8,9 @@ import { BreadcrumbService } from '../breadcrumb.service';
   imports: [BreadcrumbModule],
   template: `
     @if (breadcrumb.items().length) {
+      <!-- Divider lives inside the @if so it disappears together with the trail
+           on routes without breadcrumbs (e.g. the dashboard). -->
+      <span class="avk-divider" aria-hidden="true"></span>
       <p-breadcrumb
         class="avk-breadcrumb"
         [model]="breadcrumb.items()"
@@ -17,13 +20,27 @@ import { BreadcrumbService } from '../breadcrumb.service';
   `,
   styles: [
     `
+      /* Rendered inside the menubar's #start slot, so the trail shares the menu
+         row instead of occupying a strip of its own. */
       :host {
-        display: block;
+        display: flex;
+        align-items: center;
       }
+
+      .avk-divider {
+        width: 1px;
+        height: 1.25rem;
+        margin: 0 0.75rem;
+        background: var(--p-content-border-color, rgb(0 0 0 / 12%));
+      }
+
       .avk-breadcrumb {
-        max-width: var(--avk-content-max-width);
-        margin: 0 auto;
-        padding: 0.5rem 1.25rem 0;
+        padding: 0;
+        background: transparent;
+      }
+
+      .avk-breadcrumb ::ng-deep .p-breadcrumb-item-link {
+        padding: 0;
       }
     `,
   ],

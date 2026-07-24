@@ -3,14 +3,13 @@ import { RouterOutlet } from '@angular/router';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { MainMenu } from './core/layout/main-menu/main-menu';
-import { BreadcrumbBar } from './core/layout/breadcrumb-bar/breadcrumb-bar';
 import { ValuesStore } from './core/stores/values.store';
 import { NamesStore } from './core/stores/names.store';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, ToastModule, ConfirmDialogModule, MainMenu, BreadcrumbBar],
+  imports: [RouterOutlet, ToastModule, ConfirmDialogModule, MainMenu],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
