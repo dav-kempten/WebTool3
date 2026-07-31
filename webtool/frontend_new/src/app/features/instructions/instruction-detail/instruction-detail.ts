@@ -41,6 +41,7 @@ import { AutoSaveService } from '../../../core/services/auto-save.service';
 import { BreadcrumbService } from '../../../core/layout/breadcrumb.service';
 import { Instruction } from '../../../models/instruction';
 import { Event } from '../../../models/event';
+import { isSpecialTopic } from '../../../models/value';
 import {
   fromIsoDate,
   relaxedMinDate,
@@ -103,6 +104,14 @@ export class InstructionDetail {
    * mirrors on every change, so the hints react to the checkbox immediately.
    */
   readonly isSpecial = computed(() => this.instruction()?.isSpecial ?? false);
+
+  /**
+   * On a "Spezialkurs" topic the flag is not a choice: the topic carries no
+   * content of its own, so unticking it would leave the course without title,
+   * description and requirements. Locked in that case only — every other topic
+   * stays freely toggleable.
+   */
+  readonly isSpecialLocked = computed(() => isSpecialTopic(this.topic()));
 
   /** Field labels from the most recent failed save, for an inline hint next to the auto-save status. */
   readonly saveErrorSummary = computed(() =>

@@ -57,10 +57,16 @@
               inputId="ladiesOnlyCheckbox" />
             <label for="ladiesOnlyCheckbox">Kurs von Frauen für Frauen</label>
           </div>
-          <div class="avk-checkbox-item">
+          <!-- Tooltip on the wrapper, not the checkbox: a disabled control
+               swallows the pointer events a tooltip needs. -->
+          <div
+            class="avk-checkbox-item"
+            [pTooltip]="isSpecialLocked() ? 'Beim Kursthema „Spezialkurs“ immer gesetzt und nicht abwählbar' : ''"
+          >
             <p-checkbox
               formControlName="isSpecial"
               [binary]="true"
+              [disabled]="isSpecialLocked()"
               inputId="isSpecialCheckbox" />
             <label for="isSpecialCheckbox">Sonderkurs</label>
           </div>

@@ -13,7 +13,7 @@ import { SelectModule } from 'primeng/select';
 import { DatePickerModule } from 'primeng/datepicker';
 import { TooltipModule } from 'primeng/tooltip';
 
-import { Topic } from '../../../models/value';
+import { Topic, isSpecialTopic } from '../../../models/value';
 import { InstructionsStore } from '../../../core/stores/instructions.store';
 import { ValuesStore } from '../../../core/stores/values.store';
 import { AuthService } from '../../../core/services/auth.service';
@@ -104,6 +104,7 @@ export class InstructionCreateDialog implements OnInit {
         perm.permissionLevel === PermissionLevel.guide
           ? (perm.guideId ?? null)
           : null,
+      isSpecial: isSpecialTopic(this.values.topicById().get(value.topicId)),
     });
     this.visible.set(false);
   }

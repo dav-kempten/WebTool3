@@ -112,6 +112,20 @@ export interface Topic {
   miscEquipment: string;
 }
 
+/**
+ * Topics that stand for a special course — currently "Spezialkurs" (summer) and
+ * "Winter Spezialkurs". Such courses carry their own title, description and
+ * requirements in the main event instead of inheriting them from the topic, so
+ * the Sonderkurs flag is pre-set on creation and locked afterwards.
+ *
+ * Derived from the title rather than the category code so a future special
+ * topic is covered without changes here — the same approach the backend uses
+ * for youth tours (`'Jugend' in category.name`, tours.py).
+ */
+export function isSpecialTopic(topic: Topic | undefined): boolean {
+  return topic?.title.includes('Spezialkurs') ?? false;
+}
+
 export interface Collective {
   id: number;
   code: string;

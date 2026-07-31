@@ -21,6 +21,7 @@ export interface CreateInstructionPayload {
   topicId: number;
   startDate: string;
   guideId: number | null;
+  isSpecial: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -48,6 +49,7 @@ export class InstructionService {
       instruction: { startDate: payload.startDate } as Event,
       guideId: payload.guideId,
       stateId: 1,
+      isSpecial: payload.isSpecial,
     };
     return this.http
       .post<Instruction>('/api/frontend/instructions/', body)
