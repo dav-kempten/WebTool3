@@ -1,6 +1,0 @@
-<ol class="breadcrumb">
-  <li *ngFor="let breadcrumb of (breadcrumb$ | async); last as isLast">
-    <a *ngIf="!isLast else last" [routerLink]="breadcrumb.url" [fragment]="breadcrumb?.fragment">{{ breadcrumb.label }}</a>
-    <ng-template #last>{{ breadcrumb.label }}</ng-template>
-  </li>
-</ol>
