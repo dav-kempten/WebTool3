@@ -307,7 +307,14 @@
         @if (selectedIsMain()) {
           <div class="avk-field">
             <label>Beschreibung</label>
-            <textarea pTextarea formControlName="description" rows="3" class="avk-full"></textarea>
+            <!-- For a special course this text *is* the course description, so it
+                 gets twice the room. -->
+            <textarea
+              pTextarea
+              formControlName="description"
+              [rows]="isSpecial() ? 6 : 3"
+              class="avk-full"
+            ></textarea>
           </div>
         }
         <div class="avk-detail-actions">
