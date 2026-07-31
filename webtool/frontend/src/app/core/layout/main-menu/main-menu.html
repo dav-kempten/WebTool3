@@ -1,0 +1,99 @@
+<p-menubar [model]="navItems" class="avk-menubar">
+  <ng-template #start>
+    <a routerLink="/dashboard" class="avk-brand">
+      <i class="pi pi-mountain"></i>
+      <span>WebTool</span>
+    </a>
+    <avk-breadcrumb-bar />
+  </ng-template>
+  <ng-template #end>
+    <div class="avk-toolbar-gap">
+      @if (isLoggedIn()) {
+        <span class="avk-user">{{ user().firstName }} {{ user().lastName }}</span>
+      }
+      <p-splitButton
+        [label]="loginLabel()"
+        icon="pi pi-user"
+        [model]="loginMenu"
+        (onClick)="loginButtonHandler()"
+        severity="secondary"
+      />
+    </div>
+  </ng-template>
+</p-menubar>
+
+<p-dialog
+  header="Trainerzugang"
+  [modal]="true"
+  [visible]="displayMemberLogin()"
+  (visibleChange)="displayMemberLogin.set($event)"
+  [style]="{ width: '24rem' }"
+>
+  <form [formGroup]="memberForm" autocomplete="off" novalidate (ngSubmit)="loginMember()">
+    <p class="avk-dialog-hint">
+      Obacht! Beim Login die „/“ der Mitgliedsnummer durch „-“ ersetzen.
+    </p>
+    <div class="avk-field">
+      <label for="memberId">Mitgliedsnummer</label>
+      <input
+        id="memberId"
+        pInputText
+        type="text"
+        maxlength="13"
+        formControlName="memberId"
+        [class.avk-input-error]="memberError()"
+        autofocus
+      />
+    </div>
+    @if (memberError()) {
+      <small class="avk-error-text">Anmeldung fehlgeschlagen.</small>
+    }
+    <p-button
+      type="submit"
+      label="Anmelden"
+      styleClass="w-full"
+      [disabled]="memberForm.invalid"
+    />
+  </form>
+</p-dialog>
+
+<p-dialog
+  header="Mitarbeiterzugang"
+  [modal]="true"
+  [visible]="displayStaffLogin()"
+  (visibleChange)="displayStaffLogin.set($event)"
+  [style]="{ width: '24rem' }"
+>
+  <form [formGroup]="staffForm" novalidate (ngSubmit)="loginStaff()">
+    <div class="avk-field">
+      <label for="userName">Benutzername</label>
+      <input
+        id="userName"
+        pInputText
+        formControlName="userName"
+        autocomplete="username"
+        [class.avk-input-error]="staffError()"
+      />
+    </div>
+    <div class="avk-field">
+      <label for="password">Passwort</label>
+      <input
+        id="password"
+        pInputText
+        type="password"
+        formControlName="password"
+        autocomplete="current-password"
+        [class.avk-input-error]="staffError()"
+      />
+    </div>
+    @if (staffError()) {
+      <small class="avk-error-text">Anmeldung fehlgeschlagen.</small>
+    }
+    <p-button
+      type="submit"
+      label="Anmelden"
+      styleClass="w-full"
+      [disabled]="staffForm.invalid"
+    />
+  </form>
+</p-dialog>

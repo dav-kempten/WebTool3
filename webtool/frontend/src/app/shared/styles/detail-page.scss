@@ -1,0 +1,146 @@
+.avk-detail-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.avk-hint {
+  margin: 0 0 0.75rem;
+  opacity: 0.75;
+}
+
+.avk-warn {
+  margin: 0;
+  color: var(--p-red-500, #ef4444);
+}
+
+.avk-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.avk-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.avk-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+
+  input,
+  textarea,
+  p-select,
+  p-multiselect,
+  p-inputnumber,
+  p-datepicker {
+    width: 100%;
+  }
+
+  label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    opacity: 0.8;
+  }
+}
+
+.avk-field-checkbox {
+  justify-content: flex-end;
+}
+
+.avk-checkbox-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  align-items: center;
+}
+
+.avk-checkbox-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  label {
+    font-size: inherit;
+    font-weight: normal;
+    opacity: 1;
+    cursor: pointer;
+  }
+}
+
+.avk-full {
+  width: 100%;
+}
+
+.avk-link-cell {
+  cursor: pointer;
+}
+
+.avk-detail-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0 2rem;
+}
+
+.avk-spacer {
+  flex: 1 1 auto;
+}
+
+.avk-event-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+:host ::ng-deep .w-full {
+  width: 100%;
+}
+
+/*
+ * Instruction detail: the first course date is the main event — it carries the
+ * title/description a special course is defined by, so it is set apart from the
+ * follow-up meetings below it.
+ */
+.avk-main-badge {
+  display: inline-block;
+  padding: 0.1rem 0.45rem;
+  border-radius: 0.75rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--p-primary-contrast-color, #fff);
+  background: var(--p-primary-color, #10b981);
+  vertical-align: middle;
+}
+
+:host ::ng-deep .p-datatable .avk-row-main > td {
+  background: var(--p-primary-50, rgb(16 185 129 / 8%));
+  font-weight: 600;
+  box-shadow: inset 0 -1px 0 var(--p-primary-200, rgb(16 185 129 / 30%));
+}
+
+/* Info hints inside cards should span the full card width. */
+:host ::ng-deep .avk-full-message {
+  display: block;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+/*
+ * End date before start date. PrimeNG already reddens `.ng-invalid.ng-dirty`
+ * datepickers, but that misses records that arrive invalid without being
+ * touched — hence an explicit class bound to this one error, so no other
+ * datepicker (e.g. an untouched required field) turns red by accident.
+ */
+:host ::ng-deep p-datepicker.avk-invalid .p-inputtext {
+  border-color: var(--p-red-500, #ef4444);
+}
+
+.avk-error-text {
+  color: var(--p-red-500, #ef4444);
+}

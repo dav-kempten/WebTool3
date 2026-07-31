@@ -1,0 +1,68 @@
+<p-dialog
+  header="Neue Tour"
+  [modal]="true"
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+  (onShow)="onOpen()"
+  [style]="{ width: '32rem' }"
+>
+  <form [formGroup]="form" class="avk-dialog-form">
+    <div class="avk-field">
+      <label>Tourenart</label>
+      <p-select
+        formControlName="categoryId"
+        [options]="categoryGroups()"
+        [group]="true"
+        optionGroupLabel="label"
+        optionGroupChildren="items"
+        optionLabel="name"
+        optionValue="id"
+        placeholder="Kategorie wählen"
+        appendTo="body"
+        pTooltip="Tourkategorie"
+      />
+    </div>
+    <div class="avk-field">
+      <label>Startdatum</label>
+      <p-datepicker
+        formControlName="startDate"
+        dateFormat="dd.mm.yy"
+        appendTo="body"
+        [minDate]="minDate"
+        pTooltip="Datum des Starts der Tour"
+      />
+    </div>
+    <div class="avk-field">
+      <label>Anmeldeschluss</label>
+      <p-datepicker
+        formControlName="deadline"
+        dateFormat="dd.mm.yy"
+        appendTo="body"
+        [minDate]="minDate"
+        pTooltip="Datum des Anmeldeschlusses (normalerweise ca. 1 Woche vorher)"
+      />
+    </div>
+    <div class="avk-field">
+      <p-toggleButton
+        [ngModel]="preliminaryEnabled()"
+        [ngModelOptions]="{ standalone: true }"
+        (onChange)="preliminaryEnabled.set($event.checked)"
+        onLabel="Vorbesprechung entfernen"
+        offLabel="Vorbesprechung hinzufügen"
+      />
+    </div>
+    @if (preliminaryEnabled()) {
+      <div class="avk-field">
+        <label>Vorbesprechung</label>
+        <p-datepicker
+          formControlName="preliminary"
+          dateFormat="dd.mm.yy"
+          appendTo="body"
+          [minDate]="minDate"
+          pTooltip="Datum der Vorbesprechung (normalerweise ein paar Tage vorher)"
+        />
+      </div>
+    }
+    <p-button label="Bestätigen" (onClick)="create()" [disabled]="form.invalid" />
+  </form>
+</p-dialog>

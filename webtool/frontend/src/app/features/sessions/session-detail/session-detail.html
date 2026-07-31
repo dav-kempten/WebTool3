@@ -1,0 +1,195 @@
+@if (!canView()) {
+  <section class="avk-page">
+    <p-card header="Gruppentermin – Zugriff verboten">
+      <p>Sie sind nicht berechtigt, den Inhalt dieser Seite zu sehen.</p>
+      <a routerLink="/sessions"><p-button label="Zurück" /></a>
+    </p-card>
+  </section>
+} @else if (form(); as fg) {
+  <section class="avk-page">
+    <form [formGroup]="fg" class="avk-detail-form">
+      <p-card header="Gruppentermin">
+        @if (autoSave.lastSaved() && !saveErrorSummary()) {
+          <p-message severity="success">Automatisch gespeichert um {{ autoSave.lastSaved() | date: 'HH:mm:ss' }}</p-message>
+        }
+        @if (saveErrorSummary()) {
+          <p-message severity="error">Speichern fehlgeschlagen bei: {{ saveErrorSummary() }}</p-message>
+        }
+      </p-card>
+
+      <p-card subheader="Buchungsnummer, Status und Gruppe">
+        <div class="avk-grid-3">
+          <div class="avk-field">
+            <label>Buchungsnummer</label>
+            <input pInputText formControlName="reference" readonly />
+          </div>
+          <div class="avk-field">
+            <label>Status</label>
+            <p-select formControlName="stateId" [options]="stateOptions()" optionLabel="state" optionValue="id" />
+          </div>
+          <div class="avk-field">
+            <label>Gruppe</label>
+            <input pInputText [value]="collective()?.title ?? ''" readonly pTooltip="Auswahl der Gruppe des Gruppentermins" />
+          </div>
+        </div>
+      </p-card>
+
+      <p-card subheader="Organisation und Referent">
+        <div class="avk-grid-3">
+          <div class="avk-field">
+            <label>Leiter</label>
+            <p-select formControlName="guideId" [options]="nameOptions()" optionLabel="label" optionValue="id" [filter]="true" filterBy="label" [showClear]="true" pTooltip="Gruppenleiter eingeben und auswählen (Nachname Vorname)" />
+          </div>
+          <div class="avk-field">
+            <label>Team</label>
+            <p-multiselect formControlName="teamIds" [options]="nameOptions()" optionLabel="label" optionValue="id" [filter]="true" filterBy="label" pTooltip="Mitorganisatoren des Gruppentermins" />
+          </div>
+          <div class="avk-field">
+            <label>Referent (extern)</label>
+            <input pInputText formControlName="speaker" maxlength="125" />
+          </div>
+        </div>
+        <div class="avk-checkbox-row" style="margin-top: 1rem">
+          <div class="avk-checkbox-item">
+            <p-checkbox formControlName="ladiesOnly" [binary]="true" inputId="ladiesOnlyCheckbox" />
+            <label for="ladiesOnlyCheckbox">Von Frauen für Frauen</label>
+          </div>
+        </div>
+      </p-card>
+
+      <p-card subheader="Termin">
+        <p-table [value]="sessionEvent() ? [sessionEvent()] : []" styleClass="p-datatable-sm">
+          <ng-template #header>
+            <tr><th>Datum</th><th>Uhrzeit</th><th>Beschreibung</th><th></th></tr>
+          </ng-template>
+          <ng-template #body let-event>
+            <tr>
+              <td>{{ eventDate(event) }}</td>
+              <td>{{ event.startTime || approximateName(event.approximateId) }}</td>
+              <td>{{ event.name }}</td>
+              <td><p-button icon="pi pi-pencil" size="small" [text]="true" (onClick)="openEvent()" /></td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </p-card>
+
+      <p-card subheader="Kategorien und Ausrüstung">
+        <div class="avk-grid-2">
+          <div class="avk-field">
+            <label>Kategorien</label>
+            <p-multiselect formControlName="categoryIds" [options]="categoryOptions()" optionLabel="name" optionValue="id" />
+          </div>
+          <div class="avk-field">
+            <label>Weitere Kategorie</label>
+            <input pInputText formControlName="miscCategory" maxlength="75" />
+          </div>
+        </div>
+        <div class="avk-grid-2">
+          <div class="avk-field">
+            <label>Ausrüstung</label>
+            <p-multiselect formControlName="equipmentIds" [options]="equipmentOptions()" optionLabel="name" optionValue="id" />
+          </div>
+          <div class="avk-field">
+            <label>Zusätzliche Ausrüstung</label>
+            <input pInputText formControlName="miscEquipment" maxlength="75" />
+          </div>
+        </div>
+      </p-card>
+
+      <p-card subheader="Bemerkungen">
+        <textarea pTextarea formControlName="comment" rows="3" class="avk-full"></textarea>
+      </p-card>
+
+      <p-card subheader="Nachricht an die Geschäftsstelle (intern)">
+        <textarea pTextarea formControlName="message" rows="3" class="avk-full"></textarea>
+      </p-card>
+
+      <div class="avk-detail-actions">
+        <p-button label="Speichern" icon="pi pi-save" (onClick)="save()" />
+        <a routerLink="/sessions"><p-button label="Zurück" severity="secondary" /></a>
+        @if (isStaff()) {
+          <span class="avk-spacer"></span>
+          <p-button label="Termin löschen" icon="pi pi-trash" severity="danger" (onClick)="confirmDelete()" />
+        }
+      </div>
+    </form>
+  </section>
+
+  <p-dialog
+    header="Termin-Details"
+    [modal]="true"
+    [visible]="showEvent()"
+    (visibleChange)="showEvent.set($event)"
+    [style]="{ width: '50rem' }"
+  >
+    @if (eventForm(); as ef) {
+      <form [formGroup]="ef" class="avk-event-form">
+        <div class="avk-field">
+          <label>Titel</label>
+          <input pInputText formControlName="name" maxlength="125" />
+        </div>
+        <div class="avk-grid-3">
+          <div class="avk-field">
+            <label>Tageszeit (ca.)</label>
+            <p-select formControlName="approximateId" [options]="approximateOptions()" optionLabel="name" optionValue="id" [showClear]="true" appendTo="body" pTooltip="Ungefähre Startzeit (wenn keine genaue Zeit angegeben werden kann)" />
+          </div>
+          <div class="avk-field">
+            <label>Startzeit</label>
+            <input pInputText formControlName="startTime" placeholder="HH:MM" />
+          </div>
+          <div class="avk-field">
+            <label>Endzeit</label>
+            <input pInputText formControlName="endTime" placeholder="HH:MM" />
+          </div>
+        </div>
+        <div class="avk-grid-2">
+          <div class="avk-field">
+            <label>Startdatum</label>
+            <p-datepicker formControlName="startDate" dateFormat="dd.mm.yy" appendTo="body" [minDate]="minDate()" />
+          </div>
+          <div class="avk-field">
+            <label>Enddatum</label>
+            <!-- Lower bound is the start date itself, so an earlier day cannot
+                 be picked in the first place. -->
+            <p-datepicker
+              formControlName="endDate"
+              dateFormat="dd.mm.yy"
+              appendTo="body"
+              [minDate]="ef.get('startDate')?.value ?? minDate()"
+              [class.avk-invalid]="ef.get('endDate')?.hasError('endBeforeStart')"
+            />
+            @if (ef.get('endDate')?.hasError('endBeforeStart')) {
+              <small class="avk-error-text">
+                Das Enddatum darf nicht vor dem Startdatum liegen.
+              </small>
+            }
+          </div>
+        </div>
+        <div class="avk-grid-2">
+          <div class="avk-field">
+            <label>Treffpunkt</label>
+            <input pInputText formControlName="rendezvous" maxlength="75" />
+          </div>
+          <div class="avk-field">
+            <label>Ort</label>
+            <input pInputText formControlName="location" maxlength="75" />
+          </div>
+        </div>
+        <div class="avk-field">
+          <label>Beschreibung</label>
+          <textarea pTextarea formControlName="description" rows="3" class="avk-full"></textarea>
+        </div>
+        <div class="avk-detail-actions">
+          <p-button label="Übernehmen" icon="pi pi-check" (onClick)="applyEvent()" />
+        </div>
+      </form>
+    }
+  </p-dialog>
+} @else {
+  <section class="avk-page">
+    <p-card>
+      <p>Bitte kurz warten – der Gruppentermin wird geladen …</p>
+      <a routerLink="/sessions"><p-button label="Zurück" severity="secondary" /></a>
+    </p-card>
+  </section>
+}

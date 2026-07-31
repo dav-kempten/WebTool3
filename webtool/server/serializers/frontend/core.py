@@ -46,6 +46,12 @@ def update_event(instance, validated_data, context):
         instance.distance = validated_data.get('distance', instance.distance)
         instance.public_transport = validated_data.get('public_transport', instance.public_transport)
         instance.shuttle_service = validated_data.get('shuttle_service', instance.shuttle_service)
+        if instance.deprecated:
+            reference = instance.reference
+            if reference and reference.deprecated:
+                reference.deprecated = False
+                reference.save()
+            instance.deprecated = False
         instance.save()
     else:
         reference = instance.reference

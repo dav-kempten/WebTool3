@@ -1,0 +1,353 @@
+@if (!canView()) {
+  <section class="avk-page">
+    <p-card header="Kursformular – Zugriff verboten">
+      <p>Sie sind nicht berechtigt, den Inhalt dieser Seite zu sehen.</p>
+      <a routerLink="/instructions"><p-button label="Zurück" /></a>
+    </p-card>
+  </section>
+} @else if (form(); as fg) {
+  <section class="avk-page">
+    <form [formGroup]="fg" class="avk-detail-form">
+      <p-card header="Kursformular">
+        <p class="avk-hint">Bearbeite hier deinen Kurs. Unklare Felder kannst du leer lassen.</p>
+        @if (autoSave.lastSaved() && !saveErrorSummary()) {
+          <p-message severity="success">Automatisch gespeichert um {{ autoSave.lastSaved() | date: 'HH:mm:ss' }}</p-message>
+        }
+        @if (saveErrorSummary()) {
+          <p-message severity="error">Speichern fehlgeschlagen bei: {{ saveErrorSummary() }}</p-message>
+        }
+      </p-card>
+
+      <p-card subheader="Buchungsnummer, Status und Thema">
+        <div class="avk-grid-3">
+          <div class="avk-field">
+            <label>Buchungsnummer</label>
+            <input pInputText formControlName="reference" readonly pTooltip="Buchungscode (nicht änderbar)" />
+          </div>
+          <div class="avk-field">
+            <label>Status</label>
+            <p-select formControlName="stateId" [options]="stateOptions()" optionLabel="state" optionValue="id" [disabled]="locked()" pTooltip="Bearbeitungsstatus" />
+          </div>
+          <div class="avk-field">
+            <label>Thema</label>
+            <input pInputText [value]="topic()?.title ?? ''" readonly pTooltip="Kurskategorie der Veranstaltung" />
+          </div>
+        </div>
+      </p-card>
+
+      <p-card subheader="Organisation und Team">
+        <div class="avk-grid-2">
+          <div class="avk-field">
+            <label>Kursleiter</label>
+            <p-select formControlName="guideId" [options]="nameOptions()" optionLabel="label" optionValue="id" [filter]="true" filterBy="label" [disabled]="locked()" pTooltip="Trainer eingeben und auswählen (Nachname Vorname)" />
+          </div>
+          <div class="avk-field">
+            <label>Team</label>
+            <p-multiselect formControlName="teamIds" [options]="nameOptions()" optionLabel="label" optionValue="id" [filter]="true" filterBy="label" [disabled]="locked()" pTooltip="Mitorganisatoren des Kurses"></p-multiselect>
+          </div>
+        </div>
+      </p-card>
+
+      <p-card subheader="Kursspezifika">
+        <div class="avk-checkbox-row">
+          <div class="avk-checkbox-item">
+            <p-checkbox
+              formControlName="ladiesOnly"
+              [binary]="true"
+              inputId="ladiesOnlyCheckbox" />
+            <label for="ladiesOnlyCheckbox">Kurs von Frauen für Frauen</label>
+          </div>
+          <!-- Tooltip on the wrapper, not the checkbox: a disabled control
+               swallows the pointer events a tooltip needs. -->
+          <div
+            class="avk-checkbox-item"
+            [pTooltip]="isSpecialLocked() ? 'Beim Kursthema „Spezialkurs“ immer gesetzt und nicht abwählbar' : ''"
+          >
+            <p-checkbox
+              formControlName="isSpecial"
+              [binary]="true"
+              [disabled]="isSpecialLocked()"
+              inputId="isSpecialCheckbox" />
+            <label for="isSpecialCheckbox">Sonderkurs</label>
+          </div>
+        </div>
+      </p-card>
+
+      <p-card subheader="Kurs-Termine">
+        @if (isSpecial()) {
+          <p-message severity="success" styleClass="avk-full-message">
+            <b>Sonderkurs:</b> Der Kurs wird über den <b>Haupttermin</b> (erster Termin)
+            definiert. Titel, Beschreibung und Zeiten dieses Termins gelten für den
+            gesamten Kurs – bitte dort vollständig eintragen.
+          </p-message>
+        }
+        <p class="avk-hint">Erster Termin ist der Kurs selbst, weitere Termine sind die Kurstreffen.</p>
+        <div class="avk-toolbar-gap" style="margin-bottom: 0.75rem">
+          <p-button label="Termin hinzufügen" icon="pi pi-plus" size="small" severity="secondary" (onClick)="addMeeting()" [disabled]="locked()" />
+        </div>
+        <p-table [value]="eventRows()" styleClass="p-datatable-sm">
+          <ng-template #header>
+            <tr>
+              <th>Datum</th>
+              <th>Uhrzeit</th>
+              <th>Beschreibung</th>
+              <th></th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-event let-i="rowIndex">
+            <tr [class.avk-row-main]="i === 0">
+              <td class="avk-link-cell" (click)="selectEvent(event, i)">{{ eventDate(event) }}</td>
+              <td class="avk-link-cell" (click)="selectEvent(event, i)">{{ event.startTime || approximateName(event.approximateId) }}</td>
+              <td class="avk-link-cell" (click)="selectEvent(event, i)">{{ event.name }}</td>
+              <td>
+                @if (i === 0) {
+                  <span class="avk-main-badge">Haupttermin</span>
+                }
+                @if (i > 0 && !locked()) {
+                  <p-button icon="pi pi-trash" size="small" severity="danger" [text]="true" (onClick)="removeMeeting(event.id)" />
+                }
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </p-card>
+
+      @if (topic(); as t) {
+        @if (!isSpecial()) {
+          <p-card subheader="Kursdetails aus dem Kursthema">
+            <p class="avk-hint">
+              Diese Voraussetzungen und die Beschreibung sind bereits im Kursthema
+              „{{ t.title }}“ hinterlegt und müssen unten nicht erneut eingetragen werden.
+            </p>
+            <div class="avk-grid-2">
+              <div class="avk-field">
+                <label>Mindestqualifikation (Kursthema)</label>
+                <input pInputText [value]="topicQualificationNames()" readonly pTooltip="Benötigte Qualifikation der Teilnehmer*innen" />
+              </div>
+              <div class="avk-field">
+                <label>Zusätzliche Anforderungen (Kursthema)</label>
+                <input pInputText [value]="t.preconditions" readonly pTooltip="Zusätzliche Anforderungen" />
+              </div>
+            </div>
+            <div class="avk-grid-2">
+              <div class="avk-field">
+                <label>Ausrüstung (Kursthema)</label>
+                <input pInputText [value]="topicEquipmentNames()" readonly pTooltip="Benötigte Ausrüstungssets" />
+              </div>
+              <div class="avk-field">
+                <label>Zusatzausrüstung (Kursthema)</label>
+                <input pInputText [value]="t.miscEquipment" readonly pTooltip="Zusatzausrüstung" />
+              </div>
+            </div>
+            <div class="avk-field">
+              <label>Beschreibung (Kursthema)</label>
+              <textarea pTextarea [value]="t.description" rows="3" readonly class="avk-full" pTooltip="Kurzbeschreibung der Kursinhalte"></textarea>
+            </div>
+          </p-card>
+        }
+      }
+
+      <p-card subheader="Anforderungen und Ausrüstung">
+        <!-- Regular courses inherit these requirements from the topic (card above). -->
+        @if (isSpecial()) {
+          <p-message severity="success" styleClass="avk-full-message">
+            <b>Sonderkurs:</b> Mindestqualifikation und Ausrüstung werden <b>nicht</b> aus
+            dem Kursthema übernommen und müssen hier zwingend angegeben werden.
+          </p-message>
+          <div class="avk-grid-2">
+            <div class="avk-field">
+              <label>Mindestqualifikation</label>
+              <p-multiselect formControlName="qualificationIds" [options]="qualificationOptions()" optionLabel="title"
+                             optionValue="id" [disabled]="locked()" pTooltip="Benötigte Qualifikationen der Teilnehmer*innen"></p-multiselect>
+            </div>
+            <div class="avk-field">
+              <label>Spezielle Voraussetzungen</label>
+              <input pInputText formControlName="preconditions" [disabled]="locked()" pTooltip="Sonstige spezielle Voraussetzungen (z.B. Trittsicherheit o.ä.)" />
+            </div>
+          </div>
+        }
+        <div class="avk-grid-3">
+          <div class="avk-field">
+            <label>Ausrüstung</label>
+            <p-multiselect formControlName="equipmentIds" [options]="equipmentOptions()" optionLabel="name"
+                           optionValue="id" [disabled]="locked()" pTooltip="Zusatzausrüstung, die noch nicht aufgeführt ist"></p-multiselect>
+          </div>
+          <div class="avk-field">
+            <label>Zusätzliche Ausrüstung</label>
+            <input pInputText formControlName="miscEquipment" maxlength="75" [disabled]="locked()" pTooltip="Ergänzungsfeld für Ausrüstung, die in keinem Ausrüstungsset ist" />
+          </div>
+          <div class="avk-field avk-field-checkbox">
+            <div class="avk-checkbox-item">
+              <p-checkbox formControlName="equipmentService" [binary]="true" inputId="equipmentServiceCheckbox" />
+              <label for="equipmentServiceCheckbox">Ausrüstungsservice gewünscht</label>
+            </div>
+          </div>
+        </div>
+      </p-card>
+
+      <p-card subheader="Teilnehmer*innenanzahl">
+        <div class="avk-grid-3">
+          <div class="avk-field">
+            <label>Mindestens</label>
+            <p-inputnumber formControlName="minQuantity" [min]="0" [disabled]="locked()"></p-inputnumber>
+          </div>
+          <div class="avk-field">
+            <label>Maximal</label>
+            <p-inputnumber formControlName="maxQuantity" [min]="0" [disabled]="locked()"></p-inputnumber>
+          </div>
+          <div class="avk-field">
+            <label>Aktuell</label>
+            <p-inputnumber formControlName="curQuantity" [min]="0" [disabled]="locked()"></p-inputnumber>
+          </div>
+        </div>
+      </p-card>
+
+      <p-card subheader="Gebühr, Zusatzkosten, Anzahlung">
+        <div class="avk-grid-3">
+          <div class="avk-field">
+            <label>TN-Gebühr (€)</label>
+            <p-inputnumber formControlName="admission" [min]="0" [max]="999" [disabled]="locked()" pTooltip="Die TN-Gebühr wird von der Geschäftsstelle entsprechend ergänzt."></p-inputnumber>
+          </div>
+          <div class="avk-field">
+            <label>Zusatzkosten (€)</label>
+            <p-inputnumber formControlName="extraCharges" [min]="0" [max]="999" [disabled]="locked()" pTooltip="Zusatzkosten wie Maut, Übernachtungen etc."></p-inputnumber>
+          </div>
+          <div class="avk-field">
+            <label>Anzahlung (€)</label>
+            <p-inputnumber formControlName="advances" [min]="0" [max]="999" [disabled]="locked()" pTooltip="Anzahlungen für den Kurs, Hütten, Liftkarten etc."></p-inputnumber>
+          </div>
+        </div>
+        <div class="avk-grid-2">
+          <div class="avk-field">
+            <label>Zusatzkosten Details</label>
+            <textarea pTextarea formControlName="extraChargesInfo" rows="2" maxlength="75" pTooltip="Aufstellung der Zusatzkosten"></textarea>
+          </div>
+          <div class="avk-field">
+            <label>Anzahlung Details</label>
+            <textarea pTextarea formControlName="advancesInfo" rows="2" maxlength="75" pTooltip="Aufstellung der Anzahlung"></textarea>
+          </div>
+        </div>
+      </p-card>
+
+      @if (!isOwner()) {
+        <p-card subheader="Verlinkung KV">
+          <textarea pTextarea formControlName="kvLink" rows="1" placeholder="Link zum KV-Manager" class="avk-full"></textarea>
+        </p-card>
+      }
+
+      <p-card subheader="Bemerkungen">
+        <textarea pTextarea formControlName="comment" rows="3" class="avk-full"></textarea>
+      </p-card>
+
+      <p-card subheader="Nachricht an die Geschäftsstelle (intern)">
+        <textarea pTextarea formControlName="message" rows="5" class="avk-full"></textarea>
+      </p-card>
+
+      <div class="avk-detail-actions">
+        @if (!locked()) {
+          <p-button label="Speichern" icon="pi pi-save" (onClick)="save()" />
+        }
+        <a routerLink="/instructions"><p-button label="Zurück" severity="secondary" /></a>
+        @if (!isOwner()) {
+          <span class="avk-spacer"></span>
+          <p-button label="Kurs löschen" icon="pi pi-trash" severity="danger" (onClick)="confirmDelete()" />
+        }
+      </div>
+    </form>
+  </section>
+
+  <p-dialog
+    header="Termin-Details"
+    [modal]="true"
+    [visible]="showEvent()"
+    (visibleChange)="showEvent.set($event)"
+    (onHide)="applyEvent()"
+    [style]="{ width: '50rem' }"
+  >
+    @if (selectedEventForm(); as ef) {
+      <form [formGroup]="ef" class="avk-event-form">
+        <div class="avk-grid-2">
+          <div class="avk-field">
+            <label>Kurztitel</label>
+            <input pInputText formControlName="title" maxlength="30" pTooltip="Kurztitel (z.B. Praxistag 1, max. 30 Zeichen) für die Ansicht im Kursprogramm auf der Homepage" />
+          </div>
+          <div class="avk-field">
+            <label>Langtitel</label>
+            <input pInputText formControlName="name" maxlength="125" pTooltip="Langtitel (max. 125 Zeichen) für die Detailansicht auf der Homepage" />
+          </div>
+        </div>
+        <div class="avk-grid-3">
+          <div class="avk-field">
+            <label>Tageszeit (ca.)</label>
+            <p-select formControlName="approximateId" [options]="approximateOptions()" optionLabel="name" optionValue="id" [showClear]="true" appendTo="body" pTooltip="Ungefähre Startzeit (wenn keine genaue Zeit angegeben werden kann)" />
+          </div>
+          <div class="avk-field">
+            <label>Startzeit</label>
+            <input pInputText formControlName="startTime" placeholder="HH:MM" pTooltip="Startzeit" />
+          </div>
+          <div class="avk-field">
+            <label>Endzeit</label>
+            <input pInputText formControlName="endTime" placeholder="HH:MM" pTooltip="Endzeit" />
+          </div>
+        </div>
+        <div class="avk-grid-2">
+          <div class="avk-field">
+            <label>Startdatum</label>
+            <p-datepicker formControlName="startDate" dateFormat="dd.mm.yy" appendTo="body" [minDate]="minDate()" pTooltip="Startdatum"></p-datepicker>
+          </div>
+          <div class="avk-field">
+            <label>Enddatum</label>
+            <!-- Lower bound is the start date itself, so an earlier day cannot
+                 be picked in the first place. -->
+            <p-datepicker
+              formControlName="endDate"
+              dateFormat="dd.mm.yy"
+              appendTo="body"
+              [minDate]="ef.get('startDate')?.value ?? minDate()"
+              [class.avk-invalid]="ef.get('endDate')?.hasError('endBeforeStart')"
+              pTooltip="Enddatum"
+            ></p-datepicker>
+            @if (ef.get('endDate')?.hasError('endBeforeStart')) {
+              <small class="avk-error-text">
+                Das Enddatum darf nicht vor dem Startdatum liegen.
+              </small>
+            }
+          </div>
+        </div>
+        <div class="avk-grid-2">
+          <div class="avk-field">
+            <label>Treffpunkt</label>
+            <input pInputText formControlName="rendezvous" maxlength="75" pTooltip="Treffpunkt für die Abfahrt" />
+          </div>
+          <div class="avk-field">
+            <label>Ort</label>
+            <input pInputText formControlName="location" maxlength="75" />
+          </div>
+        </div>
+        @if (selectedIsMain()) {
+          <div class="avk-field">
+            <label>Beschreibung</label>
+            <!-- For a special course this text *is* the course description, so it
+                 gets twice the room. -->
+            <textarea
+              pTextarea
+              formControlName="description"
+              [rows]="isSpecial() ? 6 : 3"
+              class="avk-full"
+            ></textarea>
+          </div>
+        }
+        <div class="avk-detail-actions">
+          <p-button label="Übernehmen" icon="pi pi-check" (onClick)="applyEvent(); showEvent.set(false)" />
+        </div>
+      </form>
+    }
+  </p-dialog>
+} @else {
+  <section class="avk-page">
+    <p-card>
+      <p>Bitte kurz warten – der Kurs wird geladen …</p>
+      <a routerLink="/instructions"><p-button label="Zurück" severity="secondary" /></a>
+    </p-card>
+  </section>
+}

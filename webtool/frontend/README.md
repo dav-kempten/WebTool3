@@ -1,27 +1,57 @@
-# Frontend
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.3.3.
+# WebTool – Frontend (Angular 21)
 
-## Development server
+Modern rebuild of the DAV Allgäu-Kempten WebTool SPA. Talks to the same Django REST
+API as the legacy `../frontend` app (`/api/frontend/*`, `/api/login/`, `/api/logout/`).
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+Stack: **Angular 21 (standalone, zoneless) · PrimeNG 21 (Aura theme) · @ngrx/signals · SCSS · vitest**.
 
-## Code scaffolding
+## Requirements
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+- **Node ≥ 20.19** (Angular 21 requirement). Developed against Node 24 LTS.
 
-## Build
+## Development
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+```bash
+npm install
+npm start          # ng serve on http://localhost:4201, proxies /api to :8000
+```
 
-## Running unit tests
+Run the Django backend first (`docker compose up` from the repo root, then `migrate`,
+`createcachetable`, `init_season`). The dev server runs on **4201** so it can coexist
+with the legacy frontend on 4200.
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+## Build & test
 
-## Running end-to-end tests
+```bash
+npm run build      # production build (dist/frontend-new)
+npm test           # vitest unit tests (--watch=false for CI)
+```
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+## Architecture
 
-## Further help
+- `src/app/core/services` — HTTP services + `AuthService` (signals) + `AutoSaveService`.
+- `src/app/core/stores` — `@ngrx/signals` SignalStores (`ValuesStore`, `NamesStore`,
+  `ToursStore`, `EventsStore`) replacing the legacy NgRx store.
+- `src/app/core/layout` — app shell (menubar, breadcrumb, login dialogs).
+- `src/app/features/<area>` — lazily loaded feature pages.
+- `src/app/models` — wire/UI interfaces ported from the legacy app.
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+### Auto-save
+
+`AutoSaveService` (provided per detail page) saves the form every **2 minutes** when it
+is `dirty` and `valid`, then marks it pristine; a final save runs on navigation away.
+Wired into the **tour**, **instruction**, and **collective/session** detail pages.
+
+## Feature status
+
+| Area | List | Detail | Auto-save |
+| --- | --- | --- | --- |
+| Touren (tours) | ✅ | ✅ | ✅ |
+| Kurse (instructions) | ✅ | ✅ (+ dynamic meetings) | ✅ |
+| Gruppen (collectives/sessions) | ✅ | ✅ | ✅ |
+| Trainer (guides) | ✅ | ✅ (profile) | – |
+| Events (talks) | placeholder | placeholder | – |
+
+`Events/talks` is a placeholder (`ComingSoon`) — it was never implemented in the legacy
+frontend either (its detail rendered only `Talk #id`).
