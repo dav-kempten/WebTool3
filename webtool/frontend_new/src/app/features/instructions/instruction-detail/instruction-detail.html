@@ -68,6 +68,13 @@
       </p-card>
 
       <p-card subheader="Kurs-Termine">
+        @if (isSpecial()) {
+          <p-message severity="success" styleClass="avk-full-message">
+            <b>Sonderkurs:</b> Der Kurs wird über den <b>Haupttermin</b> (erster Termin)
+            definiert. Titel, Beschreibung und Zeiten dieses Termins gelten für den
+            gesamten Kurs – bitte dort vollständig eintragen.
+          </p-message>
+        }
         <p class="avk-hint">Erster Termin ist der Kurs selbst, weitere Termine sind die Kurstreffen.</p>
         <div class="avk-toolbar-gap" style="margin-bottom: 0.75rem">
           <p-button label="Termin hinzufügen" icon="pi pi-plus" size="small" severity="secondary" (onClick)="addMeeting()" [disabled]="locked()" />
@@ -82,11 +89,14 @@
             </tr>
           </ng-template>
           <ng-template #body let-event let-i="rowIndex">
-            <tr>
+            <tr [class.avk-row-main]="i === 0">
               <td class="avk-link-cell" (click)="selectEvent(event, i)">{{ event.startDate | date: 'dd.MM.yyyy' }}</td>
               <td class="avk-link-cell" (click)="selectEvent(event, i)">{{ event.startTime || approximateName(event.approximateId) }}</td>
               <td class="avk-link-cell" (click)="selectEvent(event, i)">{{ event.name }}</td>
               <td>
+                @if (i === 0) {
+                  <span class="avk-main-badge">Haupttermin</span>
+                }
                 @if (i > 0 && !locked()) {
                   <p-button icon="pi pi-trash" size="small" severity="danger" [text]="true" (onClick)="removeMeeting(event.id)" />
                 }
@@ -97,7 +107,7 @@
       </p-card>
 
       @if (topic(); as t) {
-        @if (!instruction()?.isSpecial) {
+        @if (!isSpecial()) {
           <p-card subheader="Kursdetails aus dem Kursthema">
             <p class="avk-hint">
               Diese Voraussetzungen und die Beschreibung sind bereits im Kursthema
@@ -132,8 +142,12 @@
       }
 
       <p-card subheader="Anforderungen und Ausrüstung">
-        @if (instruction()?.isSpecial) {
-          <!-- Regular courses inherit these requirements from the topic (card above). -->
+        <!-- Regular courses inherit these requirements from the topic (card above). -->
+        @if (isSpecial()) {
+          <p-message severity="success" styleClass="avk-full-message">
+            <b>Sonderkurs:</b> Mindestqualifikation und Ausrüstung werden <b>nicht</b> aus
+            dem Kursthema übernommen und müssen hier zwingend angegeben werden.
+          </p-message>
           <div class="avk-grid-2">
             <div class="avk-field">
               <label>Mindestqualifikation</label>

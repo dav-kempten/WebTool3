@@ -99,3 +99,34 @@
 :host ::ng-deep .w-full {
   width: 100%;
 }
+
+/*
+ * Instruction detail: the first course date is the main event — it carries the
+ * title/description a special course is defined by, so it is set apart from the
+ * follow-up meetings below it.
+ */
+.avk-main-badge {
+  display: inline-block;
+  padding: 0.1rem 0.45rem;
+  border-radius: 0.75rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--p-primary-contrast-color, #fff);
+  background: var(--p-primary-color, #10b981);
+  vertical-align: middle;
+}
+
+:host ::ng-deep .p-datatable .avk-row-main > td {
+  background: var(--p-primary-50, rgb(16 185 129 / 8%));
+  font-weight: 600;
+  box-shadow: inset 0 -1px 0 var(--p-primary-200, rgb(16 185 129 / 30%));
+}
+
+/* Info hints inside cards should span the full card width. */
+:host ::ng-deep .avk-full-message {
+  display: block;
+  width: 100%;
+  margin-bottom: 1rem;
+}

@@ -97,6 +97,13 @@ export class InstructionDetail {
     this.values.topicById().get(this.instruction()?.topicId ?? -1),
   );
 
+  /**
+   * Special courses define their own title, requirements and equipment instead
+   * of inheriting them from the topic. Reads through the entity, which the form
+   * mirrors on every change, so the hints react to the checkbox immediately.
+   */
+  readonly isSpecial = computed(() => this.instruction()?.isSpecial ?? false);
+
   /** Field labels from the most recent failed save, for an inline hint next to the auto-save status. */
   readonly saveErrorSummary = computed(() =>
     this.instructions
