@@ -130,3 +130,17 @@
   width: 100%;
   margin-bottom: 1rem;
 }
+
+/*
+ * End date before start date. PrimeNG already reddens `.ng-invalid.ng-dirty`
+ * datepickers, but that misses records that arrive invalid without being
+ * touched — hence an explicit class bound to this one error, so no other
+ * datepicker (e.g. an untouched required field) turns red by accident.
+ */
+:host ::ng-deep p-datepicker.avk-invalid .p-inputtext {
+  border-color: var(--p-red-500, #ef4444);
+}
+
+.avk-error-text {
+  color: var(--p-red-500, #ef4444);
+}

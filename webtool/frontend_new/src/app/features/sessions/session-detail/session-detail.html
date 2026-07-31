@@ -149,7 +149,20 @@
           </div>
           <div class="avk-field">
             <label>Enddatum</label>
-            <p-datepicker formControlName="endDate" dateFormat="dd.mm.yy" appendTo="body" [minDate]="minDate()" />
+            <!-- Lower bound is the start date itself, so an earlier day cannot
+                 be picked in the first place. -->
+            <p-datepicker
+              formControlName="endDate"
+              dateFormat="dd.mm.yy"
+              appendTo="body"
+              [minDate]="ef.get('startDate')?.value ?? minDate()"
+              [class.avk-invalid]="ef.get('endDate')?.hasError('endBeforeStart')"
+            />
+            @if (ef.get('endDate')?.hasError('endBeforeStart')) {
+              <small class="avk-error-text">
+                Das Enddatum darf nicht vor dem Startdatum liegen.
+              </small>
+            }
           </div>
         </div>
         <div class="avk-grid-2">

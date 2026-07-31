@@ -48,7 +48,10 @@ import {
   toIsoDate,
   tomorrow,
 } from '../../../shared/util/date';
-import { timeFormatValidator } from '../../../shared/util/validators';
+import {
+  endNotBeforeStartValidator,
+  timeFormatValidator,
+} from '../../../shared/util/validators';
 import { describeSaveErrorPath } from '../../../shared/util/save-error';
 
 @Component({
@@ -285,20 +288,30 @@ export class InstructionDetail {
     this.selectedIsMain.set(index === 0);
     this.selectedEventId = event.id;
     this.minDate.set(relaxedMinDate(fromIsoDate(event.startDate)));
-    this.selectedEventForm.set(
-      this.fb.group({
-        title: [event.title],
-        name: [event.name],
-        description: [event.description],
-        startDate: [fromIsoDate(event.startDate)],
-        startTime: [event.startTime, timeFormatValidator()],
-        approximateId: [event.approximateId],
-        endDate: [fromIsoDate(event.endDate)],
-        endTime: [event.endTime, timeFormatValidator()],
-        rendezvous: [event.rendezvous],
-        location: [event.location],
-      }),
-    );
+    const group = this.fb.group({
+      title: [event.title],
+      name: [event.name],
+      description: [event.description],
+      startDate: [fromIsoDate(event.startDate)],
+      startTime: [event.startTime, timeFormatValidator()],
+      approximateId: [event.approximateId],
+      endDate: [fromIsoDate(event.endDate), endNotBeforeStartValidator()],
+      endTime: [event.endTime, timeFormatValidator()],
+      rendezvous: [event.rendezvous],
+      location: [event.location],
+    });
+
+    // The end-date validator reads the start date, so moving the start has to
+    // re-run it — otherwise a newly created overlap would go unflagged. The
+    // group is discarded with the dialog, so no explicit teardown is needed.
+    group
+      .get('startDate')!
+      .valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() =>
+        group.get('endDate')!.updateValueAndValidity({ emitEvent: false }),
+      );
+
+    this.selectedEventForm.set(group);
     this.showEvent.set(true);
   }
 

@@ -49,7 +49,10 @@ import {
   toIsoDate,
   tomorrow,
 } from '../../../shared/util/date';
-import { timeFormatValidator } from '../../../shared/util/validators';
+import {
+  endNotBeforeStartValidator,
+  timeFormatValidator,
+} from '../../../shared/util/validators';
 import { describeSaveErrorPath } from '../../../shared/util/save-error';
 
 type EventKind = 'tour' | 'deadline' | 'preliminary';
@@ -292,7 +295,7 @@ export class TourDetail {
       startDate: [fromIsoDate(event.startDate)],
       startTime: [event.startTime, timeFormatValidator()],
       approximateId: [event.approximateId],
-      endDate: [fromIsoDate(event.endDate)],
+      endDate: [fromIsoDate(event.endDate), endNotBeforeStartValidator()],
       endTime: [event.endTime, timeFormatValidator()],
       rendezvous: [event.rendezvous],
       location: [event.location],
@@ -306,6 +309,15 @@ export class TourDetail {
       publicTransport: [event.publicTransport],
       shuttleService: [event.shuttleService],
     });
+
+    // The end-date validator reads the start date, so moving the start has to
+    // re-run it — otherwise a newly created overlap would go unflagged.
+    group
+      .get('startDate')!
+      .valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() =>
+        group.get('endDate')!.updateValueAndValidity({ emitEvent: false }),
+      );
 
     group.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((value) => {
       // Route through the store so the list summary updates immediately too.
