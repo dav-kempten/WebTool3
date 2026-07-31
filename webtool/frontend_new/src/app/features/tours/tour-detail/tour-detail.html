@@ -142,7 +142,7 @@
           </ng-template>
           <ng-template #body let-event let-i="rowIndex">
             <tr>
-              <td class="avk-link-cell" (click)="selectEvent(i)">{{ event.startDate | date: 'dd.MM.yyyy' }}</td>
+              <td class="avk-link-cell" (click)="selectEvent(i)">{{ eventDate(event) }}</td>
               <td class="avk-link-cell" (click)="selectEvent(i)">{{ event.startTime || approximateName(event.approximateId) }}</td>
               <td class="avk-link-cell" (click)="selectEvent(i)">{{ event.name }}</td>
               <td>

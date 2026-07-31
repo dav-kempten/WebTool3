@@ -35,7 +35,9 @@ import { PermissionLevel } from '../../../core/services/permission';
 import { AutoSaveService } from '../../../core/services/auto-save.service';
 import { BreadcrumbService } from '../../../core/layout/breadcrumb.service';
 import { Session } from '../../../models/session';
+import { Event } from '../../../models/event';
 import {
+  formatIsoDateRangeDe,
   fromIsoDate,
   relaxedMinDate,
   toIsoDate,
@@ -209,6 +211,11 @@ export class SessionDetail {
 
   approximateName(id: number | null): string {
     return id == null ? '' : (this.values.approximateById().get(id)?.name ?? '');
+  }
+
+  /** Date column: multi-day events are shown as a range. */
+  eventDate(event: Event): string {
+    return formatIsoDateRangeDe(event.startDate, event.endDate);
   }
 
   openEvent(): void {

@@ -54,3 +54,26 @@ export function formatIsoDateDe(value: string | null | undefined): string {
   const parts = value.split('-');
   return parts.length === 3 ? `${parts[2]}.${parts[1]}.${parts[0]}` : value;
 }
+
+/**
+ * Date column of the event lists. A single day keeps the full date
+ * (`15.07.2024`); a period collapses into a range (`11.06. - 22.07.26`), where
+ * the start drops its year because the end already carries it. Across a
+ * year boundary both years are shown (`30.12.25 - 06.01.26`), otherwise the
+ * range would read as if it were within one year.
+ */
+export function formatIsoDateRangeDe(
+  startDate: string | null | undefined,
+  endDate: string | null | undefined,
+): string {
+  const start = startDate?.split('-');
+  if (!start || start.length !== 3) {
+    return '';
+  }
+  const end = endDate?.split('-');
+  if (!end || end.length !== 3 || endDate === startDate) {
+    return formatIsoDateDe(startDate);
+  }
+  const startYear = start[0] === end[0] ? '' : start[0].slice(-2);
+  return `${start[2]}.${start[1]}.${startYear} - ${end[2]}.${end[1]}.${end[0].slice(-2)}`;
+}

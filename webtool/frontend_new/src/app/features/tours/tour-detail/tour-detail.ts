@@ -44,6 +44,7 @@ import { BreadcrumbService } from '../../../core/layout/breadcrumb.service';
 import { Tour } from '../../../models/tour';
 import { Event } from '../../../models/event';
 import {
+  formatIsoDateRangeDe,
   fromIsoDate,
   relaxedMinDate,
   toIsoDate,
@@ -373,6 +374,11 @@ export class TourDetail {
       return '';
     }
     return this.values.approximateById().get(id)?.name ?? '';
+  }
+
+  /** Date column: multi-day events are shown as a range. */
+  eventDate(event: Event): string {
+    return formatIsoDateRangeDe(event.startDate, event.endDate);
   }
 
   selectEvent(index: number): void {

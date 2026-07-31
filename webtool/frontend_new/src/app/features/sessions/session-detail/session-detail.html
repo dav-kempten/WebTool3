@@ -64,7 +64,7 @@
           </ng-template>
           <ng-template #body let-event>
             <tr>
-              <td>{{ event.startDate | date: 'dd.MM.yyyy' }}</td>
+              <td>{{ eventDate(event) }}</td>
               <td>{{ event.startTime || approximateName(event.approximateId) }}</td>
               <td>{{ event.name }}</td>
               <td><p-button icon="pi pi-pencil" size="small" [text]="true" (onClick)="openEvent()" /></td>

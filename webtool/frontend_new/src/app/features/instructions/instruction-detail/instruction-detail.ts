@@ -43,6 +43,7 @@ import { Instruction } from '../../../models/instruction';
 import { Event } from '../../../models/event';
 import { isSpecialTopic } from '../../../models/value';
 import {
+  formatIsoDateRangeDe,
   fromIsoDate,
   relaxedMinDate,
   toIsoDate,
@@ -282,6 +283,11 @@ export class InstructionDetail {
 
   approximateName(id: number | null): string {
     return id == null ? '' : (this.values.approximateById().get(id)?.name ?? '');
+  }
+
+  /** Date column: multi-day events are shown as a range. */
+  eventDate(event: Event): string {
+    return formatIsoDateRangeDe(event.startDate, event.endDate);
   }
 
   selectEvent(event: Event, index: number): void {

@@ -96,7 +96,7 @@
           </ng-template>
           <ng-template #body let-event let-i="rowIndex">
             <tr [class.avk-row-main]="i === 0">
-              <td class="avk-link-cell" (click)="selectEvent(event, i)">{{ event.startDate | date: 'dd.MM.yyyy' }}</td>
+              <td class="avk-link-cell" (click)="selectEvent(event, i)">{{ eventDate(event) }}</td>
               <td class="avk-link-cell" (click)="selectEvent(event, i)">{{ event.startTime || approximateName(event.approximateId) }}</td>
               <td class="avk-link-cell" (click)="selectEvent(event, i)">{{ event.name }}</td>
               <td>
