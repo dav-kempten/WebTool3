@@ -59,7 +59,7 @@
     </ng-template>
 
     <ng-template #body let-row>
-      <tr>
+      <tr [class.avk-row-foreign]="row.foreign">
         <td (click)="select(row)" class="avk-link-cell">{{ row.reference }}</td>
         <td (click)="select(row)" class="avk-link-cell">
           {{ row.startDate | date: 'dd.MM.yyyy' }}

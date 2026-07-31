@@ -65,7 +65,7 @@
     </ng-template>
 
     <ng-template #body let-tour>
-      <tr>
+      <tr [class.avk-row-foreign]="tour.foreign">
         <td (click)="selectTour(tour)" class="avk-link-cell">{{ tour.reference }}</td>
         <td (click)="selectTour(tour)" class="avk-link-cell">
           {{ tour.startDate | date: 'dd.MM.yyyy' }}

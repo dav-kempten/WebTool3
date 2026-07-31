@@ -25,6 +25,19 @@
   cursor: pointer;
 }
 
+/*
+ * Entries owned by another trainer, shown below one's own. They are not
+ * navigable (canModify is false), so the pointer cursor is removed as well —
+ * otherwise the rows would invite a click that does nothing.
+ */
+.avk-row-foreign {
+  opacity: 0.6;
+
+  .avk-link-cell {
+    cursor: default;
+  }
+}
+
 .avk-center-cell {
   text-align: center;
 }

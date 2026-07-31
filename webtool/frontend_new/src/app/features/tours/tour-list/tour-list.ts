@@ -31,6 +31,8 @@ import { TourCreateDialog } from '../../../shared/dialogs/tour-create-dialog/tou
 
 interface TourRow extends TourSummary {
   stateName: string;
+  /** Another trainer's tour — greyed out and listed below one's own. */
+  foreign: boolean;
 }
 
 @Component({
@@ -78,7 +80,7 @@ export class TourList implements OnInit {
   readonly stateGroupOptions = [
     { label: 'Aktive Touren', value: StatesGroup.Active },
     { label: 'Alle Touren', value: StatesGroup.All },
-    { label: 'Fertige Touren', value: StatesGroup.Finished },
+    { label: 'Fertige Touren', value: StatesGroup.Ready },
   ];
 
   private readonly permission = this.auth.permission;
@@ -93,8 +95,9 @@ export class TourList implements OnInit {
     const stateMap = this.values.stateById();
     const nameMap = this.names.nameById();
     const perm = this.permission();
+    const isGuide = perm.permissionLevel === PermissionLevel.guide;
 
-    return this.tours
+    const rows = this.tours
       .summaries()
       .filter(
         (t) =>
@@ -104,19 +107,23 @@ export class TourList implements OnInit {
           !part,
       )
       .filter((t) => group.includes(t.stateId))
-      .filter((t) =>
-        perm.permissionLevel === PermissionLevel.guide
-          ? perm.guideId === t.guideId
-          : true,
-      )
       .map((t) => {
         const name = nameMap.get(t.guideId);
         return {
           ...t,
           stateName: stateMap.get(t.stateId)?.state ?? '',
           guide: name ? `${name.firstName} ${name.lastName}` : '',
+          // Only trainers get the own/foreign split; for everyone else the
+          // list stays a plain, uniformly styled list.
+          foreign: isGuide && perm.guideId !== t.guideId,
         };
       });
+
+    // Trainers see their own tours first, the rest greyed out below. Both
+    // partitions keep the incoming order.
+    return isGuide
+      ? [...rows.filter((r) => !r.foreign), ...rows.filter((r) => r.foreign)]
+      : rows;
   });
 
   // --- create dialog (shared component) ---

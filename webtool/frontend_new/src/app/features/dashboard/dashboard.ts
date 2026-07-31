@@ -119,25 +119,25 @@ export class Dashboard {
       label: 'Touren',
       icon: 'pi pi-globe',
       link: '/tours',
-      description: 'Gemeinschaftstouren einsehen und ändern.',
+      description: 'Gemeinschaftstouren verwalten.',
     },
     {
       label: 'Kurse',
       icon: 'pi pi-graduation-cap',
       link: '/instructions',
-      description: 'Aus- und Fortbildungen verwalten.',
+      description: 'Outdoorkurse verwalten.',
     },
     {
       label: 'Gruppen',
       icon: 'pi pi-users',
       link: '/sessions',
-      description: 'Gruppentermine und Treffen koordinieren.',
+      description: 'Gruppentermine koordinieren.',
     },
     {
       label: 'Events',
       icon: 'pi pi-bookmark',
       link: '/talks',
-      description: '[Im Aufbau] Vorträge und Veranstaltungen ankündigen.',
+      description: '[Im Aufbau] Events managen.',
     },
   ];
 }

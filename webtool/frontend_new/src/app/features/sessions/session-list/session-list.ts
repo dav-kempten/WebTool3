@@ -77,7 +77,7 @@ export class SessionList implements OnInit {
   readonly stateGroupOptions = [
     { label: 'Aktive Termine', value: StatesGroup.Active },
     { label: 'Alle Termine', value: StatesGroup.All },
-    { label: 'Fertige Termine', value: StatesGroup.Finished },
+    { label: 'Fertige Termine', value: StatesGroup.Ready },
   ];
 
   private readonly permission = this.auth.permission;

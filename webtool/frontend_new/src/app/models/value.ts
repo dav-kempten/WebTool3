@@ -19,8 +19,11 @@ export enum States {
 
 export enum StatesGroup {
   Active = 1,
+  /** Closed events (durchgeführt/ausgefallen) — also guards deletion. */
   Finished,
   All,
+  /** Exactly the "Fertig" state, i.e. handed in for review. */
+  Ready,
 }
 
 export function getStatesOfGroup(group: StatesGroup): States[] {
@@ -37,6 +40,8 @@ export function getStatesOfGroup(group: StatesGroup): States[] {
       ];
     case StatesGroup.Finished:
       return [States.FINISHED, States.CANCELED];
+    case StatesGroup.Ready:
+      return [States.READY];
     case StatesGroup.All:
       return [
         States.WORKING,

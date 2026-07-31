@@ -27,6 +27,8 @@ import { InstructionCreateDialog } from '../../../shared/dialogs/instruction-cre
 
 interface InstructionRow extends InstructionSummary {
   stateName: string;
+  /** Another trainer's course — greyed out and listed below one's own. */
+  foreign: boolean;
 }
 
 @Component({
@@ -74,7 +76,7 @@ export class InstructionList implements OnInit {
   readonly stateGroupOptions = [
     { label: 'Aktive Kurse', value: StatesGroup.Active },
     { label: 'Alle Kurse', value: StatesGroup.All },
-    { label: 'Fertige Kurse', value: StatesGroup.Finished },
+    { label: 'Fertige Kurse', value: StatesGroup.Ready },
   ];
 
   private readonly permission = this.auth.permission;
@@ -89,8 +91,9 @@ export class InstructionList implements OnInit {
     const stateMap = this.values.stateById();
     const nameMap = this.names.nameById();
     const perm = this.permission();
+    const isGuide = perm.permissionLevel === PermissionLevel.guide;
 
-    return this.instructions
+    const rows = this.instructions
       .summaries()
       .filter(
         (t) =>
@@ -100,19 +103,23 @@ export class InstructionList implements OnInit {
           !part,
       )
       .filter((t) => group.includes(t.stateId))
-      .filter((t) =>
-        perm.permissionLevel === PermissionLevel.guide
-          ? perm.guideId === t.guideId
-          : true,
-      )
       .map((t) => {
         const name = nameMap.get(t.guideId);
         return {
           ...t,
           stateName: stateMap.get(t.stateId)?.state ?? '',
           guide: name ? `${name.firstName} ${name.lastName}` : '',
+          // Only trainers get the own/foreign split; for everyone else the
+          // list stays a plain, uniformly styled list.
+          foreign: isGuide && perm.guideId !== t.guideId,
         };
       });
+
+    // Trainers see their own courses first, the rest greyed out below. Both
+    // partitions keep the incoming order.
+    return isGuide
+      ? [...rows.filter((r) => !r.foreign), ...rows.filter((r) => r.foreign)]
+      : rows;
   });
 
   // create dialog (shared component)
