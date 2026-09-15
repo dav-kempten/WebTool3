@@ -55,6 +55,17 @@ personaldaten_json.py
 *.sh
 *.ico
 
+# Das pauschale *.json oben zielt auf Datenexporte, erfasst aber auch die
+# Angular-Projektdateien. Ohne diese Ausnahmen sind sie unversioniert und damit
+# ungeschützt — genau so gingen package.json/angular.json beim Verschieben des
+# Frontends verloren (31.07.2026).
+!webtool/frontend/package.json
+!webtool/frontend/package-lock.json
+!webtool/frontend/angular.json
+!webtool/frontend/tsconfig*.json
+!webtool/frontend/proxy.conf.json
+!webtool/frontend/.vscode/*.json
+
 webtool/sslin.df.eu.cer
 webtool/static/rest_framework/
 webtool/static/admin/

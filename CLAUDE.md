@@ -144,9 +144,12 @@ One thing to know about the setup:
 ```bash
 cd webtool/frontend
 npm run build     # Production build
-npm test          # ng test (Karma) — no specs written yet beyond app.spec.ts
+npm test          # ng test — vitest + jsdom (@angular/build:unit-test)
 npm run watch     # Rebuild on change (development configuration)
 ```
+
+Specs live next to their subject (`*.spec.ts`); `src/test-setup.ts` polyfills the
+browser APIs PrimeNG expects but jsdom lacks.
 
 Production build for deployment at the web root — the app is served at `/`,
 `src/index.html` already carries `<base href="/">`, so no `--base-href` is needed:
@@ -154,6 +157,11 @@ Production build for deployment at the web root — the app is served at `/`,
 ```bash
 npm run build     # output: dist/frontend-new/browser
 ```
+
+The Angular config files (`package.json`, `angular.json`, `tsconfig*.json`,
+`proxy.conf.json`) are only tracked thanks to explicit `!` exceptions in the root
+`.gitignore` — a blanket `*.json` rule there would otherwise leave them
+unversioned.
 
 ## Settings
 
