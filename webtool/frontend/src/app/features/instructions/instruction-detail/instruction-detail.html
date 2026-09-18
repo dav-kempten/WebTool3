@@ -186,7 +186,15 @@
       </p-card>
 
       <p-card subheader="Teilnehmer*innenanzahl">
-        <div class="avk-grid-3">
+        <!-- "Aktuell" (curQuantity) ist vorerst ausgeblendet, weil die Zahl
+             derzeit nicht hier gepflegt wird. Das Formularfeld bleibt bestehen
+             und der Wert läuft unverändert durch, sodass zum Wiedereinschalten
+             der Block hier genügt — zurück auf avk-grid-3:
+               <div class="avk-field">
+                 <label>Aktuell</label>
+                 <p-inputnumber formControlName="curQuantity" [min]="0" [disabled]="locked()"></p-inputnumber>
+               </div> -->
+        <div class="avk-grid-2">
           <div class="avk-field">
             <label>Mindestens</label>
             <p-inputnumber formControlName="minQuantity" [min]="0" [disabled]="locked()"></p-inputnumber>
@@ -194,10 +202,6 @@
           <div class="avk-field">
             <label>Maximal</label>
             <p-inputnumber formControlName="maxQuantity" [min]="0" [disabled]="locked()"></p-inputnumber>
-          </div>
-          <div class="avk-field">
-            <label>Aktuell</label>
-            <p-inputnumber formControlName="curQuantity" [min]="0" [disabled]="locked()"></p-inputnumber>
           </div>
         </div>
       </p-card>
@@ -240,7 +244,13 @@
       </p-card>
 
       <p-card subheader="Nachricht an die Geschäftsstelle (intern)">
-        <textarea pTextarea formControlName="message" rows="5" class="avk-full"></textarea>
+        <textarea
+          pTextarea
+          formControlName="message"
+          rows="5"
+          class="avk-full"
+          placeholder="Interna für die Geschäftsstelle – z. B. Stornofristen, Absprachen zu Kosten oder Hinweise zur Abrechnung"
+        ></textarea>
       </p-card>
 
       <div class="avk-detail-actions">
