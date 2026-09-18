@@ -541,10 +541,6 @@
         @if (selectedKind() === 'tour') {
           <div class="avk-grid-2">
             <div class="avk-field">
-              <label>Übernachtungsort</label>
-              <input pInputText formControlName="location" maxlength="75" />
-            </div>
-            <div class="avk-field">
               <label>Treffpunkt</label>
               <input
                 pInputText
@@ -552,6 +548,10 @@
                 maxlength="75"
                 pTooltip="Treffpunkt für die Abfahrt"
               />
+            </div>
+            <div class="avk-field">
+              <label>Übernachtungsort</label>
+              <input pInputText formControlName="location" maxlength="75" />
             </div>
           </div>
 
