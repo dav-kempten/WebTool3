@@ -378,6 +378,12 @@ export class TourDetail {
     ]);
   });
 
+  /**
+   * Das Alpin-Shuttle wird am Haupttermin angehakt, gebraucht wird der
+   * Hinweis aber bei der Nachricht an die Geschäftsstelle.
+   */
+  readonly wantsShuttle = computed(() => this.eventRows()[0]?.shuttleService ?? false);
+
   readonly hasPreliminary = computed(() => this.tour()?.preliminaryId != null);
 
   addPreliminary(): void {

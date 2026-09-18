@@ -356,6 +356,14 @@
 
       <p-card subheader="Nachricht an die Geschäftsstelle (intern)">
         <textarea pTextarea formControlName="message" rows="3" class="avk-full"></textarea>
+        <!-- Der Reservierungswunsch steckt sonst nur im Haken beim Haupttermin;
+             hier sieht ihn die Geschäftsstelle an der Stelle, an der sie liest. -->
+        @if (wantsShuttle()) {
+          <p class="avk-notice">
+            <i class="pi pi-info-circle" aria-hidden="true"></i>
+            Reservierungswunsch für das Alpin-Shuttle
+          </p>
+        }
       </p-card>
 
       <p-card header="Obacht!">
@@ -555,7 +563,7 @@
             </div>
           </div>
 
-          <div class="avk-checkbox-row">
+          <div class="avk-checkbox-row avk-checkbox-row-spread">
             <div class="avk-checkbox-item">
               <p-checkbox formControlName="lea" [binary]="true" inputId="leaCheckbox" />
               <label for="leaCheckbox">Low Emission Adventure</label>
