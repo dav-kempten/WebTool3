@@ -412,6 +412,20 @@
 
         @if (selectedKind() !== 'deadline') {
           <div class="avk-grid-3">
+            <!-- Die Vorbesprechung dauert nur einen Abend: Startdatum steht hier
+                 in der Zeitzeile, der Treffpunkt bekommt darunter eine eigene. -->
+            @if (selectedKind() === 'preliminary') {
+              <div class="avk-field">
+                <label>Startdatum</label>
+                <p-datepicker
+                  formControlName="startDate"
+                  dateFormat="dd.mm.yy"
+                  appendTo="body"
+                  [minDate]="minDate()"
+                  pTooltip="Startdatum"
+                ></p-datepicker>
+              </div>
+            }
             @if (selectedKind() === 'tour') {
               <div class="avk-field">
                 <label>Tageszeit (ca.)</label>
@@ -437,38 +451,81 @@
           </div>
         }
 
-        <div class="avk-grid-2">
-          <div class="avk-field">
-            <label>Startdatum</label>
-            <p-datepicker
-              formControlName="startDate"
-              dateFormat="dd.mm.yy"
-              appendTo="body"
-              [minDate]="minDate()"
-              pTooltip="Startdatum"
-            ></p-datepicker>
-          </div>
-          @if (selectedKind() === 'tour') {
+        @if (selectedKind() !== 'preliminary') {
+          <div class="avk-grid-2">
             <div class="avk-field">
-              <label>Enddatum</label>
-              <!-- Lower bound is the start date itself, so an earlier day cannot
-                   be picked in the first place. -->
+              <label>Startdatum</label>
               <p-datepicker
-                formControlName="endDate"
+                formControlName="startDate"
                 dateFormat="dd.mm.yy"
                 appendTo="body"
-                [minDate]="ef.get('startDate')?.value ?? minDate()"
-                [class.avk-invalid]="ef.get('endDate')?.hasError('endBeforeStart')"
-                pTooltip="Enddatum (nur angeben wenn die Veranstaltung länger als einen Tag dauert)"
+                [minDate]="minDate()"
+                pTooltip="Startdatum"
               ></p-datepicker>
-              @if (ef.get('endDate')?.hasError('endBeforeStart')) {
-                <small class="avk-error-text">
-                  Das Enddatum darf nicht vor dem Startdatum liegen.
-                </small>
-              }
             </div>
-          }
-        </div>
+            @if (selectedKind() === 'tour') {
+              <div class="avk-field">
+                <label>Enddatum</label>
+                <!-- Lower bound is the start date itself, so an earlier day cannot
+                     be picked in the first place. -->
+                <p-datepicker
+                  formControlName="endDate"
+                  dateFormat="dd.mm.yy"
+                  appendTo="body"
+                  [minDate]="ef.get('startDate')?.value ?? minDate()"
+                  [class.avk-invalid]="ef.get('endDate')?.hasError('endBeforeStart')"
+                  pTooltip="Enddatum (nur angeben wenn die Veranstaltung länger als einen Tag dauert)"
+                ></p-datepicker>
+                @if (ef.get('endDate')?.hasError('endBeforeStart')) {
+                  <small class="avk-error-text">
+                    Das Enddatum darf nicht vor dem Startdatum liegen.
+                  </small>
+                }
+              </div>
+            }
+          </div>
+        }
+
+        @if (selectedKind() === 'preliminary') {
+          <div class="avk-field">
+            <label>Treffpunkt</label>
+            <!-- Die beiden Optionen schließen sich aus und spiegeln nur den
+                 Freitext darunter: er bleibt die einzige gespeicherte Quelle.
+                 "Seminarraum" ist zugleich der Reservierungswunsch — genau
+                 deshalb entfällt die frühere Checkbox
+                 "Schulungsraum-Reservierung". -->
+            <div class="avk-checkbox-row">
+              <div class="avk-checkbox-item" pTooltip="Vorbesprechung im Seminarraum – reserviert ihn zugleich">
+                <p-checkbox
+                  [ngModel]="meetingSeminarRoom()"
+                  [ngModelOptions]="{ standalone: true }"
+                  (onChange)="toggleMeetingOption('seminar', $event.checked)"
+                  [binary]="true"
+                  inputId="meetingSeminarRoomCheckbox"
+                />
+                <label for="meetingSeminarRoomCheckbox">Seminarraum</label>
+              </div>
+              <div class="avk-checkbox-item" pTooltip="Vorbesprechung als Videokonferenz">
+                <p-checkbox
+                  [ngModel]="meetingOnline()"
+                  [ngModelOptions]="{ standalone: true }"
+                  (onChange)="toggleMeetingOption('online', $event.checked)"
+                  [binary]="true"
+                  inputId="meetingOnlineCheckbox"
+                />
+                <label for="meetingOnlineCheckbox">online</label>
+              </div>
+            </div>
+            <input
+              pInputText
+              formControlName="rendezvous"
+              maxlength="75"
+              class="avk-full"
+              pTooltip="Abweichender Treffpunkt für Ausnahmefälle"
+            />
+            <small>Für Ausnahmefälle frei eintragbar – die Optionen oben werden dann abgewählt.</small>
+          </div>
+        }
 
         @if (selectedKind() === 'tour') {
           <div class="avk-field">
@@ -478,41 +535,28 @@
           </div>
         }
 
-        @if (selectedKind() !== 'deadline') {
+        @if (selectedKind() === 'tour') {
           <div class="avk-grid-2">
-            @if (selectedKind() === 'tour') {
-              <div class="avk-field">
-                <label>Übernachtungsort</label>
-                <input pInputText formControlName="location" maxlength="75" />
-              </div>
-            }
+            <div class="avk-field">
+              <label>Übernachtungsort</label>
+              <input pInputText formControlName="location" maxlength="75" />
+            </div>
             <div class="avk-field">
               <label>Treffpunkt</label>
               <input
                 pInputText
                 formControlName="rendezvous"
                 maxlength="75"
-                pTooltip="Treffpunkt für die Abfahrt oder Vorbesprechung"
+                pTooltip="Treffpunkt für die Abfahrt"
               />
             </div>
           </div>
 
           <div class="avk-checkbox-row">
-            <div class="avk-checkbox-item" pTooltip="Reservierungswunsch Schulungsraum">
-              <p-checkbox formControlName="reservationService" [binary]="true" inputId="reservationServiceCheckbox" />
-              <label for="reservationServiceCheckbox">Schulungsraum-Reservierung</label>
+            <div class="avk-checkbox-item">
+              <p-checkbox formControlName="lea" [binary]="true" inputId="leaCheckbox" />
+              <label for="leaCheckbox">Low Emission Adventure</label>
             </div>
-            @if (selectedKind() === 'tour') {
-              <div class="avk-checkbox-item">
-                <p-checkbox formControlName="lea" [binary]="true" inputId="leaCheckbox" />
-                <label for="leaCheckbox">Low Emission Adventure</label>
-              </div>
-            }
-          </div>
-        }
-
-        @if (selectedKind() === 'tour') {
-          <div class="avk-checkbox-row">
             <div class="avk-checkbox-item">
               <p-checkbox formControlName="distal" [binary]="true" inputId="distalCheckbox" />
               <label for="distalCheckbox">Gemeinschaftsanreise</label>

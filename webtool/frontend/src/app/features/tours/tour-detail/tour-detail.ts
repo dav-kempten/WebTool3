@@ -191,6 +191,14 @@ export class TourDetail {
   readonly showEvent = signal(false);
   readonly selectedKind = signal<EventKind>('tour');
   selectedEventForm = signal<FormGroup | undefined>(undefined);
+  /**
+   * Treffpunkt-Optionen der Vorbesprechung. Reine UI-Zustände — gespeichert
+   * wird nur der Freitext `rendezvous` (plus der daraus folgende
+   * Reservierungswunsch). Die beiden Signale spiegeln ihn und schließen sich
+   * gegenseitig aus; steht dort etwas anderes, ist keins von beiden gesetzt.
+   */
+  readonly meetingSeminarRoom = signal(false);
+  readonly meetingOnline = signal(false);
 
   constructor() {
     // Trigger loads.
@@ -331,6 +339,20 @@ export class TourDetail {
         group.get('endDate')!.updateValueAndValidity({ emitEvent: false }),
       );
 
+    // Der Freitext führt: jede Änderung setzt die Optionen neu und zieht den
+    // Reservierungswunsch nach. Das Abo hängt am Feld, nicht an der Gruppe,
+    // damit das Nachziehen von 'reservationService' es nicht erneut auslöst.
+    group
+      .get('rendezvous')!
+      .valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        const seminar = this.deriveMeetingOptions(group);
+        const reservation = group.get('reservationService')!;
+        if (reservation.value !== seminar) {
+          reservation.setValue(seminar);
+        }
+      });
+
     group.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((value) => {
       // Route through the store so the list summary updates immediately too.
       this.tours.updateEventLocal(event.id, {
@@ -402,8 +424,38 @@ export class TourDetail {
     );
     const group = array.at(index) as FormGroup;
     this.minDate.set(relaxedMinDate(group.get('startDate')?.value));
+    this.deriveMeetingOptions(group);
     this.selectedEventForm.set(group);
     this.showEvent.set(true);
+  }
+
+  /**
+   * Schreibt die Treffpunkt-Optionen der Vorbesprechung zurück. "Seminarraum"
+   * ist zugleich der Reservierungswunsch — genau deshalb entfällt die frühere
+   * Checkbox "Schulungsraum-Reservierung".
+   */
+  toggleMeetingOption(option: 'seminar' | 'online', checked: boolean): void {
+    const group = this.selectedEventForm();
+    if (!group) {
+      return;
+    }
+    // Entweder-oder: die gewählte Option ersetzt die andere, Abwählen leert
+    // das Feld. Alles Weitere erledigt das Abo auf `rendezvous`.
+    group.get('rendezvous')!.setValue(checked ? (option === 'seminar' ? 'Seminarraum' : 'online') : '');
+    group.markAsDirty();
+  }
+
+  /**
+   * Leitet die beiden Optionen aus dem Treffpunkt-Freitext ab und meldet
+   * zurück, ob der Seminarraum gewählt ist. Verglichen wird exakt: sobald
+   * etwas anderes im Feld steht, ist keine Option angehakt.
+   */
+  private deriveMeetingOptions(group: FormGroup): boolean {
+    const text = String(group.get('rendezvous')?.value ?? '').trim().toLowerCase();
+    const seminar = text === 'seminarraum';
+    this.meetingSeminarRoom.set(seminar);
+    this.meetingOnline.set(text === 'online');
+    return seminar;
   }
 
   /**
