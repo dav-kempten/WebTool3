@@ -358,12 +358,18 @@
 
       <p-card subheader="Nachricht an die Geschäftsstelle (intern)">
         <textarea pTextarea formControlName="message" rows="3" class="avk-full"></textarea>
-        <!-- Der Reservierungswunsch steckt sonst nur im Haken beim Haupttermin;
-             hier sieht ihn die Geschäftsstelle an der Stelle, an der sie liest. -->
+        <!-- Die Reservierungswünsche stecken sonst nur in den Termin-Details;
+             hier sieht sie die Geschäftsstelle an der Stelle, an der sie liest. -->
         @if (wantsShuttle()) {
           <p class="avk-notice">
             <i class="pi pi-info-circle" aria-hidden="true"></i>
             Reservierungswunsch für das Alpin-Shuttle
+          </p>
+        }
+        @if (wantsSeminarRoom()) {
+          <p class="avk-notice">
+            <i class="pi pi-info-circle" aria-hidden="true"></i>
+            Reservierungswunsch für den Seminarraum (Vorbesprechung)
           </p>
         }
       </p-card>

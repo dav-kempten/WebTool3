@@ -384,6 +384,17 @@ export class TourDetail {
    */
   readonly wantsShuttle = computed(() => this.eventRows()[0]?.shuttleService ?? false);
 
+  /**
+   * Der Seminarraum ist genauso reservierungspflichtig wie das Shuttle. Es
+   * zählt der Freitext der Vorbesprechung, nicht nur die Checkbox — wer
+   * "Seminarraum 2. OG" einträgt, meint denselben Wunsch.
+   */
+  readonly wantsSeminarRoom = computed(() =>
+    /seminarraum/i.test(
+      this.events.eventsByIds([this.tour()?.preliminaryId])[0]?.rendezvous ?? '',
+    ),
+  );
+
   readonly hasPreliminary = computed(() => this.tour()?.preliminaryId != null);
 
   addPreliminary(): void {
