@@ -7,6 +7,9 @@ from server.models import (
     Skill, Fitness, Topic)
 from server.serializers.frontend.core import EventSerializer, MoneyField, create_event, update_event
 
+#: Obergrenze für Zusatzkategorien einer Tour, siehe validate_categoryIds.
+MAX_EXTRA_CATEGORIES = 3
+
 
 class TourListSerializer(serializers.ModelSerializer):
 
@@ -146,6 +149,15 @@ class TourSerializer(serializers.ModelSerializer):
         if instance.preliminary_id and instance.preliminary.deprecated:
             data['preliminary'] = None
         return data
+
+    def validate_categoryIds(self, value):
+        # Spiegelt die Obergrenze des Tourenformulars, damit sie auch für
+        # Zugriffe gilt, die nicht über das Formular laufen.
+        if len(value) > MAX_EXTRA_CATEGORIES:
+            raise serializers.ValidationError(
+                "Höchstens {} Zusatzkategorien pro Tour.".format(MAX_EXTRA_CATEGORIES)
+            )
+        return value
 
     def validate(self, data):
         if self.instance is not None:

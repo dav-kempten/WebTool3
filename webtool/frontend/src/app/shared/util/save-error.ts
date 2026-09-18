@@ -44,7 +44,7 @@ const FIELD_LABELS: Record<string, string> = {
   guideId: 'Leiter',
   teamIds: 'Team',
   categoryId: 'Kategorie',
-  categoryIds: 'Tourenart',
+  categoryIds: 'Kategorien',
   info: 'Zusatzinfo',
   stateId: 'Status',
   skillId: 'Können',
