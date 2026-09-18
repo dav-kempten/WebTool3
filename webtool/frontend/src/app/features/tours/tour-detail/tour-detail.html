@@ -125,8 +125,10 @@
               optionValue="id"
               styleClass="w-full"
               [disabled]="locked()"
+              [selectionLimit]="3"
               pTooltip="Zusatzkategorien zusätzlich zur Hauptkategorie"
             ></p-multiselect>
+            <small>Höchstens drei – sind drei gewählt, lassen sich die übrigen nicht mehr anhaken.</small>
           </div>
         }
       </p-card>
