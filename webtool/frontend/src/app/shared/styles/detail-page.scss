@@ -144,3 +144,14 @@
 .avk-error-text {
   color: var(--p-red-500, #ef4444);
 }
+
+/* Visual divider inside a checkbox row, setting a group apart from the rest. */
+.avk-checkbox-separator {
+  color: var(--p-content-border-color, rgb(0 0 0 / 25%));
+  user-select: none;
+}
+
+/* A field that follows a checkbox row needs to breathe. */
+.avk-field-spaced {
+  margin-top: 1.25rem;
+}

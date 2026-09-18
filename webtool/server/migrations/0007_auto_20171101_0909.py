@@ -6,6 +6,61 @@ from django.db import migrations, models
 import django.db.models.deletion
 
 
+# Der Primärschlüssel von Topic wandert von `id` auf `category_id`.
+#
+# Die ursprünglich generierten Operationen (RemoveField(id) gefolgt von
+# AlterField(category, primary_key=True)) liefen auf einer leeren Datenbank nie
+# durch: PostgreSQL verweigert den DROP von `id`, solange die Fremdschlüssel der
+# abhängigen Tabellen darauf zeigen. Ein bloßes Vertauschen der Reihenfolge hilft
+# nicht — dann stehen kurzzeitig zwei Primärschlüssel nebeneinander, was ebenfalls
+# abgelehnt wird. Der Umbau muss deshalb in einem Rutsch auf DB-Ebene passieren.
+#
+# Die Constraints werden dynamisch aus dem Katalog gelesen statt hart benannt,
+# damit der Code nicht an Djangos Namensschema für Constraints hängt.
+#
+# Bestandsdatenbanken haben diese Migration längst als angewandt verbucht; das
+# SQL läuft also nur auf frisch aufgesetzten Datenbanken, wo die Tabellen an
+# dieser Stelle noch leer sind. Eine Datenübernahme von id auf category_id ist
+# deshalb nicht nötig.
+TOPIC_PRIMARY_KEY_SQL = """
+DO $$
+DECLARE
+    con RECORD;
+    restore_statements TEXT[] := ARRAY[]::TEXT[];
+    statement TEXT;
+BEGIN
+    -- Fremdschlüssel auf server_topic einsammeln, für später umschreiben und lösen.
+    FOR con IN
+        SELECT conrelid::regclass::text AS table_name,
+               conname,
+               pg_get_constraintdef(oid) AS definition
+        FROM pg_constraint
+        WHERE confrelid = 'server_topic'::regclass AND contype = 'f'
+    LOOP
+        restore_statements := restore_statements || format(
+            'ALTER TABLE %s ADD CONSTRAINT %I %s',
+            con.table_name,
+            con.conname,
+            replace(con.definition,
+                    'REFERENCES server_topic(id)',
+                    'REFERENCES server_topic(category_id)')
+        );
+        EXECUTE format('ALTER TABLE %s DROP CONSTRAINT %I', con.table_name, con.conname);
+    END LOOP;
+
+    -- Primärschlüssel umhängen.
+    EXECUTE 'ALTER TABLE server_topic DROP CONSTRAINT server_topic_pkey';
+    EXECUTE 'ALTER TABLE server_topic DROP COLUMN id';
+    EXECUTE 'ALTER TABLE server_topic ADD CONSTRAINT server_topic_pkey PRIMARY KEY (category_id)';
+
+    -- Fremdschlüssel wieder anlegen, jetzt gegen category_id.
+    FOREACH statement IN ARRAY restore_statements LOOP
+        EXECUTE statement;
+    END LOOP;
+END $$;
+"""
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -13,19 +68,29 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='topic',
-            name='id',
-        ),
         migrations.AlterField(
             model_name='session',
             name='equipments',
             field=models.ManyToManyField(blank=True, db_index=True, related_name='session_list', to='server.Equipment', verbose_name='Ausrüstung'),
         ),
-        migrations.AlterField(
-            model_name='topic',
-            name='category',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, primary_key=True, related_name='topic_list', serialize=False, to='server.Category', verbose_name='Kategorie'),
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.RemoveField(
+                    model_name='topic',
+                    name='id',
+                ),
+                migrations.AlterField(
+                    model_name='topic',
+                    name='category',
+                    field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, primary_key=True, related_name='topic_list', serialize=False, to='server.Category', verbose_name='Kategorie'),
+                ),
+            ],
+            database_operations=[
+                migrations.RunSQL(
+                    sql=TOPIC_PRIMARY_KEY_SQL,
+                    reverse_sql=migrations.RunSQL.noop,
+                ),
+            ],
         ),
         migrations.AlterField(
             model_name='topic',

@@ -69,7 +69,7 @@ const FIELD_LABELS: Record<string, string> = {
   rendezvous: 'Treffpunkt',
   location: 'Ort',
   reservationService: 'Reservierungsservice',
-  distance: 'Strecke',
+  distance: 'Gesamtfahrstrecke',
   shuttleService: 'Shuttleservice',
   link: 'Link',
   topicId: 'Thema',

@@ -20,6 +20,7 @@ import { TourService, CreateTourPayload } from '../services/tour.service';
 import { EventsStore } from './events.store';
 import { RawTour, Tour, TourSummary } from '../../models/tour';
 import { Event } from '../../models/event';
+import { States } from '../../models/value';
 import { SaveError, describeSaveError } from '../../shared/util/save-error';
 
 interface ToursState {
@@ -102,21 +103,39 @@ export const ToursStore = signalStore(
       };
     }
 
-    /** Reassembles the wire payload for a clone (POST) directly from a fresh raw tour. */
+    /**
+     * Reassembles the wire payload for a clone (POST) from a fresh raw tour.
+     *
+     * Everything identifying the source has to go: with an `id` present the
+     * backend's create() delegates to update() and silently rewrites the source
+     * tour instead of cloning it. The sub-events need their ids stripped too, so
+     * the clone gets freshly generated booking codes throughout.
+     */
     function buildCloneBody(raw: RawTour, startDate: string, endDate: string | null): unknown {
-      const flat = { ...raw } as RawTour & Record<string, unknown>;
-      delete (flat as Record<string, unknown>)['tour'];
-      delete (flat as Record<string, unknown>)['deadline'];
-      delete (flat as Record<string, unknown>)['preliminary'];
+      const withoutId = (event: Event): Record<string, unknown> => {
+        const copy = { ...event } as Record<string, unknown>;
+        delete copy['id'];
+        return copy;
+      };
+
+      const flat = { ...raw } as Record<string, unknown>;
+      delete flat['tour'];
+      delete flat['deadline'];
+      delete flat['preliminary'];
+      delete flat['id'];
+      delete flat['reference'];
+      // On read the category arrives as `categoryId` (a nested source); creation
+      // expects the write-only `category` and fails without it.
+      flat['category'] = raw.categoryId;
+      // A clone starts over: editable by the guide again, no participants yet.
+      flat['stateId'] = States.WORKING;
+      flat['curQuantity'] = 0;
 
       return {
         ...flat,
-        tourId: raw.tour.id,
-        deadlineId: raw.deadline.id,
-        preliminaryId: raw.preliminary ? raw.preliminary.id : null,
-        tour: { ...raw.tour, startDate, endDate: endDate || null },
-        deadline: raw.deadline,
-        preliminary: raw.preliminary ?? null,
+        tour: { ...withoutId(raw.tour), startDate, endDate: endDate || null },
+        deadline: withoutId(raw.deadline),
+        preliminary: raw.preliminary ? withoutId(raw.preliminary) : null,
         admission: String(raw.admission ?? 0),
         advances: String(raw.advances ?? 0),
         extraCharges: String(raw.extraCharges ?? 0),

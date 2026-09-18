@@ -79,18 +79,6 @@
         </div>
       </p-card>
 
-      <p-card subheader="Zusatzkategorien">
-        <p-multiselect
-          formControlName="categoryIds"
-          [options]="categoryOptions()"
-          optionLabel="name"
-          optionValue="id"
-          styleClass="w-full"
-          [disabled]="locked()"
-          pTooltip="Zusatzkategorien zusätzlich zur Hauptkategorie"
-        ></p-multiselect>
-      </p-card>
-
       <p-card subheader="Tourenspezifika">
         <div class="avk-checkbox-row">
           <div class="avk-checkbox-item">
@@ -112,7 +100,35 @@
             <p-checkbox formControlName="mountainBus" [binary]="true" inputId="mountainBusCheckbox" />
             <label for="mountainBusCheckbox">Bergbus</label>
           </div>
+          <span class="avk-checkbox-separator" aria-hidden="true">|</span>
+          <!-- UI-only switch: the backend has no such flag, it just reveals the
+               field below (see toggleExtraCategories). -->
+          <div class="avk-checkbox-item">
+            <p-checkbox
+              [ngModel]="needsExtraCategories()"
+              [ngModelOptions]="{ standalone: true }"
+              (onChange)="toggleExtraCategories($event.checked)"
+              [binary]="true"
+              [disabled]="locked()"
+              inputId="needsExtraCategoriesCheckbox"
+            />
+            <label for="needsExtraCategoriesCheckbox">Zusatzkategorie benötigt?</label>
+          </div>
         </div>
+        @if (needsExtraCategories()) {
+          <div class="avk-field avk-field-spaced">
+            <label>Zusatzkategorien</label>
+            <p-multiselect
+              formControlName="categoryIds"
+              [options]="categoryOptions()"
+              optionLabel="name"
+              optionValue="id"
+              styleClass="w-full"
+              [disabled]="locked()"
+              pTooltip="Zusatzkategorien zusätzlich zur Hauptkategorie"
+            ></p-multiselect>
+          </div>
+        }
       </p-card>
 
       <p-card subheader="Tour-Termine">
@@ -512,12 +528,12 @@
           </div>
           <div class="avk-grid-3">
             <div class="avk-field">
-              <label>Anreise (km)</label>
+              <label>Gesamtfahrstrecke (km)</label>
               <p-inputnumber
                 formControlName="distance"
                 [min]="0"
                 [max]="9999"
-                pTooltip="Gesamtfahrtstrecke der Veranstaltung"
+                pTooltip="Gesamtfahrstrecke der Veranstaltung"
               ></p-inputnumber>
             </div>
             <div class="avk-field">

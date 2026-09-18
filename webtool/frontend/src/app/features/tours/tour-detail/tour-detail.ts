@@ -13,6 +13,7 @@ import {
   FormArray,
   FormBuilder,
   FormGroup,
+  FormsModule,
   ReactiveFormsModule,
 } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -63,6 +64,7 @@ type EventKind = 'tour' | 'deadline' | 'preliminary';
   standalone: true,
   imports: [
     RouterModule,
+    FormsModule,
     ReactiveFormsModule,
     DatePipe,
     CardModule,
@@ -164,6 +166,13 @@ export class TourDetail {
         }))
       : [],
   );
+
+  /**
+   * Whether the extra-category picker is shown. Pure UI state — there is no
+   * such flag on the backend — so it is derived from the stored selection
+   * whenever a tour is loaded.
+   */
+  readonly needsExtraCategories = signal(false);
 
   // --- forms ---
   form = signal<FormGroup | undefined>(undefined);
@@ -275,6 +284,8 @@ export class TourDetail {
       comment: [tour.comment],
       message: [tour.message],
     });
+
+    this.needsExtraCategories.set((tour.categoryIds?.length ?? 0) > 0);
 
     group.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((value) => {
       this.tours.updateLocal(tour.id, value as Partial<Tour>);
@@ -393,6 +404,18 @@ export class TourDetail {
     this.minDate.set(relaxedMinDate(group.get('startDate')?.value));
     this.selectedEventForm.set(group);
     this.showEvent.set(true);
+  }
+
+  /**
+   * Unticking clears the selection so the stored data matches what the form
+   * shows. Otherwise categories would stay saved but invisible, and the box
+   * would tick itself again on the next load.
+   */
+  toggleExtraCategories(checked: boolean): void {
+    this.needsExtraCategories.set(checked);
+    if (!checked) {
+      this.form()?.get('categoryIds')?.setValue([]);
+    }
   }
 
   // --- actions ---

@@ -314,7 +314,9 @@
             }
           </div>
         </div>
-        <div class="avk-grid-2">
+        <!-- Three across on the main event. The distance only applies there, so
+             follow-up meetings drop back to two columns instead of leaving a gap. -->
+        <div [class]="selectedIsMain() ? 'avk-grid-3' : 'avk-grid-2'">
           <div class="avk-field">
             <label>Treffpunkt</label>
             <input pInputText formControlName="rendezvous" maxlength="75" pTooltip="Treffpunkt für die Abfahrt" />
@@ -323,6 +325,17 @@
             <label>Ort</label>
             <input pInputText formControlName="location" maxlength="75" />
           </div>
+          @if (selectedIsMain()) {
+            <div class="avk-field">
+              <label>Gesamtfahrstrecke (km)</label>
+              <p-inputnumber
+                formControlName="distance"
+                [min]="0"
+                [max]="9999"
+                pTooltip="Gesamtfahrstrecke der Veranstaltung"
+              ></p-inputnumber>
+            </div>
+          }
         </div>
         @if (selectedIsMain()) {
           <div class="avk-field">

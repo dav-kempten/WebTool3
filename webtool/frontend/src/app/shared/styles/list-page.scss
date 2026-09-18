@@ -108,3 +108,16 @@
     width: 100%;
   }
 }
+
+/*
+ * End date before start date in the clone dialogs. Bound to this one error
+ * specifically, so no other date field turns red by accident (mirrors the rule
+ * in detail-page.scss).
+ */
+:host ::ng-deep p-datepicker.avk-invalid .p-inputtext {
+  border-color: var(--p-red-500, #ef4444);
+}
+
+.avk-error-text {
+  color: var(--p-red-500, #ef4444);
+}

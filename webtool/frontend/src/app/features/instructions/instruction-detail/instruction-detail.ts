@@ -305,6 +305,7 @@ export class InstructionDetail {
       endTime: [event.endTime, timeFormatValidator()],
       rendezvous: [event.rendezvous],
       location: [event.location],
+      distance: [event.distance],
     });
 
     // The end-date validator reads the start date, so moving the start has to

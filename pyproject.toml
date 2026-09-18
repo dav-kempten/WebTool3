@@ -22,6 +22,23 @@ prod = [
     "uwsgi>=2.0.20; sys_platform == 'linux'",
 ]
 
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "pytest-django>=4.9",
+    "pytest-cov>=6.0",
+]
+
 [tool.setuptools.packages.find]
 include = ["webtool*", "dicts*"]
 exclude = ["venv312*"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings.test"
+# manage.py liegt in webtool/, also muss dieses Verzeichnis auf den Importpfad.
+pythonpath = ["webtool"]
+testpaths = ["webtool/server/tests"]
+python_files = ["test_*.py"]
+# --reuse-db spart bei jedem Lauf das Neuaufbauen der Test-DB.
+# Nach neuen Migrationen einmalig mit --create-db laufen lassen.
+addopts = "--reuse-db --strict-markers -ra"

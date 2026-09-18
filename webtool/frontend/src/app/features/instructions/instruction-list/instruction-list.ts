@@ -1,7 +1,7 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { TableModule } from 'primeng/table';
@@ -23,6 +23,7 @@ import { PermissionLevel } from '../../../core/services/permission';
 import { States, StatesGroup, getStatesOfGroup } from '../../../models/value';
 import { InstructionSummary } from '../../../models/instruction';
 import { toIsoDate } from '../../../shared/util/date';
+import { endNotBeforeStartValidator } from '../../../shared/util/validators';
 import { InstructionCreateDialog } from '../../../shared/dialogs/instruction-create-dialog/instruction-create-dialog';
 
 interface InstructionRow extends InstructionSummary {
@@ -130,8 +131,18 @@ export class InstructionList implements OnInit {
   readonly cloneForm = this.fb.group({
     instructionId: this.fb.control<number | null>(null),
     startDate: this.fb.control<Date | null>(null),
-    endDate: this.fb.control<Date | null>(null),
+    endDate: this.fb.control<Date | null>(null, endNotBeforeStartValidator()),
   });
+
+  constructor() {
+    // The end-date validator reads the start date, so moving the start has to
+    // re-run it — otherwise a newly created overlap would go unflagged.
+    this.cloneForm.controls.startDate.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe(() =>
+        this.cloneForm.controls.endDate.updateValueAndValidity({ emitEvent: false }),
+      );
+  }
 
   ngOnInit(): void {
     // ensureSummaries: a hard reload here would overwrite locally synced,
