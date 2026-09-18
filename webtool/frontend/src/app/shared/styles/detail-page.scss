@@ -46,6 +46,35 @@
   gap: 1rem;
 }
 
+/* Zeile für wenige schmale Felder — anders als die avk-grid-* Raster nimmt
+   sie höchstens ein Drittel der Kartenbreite ein. Kein Umbruch: die Felder
+   stehen immer nebeneinander und schrumpfen stattdessen mit. */
+.avk-row-compact {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.75rem;
+  max-width: 33.333%;
+}
+
+/* Teilen sich die Zeile zu gleichen Teilen. min-width hebt die Vorgabe auf,
+   mit der ein Eingabefeld sonst seine Inhaltsbreite erzwingt. */
+.avk-field-narrow {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* Das eigentliche Eingabefeld steckt in PrimeNGs eigenem Template und bringt
+   dort eine Grundbreite mit. Ohne diese Regel schiebt es die Zeile über das
+   Drittel hinaus, statt mitzuschrumpfen. */
+:host ::ng-deep .avk-field-narrow .p-inputnumber {
+  min-width: 0;
+
+  .p-inputnumber-input {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
 .avk-field {
   display: flex;
   flex-direction: column;
