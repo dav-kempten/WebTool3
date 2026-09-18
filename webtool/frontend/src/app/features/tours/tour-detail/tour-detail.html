@@ -157,11 +157,14 @@
             </tr>
           </ng-template>
           <ng-template #body let-event let-i="rowIndex">
-            <tr>
+            <tr [class.avk-row-main]="i === 0">
               <td class="avk-link-cell" (click)="selectEvent(i)">{{ eventDate(event) }}</td>
               <td class="avk-link-cell" (click)="selectEvent(i)">{{ event.startTime || approximateName(event.approximateId) }}</td>
               <td class="avk-link-cell" (click)="selectEvent(i)">{{ event.name }}</td>
               <td>
+                @if (i === 0) {
+                  <span class="avk-main-badge">Haupttermin</span>
+                }
                 @if (i === 2 && !locked()) {
                   <p-button icon="pi pi-trash" size="small" severity="danger" [text]="true" (onClick)="removePreliminary()" />
                 }
