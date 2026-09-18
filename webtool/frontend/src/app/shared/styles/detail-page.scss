@@ -78,14 +78,24 @@
   align-items: center;
 }
 
-/* Vier etwa gleich wichtige, aber unterschiedlich lang beschriftete
-   Optionen: gleich breite Spalten verteilen sie über die Zeile, statt sie
-   links zusammenzudrängen. Wird es schmaler, bricht auto-fit auf zwei
-   Spalten und zuletzt auf eine um. */
+/* Verteilt unterschiedlich lang beschriftete Optionen über die ganze Zeile:
+   die Elemente behalten ihre Inhaltsbreite, der übrige Platz geht zu gleichen
+   Teilen in die Abstände dazwischen. */
 .avk-checkbox-row-spread {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-  gap: 0.75rem 1.25rem;
+  justify-content: space-between;
+  row-gap: 0.75rem;
+
+  /* Beschriftungen dürfen nicht umbrechen — sonst rutscht der Text unter
+     seine Box und die Zeile wird ungleich hoch. */
+  label {
+    white-space: nowrap;
+  }
+
+  /* Der Trenner steht zwischen zwei Gruppen und braucht dafür mehr Luft als
+     der Abstand zweier Optionen derselben Gruppe. */
+  > .avk-checkbox-separator {
+    padding: 0 1.25rem;
+  }
 }
 
 .avk-checkbox-item {
