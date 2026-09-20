@@ -131,11 +131,14 @@ export class TourDetail {
     return false;
   });
   /**
-   * Die TN-Gebühr setzt die Geschäftsstelle; Trainer*innen sehen das Feld
-   * gar nicht erst. Das Formularfeld bleibt trotzdem bestehen, damit der
-   * gespeicherte Betrag beim Speichern unverändert durchläuft.
+   * Nur die Geschäftsstelle (und Administration) sieht TN-Gebühr und
+   * KV-Verlinkung. Die Formularfelder bleiben bestehen, damit die
+   * gespeicherten Werte beim Speichern unverändert durchlaufen.
+   *
+   * Achtung: Das gleichnamige isStaff in den Gruppenterminen ist weiter
+   * gefasst und schließt Fachbereichssprecher ein — daher der eigene Name.
    */
-  readonly canSeeAdmission = computed(
+  readonly isOffice = computed(
     () => this.permission().permissionLevel >= PermissionLevel.staff,
   );
 

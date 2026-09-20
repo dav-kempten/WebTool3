@@ -308,8 +308,8 @@
 
       <p-card subheader="Teilnehmer*innengebühr, Zusatzkosten, Anzahlung">
         <!-- Die TN-Gebühr legt die Geschäftsstelle fest, Trainer*innen bekommen
-             sie gar nicht erst zu sehen (siehe canSeeAdmission). -->
-        @if (canSeeAdmission()) {
+             sie gar nicht erst zu sehen (siehe isOffice). -->
+        @if (isOffice()) {
           <div class="avk-row-amount">
             <div class="avk-field">
               <label>TN-Gebühr (€)</label>
@@ -375,7 +375,9 @@
         </div>
       </p-card>
 
-      @if (!isOwner()) {
+      <!-- Der KV-Manager ist ein Werkzeug der Geschäftsstelle; der Link hat im
+           Trainerformular nichts zu suchen. -->
+      @if (isOffice()) {
         <p-card subheader="Verlinkung KV">
           <textarea pTextarea formControlName="kvLink" rows="1" placeholder="Link zum KV-Manager" class="avk-full"></textarea>
         </p-card>
