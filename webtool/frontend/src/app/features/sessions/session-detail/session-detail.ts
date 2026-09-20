@@ -23,6 +23,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { TooltipModule } from 'primeng/tooltip';
+import { ResponsiveTooltip } from '../../../shared/directives/responsive-tooltip';
 import { MessageModule } from 'primeng/message';
 import { ConfirmationService } from 'primeng/api';
 
@@ -67,6 +68,7 @@ import { describeSaveErrorPath } from '../../../shared/util/save-error';
     InputTextModule,
     TextareaModule,
     TooltipModule,
+    ResponsiveTooltip,
     MessageModule,
   ],
   providers: [AutoSaveService],

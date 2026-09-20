@@ -30,6 +30,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { TextareaModule } from 'primeng/textarea';
 import { TooltipModule } from 'primeng/tooltip';
+import { ResponsiveTooltip } from '../../../shared/directives/responsive-tooltip';
 import { MessageModule } from 'primeng/message';
 import { ConfirmationService } from 'primeng/api';
 
@@ -79,6 +80,7 @@ type EventKind = 'tour' | 'deadline' | 'preliminary';
     InputNumberModule,
     TextareaModule,
     TooltipModule,
+    ResponsiveTooltip,
     MessageModule,
   ],
   providers: [AutoSaveService],
