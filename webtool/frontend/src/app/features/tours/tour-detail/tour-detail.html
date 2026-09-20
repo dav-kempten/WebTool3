@@ -307,55 +307,67 @@
       </p-card>
 
       <p-card subheader="Teilnehmer*innengebühr, Zusatzkosten, Anzahlung">
-        <div class="avk-grid-3">
-          <div class="avk-field">
-            <label>TN-Gebühr (€)</label>
-            <p-inputnumber
-              formControlName="admission"
-              [min]="0"
-              [max]="999"
-              [disabled]="locked()"
-              pTooltip="Die TN-Gebühr wird von der Geschäftsstelle entsprechend ergänzt."
-            ></p-inputnumber>
+        <!-- Die TN-Gebühr legt die Geschäftsstelle fest, Trainer*innen bekommen
+             sie gar nicht erst zu sehen (siehe canSeeAdmission). -->
+        @if (canSeeAdmission()) {
+          <div class="avk-row-amount">
+            <div class="avk-field">
+              <label>TN-Gebühr (€)</label>
+              <p-inputnumber
+                formControlName="admission"
+                [min]="0"
+                [max]="999"
+                [maxFractionDigits]="0"
+                suffix=".00 €"
+                [disabled]="locked()"
+                pTooltip="Die TN-Gebühr wird von der Geschäftsstelle entsprechend ergänzt."
+              ></p-inputnumber>
+            </div>
           </div>
+        }
+        <div class="avk-row-amount">
           <div class="avk-field">
             <label>Zusatzkosten (€)</label>
             <p-inputnumber
               formControlName="extraCharges"
               [min]="0"
               [max]="999"
+              [maxFractionDigits]="0"
+              suffix=".00 €"
               [disabled]="locked()"
               pTooltip="Zusatzkosten wie Maut, Übernachtungen etc."
             ></p-inputnumber>
           </div>
+          <div class="avk-field">
+            <label>Zusatzkosten Details</label>
+            <textarea
+              pTextarea
+              formControlName="extraChargesInfo"
+              rows="1"
+              maxlength="75"
+              pTooltip="Aufstellung der Zusatzkosten"
+            ></textarea>
+          </div>
+        </div>
+        <div class="avk-row-amount">
           <div class="avk-field">
             <label>Anzahlung (€)</label>
             <p-inputnumber
               formControlName="advances"
               [min]="0"
               [max]="999"
+              [maxFractionDigits]="0"
+              suffix=".00 €"
               [disabled]="locked()"
               pTooltip="Anzahlungen für die Tour, Hütten, Liftkarten etc."
             ></p-inputnumber>
-          </div>
-        </div>
-        <div class="avk-grid-2">
-          <div class="avk-field">
-            <label>Zusatzkosten Details</label>
-            <textarea
-              pTextarea
-              formControlName="extraChargesInfo"
-              rows="2"
-              maxlength="75"
-              pTooltip="Aufstellung der Zusatzkosten"
-            ></textarea>
           </div>
           <div class="avk-field">
             <label>Anzahlung Details</label>
             <textarea
               pTextarea
               formControlName="advancesInfo"
-              rows="2"
+              rows="1"
               maxlength="75"
               pTooltip="Aufstellung der Anzahlung"
             ></textarea>

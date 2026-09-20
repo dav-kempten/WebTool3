@@ -165,6 +165,15 @@ export class InstructionDetail {
     }
     return false;
   });
+  /**
+   * Die TN-Gebühr setzt die Geschäftsstelle; Trainer*innen sehen das Feld
+   * gar nicht erst. Das Formularfeld bleibt trotzdem bestehen, damit der
+   * gespeicherte Betrag beim Speichern unverändert durchläuft.
+   */
+  readonly canSeeAdmission = computed(
+    () => this.permission().permissionLevel >= PermissionLevel.staff,
+  );
+
   readonly locked = computed(
     () => this.isOwner() && (this.instruction()?.stateId ?? 0) > 2,
   );

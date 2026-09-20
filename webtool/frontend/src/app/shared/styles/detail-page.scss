@@ -64,14 +64,42 @@
 }
 
 /* Das eigentliche Eingabefeld steckt in PrimeNGs eigenem Template und bringt
-   dort eine Grundbreite mit. Ohne diese Regel schiebt es die Zeile über das
-   Drittel hinaus, statt mitzuschrumpfen. */
-:host ::ng-deep .avk-field-narrow .p-inputnumber {
+   dort eine Grundbreite mit. Ohne diese Regel wächst es über seine Spalte
+   hinaus — in der schmalen Zeile über das Drittel, in der Betragszeile unter
+   das Feld daneben. */
+:host ::ng-deep .avk-field-narrow .p-inputnumber,
+:host ::ng-deep .avk-row-amount .p-inputnumber {
   min-width: 0;
 
   .p-inputnumber-input {
     width: 100%;
     min-width: 0;
+  }
+}
+
+/* Betrag samt zugehöriger Erläuterung in einer Zeile: die Zahl braucht
+   wenig Platz, der Text umso mehr. Steht kein Erläuterungsfeld daneben,
+   bleibt die zweite Spalte einfach leer und die Beträge fluchten. */
+.avk-row-amount {
+  display: grid;
+  grid-template-columns: 8rem minmax(0, 1fr);
+  /* Zeilenabstand 1rem, dazwischen etwas mehr, damit Betrag und Erläuterung
+     nicht aneinanderkleben. */
+  gap: 1rem 1.5rem;
+  align-items: start;
+
+  > .avk-field {
+    min-width: 0;
+  }
+
+  + .avk-row-amount {
+    margin-top: 1rem;
+  }
+}
+
+@media (max-width: 40rem) {
+  .avk-row-amount {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
@@ -87,6 +115,12 @@
   p-inputnumber,
   p-datepicker {
     width: 100%;
+  }
+
+  /* Einzeilig starten, aber vom Benutzer aufziehbar bleiben. Nur senkrecht,
+     damit ein breitgezogenes Feld das Raster nicht sprengt. */
+  textarea {
+    resize: vertical;
   }
 
   label {

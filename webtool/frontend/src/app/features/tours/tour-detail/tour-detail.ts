@@ -130,6 +130,15 @@ export class TourDetail {
     }
     return false;
   });
+  /**
+   * Die TN-Gebühr setzt die Geschäftsstelle; Trainer*innen sehen das Feld
+   * gar nicht erst. Das Formularfeld bleibt trotzdem bestehen, damit der
+   * gespeicherte Betrag beim Speichern unverändert durchläuft.
+   */
+  readonly canSeeAdmission = computed(
+    () => this.permission().permissionLevel >= PermissionLevel.staff,
+  );
+
   /** Owner may only edit while the tour is still In Arbeit/Fertig (state <= 2). */
   readonly locked = computed(
     () => this.isOwner() && (this.tour()?.stateId ?? 0) > 2,
