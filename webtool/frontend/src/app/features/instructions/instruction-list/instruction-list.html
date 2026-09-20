@@ -53,7 +53,10 @@
         <th>Bezeichnung</th>
         <th>Kursleiter</th>
         <th>Status</th>
-        <th class="avk-center-cell">Belegung (Min|Akt|Max)</th>
+        <!-- Belegungsspalte ausgeblendet, solange die aktuelle TN-Zahl nicht
+             gepflegt wird (siehe Kommentar im Detailformular). Zum
+             Wiedereinschalten hier und in der Zeile darunter:
+               <th class="avk-center-cell">Belegung (Min|Akt|Max)</th> -->
         <th>Aktionen</th>
       </tr>
     </ng-template>
@@ -70,7 +73,7 @@
         <td (click)="select(row)" class="avk-link-cell">{{ row.title }}</td>
         <td>{{ row.guide }}</td>
         <td>{{ row.stateName }}</td>
-        <td class="avk-center-cell">{{ row.minQuantity }} | {{ row.curQuantity }} | {{ row.maxQuantity }}</td>
+        <!-- <td class="avk-center-cell">{{ row.minQuantity }} | {{ row.curQuantity }} | {{ row.maxQuantity }}</td> -->
         <td>
           <div class="avk-row-actions">
             @if (canModify(row)) {
