@@ -1,5 +1,8 @@
+/* Spalte aus Kopf, Inhalt und Fuss, damit die Fusszeile auch auf kurzen
+   Seiten unten steht statt direkt unter dem Inhalt zu kleben. */
 :host {
-  display: block;
+  display: flex;
+  flex-direction: column;
   min-height: 100%;
 }
 
@@ -12,6 +15,19 @@
 }
 
 .avk-main {
-  display: block;
+  flex: 1 0 auto;
   padding-bottom: 3rem;
+}
+
+/* Steht am Seitenende rechts und fluchtet mit dem Inhalt darüber, nicht mit
+   dem Fensterrand. Zurückhaltend gesetzt — im Alltag uninteressant, aber zur
+   Hand, wenn jemand meldet, bei ihm sehe etwas anders aus. */
+.avk-footer {
+  max-width: var(--avk-content-max-width);
+  margin: 0 auto;
+  padding: 0 1.25rem 1rem;
+  text-align: right;
+  font-size: 0.8rem;
+  opacity: 0.55;
+  user-select: none;
 }

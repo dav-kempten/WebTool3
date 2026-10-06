@@ -1,12 +1,16 @@
 {
   "name": "frontend-new",
-  "version": "0.0.0",
+  "version": "2.0.0",
   "scripts": {
     "ng": "ng",
+    "prestart": "node scripts/build-info.mjs",
     "start": "ng serve",
+    "prebuild": "node scripts/build-info.mjs",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "pretest": "node scripts/build-info.mjs",
+    "test": "ng test",
+    "package": "npm run build && powershell -NoProfile -ExecutionPolicy Bypass -File scripts/package.ps1"
   },
   "private": true,
   "dependencies": {

@@ -66,6 +66,11 @@ personaldaten_json.py
 !webtool/frontend/proxy.conf.json
 !webtool/frontend/.vscode/*.json
 
+# Wird bei jedem Build aus package.json und der Uhrzeit erzeugt
+# (webtool/frontend/scripts/build-info.mjs) und gehoert damit zum Build,
+# nicht zum Quellstand.
+webtool/frontend/src/app/build-info.ts
+
 webtool/sslin.df.eu.cer
 webtool/static/rest_framework/
 webtool/static/admin/

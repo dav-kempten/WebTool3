@@ -151,6 +151,21 @@ npm run watch     # Rebuild on change (development configuration)
 Specs live next to their subject (`*.spec.ts`); `src/test-setup.ts` polyfills the
 browser APIs PrimeNG expects but jsdom lacks.
 
+Version and build time are shown on the dashboard. The version lives in
+`package.json`; `scripts/build-info.mjs` turns it plus the current time into
+`src/app/build-info.ts`, run automatically via the `prebuild`/`prestart`/
+`pretest` hooks. That file is generated, so it is gitignored — the npm scripts
+recreate it. Bump the minor version whenever a new ZIP goes to the server.
+
+```bash
+npm run package   # build + ZIP in dist/webtool-frontend-v<version>-<date>.zip
+```
+
+The ZIP holds the contents of `dist/frontend-new/browser` without a wrapping
+folder, ready to unpack into the web root. `scripts/package.ps1` builds it
+entry by entry: PowerShell 5.1 writes backslashes into zip paths, which Linux
+unpacks as files named `media\primeicons-…` instead of a `media/` folder.
+
 Production build for deployment at the web root — the app is served at `/`,
 `src/index.html` already carries `<base href="/">`, so no `--base-href` is needed:
 

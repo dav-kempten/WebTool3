@@ -6,5 +6,9 @@
   <router-outlet />
 </main>
 
+<footer class="avk-footer">
+  Version {{ build.version }} · Build vom {{ build.builtAt | date: 'dd.MM.yyyy, HH:mm' }} Uhr
+</footer>
+
 <p-toast position="top-right" />
 <p-confirmdialog />
