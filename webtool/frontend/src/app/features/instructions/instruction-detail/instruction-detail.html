@@ -248,7 +248,7 @@
               [maxFractionDigits]="0"
               suffix=".00 €"
               [disabled]="locked()"
-              pTooltip="Zusatzkosten wie Maut, Übernachtungen etc."
+              pTooltip="Zusatzkosten wie Maut, Übernachtungen etc. – keine Fahrtkosten, die werden automatisch aus der Gesamtfahrstrecke berechnet"
             ></p-inputnumber>
           </div>
           <div class="avk-field">
@@ -399,7 +399,7 @@
                 formControlName="distance"
                 [min]="0"
                 [max]="9999"
-                pTooltip="Gesamtfahrstrecke der Veranstaltung"
+                pTooltip="Gesamtfahrstrecke der Veranstaltung – Fahrten innerhalb des Kurses bitte mitrechnen, auch wenn nur geschätzt"
               ></p-inputnumber>
             </div>
           }
