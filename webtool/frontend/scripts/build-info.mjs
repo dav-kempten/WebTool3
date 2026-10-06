@@ -1,15 +1,31 @@
 /*
  * Schreibt src/app/build-info.ts mit Version und Zeitpunkt des Builds.
  *
- * Läuft über die npm-Hooks prebuild/prestart/pretest, damit die Datei in jeder
- * Umgebung existiert, bevor der Compiler sie sucht. Sie ist deshalb auch nicht
- * versioniert — ihr Inhalt gehört zum Build, nicht zum Quellstand.
+ * Zwei Betriebsarten:
+ *
+ *   ohne Argument  Legt die Datei nur an, wenn sie fehlt. Darauf laufen die
+ *                  Hooks prebuild/prestart/pretest — sie sollen nur
+ *                  sicherstellen, dass der Compiler sie findet.
+ *   --stamp        Schreibt sie neu mit der aktuellen Uhrzeit. Nur "npm run
+ *                  package" ruft das auf, damit der angezeigte Zeitpunkt den
+ *                  ausgelieferten Stand meint und nicht den letzten Testbau.
+ *
+ * Die Datei ist nicht versioniert: ihr Inhalt gehört zum Build, nicht zum
+ * Quellstand.
  */
-import { readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
+const target = join(root, 'src', 'app', 'build-info.ts');
+const stamp = process.argv.includes('--stamp');
+
+if (!stamp && existsSync(target)) {
+  console.log('build-info: vorhanden, Zeitstempel bleibt');
+  process.exit(0);
+}
+
 const { version } = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
 
 // package.json braucht eine dreiteilige Version; angezeigt wird "2.0" statt
@@ -17,7 +33,6 @@ const { version } = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'))
 const display = version.replace(/\.0$/, '');
 const builtAt = new Date().toISOString();
 
-const target = join(root, 'src', 'app', 'build-info.ts');
 writeFileSync(
   target,
   `/* Automatisch erzeugt von scripts/build-info.mjs — nicht von Hand ändern. */\n` +
@@ -28,4 +43,8 @@ writeFileSync(
   'utf8',
 );
 
-console.log(`build-info: Version ${display}, Stand ${builtAt}`);
+console.log(
+  stamp
+    ? `build-info: Version ${display}, Stand ${builtAt}`
+    : `build-info: angelegt (Version ${display})`,
+);

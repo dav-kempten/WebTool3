@@ -10,7 +10,7 @@
     "watch": "ng build --watch --configuration development",
     "pretest": "node scripts/build-info.mjs",
     "test": "ng test",
-    "package": "npm run build && powershell -NoProfile -ExecutionPolicy Bypass -File scripts/package.ps1"
+    "package": "node scripts/build-info.mjs --stamp && npm run build && powershell -NoProfile -ExecutionPolicy Bypass -File scripts/package.ps1"
   },
   "private": true,
   "dependencies": {
