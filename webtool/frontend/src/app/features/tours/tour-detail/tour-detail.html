@@ -383,8 +383,14 @@
         </p-card>
       }
 
-      <p-card subheader="Bemerkungen">
-        <textarea pTextarea formControlName="comment" rows="3" class="avk-full"></textarea>
+      <p-card subheader="Bemerkungen (öffentlich)">
+        <textarea
+          pTextarea
+          formControlName="comment"
+          rows="3"
+          class="avk-full"
+          placeholder="Erscheint auf der Homepage als „Hinweis: …“ – Internes bitte in die Nachricht an die Geschäftsstelle"
+        ></textarea>
       </p-card>
 
       <p-card subheader="Nachricht an die Geschäftsstelle (intern)">
