@@ -20,6 +20,86 @@ Die Daten liegen im **Named Volume**, nicht im Projektordner. Das Volume überle
 
 ---
 
+## Aktuellen Stand vom Produktionsserver holen
+
+Der schnellste Weg zu realistischen Daten. Voraussetzung ist der ssh-Zugang `webtool`
+(Eintrag in `~/.ssh/config`, Benutzer `djcode`).
+
+| | Server |
+|---|---|
+| Host | `webtool.dav-kempten.de` |
+| Cluster der Anwendung | **Postgres 17**, Port 5432 (per Unix-Socket) |
+| Weitere Cluster | 16 (Port 5433), 9.6 (Port 5434) — **nicht** von der Anwendung genutzt |
+| Datenbank / Benutzer | `webtool` / `djcode`, per Socket ohne Passwort |
+
+> **Wichtig:** Auf dem Server sind Client-Programme mehrerer Postgres-Versionen
+> installiert (`psql` im `PATH` ist bereits Version 18). Ein Custom-Format-Dump von
+> `pg_dump` 18 kann das lokale `pg_restore` 17 nicht lesen. Deshalb den vollen Pfad zur
+> 17er-Version verwenden, statt sich auf den `PATH` zu verlassen.
+
+### 1. Dump auf dem Server erzeugen und holen
+
+```bash
+ssh webtool "umask 077 && /usr/lib/postgresql/17/bin/pg_dump -w -d webtool -Fc --no-owner --no-privileges -f ~/webtool.dump"
+```
+
+```bash
+scp webtool:webtool.dump ..\webtool-prod.dump
+```
+
+```bash
+ssh webtool "rm ~/webtool.dump"
+```
+
+- Der Dump landet **neben** dem Repo (`..\`), nicht darin: Er enthält echte
+  Personendaten (Trainer, Benutzerkonten) und gehört nicht ins Git.
+- `umask 077` sorgt dafür, dass die Datei auf dem Server nur für `djcode` lesbar ist,
+  solange sie dort liegt.
+
+> **Windows-Fallstrick:** Nicht `ssh webtool "pg_dump ..." > datei` verwenden. Die
+> `>`-Umleitung in PowerShell 5.1 kodiert die Ausgabe als UTF-16-Text und macht den
+> Binär-Dump unbrauchbar. In Git Bash würde das funktionieren, `scp` funktioniert überall.
+
+### 2. Lokal einspielen
+
+Ersetzt die lokale Datenbank **komplett**:
+
+```bash
+docker compose stop web
+```
+
+```bash
+docker cp ..\webtool-prod.dump webtool3-db-1:/tmp/prod.dump
+```
+
+```bash
+docker compose exec db psql -U djcode -d postgres -c "DROP DATABASE IF EXISTS webtool;" -c "CREATE DATABASE webtool OWNER djcode;"
+```
+
+```bash
+docker compose exec db pg_restore -U djcode -d webtool --no-owner --no-privileges --exit-on-error /tmp/prod.dump
+```
+
+```bash
+docker compose exec db rm /tmp/prod.dump
+```
+
+```bash
+docker compose start web
+```
+
+Danach den Migrationsstand prüfen (siehe [Nach dem Import](#nach-dem-import-django-migrationsstand)).
+Ist `develop` weiter als der Server, holt `migrate` die neuen Migrationen nach.
+
+Die Benutzerkonten stammen aus der Produktion. Zum Anmelden in der lokalen App also
+die echten Zugangsdaten verwenden oder einen lokalen Admin anlegen:
+
+```bash
+docker compose exec web python webtool/manage.py createsuperuser
+```
+
+---
+
 ## Variante A — Dump in die laufende Datenbank importieren
 
 Der übliche Weg, wenn du einen Dump aus der Produktion o. ä. hast.
