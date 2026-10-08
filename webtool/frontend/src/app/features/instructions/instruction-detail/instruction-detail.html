@@ -70,7 +70,38 @@
               inputId="isSpecialCheckbox" />
             <label for="isSpecialCheckbox">Sonderkurs</label>
           </div>
+          <span class="avk-checkbox-separator" aria-hidden="true">|</span>
+          <!-- UI-only switch: the backend has no such flag, it just reveals the
+               field below (see toggleExtraCategory). -->
+          <div class="avk-checkbox-item">
+            <p-checkbox
+              [ngModel]="needsExtraCategory()"
+              [ngModelOptions]="{ standalone: true }"
+              (onChange)="toggleExtraCategory($event.checked)"
+              [binary]="true"
+              [disabled]="locked()"
+              inputId="needsExtraCategoryCheckbox"
+            />
+            <label for="needsExtraCategoryCheckbox">Zusatzkategorie benötigt?</label>
+          </div>
         </div>
+        @if (needsExtraCategory()) {
+          <div class="avk-field avk-field-spaced">
+            <label>Zusatzkategorie</label>
+            <p-select
+              formControlName="categoryId"
+              [options]="categoryOptions()"
+              optionLabel="name"
+              optionValue="id"
+              [filter]="true"
+              filterBy="name"
+              placeholder="Kategorie wählen"
+              styleClass="w-full"
+              [disabled]="locked()"
+              pTooltip="Weitere Kurskategorie zusätzlich zur Hauptkategorie"
+            />
+          </div>
+        }
       </p-card>
 
       <p-card subheader="Kurs-Termine">

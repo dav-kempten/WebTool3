@@ -94,11 +94,14 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
         help_text = 'Kreative Kursinhalte'
     )
 
-    # category is valid only, if instruction is_special
-    category = models.OneToOneField(
+    # Optional extra course category, shown next to the topic's own category.
+    # Several courses may share one, hence a ForeignKey (formerly OneToOne, see
+    # migration 0051). No index: production never had one on this column.
+    category = models.ForeignKey(
         'Category',
-        verbose_name='Sonder Kategorie',
-        related_name='special_instruction',
+        verbose_name='Zusatzkategorie',
+        related_name='+',
+        db_index=False,
         blank=True, null=True,
         on_delete=models.PROTECT,
     )

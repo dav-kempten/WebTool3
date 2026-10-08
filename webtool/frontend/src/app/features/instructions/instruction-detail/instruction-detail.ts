@@ -12,6 +12,7 @@ import { RouterModule } from '@angular/router';
 import {
   FormBuilder,
   FormGroup,
+  FormsModule,
   ReactiveFormsModule,
 } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -61,6 +62,7 @@ import { describeSaveErrorPath } from '../../../shared/util/save-error';
   standalone: true,
   imports: [
     RouterModule,
+    FormsModule,
     ReactiveFormsModule,
     DatePipe,
     CardModule,
@@ -149,9 +151,11 @@ export class InstructionDetail {
       .filter(Boolean)
       .join(', ');
   });
-  readonly isIndoor = computed(
-    () => this.values.categoryById().get(this.instruction()?.categoryId ?? -1)?.indoor ?? false,
-  );
+  /** Indoor follows the main category (the topic's), never the optional extra one. */
+  readonly isIndoor = computed(() => {
+    const code = this.topic()?.code;
+    return this.values.categories().some((c) => c.code === code && c.indoor);
+  });
 
   private readonly permission = this.auth.permission;
   readonly isOwner = computed(
@@ -193,6 +197,11 @@ export class InstructionDetail {
     const currentId = this.instruction()?.stateId;
     return states.filter((s) => s.id <= 2 || s.id === currentId);
   });
+  /** Course categories for the optional extra category, minus the topic's own one. */
+  readonly categoryOptions = computed(() => {
+    const ownCode = this.topic()?.code;
+    return this.values.categories().filter((c) => c.instruction && c.code !== ownCode);
+  });
   readonly equipmentOptions = this.values.equipments;
   readonly qualificationOptions = this.values.topics;
   readonly approximateOptions = this.values.approximates;
@@ -206,6 +215,12 @@ export class InstructionDetail {
   form = signal<FormGroup | undefined>(undefined);
   /** Id of the course the form was last built for; rebuilds when navigating to a different course. */
   private builtId: number | null = null;
+
+  /**
+   * Whether the extra-category picker is shown. Pure UI state, as on the tour
+   * form: derived from the stored category whenever a course is loaded.
+   */
+  readonly needsExtraCategory = signal(false);
 
   /** See tour-detail: relaxed for events that already lie in the past. */
   readonly minDate = signal<Date>(tomorrow());
@@ -276,11 +291,24 @@ export class InstructionDetail {
       message: [instruction.message],
     });
 
+    this.needsExtraCategory.set(instruction.categoryId != null);
+
     group.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((value) => {
       this.instructions.updateLocal(instruction.id, value as Partial<Instruction>);
     });
 
     this.form.set(group);
+  }
+
+  /**
+   * Unticking clears the category so the stored data matches what the form
+   * shows; otherwise it would stay saved but invisible.
+   */
+  toggleExtraCategory(checked: boolean): void {
+    this.needsExtraCategory.set(checked);
+    if (!checked) {
+      this.form()?.get('categoryId')?.setValue(null);
+    }
   }
 
   // --- meetings table ---

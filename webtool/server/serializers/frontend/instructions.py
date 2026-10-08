@@ -73,8 +73,10 @@ class InstructionSerializer(serializers.ModelSerializer):
     meetings = EventSerializer(source='meeting_list', many=True, default=[])
     ladiesOnly = serializers.BooleanField(source='ladies_only', default=False)
     isSpecial = serializers.BooleanField(source='is_special', default=False)
+    # Optional extra category; only course categories. Deprecated ones stay valid
+    # so that courses which still carry one can be saved.
     categoryId = serializers.PrimaryKeyRelatedField(
-        source='category', default=None, allow_null=True, queryset=Category.objects.all()
+        source='category', default=None, allow_null=True, queryset=Category.objects.filter(topic=True)
     )
 
     qualificationIds = serializers.PrimaryKeyRelatedField(
