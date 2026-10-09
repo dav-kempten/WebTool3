@@ -422,12 +422,12 @@
         </div>
         @if (tour()?.equipmentService) {
           <p class="avk-notice">
-            <i class="pi pi-download" aria-hidden="true"></i>
+            <i class="pi pi-info-circle" aria-hidden="true"></i>
             <span>
               Dann lade die
-              <a [href]="equipmentListUrl" target="_blank" rel="noopener">Ausrüstungsliste</a>
+              <a class="avk-notice-link" [href]="equipmentListUrl" target="_blank" rel="noopener" title="Excel-Datei herunterladen"><i class="pi pi-file-excel" aria-hidden="true"></i>Ausrüstungsliste</a>
               herunter, trag ein, was du für deine Tour benötigst, und schicke sie an
-              <a href="mailto:kurse@dav-kempten.de">kurse&#64;dav-kempten.de</a>.
+              <a class="avk-notice-link" href="mailto:kurse@dav-kempten.de" title="E-Mail an die Geschäftsstelle schreiben"><i class="pi pi-envelope" aria-hidden="true"></i>kurse&#64;dav-kempten.de</a>.
             </span>
           </p>
         }
