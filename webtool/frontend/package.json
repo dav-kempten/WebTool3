@@ -1,6 +1,6 @@
 {
   "name": "frontend-new",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "scripts": {
     "ng": "ng",
     "prestart": "node scripts/build-info.mjs",
