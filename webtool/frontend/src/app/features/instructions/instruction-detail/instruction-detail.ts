@@ -57,6 +57,7 @@ import {
 } from '../../../shared/util/validators';
 import { describeSaveErrorPath } from '../../../shared/util/save-error';
 import { EQUIPMENT_LIST_URL } from '../../../shared/util/links';
+import { lockStartTimeOrApproximate } from '../../../shared/util/event-time';
 
 @Component({
   selector: 'avk-instruction-detail',
@@ -155,6 +156,7 @@ export class InstructionDetail {
   /** Indoor follows the main category (the topic's), never the optional extra one. */
   /** Download offered once "Ausrüstungsbedarf Kurs" is ticked. */
   readonly equipmentListUrl = EQUIPMENT_LIST_URL;
+
 
   readonly isIndoor = computed(() => {
     const code = this.topic()?.code;
@@ -363,6 +365,7 @@ export class InstructionDetail {
       .subscribe(() =>
         group.get('endDate')!.updateValueAndValidity({ emitEvent: false }),
       );
+    lockStartTimeOrApproximate(group, this.destroyRef);
 
     this.selectedEventForm.set(group);
     this.showEvent.set(true);

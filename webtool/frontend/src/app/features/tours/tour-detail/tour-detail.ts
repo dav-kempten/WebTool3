@@ -58,6 +58,7 @@ import {
 } from '../../../shared/util/validators';
 import { describeSaveErrorPath } from '../../../shared/util/save-error';
 import { EQUIPMENT_LIST_URL } from '../../../shared/util/links';
+import { lockStartTimeOrApproximate } from '../../../shared/util/event-time';
 
 type EventKind = 'tour' | 'deadline' | 'preliminary';
 
@@ -261,7 +262,7 @@ export class TourDetail {
       if (tour.preliminaryId != null && !hasSlot) {
         const [preliminaryEvent] = this.events.eventsByIds([tour.preliminaryId]);
         if (preliminaryEvent) {
-          array.push(this.buildEventForm(preliminaryEvent));
+          array.push(this.buildEventForm(preliminaryEvent, false));
         }
       } else if (tour.preliminaryId == null && hasSlot) {
         array.removeAt(2);
@@ -315,13 +316,14 @@ export class TourDetail {
     });
 
     const array = new FormArray(
-      events.map((event) => this.buildEventForm(event)),
+      events.map((event, index) => this.buildEventForm(event, index === 0)),
     );
     this.form.set(group);
     this.eventForms.set(array);
   }
 
-  private buildEventForm(event: Event): FormGroup {
+  /** @param isTour the tour itself (index 0) — the only event with a "Tageszeit" field. */
+  private buildEventForm(event: Event, isTour: boolean): FormGroup {
     const group = this.fb.group({
       id: [event.id],
       title: [event.title],
@@ -354,6 +356,12 @@ export class TourDetail {
         group.get('endDate')!.updateValueAndValidity({ emitEvent: false }),
       );
 
+    // Only where the "Tageszeit" field is shown, or a stored time of day would
+    // lock the start time with no way to clear it.
+    if (isTour) {
+      lockStartTimeOrApproximate(group, this.destroyRef);
+    }
+
     // Der Freitext führt: jede Änderung setzt die Optionen neu und zieht den
     // Reservierungswunsch nach. Das Abo hängt am Feld, nicht an der Gruppe,
     // damit das Nachziehen von 'reservationService' es nicht erneut auslöst.
@@ -368,7 +376,10 @@ export class TourDetail {
         }
       });
 
-    group.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((value) => {
+    group.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      // getRawValue(), not the emitted value: that one leaves out locked fields,
+      // so a start time cleared and locked in one go would never reach the store.
+      const value: typeof group.value = group.getRawValue();
       // Route through the store so the list summary updates immediately too.
       this.tours.updateEventLocal(event.id, {
         ...(value as Partial<Event>),
@@ -401,6 +412,7 @@ export class TourDetail {
 
   /** Download offered once "Ausrüstungsbedarf Tour" is ticked. */
   readonly equipmentListUrl = EQUIPMENT_LIST_URL;
+
 
   /**
    * Der Seminarraum ist genauso reservierungspflichtig wie das Shuttle. Es

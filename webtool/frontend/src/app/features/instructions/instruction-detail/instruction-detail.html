@@ -392,11 +392,13 @@
         <div class="avk-grid-3">
           <div class="avk-field">
             <label>Tageszeit (ca.)</label>
-            <p-select formControlName="approximateId" [options]="approximateOptions()" optionLabel="name" optionValue="id" [showClear]="true" appendTo="body" pTooltip="Ungefähre Startzeit (wenn keine genaue Zeit angegeben werden kann)" />
+            <!-- Tageszeit and Startzeit lock each other, see lockStartTimeOrApproximate(). -->
+            <p-select formControlName="approximateId" [options]="approximateOptions()" optionLabel="name" optionValue="id" [showClear]="true" appendTo="body"
+                      pTooltip="Ungefähre Startzeit (wenn keine genaue Zeit angegeben werden kann) – gesperrt, solange eine Startzeit eingetragen ist" />
           </div>
           <div class="avk-field">
             <label>Startzeit</label>
-            <input pInputText formControlName="startTime" placeholder="HH:MM" pTooltip="Startzeit" />
+            <input pInputText formControlName="startTime" placeholder="HH:MM" pTooltip="Startzeit – gesperrt, solange eine Tageszeit gewählt ist" />
           </div>
           <div class="avk-field">
             <label>Endzeit</label>
@@ -435,7 +437,7 @@
             <input pInputText formControlName="rendezvous" maxlength="75" pTooltip="Treffpunkt für die Abfahrt" />
           </div>
           <div class="avk-field">
-            <label>Ort</label>
+            <label>Kursort</label>
             <input pInputText formControlName="location" maxlength="75" />
           </div>
           @if (selectedIsMain()) {
