@@ -56,6 +56,7 @@ import {
   timeFormatValidator,
 } from '../../../shared/util/validators';
 import { describeSaveErrorPath } from '../../../shared/util/save-error';
+import { EQUIPMENT_LIST_URL } from '../../../shared/util/links';
 
 @Component({
   selector: 'avk-instruction-detail',
@@ -152,6 +153,9 @@ export class InstructionDetail {
       .join(', ');
   });
   /** Indoor follows the main category (the topic's), never the optional extra one. */
+  /** Download offered once "Ausrüstungsbedarf Kurs" is ticked. */
+  readonly equipmentListUrl = EQUIPMENT_LIST_URL;
+
   readonly isIndoor = computed(() => {
     const code = this.topic()?.code;
     return this.values.categories().some((c) => c.code === code && c.indoor);

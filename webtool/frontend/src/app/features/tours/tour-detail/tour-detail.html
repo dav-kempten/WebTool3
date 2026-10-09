@@ -241,7 +241,7 @@
             />
           </div>
         </div>
-        <div class="avk-grid-3">
+        <div class="avk-grid-2">
           <div class="avk-field">
             <label>Ausrüstung</label>
             <p-multiselect
@@ -262,12 +262,6 @@
               [disabled]="locked()"
               pTooltip="Ergänzungsfeld für Ausrüstung, die in keinem Ausrüstungsset ist"
             />
-          </div>
-          <div class="avk-field avk-field-checkbox">
-            <div class="avk-checkbox-item">
-              <p-checkbox formControlName="equipmentService" [binary]="true" inputId="equipmentServiceCheckbox" />
-              <label for="equipmentServiceCheckbox">Ausrüstungsservice gewünscht</label>
-            </div>
           </div>
         </div>
       </p-card>
@@ -413,6 +407,21 @@
           <p class="avk-notice">
             <i class="pi pi-info-circle" aria-hidden="true"></i>
             Reservierungswunsch für den Seminarraum (Vorbesprechung)
+          </p>
+        }
+        <div class="avk-checkbox-item avk-field-spaced">
+          <p-checkbox formControlName="equipmentService" [binary]="true" inputId="equipmentServiceCheckbox" />
+          <label for="equipmentServiceCheckbox">Ausrüstungsbedarf Tour</label>
+        </div>
+        @if (tour()?.equipmentService) {
+          <p class="avk-notice">
+            <i class="pi pi-download" aria-hidden="true"></i>
+            <span>
+              Dann lade die
+              <a [href]="equipmentListUrl" target="_blank" rel="noopener">Ausrüstungsliste</a>
+              herunter, trag ein, was du für deine Tour benötigst, und schicke sie an
+              <a href="mailto:kurse@dav-kempten.de">kurse&#64;dav-kempten.de</a>.
+            </span>
           </p>
         }
       </p-card>

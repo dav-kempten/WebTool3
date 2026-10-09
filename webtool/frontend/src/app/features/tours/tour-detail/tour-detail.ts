@@ -57,6 +57,7 @@ import {
   timeFormatValidator,
 } from '../../../shared/util/validators';
 import { describeSaveErrorPath } from '../../../shared/util/save-error';
+import { EQUIPMENT_LIST_URL } from '../../../shared/util/links';
 
 type EventKind = 'tour' | 'deadline' | 'preliminary';
 
@@ -397,6 +398,9 @@ export class TourDetail {
    * Hinweis aber bei der Nachricht an die Geschäftsstelle.
    */
   readonly wantsShuttle = computed(() => this.eventRows()[0]?.shuttleService ?? false);
+
+  /** Download offered once "Ausrüstungsbedarf Tour" is ticked. */
+  readonly equipmentListUrl = EQUIPMENT_LIST_URL;
 
   /**
    * Der Seminarraum ist genauso reservierungspflichtig wie das Shuttle. Es

@@ -197,7 +197,7 @@
             </div>
           </div>
         }
-        <div class="avk-grid-3">
+        <div class="avk-grid-2">
           <div class="avk-field">
             <label>Ausrüstung</label>
             <p-multiselect formControlName="equipmentIds" [options]="equipmentOptions()" optionLabel="name"
@@ -206,12 +206,6 @@
           <div class="avk-field">
             <label>Zusätzliche Ausrüstung</label>
             <input pInputText formControlName="miscEquipment" maxlength="75" [disabled]="locked()" pTooltip="Ergänzungsfeld für Ausrüstung, die in keinem Ausrüstungsset ist" />
-          </div>
-          <div class="avk-field avk-field-checkbox">
-            <div class="avk-checkbox-item">
-              <p-checkbox formControlName="equipmentService" [binary]="true" inputId="equipmentServiceCheckbox" />
-              <label for="equipmentServiceCheckbox">Ausrüstungsservice gewünscht</label>
-            </div>
           </div>
         </div>
       </p-card>
@@ -345,6 +339,21 @@
           class="avk-full"
           placeholder="Interna für die Geschäftsstelle – z. B. Stornofristen, Absprachen zu Kosten oder Hinweise zur Abrechnung"
         ></textarea>
+        <div class="avk-checkbox-item avk-field-spaced">
+          <p-checkbox formControlName="equipmentService" [binary]="true" inputId="equipmentServiceCheckbox" />
+          <label for="equipmentServiceCheckbox">Ausrüstungsbedarf Kurs</label>
+        </div>
+        @if (instruction()?.equipmentService) {
+          <p class="avk-notice">
+            <i class="pi pi-download" aria-hidden="true"></i>
+            <span>
+              Dann lade die
+              <a [href]="equipmentListUrl" target="_blank" rel="noopener">Ausrüstungsliste</a>
+              herunter, trag ein, was du für deinen Kurs benötigst, und schicke sie an
+              <a href="mailto:kurse@dav-kempten.de">kurse&#64;dav-kempten.de</a>.
+            </span>
+          </p>
+        }
       </p-card>
 
       <div class="avk-detail-actions">
