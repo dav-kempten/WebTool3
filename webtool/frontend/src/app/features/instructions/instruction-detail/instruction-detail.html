@@ -366,6 +366,14 @@
       <div class="avk-detail-actions">
         @if (!locked()) {
           <p-button label="Speichern" icon="pi pi-save" (onClick)="save()" />
+          @if (isWorking()) {
+            <p-button
+              label="Speichern + Fertig"
+              icon="pi pi-check"
+              (onClick)="saveAsReady()"
+              pTooltip="Speichert und setzt den Status auf „Fertig“. Danach prüfen Geschäftsstelle oder Fachbereichssprecher den Kurs und geben ihn frei."
+            />
+          }
         }
         <a routerLink="/instructions"><p-button label="Zurück" severity="secondary" /></a>
         @if (!isOwner()) {

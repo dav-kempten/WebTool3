@@ -43,7 +43,7 @@ import { AutoSaveService } from '../../../core/services/auto-save.service';
 import { BreadcrumbService } from '../../../core/layout/breadcrumb.service';
 import { Instruction } from '../../../models/instruction';
 import { Event } from '../../../models/event';
-import { isSpecialTopic } from '../../../models/value';
+import { States, isSpecialTopic } from '../../../models/value';
 import {
   formatIsoDateRangeDe,
   fromIsoDate,
@@ -419,6 +419,19 @@ export class InstructionDetail {
   save(): void {
     this.persist(false);
     this.form()?.markAsPristine();
+  }
+
+  /** "Speichern + Fertig" is only offered while the course is still In Arbeit. */
+  readonly isWorking = computed(() => this.instruction()?.stateId === States.WORKING);
+
+  /**
+   * Hands the course in for review: sets the state to Fertig and saves. The form
+   * mirrors the change into the store synchronously, so the save carries it,
+   * and the backend sends its In Arbeit → Fertig notification as usual.
+   */
+  saveAsReady(): void {
+    this.form()?.get('stateId')?.setValue(States.READY);
+    this.save();
   }
 
   confirmDelete(): void {

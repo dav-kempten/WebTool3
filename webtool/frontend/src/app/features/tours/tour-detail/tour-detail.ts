@@ -59,6 +59,7 @@ import {
 import { describeSaveErrorPath } from '../../../shared/util/save-error';
 import { EQUIPMENT_LIST_URL } from '../../../shared/util/links';
 import { lockStartTimeOrApproximate } from '../../../shared/util/event-time';
+import { States } from '../../../models/value';
 
 type EventKind = 'tour' | 'deadline' | 'preliminary';
 
@@ -528,6 +529,19 @@ export class TourDetail {
   save(): void {
     this.persist(false);
     this.form()?.markAsPristine();
+  }
+
+  /** "Speichern + Fertig" is only offered while the tour is still In Arbeit. */
+  readonly isWorking = computed(() => this.tour()?.stateId === States.WORKING);
+
+  /**
+   * Hands the tour in for review: sets the state to Fertig and saves. The form
+   * mirrors the change into the store synchronously, so the save carries it,
+   * and the backend sends its In Arbeit → Fertig notification as usual.
+   */
+  saveAsReady(): void {
+    this.form()?.get('stateId')?.setValue(States.READY);
+    this.save();
   }
 
   confirmDelete(): void {

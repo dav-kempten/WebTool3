@@ -433,17 +433,17 @@
         }
       </p-card>
 
-      <p-card header="Obacht!">
-        <p class="avk-warn">
-          Ist die Tour fertig bearbeitet, ändere vor dem Speichern den Status von
-          „In Arbeit“ auf „Fertig“. Danach prüfen Geschäftsstelle oder
-          Fachbereichssprecher die Tour und geben sie frei.
-        </p>
-      </p-card>
-
       <div class="avk-detail-actions">
         @if (!locked()) {
           <p-button label="Speichern" icon="pi pi-save" (onClick)="save()" />
+          @if (isWorking()) {
+            <p-button
+              label="Speichern + Fertig"
+              icon="pi pi-check"
+              (onClick)="saveAsReady()"
+              pTooltip="Speichert und setzt den Status auf „Fertig“. Danach prüfen Geschäftsstelle oder Fachbereichssprecher die Tour und geben sie frei."
+            />
+          }
         }
         <a routerLink="/tours"><p-button label="Zurück" severity="secondary" /></a>
         <p-button label="Ausdruck" icon="pi pi-print" severity="secondary" (onClick)="preview()" />
