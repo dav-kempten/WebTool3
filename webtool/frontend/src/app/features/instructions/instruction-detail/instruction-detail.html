@@ -339,7 +339,14 @@
           class="avk-full"
           placeholder="Interna für die Geschäftsstelle – z. B. Stornofristen, Absprachen zu Kosten oder Hinweise zur Abrechnung"
         ></textarea>
-        <div class="avk-checkbox-item avk-field-spaced">
+        <div class="avk-field-spaced">
+          <p-message severity="warn" styleClass="avk-full-message">
+            <b>Obacht, neu:</b> Bitte schickt Ausrüstungsbedarf für euren Kurs ausschließlich über
+            „Ausrüstungsbedarf Kurs“ mit dem angefügten Formular an die Geschäftsstelle. Wenn es
+            Bedarf gibt, auf „Ausrüstungsbedarf Kurs“ klicken.
+          </p-message>
+        </div>
+        <div class="avk-checkbox-item">
           <p-checkbox formControlName="equipmentService" [binary]="true" inputId="equipmentServiceCheckbox" />
           <label for="equipmentServiceCheckbox">Ausrüstungsbedarf Kurs</label>
         </div>

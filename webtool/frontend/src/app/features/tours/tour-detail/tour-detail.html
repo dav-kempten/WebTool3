@@ -409,7 +409,14 @@
             Reservierungswunsch für den Seminarraum (Vorbesprechung)
           </p>
         }
-        <div class="avk-checkbox-item avk-field-spaced">
+        <div class="avk-field-spaced">
+          <p-message severity="warn" styleClass="avk-full-message">
+            <b>Obacht, neu:</b> Bitte schickt Ausrüstungsbedarf für eure Tour ausschließlich über
+            „Ausrüstungsbedarf Tour“ mit dem angefügten Formular an die Geschäftsstelle. Wenn es
+            Bedarf gibt, auf „Ausrüstungsbedarf Tour“ klicken.
+          </p-message>
+        </div>
+        <div class="avk-checkbox-item">
           <p-checkbox formControlName="equipmentService" [binary]="true" inputId="equipmentServiceCheckbox" />
           <label for="equipmentServiceCheckbox">Ausrüstungsbedarf Tour</label>
         </div>
