@@ -193,7 +193,7 @@
             </div>
             <div class="avk-field">
               <label>Spezielle Voraussetzungen</label>
-              <input pInputText formControlName="preconditions" [disabled]="locked()" pTooltip="Sonstige spezielle Voraussetzungen (z.B. Trittsicherheit o.ä.)" />
+              <input pInputText formControlName="preconditions" [attr.disabled]="locked() ? '' : null" pTooltip="Sonstige spezielle Voraussetzungen (z.B. Trittsicherheit o.ä.)" />
             </div>
           </div>
         }
@@ -205,7 +205,7 @@
           </div>
           <div class="avk-field">
             <label>Zusätzliche Ausrüstung</label>
-            <input pInputText formControlName="miscEquipment" maxlength="75" [disabled]="locked()" pTooltip="Ergänzungsfeld für Ausrüstung, die in keinem Ausrüstungsset ist" />
+            <input pInputText formControlName="miscEquipment" maxlength="75" [attr.disabled]="locked() ? '' : null" pTooltip="Ergänzungsfeld für Ausrüstung, die in keinem Ausrüstungsset ist" />
           </div>
         </div>
       </p-card>

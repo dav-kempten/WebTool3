@@ -183,7 +183,7 @@
             pInputText
             formControlName="info"
             maxlength="75"
-            [disabled]="locked()"
+            [attr.disabled]="locked() ? '' : null"
             pTooltip="Tourenabsprache per E-Mail etc. (max. 75 Zeichen)"
           />
         </div>
@@ -236,7 +236,7 @@
             <input
               pInputText
               formControlName="preconditions"
-              [disabled]="locked()"
+              [attr.disabled]="locked() ? '' : null"
               pTooltip="Spezielle Voraussetzungen"
             />
           </div>
@@ -259,7 +259,7 @@
               pInputText
               formControlName="miscEquipment"
               maxlength="75"
-              [disabled]="locked()"
+              [attr.disabled]="locked() ? '' : null"
               pTooltip="Ergänzungsfeld für Ausrüstung, die in keinem Ausrüstungsset ist"
             />
           </div>
