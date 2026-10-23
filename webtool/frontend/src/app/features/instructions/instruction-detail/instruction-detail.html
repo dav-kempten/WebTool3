@@ -376,6 +376,7 @@
             />
           }
         }
+        <p-button label="Vorschau Homepage" icon="pi pi-eye" severity="secondary" (onClick)="openPreview()" pTooltip="Speichert und zeigt, wie der Kurs auf dav-kempten.de erscheint" />
         <a routerLink="/instructions"><p-button label="Zurück" severity="secondary" /></a>
         @if (!isOwner()) {
           <span class="avk-spacer"></span>
@@ -394,6 +395,8 @@
     [equipmentService]="instruction()?.equipmentService ?? false"
     (confirmed)="completeReady()"
   />
+
+  <avk-homepage-preview-dialog [(visible)]="showPreview" [preview]="homepagePreview()" [loading]="previewLoading()" />
 
   <p-dialog
     header="Termin-Details"

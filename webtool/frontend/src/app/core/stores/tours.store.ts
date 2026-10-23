@@ -256,13 +256,15 @@ export const ToursStore = signalStore(
       ),
     );
 
-    const save = rxMethod<{ tour: Tour; silent?: boolean }>(
+    const save = rxMethod<{ tour: Tour; silent?: boolean; onSaved?: () => void }>(
       pipe(
-        switchMap(({ tour, silent }) =>
+        switchMap(({ tour, silent, onSaved }) =>
           tourService.upsertTour(tour.id, buildSaveBody(tour)).pipe(
             tap(({ data, errors }) => {
               if (data) {
                 patchState(store, setEntity(rawToEntity(data)), { lastSaveErrors: [] });
+                // Runs only after a successful save, e.g. to open the homepage preview.
+                onSaved?.();
                 loadSummaries();
                 if (!silent) {
                   messages.add({

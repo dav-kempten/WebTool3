@@ -37,6 +37,9 @@ import { MessageModule } from 'primeng/message';
 import { ConfirmationService } from 'primeng/api';
 
 import { ToursStore } from '../../../core/stores/tours.store';
+import { TourService } from '../../../core/services/tour.service';
+import { ActivityPreview } from '../../../models/preview';
+import { HomepagePreviewDialog } from '../../../shared/dialogs/homepage-preview-dialog/homepage-preview-dialog';
 import { ValuesStore } from '../../../core/stores/values.store';
 import { NamesStore } from '../../../core/stores/names.store';
 import { EventsStore } from '../../../core/stores/events.store';
@@ -88,6 +91,7 @@ type EventKind = 'tour' | 'deadline' | 'preliminary';
     ResponsiveTooltip,
     MessageModule,
     ReadyChecklistDialog,
+    HomepagePreviewDialog,
   ],
   providers: [AutoSaveService],
   templateUrl: './tour-detail.html',
@@ -98,6 +102,7 @@ export class TourDetail {
   readonly id = input.required<string>();
 
   private tours = inject(ToursStore);
+  private tourService = inject(TourService);
   private values = inject(ValuesStore);
   private names = inject(NamesStore);
   private events = inject(EventsStore);
@@ -536,6 +541,37 @@ export class TourDetail {
     if (tour) {
       this.tours.save({ tour, silent });
     }
+  }
+
+  readonly showPreview = signal(false);
+  readonly homepagePreview = signal<ActivityPreview | null>(null);
+  readonly previewLoading = signal(false);
+
+  /**
+   * Saves first, so the preview shows the current state, then opens what the
+   * homepage would show. A failed save reports its errors and opens nothing.
+   * A locked tour cannot be saved by its guide, so it is previewed as stored.
+   */
+  openPreview(): void {
+    const tour = this.tour();
+    if (!tour) {
+      return;
+    }
+    const load = () => {
+      this.homepagePreview.set(null);
+      this.previewLoading.set(true);
+      this.showPreview.set(true);
+      this.tourService.getPreview(tour.id).subscribe((preview) => {
+        this.homepagePreview.set(preview);
+        this.previewLoading.set(false);
+      });
+    };
+    if (this.locked()) {
+      load();
+      return;
+    }
+    this.tours.save({ tour, silent: true, onSaved: load });
+    this.form()?.markAsPristine();
   }
 
   save(): void {

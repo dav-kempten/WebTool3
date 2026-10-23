@@ -2,10 +2,12 @@
 from django.http import Http404
 from django.template.defaultfilters import date
 from rest_framework import viewsets, permissions, status, mixins
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from datetime import datetime, date as datetime_date
 
 from server.models import Instruction
+from server.serializers.client.activity import ActivitySerializer
 from server.serializers.frontend.instructions import InstructionListSerializer, InstructionSerializer
 
 
@@ -111,6 +113,17 @@ class InstructionViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
             instance._prefetched_objects_cache = {}
 
         return Response(serializer.data)
+
+    @action(detail=True, methods=['get'], permission_classes=[permissions.IsAuthenticated])
+    def preview(self, request, pk=None):
+        """
+        What the homepage receives for this course (the client API's detail view),
+        also while the course is unpublished and thus missing from the client API.
+        """
+        instance = self.get_object()
+        response = Response(ActivitySerializer(instance.instruction, context=dict(request=request)).data)
+        response['Cache-Control'] = 'no-store'
+        return response
 
     def destroy(self, request, pk=None, *args, **kwargs):
 

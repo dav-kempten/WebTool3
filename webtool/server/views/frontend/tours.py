@@ -2,10 +2,12 @@
 from django.http import Http404
 from rest_framework import permissions, mixins, viewsets, status
 from django.template.defaultfilters import date
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from datetime import datetime, date as datetime_date
 
 from server.models import Tour
+from server.serializers.client.activity import ActivitySerializer
 from server.serializers.frontend.tours import TourListSerializer, TourSerializer
 
 
@@ -104,6 +106,17 @@ class TourViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
             instance._prefetched_objects_cache = {}
 
         return Response(serializer.data)
+
+    @action(detail=True, methods=['get'], permission_classes=[permissions.IsAuthenticated])
+    def preview(self, request, pk=None):
+        """
+        What the homepage receives for this tour (the client API's detail view),
+        also while the tour is unpublished and thus missing from the client API.
+        """
+        instance = self.get_object()
+        response = Response(ActivitySerializer(instance.tour, context=dict(request=request)).data)
+        response['Cache-Control'] = 'no-store'
+        return response
 
     def destroy(self, request, pk=None, *args, **kwargs):
 

@@ -242,13 +242,15 @@ export const InstructionsStore = signalStore(
       ),
     );
 
-    const save = rxMethod<{ instruction: Instruction; silent?: boolean }>(
+    const save = rxMethod<{ instruction: Instruction; silent?: boolean; onSaved?: () => void }>(
       pipe(
-        switchMap(({ instruction, silent }) =>
+        switchMap(({ instruction, silent, onSaved }) =>
           service.upsertInstruction(instruction.id, buildSaveBody(instruction)).pipe(
             tap(({ data, errors }) => {
               if (data) {
                 patchState(store, setEntity(rawToEntity(data)), { lastSaveErrors: [] });
+                // Runs only after a successful save, e.g. to open the homepage preview.
+                onSaved?.();
                 loadSummaries();
                 if (!silent) {
                   messages.add({

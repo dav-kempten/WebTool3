@@ -3,6 +3,7 @@ import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http
 import { Observable, catchError, map, of } from 'rxjs';
 import { RawTour, Tour, TourSummary } from '../../models/tour';
 import { Event } from '../../models/event';
+import { ActivityPreview } from '../../models/preview';
 import { SaveResult, toSaveError } from '../../shared/util/save-error';
 
 const JSON_HEADERS = new HttpHeaders({
@@ -42,6 +43,13 @@ export class TourService {
     }
     return this.http
       .get<RawTour>(`/api/frontend/tours/${id}/`, { headers: READ_HEADERS })
+      .pipe(catchError(() => of(null)));
+  }
+
+  /** The tour as the homepage receives it, also before it is published. */
+  getPreview(id: number): Observable<ActivityPreview | null> {
+    return this.http
+      .get<ActivityPreview>(`/api/frontend/tours/${id}/preview/`, { headers: READ_HEADERS })
       .pipe(catchError(() => of(null)));
   }
 

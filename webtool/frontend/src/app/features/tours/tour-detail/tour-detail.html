@@ -446,6 +446,7 @@
             />
           }
         }
+        <p-button label="Vorschau Homepage" icon="pi pi-eye" severity="secondary" (onClick)="openPreview()" pTooltip="Speichert und zeigt, wie die Tour auf dav-kempten.de erscheint" />
         <a routerLink="/tours"><p-button label="Zurück" severity="secondary" /></a>
         <p-button label="Ausdruck" icon="pi pi-print" severity="secondary" (onClick)="preview()" />
         @if (!isOwner()) {
@@ -465,6 +466,8 @@
     [equipmentService]="tour()?.equipmentService ?? false"
     (confirmed)="completeReady()"
   />
+
+  <avk-homepage-preview-dialog [(visible)]="showPreview" [preview]="homepagePreview()" [loading]="previewLoading()" />
 
   <!-- Event editing dialog -->
   <p-dialog

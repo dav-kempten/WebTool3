@@ -36,6 +36,9 @@ import { MessageModule } from 'primeng/message';
 import { ConfirmationService } from 'primeng/api';
 
 import { InstructionsStore } from '../../../core/stores/instructions.store';
+import { InstructionService } from '../../../core/services/instruction.service';
+import { ActivityPreview } from '../../../models/preview';
+import { HomepagePreviewDialog } from '../../../shared/dialogs/homepage-preview-dialog/homepage-preview-dialog';
 import { ValuesStore } from '../../../core/stores/values.store';
 import { NamesStore } from '../../../core/stores/names.store';
 import { EventsStore } from '../../../core/stores/events.store';
@@ -84,6 +87,7 @@ import { lockStartTimeOrApproximate } from '../../../shared/util/event-time';
     ResponsiveTooltip,
     MessageModule,
     ReadyChecklistDialog,
+    HomepagePreviewDialog,
   ],
   providers: [AutoSaveService],
   templateUrl: './instruction-detail.html',
@@ -93,6 +97,7 @@ export class InstructionDetail {
   readonly id = input.required<string>();
 
   private instructions = inject(InstructionsStore);
+  private instructionService = inject(InstructionService);
   private values = inject(ValuesStore);
   private names = inject(NamesStore);
   private events = inject(EventsStore);
@@ -426,6 +431,37 @@ export class InstructionDetail {
     if (instruction) {
       this.instructions.save({ instruction, silent });
     }
+  }
+
+  readonly showPreview = signal(false);
+  readonly homepagePreview = signal<ActivityPreview | null>(null);
+  readonly previewLoading = signal(false);
+
+  /**
+   * Saves first, so the preview shows the current state, then opens what the
+   * homepage would show. A failed save reports its errors and opens nothing.
+   * A locked course cannot be saved by its guide, so it is previewed as stored.
+   */
+  openPreview(): void {
+    const instruction = this.instruction();
+    if (!instruction) {
+      return;
+    }
+    const load = () => {
+      this.homepagePreview.set(null);
+      this.previewLoading.set(true);
+      this.showPreview.set(true);
+      this.instructionService.getPreview(instruction.id).subscribe((preview) => {
+        this.homepagePreview.set(preview);
+        this.previewLoading.set(false);
+      });
+    };
+    if (this.locked()) {
+      load();
+      return;
+    }
+    this.instructions.save({ instruction, silent: true, onSaved: load });
+    this.form()?.markAsPristine();
   }
 
   save(): void {

@@ -7,6 +7,7 @@ import {
   RawInstruction,
 } from '../../models/instruction';
 import { Event } from '../../models/event';
+import { ActivityPreview } from '../../models/preview';
 import { SaveResult, toSaveError } from '../../shared/util/save-error';
 
 const JSON_HEADERS = new HttpHeaders({
@@ -40,6 +41,13 @@ export class InstructionService {
     }
     return this.http
       .get<RawInstruction>(`/api/frontend/instructions/${id}/`, { headers: READ_HEADERS })
+      .pipe(catchError(() => of(null)));
+  }
+
+  /** The course as the homepage receives it, also before it is published. */
+  getPreview(id: number): Observable<ActivityPreview | null> {
+    return this.http
+      .get<ActivityPreview>(`/api/frontend/instructions/${id}/preview/`, { headers: READ_HEADERS })
       .pipe(catchError(() => of(null)));
   }
 
