@@ -1,28 +1,24 @@
 # -*- coding: utf-8 -*-
 from django.core.management.base import BaseCommand, CommandError
-from django.db.models import Count, Q
+from django.db.models import Count
 
 from server.models import Reference
-from server.models.reference import REFERENCE_RANGE
+from server.models.reference import REFERENCE_RANGE, SATELLITE_REFERENCE_RANGE
 
-# Ein öffentlicher Code trägt die Jahresziffer (BGT-6NN), es zählen also nur die
-# Nummern 1..99 dieser einen Ziffer. Ein Überlauf in die nächste Ziffer würde ein
-# falsches Jahr drucken -- deshalb ist das die eigentliche Grenze.
+# Je Kategorie, Saison und Jahresziffer: öffentliche Codes bleiben zweistellig
+# (BGT-701 .. BGT-799), Satelliten (Anmeldeschluss, Vorbesprechung, Kurstermin)
+# werden nie veröffentlicht und dürfen dreistellig werden (KT9-7100).
 PUBLIC_CAPACITY = len(REFERENCE_RANGE)
-# Satelliten (Anmeldeschluss, Vorbesprechung, Kurstermin) werden nie veröffentlicht
-# und dürfen sich über alle zehn Ziffern verteilen.
-SATELLITE_CAPACITY = len(REFERENCE_RANGE) * 10
-
-SATELLITE = Q(category__deadline=True) | Q(category__preliminary=True) | Q(category__meeting=True)
+SATELLITE_CAPACITY = len(SATELLITE_REFERENCE_RANGE)
 
 
 class Command(BaseCommand):
 
     help = (
-        'Report how full the booking code space is. A public category holds {} codes '
-        'per season and year digit; a satellite category (deadline, preliminary, '
-        'meeting) holds {} per season. Once they are gone no further event can be '
-        'created there.'.format(PUBLIC_CAPACITY, SATELLITE_CAPACITY)
+        'Report how full the booking code space is, per season, category and year '
+        'digit. A public category holds {} codes there, a satellite category '
+        '(deadline, preliminary, meeting) {}. Once they are gone no further event can '
+        'be created there.'.format(PUBLIC_CAPACITY, SATELLITE_CAPACITY)
     )
 
     def add_arguments(self, parser):
@@ -43,27 +39,22 @@ class Command(BaseCommand):
         if season:
             queryset = queryset.filter(season__name=str(season))
 
-        rows = [
-            (row['season__name'], row['category__code'], str(row['prefix']), row['used'], PUBLIC_CAPACITY)
-            for row in (
-                queryset.exclude(SATELLITE)
-                .values('season__name', 'category__code', 'prefix')
-                .annotate(used=Count('pk'))
-            )
-        ] + [
-            (row['season__name'], row['category__code'], '*', row['used'], SATELLITE_CAPACITY)
-            for row in (
-                queryset.filter(SATELLITE)
-                .values('season__name', 'category__code')
-                .annotate(used=Count('pk'))
-            )
-        ]
+        rows = []
+        for row in (
+            queryset
+            .values('season__name', 'category__code', 'prefix',
+                    'category__deadline', 'category__preliminary', 'category__meeting')
+            .annotate(used=Count('pk'))
+        ):
+            satellite = row['category__deadline'] or row['category__preliminary'] or row['category__meeting']
+            capacity = SATELLITE_CAPACITY if satellite else PUBLIC_CAPACITY
+            rows.append((row['season__name'], row['category__code'], row['prefix'], row['used'], capacity))
 
         if not rows:
             self.stdout.write('no booking codes found')
             return
 
-        # Fullest first; '*' in the digit column marks a satellite category.
+        # Fullest first.
         rows.sort(key=lambda row: row[3] / row[4], reverse=True)
 
         breached = []
