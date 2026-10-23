@@ -53,7 +53,7 @@ export class TourService {
       .pipe(catchError(() => of(null)));
   }
 
-  createTour(payload: CreateTourPayload): Observable<Tour> {
+  createTour(payload: CreateTourPayload): Observable<SaveResult<Tour>> {
     const body: Record<string, unknown> = {
       category: payload.categoryId,
       tour: { startDate: payload.startDate } as Event,
@@ -66,16 +66,20 @@ export class TourService {
     if (payload.preliminary !== null) {
       body['preliminary'] = { startDate: payload.preliminary } as Event;
     }
-    return this.http
-      .post<Tour>('/api/frontend/tours/', body)
-      .pipe(catchError(() => of({ id: 0 } as Tour)));
+    return this.postTour(body);
   }
 
   /** `body` is a fully assembled RawTour stripped of ids + carrying `category`. */
-  cloneTour(body: unknown): Observable<Tour> {
-    return this.http
-      .post<Tour>('/api/frontend/tours/', body)
-      .pipe(catchError(() => of({ id: 0 } as Tour)));
+  cloneTour(body: unknown): Observable<SaveResult<Tour>> {
+    return this.postTour(body);
+  }
+
+  /** Keeps the backend's validation errors (e.g. a full booking code space) for the message. */
+  private postTour(body: unknown): Observable<SaveResult<Tour>> {
+    return this.http.post<Tour>('/api/frontend/tours/', body).pipe(
+      map((data) => ({ data, errors: [] }) as SaveResult<Tour>),
+      catchError((error: HttpErrorResponse) => of(toSaveError<Tour>(error))),
+    );
   }
 
   /** `body` is a fully assembled RawTour (nested events, decimal strings). */

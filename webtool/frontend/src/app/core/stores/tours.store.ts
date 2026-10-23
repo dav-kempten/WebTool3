@@ -21,7 +21,7 @@ import { EventsStore } from './events.store';
 import { RawTour, Tour, TourSummary } from '../../models/tour';
 import { Event } from '../../models/event';
 import { States } from '../../models/value';
-import { SaveError, describeSaveError } from '../../shared/util/save-error';
+import { SaveError, describeSaveError, describeSaveErrors } from '../../shared/util/save-error';
 
 interface ToursState {
   summaries: TourSummary[];
@@ -190,15 +190,16 @@ export const ToursStore = signalStore(
       pipe(
         switchMap((payload) =>
           tourService.createTour(payload).pipe(
-            tap((tour) => {
-              if (tour.id !== 0) {
+            tap(({ data: tour, errors }) => {
+              if (tour) {
                 loadSummaries();
                 void router.navigate(['tours', tour.id]);
               } else {
                 messages.add({
                   severity: 'error',
                   summary: 'Tourerstellung fehlgeschlagen',
-                  detail: 'Bitte Eingaben noch einmal überprüfen.',
+                  detail: describeSaveErrors(errors, 'Bitte Eingaben noch einmal überprüfen.'),
+                  life: 10000,
                 });
               }
             }),
@@ -221,15 +222,16 @@ export const ToursStore = signalStore(
                 return EMPTY;
               }
               return tourService.cloneTour(buildCloneBody(raw, startDate, endDate)).pipe(
-                tap((created) => {
-                  if (created.id !== 0) {
+                tap(({ data: created, errors }) => {
+                  if (created) {
                     loadSummaries();
                     void router.navigate(['tours', created.id]);
                   } else {
                     messages.add({
                       severity: 'error',
                       summary: 'Klonen fehlgeschlagen',
-                      detail: 'Die Tour konnte nicht kopiert werden.',
+                      detail: describeSaveErrors(errors, 'Die Tour konnte nicht kopiert werden.'),
+                      life: 10000,
                     });
                   }
                 }),

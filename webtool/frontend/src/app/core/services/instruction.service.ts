@@ -51,7 +51,7 @@ export class InstructionService {
       .pipe(catchError(() => of(null)));
   }
 
-  createInstruction(payload: CreateInstructionPayload): Observable<Instruction> {
+  createInstruction(payload: CreateInstructionPayload): Observable<SaveResult<Instruction>> {
     const body = {
       topicId: payload.topicId,
       instruction: { startDate: payload.startDate } as Event,
@@ -59,15 +59,19 @@ export class InstructionService {
       stateId: 1,
       isSpecial: payload.isSpecial,
     };
-    return this.http
-      .post<Instruction>('/api/frontend/instructions/', body)
-      .pipe(catchError(() => of({ id: 0 } as Instruction)));
+    return this.postInstruction(body);
   }
 
-  cloneInstruction(body: unknown): Observable<Instruction> {
-    return this.http
-      .post<Instruction>('/api/frontend/instructions/', body)
-      .pipe(catchError(() => of({ id: 0 } as Instruction)));
+  cloneInstruction(body: unknown): Observable<SaveResult<Instruction>> {
+    return this.postInstruction(body);
+  }
+
+  /** Keeps the backend's validation errors (e.g. a full booking code space) for the message. */
+  private postInstruction(body: unknown): Observable<SaveResult<Instruction>> {
+    return this.http.post<Instruction>('/api/frontend/instructions/', body).pipe(
+      map((data) => ({ data, errors: [] }) as SaveResult<Instruction>),
+      catchError((error: HttpErrorResponse) => of(toSaveError<Instruction>(error))),
+    );
   }
 
   upsertInstruction(id: number, body: unknown): Observable<SaveResult<RawInstruction>> {

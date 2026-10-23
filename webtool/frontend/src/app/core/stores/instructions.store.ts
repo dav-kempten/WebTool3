@@ -28,7 +28,7 @@ import {
   RawInstruction,
 } from '../../models/instruction';
 import { Event } from '../../models/event';
-import { SaveError, describeSaveError } from '../../shared/util/save-error';
+import { SaveError, describeSaveError, describeSaveErrors } from '../../shared/util/save-error';
 
 interface InstructionsState {
   summaries: InstructionSummary[];
@@ -181,15 +181,16 @@ export const InstructionsStore = signalStore(
       pipe(
         switchMap((payload) =>
           service.createInstruction(payload).pipe(
-            tap((created) => {
-              if (created.id !== 0) {
+            tap(({ data: created, errors }) => {
+              if (created) {
                 loadSummaries();
                 void router.navigate(['instructions', created.id]);
               } else {
                 messages.add({
                   severity: 'error',
                   summary: 'Kurserstellung fehlgeschlagen',
-                  detail: 'Bitte Eingaben noch einmal überprüfen.',
+                  detail: describeSaveErrors(errors, 'Bitte Eingaben noch einmal überprüfen.'),
+                  life: 10000,
                 });
               }
             }),
@@ -207,15 +208,16 @@ export const InstructionsStore = signalStore(
                 return EMPTY;
               }
               return service.cloneInstruction(buildCloneBody(raw, startDate, endDate)).pipe(
-                tap((created) => {
-                  if (created.id !== 0) {
+                tap(({ data: created, errors }) => {
+                  if (created) {
                     loadSummaries();
                     void router.navigate(['instructions', created.id]);
                   } else {
                     messages.add({
                       severity: 'error',
                       summary: 'Klonen fehlgeschlagen',
-                      detail: 'Der Kurs konnte nicht kopiert werden.',
+                      detail: describeSaveErrors(errors, 'Der Kurs konnte nicht kopiert werden.'),
+                      life: 10000,
                     });
                   }
                 }),
