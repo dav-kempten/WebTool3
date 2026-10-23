@@ -78,3 +78,42 @@ def test_create_event_reports_exhaustion_as_a_validation_error(
         )
 
     assert 'reference' in excinfo.value.detail
+
+
+@pytest.mark.django_db
+def test_check_reference_space_reports_usage(make_season, make_category):
+    from io import StringIO
+
+    from django.core.management import call_command
+
+    season = make_season('2025', current=True)
+    category = make_category('KT1')
+    Reference.objects.bulk_create([
+        Reference(season=season, category=category, prefix=0, reference=r)
+        for r in range(1, 100)
+    ])
+
+    out = StringIO()
+    call_command('check_reference_space', stdout=out)
+    output = out.getvalue()
+
+    assert 'KT1' in output
+    assert '99/990' in output
+
+
+@pytest.mark.django_db
+def test_check_reference_space_fails_above_the_threshold(make_season, make_category):
+    from django.core.management.base import CommandError
+
+    from django.core.management import call_command
+
+    season = make_season('2025', current=True)
+    category = make_category('KT1')
+    Reference.objects.bulk_create([
+        Reference(season=season, category=category, prefix=p, reference=r)
+        for p in range(10)
+        for r in range(1, 100)
+    ])
+
+    with pytest.raises(CommandError):
+        call_command('check_reference_space', '--threshold', '50')
