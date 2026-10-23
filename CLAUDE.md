@@ -118,26 +118,33 @@ python manage.py replication          # Replicate data to external system
 
 ### Backend tests
 
-pytest + pytest-django. Tests live in `webtool/server/tests/`; shared fixtures are in
-`webtool/conftest.py`. Config sits in `pyproject.toml` (`[tool.pytest.ini_options]`).
+pytest + pytest-django, run inside the `web` container (the host has no Python).
+Tests live in `webtool/server/tests/`, shared fixtures in
+`webtool/server/tests/conftest.py`. Config sits in `pyproject.toml`
+(`[tool.pytest.ini_options]`), settings in `config/settings/test.py`.
 
 ```bash
-# Requires the PostgreSQL container: docker compose up -d db
-uv pip install "pytest>=8.0" "pytest-django>=4.9" "pytest-cov>=6.0"
-
-pytest                       # from the project root
-pytest --create-db           # rebuild the test DB after model changes
-pytest --cov=server          # with coverage
+docker compose exec web pytest                 # all tests
+docker compose exec web pytest --create-db     # rebuild the test DB after model changes
+docker compose exec web pytest --cov=server    # with coverage
 ```
 
-One thing to know about the setup:
+Things to know about the setup:
 
-- **Reference data comes from `init_season`**, seeded once per session by the
-  `django_db_setup` fixture. Nearly every model default (`defaults.get_default_state`
-  and friends) resolves through `Season.objects.get(current=True)`, so without a
-  current season no event can be created at all. The command seeds season **2018**,
-  while `TourViewSet.queryset` only returns tours starting on or after 1 January of
-  the previous year — test tours therefore need a current-year `start_date`.
+- **The image installs exact versions from `uv.lock`**, including the `dev` group
+  with pytest — the same Django as production. After changing dependencies, run
+  `uv lock` and rebuild: `docker compose build web && docker compose up -d web`.
+- **`--ds=config.settings.test` sits in `addopts`**, because the container sets
+  `DJANGO_SETTINGS_MODULE=config.settings.local` through `.env`, which would
+  otherwise take precedence.
+- **Fixtures are deliberately narrow:** `make_season`, `make_category` and
+  `make_booking_code` create just the rows a test needs; there is no seeded
+  reference data. `Reference.get_reference` only finds categories assigned to the
+  season, so `make_booking_code` adds that assignment. Tests that create real tours
+  or courses need more: nearly every model default (`defaults.get_default_state`
+  and friends) resolves through `Season.objects.get(current=True)`, and
+  `TourViewSet.queryset` only returns tours starting on or after 1 January of the
+  previous year.
 
 ### Frontend
 

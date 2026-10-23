@@ -10,11 +10,21 @@
 
 **Spec:** `docs/superpowers/plans/2026-09-22-buchungscodes-spec.md`
 
-> **Stand 2026-10-23:** Task 1, Steps 3–5 sind erledigt. `config/settings/test.py`,
-> `server/tests/__init__.py` und `server/tests/test_constraints.py` lagen seit
-> 2026-09-23 unversioniert im Server-Checkout und sind jetzt im Repo — inhaltlich
-> wie unten, nur mit ausführlicheren Kommentaren. **Offen:** Task 1 Step 1
-> (angepasst), 2 und 6 sowie Task 2. Ein Testlauf hat noch nie stattgefunden.
+> **Stand 2026-10-23: Plan 0 ist abgeschlossen, `pytest` läuft mit 4 passed.**
+> Abweichungen von der ursprünglichen Fassung:
+>
+> - `config/settings/test.py`, `server/tests/__init__.py` und
+>   `server/tests/test_constraints.py` lagen seit 2026-09-23 unversioniert im
+>   Server-Checkout und sind jetzt im Repo, inhaltlich wie unten.
+> - **Die Tests laufen im `web`-Container**, nicht auf dem Host (dort gibt es kein
+>   Python). Das Image installiert dafür die `dev`-Gruppe, und zwar exakt in den
+>   Versionen aus `uv.lock` (Django 6.0.5 wie in Produktion). `pyproject.toml` setzt
+>   `--ds=config.settings.test`, weil der Container über `.env`
+>   `DJANGO_SETTINGS_MODULE=config.settings.local` vorgibt. Aufruf:
+>   `docker compose exec web pytest`.
+> - `make_booking_code` ordnet die Kategorie zusätzlich der Saison zu
+>   (`category.seasons.add(season)`) — sonst findet `Reference.get_reference` den
+>   Code nicht, siehe Task 2 Step 3.
 
 ## Global Constraints
 
@@ -50,9 +60,9 @@ Siehe Abschnitt 6 der Spec. Kurzfassung:
 
 **Interfaces:**
 - Consumes: nichts
-- Produces: ein grüner `uv run pytest`-Lauf; das Settings-Modul `config.settings.test`
+- Produces: ein grüner `docker compose exec web pytest`-Lauf; das Settings-Modul `config.settings.test`
 
-- [ ] **Step 1: Datenbank starten**
+- [x] **Step 1: Datenbank starten** — erledigt (der `db`-Container lief bereits)
 
 > **Geändert 2026-10-23:** Die ursprüngliche Fassung legte `.env` mit
 > `printf … > .env` neu an. Das überschreibt die vorhandene lokale `.env`
@@ -87,10 +97,13 @@ $env:DJCODE_DB_PASSWORD = ((Get-Content .env | Select-String '^DJCODE_DB_PASSWOR
 Der `djcode` des Containers ist Postgres-Superuser (er ist `POSTGRES_USER`) und
 darf damit `test_webtool` anlegen.
 
-- [ ] **Step 2: Abhängigkeiten installieren**
+- [x] **Step 2: Abhängigkeiten installieren** — erledigt, anders als geplant
+
+Statt `uv sync` auf dem Host: das `web`-Image installiert die `dev`-Gruppe aus
+`uv.lock` (siehe `Dockerfile`). Nach einer Änderung an den Abhängigkeiten:
 
 ```bash
-uv sync
+docker compose build web && docker compose up -d web
 ```
 
 - [x] **Step 3: Testsettings anlegen** — erledigt, siehe Stand oben
@@ -174,10 +187,10 @@ def test_only_one_season_can_be_current():
             Season.objects.create(name='2026', current=True)
 ```
 
-- [ ] **Step 6: Tests laufen lassen**
+- [x] **Step 6: Tests laufen lassen** — erledigt (2 passed)
 
 ```bash
-uv run pytest
+docker compose exec web pytest
 ```
 
 Erwartet: 2 passed. Beim allerersten Lauf legt pytest-django `test_webtool` an;
@@ -202,15 +215,11 @@ git commit -m "test: bootstrap pytest-django setup with a constraint smoke test"
 
 ### Task 2: Gemeinsame Fixtures
 
-> **Hinweis 2026-10-23 — Widerspruch zur CLAUDE.md:** Die `CLAUDE.md` beschreibt
-> ein anderes Setup als dieser Plan: gemeinsame Fixtures in `webtool/conftest.py`
-> und ein `django_db_setup`, das einmal pro Testlauf `init_season` ausführt (Saison
-> 2018 als aktuelle). Dieser Plan legt dagegen schmale Fixtures in
-> `webtool/server/tests/conftest.py` an, die nur das Nötigste erzeugen. Keine der
-> beiden Dateien existiert bisher. Vor der Umsetzung entscheiden, welcher Weg gilt,
-> und die jeweils andere Beschreibung angleichen. Für die Buchungscode-Tests
-> genügen die schmalen Fixtures; Tests, die echte Touren oder Kurse anlegen, brauchen
-> dagegen die Referenzdaten aus `init_season`.
+> **Entschieden 2026-10-23: schmale Fixtures** in `webtool/server/tests/conftest.py`.
+> Die `CLAUDE.md` beschrieb vorher ein anderes Setup (`webtool/conftest.py` mit
+> `init_season` pro Testlauf), das nie existierte; sie ist angeglichen. Tests, die
+> später echte Touren oder Kurse anlegen, brauchen zusätzlich Referenzdaten — dafür
+> dann eine eigene Fixture ergänzen.
 
 **Files:**
 - Create: `webtool/server/tests/conftest.py`
@@ -224,7 +233,7 @@ git commit -m "test: bootstrap pytest-django setup with a constraint smoke test"
   - `make_booking_code(season, category, prefix, reference, title='Testtour') -> str`
     legt `Reference` **und** zugehöriges `Event` an und gibt den Code-String zurück
 
-- [ ] **Step 1: Den Test schreiben, der die Fixtures benutzt**
+- [x] **Step 1: Den Test schreiben, der die Fixtures benutzt** — erledigt
 
 Datei `webtool/server/tests/test_fixtures.py`:
 
@@ -264,15 +273,15 @@ def test_the_same_code_can_exist_in_two_seasons(
     assert Reference.objects.filter(category=category, prefix=0, reference=12).count() == 2
 ```
 
-- [ ] **Step 2: Test laufen lassen, Fehlschlag bestätigen**
+- [x] **Step 2: Test laufen lassen, Fehlschlag bestätigen** — erledigt
 
 ```bash
-uv run pytest webtool/server/tests/test_fixtures.py -v
+docker compose exec web pytest webtool/server/tests/test_fixtures.py -v
 ```
 
 Erwartet: FAIL mit `fixture 'make_season' not found`.
 
-- [ ] **Step 3: Fixtures implementieren**
+- [x] **Step 3: Fixtures implementieren** — erledigt, mit Ergänzung (siehe unten)
 
 Datei `webtool/server/tests/conftest.py`:
 
@@ -310,6 +319,9 @@ def make_category(db):
 @pytest.fixture
 def make_booking_code(db):
     def make(season, category, prefix, reference, title='Testtour'):
+        # Reference.get_reference only looks at categories assigned to the
+        # season (Category.seasons); init_season does that for real data.
+        category.seasons.add(season)
         ref = Reference.objects.create(
             season=season, category=category, prefix=prefix, reference=reference,
         )
@@ -324,10 +336,10 @@ def make_booking_code(db):
     return make
 ```
 
-- [ ] **Step 4: Test laufen lassen, Erfolg bestätigen**
+- [x] **Step 4: Test laufen lassen, Erfolg bestätigen** — erledigt
 
 ```bash
-uv run pytest webtool/server/tests/test_fixtures.py -v
+docker compose exec web pytest webtool/server/tests/test_fixtures.py -v
 ```
 
 Erwartet: 2 passed.
@@ -338,15 +350,15 @@ ergänzen. Geprüft wurde gegen das Schema vom 2026-09-22: für `Category` sind
 `code`, `name`, `order` nötig, für `Event` `reference`, `season`, `title`,
 `name`, `start_date`.
 
-- [ ] **Step 5: Gesamten Testlauf prüfen**
+- [x] **Step 5: Gesamten Testlauf prüfen** — erledigt (4 passed)
 
 ```bash
-uv run pytest
+docker compose exec web pytest
 ```
 
 Erwartet: 4 passed.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit** — erledigt
 
 ```bash
 git add webtool/server/tests/conftest.py webtool/server/tests/test_fixtures.py

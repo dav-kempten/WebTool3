@@ -10,7 +10,7 @@
 
 **Spec:** `docs/superpowers/plans/2026-09-22-buchungscodes-spec.md` (Problem P2, Entscheidung E2)
 
-**Voraussetzung:** Plan 0 ist abgeschlossen, `uv run pytest` ist grün. Plan 1 ist **nicht** Voraussetzung.
+**Voraussetzung:** Plan 0 ist abgeschlossen, `docker compose exec web pytest` ist grün. Plan 1 ist **nicht** Voraussetzung.
 
 ## Global Constraints
 
@@ -110,7 +110,7 @@ def test_a_full_category_is_not_cloned(make_season, make_category):
 - [ ] **Step 2: Tests laufen lassen, Fehlschlag bestätigen**
 
 ```bash
-uv run pytest webtool/server/tests/test_reference_space.py -v
+docker compose exec web pytest webtool/server/tests/test_reference_space.py -v
 ```
 
 Erwartet: FAIL beim Import — `cannot import name 'ReferenceSpaceExhausted' from 'server.models'`.
@@ -177,7 +177,7 @@ from .reference import Reference, ReferenceSpaceExhausted
 - [ ] **Step 4: Tests laufen lassen, Erfolg bestätigen**
 
 ```bash
-uv run pytest webtool/server/tests/test_reference_space.py -v
+docker compose exec web pytest webtool/server/tests/test_reference_space.py -v
 ```
 
 Erwartet: 3 passed.
@@ -185,7 +185,7 @@ Erwartet: 3 passed.
 - [ ] **Step 5: Gesamtlauf**
 
 ```bash
-uv run pytest
+docker compose exec web pytest
 ```
 
 Erwartet: alle grün. Falls `Category` in `reference.py` danach ungenutzt ist,
@@ -246,7 +246,7 @@ def test_create_event_reports_exhaustion_as_a_validation_error(
 - [ ] **Step 2: Test laufen lassen, Fehlschlag bestätigen**
 
 ```bash
-uv run pytest webtool/server/tests/test_reference_space.py -v -k validation_error
+docker compose exec web pytest webtool/server/tests/test_reference_space.py -v -k validation_error
 ```
 
 Erwartet: FAIL — es kommt `ReferenceSpaceExhausted` statt `ValidationError` durch.
@@ -289,7 +289,7 @@ wird:
 - [ ] **Step 4: Test laufen lassen, Erfolg bestätigen**
 
 ```bash
-uv run pytest webtool/server/tests/test_reference_space.py -v
+docker compose exec web pytest webtool/server/tests/test_reference_space.py -v
 ```
 
 Erwartet: 4 passed.
@@ -364,7 +364,7 @@ def test_check_reference_space_fails_above_the_threshold(make_season, make_categ
 - [ ] **Step 2: Tests laufen lassen, Fehlschlag bestätigen**
 
 ```bash
-uv run pytest webtool/server/tests/test_reference_space.py -v -k check_reference_space
+docker compose exec web pytest webtool/server/tests/test_reference_space.py -v -k check_reference_space
 ```
 
 Erwartet: FAIL mit `Unknown command: 'check_reference_space'`.
@@ -447,7 +447,7 @@ class Command(BaseCommand):
 - [ ] **Step 4: Tests laufen lassen, Erfolg bestätigen**
 
 ```bash
-uv run pytest webtool/server/tests/test_reference_space.py -v
+docker compose exec web pytest webtool/server/tests/test_reference_space.py -v
 ```
 
 Erwartet: 6 passed.
@@ -455,7 +455,7 @@ Erwartet: 6 passed.
 - [ ] **Step 5: Gesamtlauf**
 
 ```bash
-uv run pytest
+docker compose exec web pytest
 ```
 
 - [ ] **Step 6: Commit**

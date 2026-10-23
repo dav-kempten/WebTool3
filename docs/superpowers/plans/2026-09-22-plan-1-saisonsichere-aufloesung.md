@@ -10,7 +10,7 @@
 
 **Spec:** `docs/superpowers/plans/2026-09-22-buchungscodes-spec.md` (Problem P1, Entscheidung E1)
 
-**Voraussetzung:** Plan 0 ist abgeschlossen, `uv run pytest` ist grün.
+**Voraussetzung:** Plan 0 ist abgeschlossen, `docker compose exec web pytest` ist grün.
 
 ## Global Constraints
 
@@ -102,7 +102,7 @@ def test_seasons_for_is_empty_for_a_malformed_code():
 - [ ] **Step 2: Tests laufen lassen, Fehlschlag bestätigen**
 
 ```bash
-uv run pytest webtool/server/tests/test_reference_codes.py -v
+docker compose exec web pytest webtool/server/tests/test_reference_codes.py -v
 ```
 
 Erwartet: FAIL mit `AttributeError: type object 'Reference' has no attribute 'parse_code'`.
@@ -172,7 +172,7 @@ Der `raise Reference.DoesNotExist(...)` darunter bleibt unverändert.
 - [ ] **Step 4: Tests laufen lassen, Erfolg bestätigen**
 
 ```bash
-uv run pytest webtool/server/tests/test_reference_codes.py -v
+docker compose exec web pytest webtool/server/tests/test_reference_codes.py -v
 ```
 
 Erwartet: 6 passed.
@@ -180,7 +180,7 @@ Erwartet: 6 passed.
 - [ ] **Step 5: Gesamtlauf, damit der Refactor nichts gebrochen hat**
 
 ```bash
-uv run pytest
+docker compose exec web pytest
 ```
 
 Erwartet: alle grün.
@@ -261,7 +261,7 @@ def test_public_events_hides_deleted_and_internal_events(
 - [ ] **Step 2: Test laufen lassen, Fehlschlag bestätigen**
 
 ```bash
-uv run pytest webtool/server/tests/test_client_activities.py -v
+docker compose exec web pytest webtool/server/tests/test_client_activities.py -v
 ```
 
 Erwartet: FAIL mit `ImportError: cannot import name 'public_events'`.
@@ -341,7 +341,7 @@ wird:
 - [ ] **Step 4: Tests laufen lassen, Erfolg bestätigen**
 
 ```bash
-uv run pytest webtool/server/tests/test_client_activities.py -v
+docker compose exec web pytest webtool/server/tests/test_client_activities.py -v
 ```
 
 Erwartet: 3 passed.
@@ -436,7 +436,7 @@ def test_an_unknown_season_404s(
 - [ ] **Step 2: Tests laufen lassen, Fehlschlag bestätigen**
 
 ```bash
-uv run pytest webtool/server/tests/test_client_activities.py -v -k seasonal
+docker compose exec web pytest webtool/server/tests/test_client_activities.py -v -k seasonal
 ```
 
 Erwartet: FAIL mit Status 404 statt 200 bei `test_a_seasonal_url_resolves_the_old_event`
@@ -491,7 +491,7 @@ from server.views.client import client_urlpatterns
 - [ ] **Step 4: Tests laufen lassen, Erfolg bestätigen**
 
 ```bash
-uv run pytest webtool/server/tests/test_client_activities.py -v
+docker compose exec web pytest webtool/server/tests/test_client_activities.py -v
 ```
 
 Erwartet: 7 passed.
@@ -499,7 +499,7 @@ Erwartet: 7 passed.
 - [ ] **Step 5: Gesamtlauf**
 
 ```bash
-uv run pytest
+docker compose exec web pytest
 ```
 
 Erwartet: alle grün.
@@ -548,7 +548,7 @@ def test_the_response_names_the_season_it_resolved_to(
 - [ ] **Step 2: Test laufen lassen, Fehlschlag bestätigen**
 
 ```bash
-uv run pytest webtool/server/tests/test_client_activities.py -v -k season_it_resolved
+docker compose exec web pytest webtool/server/tests/test_client_activities.py -v -k season_it_resolved
 ```
 
 Erwartet: FAIL mit `KeyError: 'season'`.
@@ -569,7 +569,7 @@ Dann `'season',` in **beide** `Meta.fields`-Tupel aufnehmen, jeweils direkt nach
 - [ ] **Step 4: Test laufen lassen, Erfolg bestätigen**
 
 ```bash
-uv run pytest webtool/server/tests/test_client_activities.py -v
+docker compose exec web pytest webtool/server/tests/test_client_activities.py -v
 ```
 
 Erwartet: 8 passed.
@@ -577,7 +577,7 @@ Erwartet: 8 passed.
 - [ ] **Step 5: Gesamtlauf**
 
 ```bash
-uv run pytest
+docker compose exec web pytest
 ```
 
 - [ ] **Step 6: Commit**

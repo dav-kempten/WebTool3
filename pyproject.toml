@@ -41,4 +41,5 @@ testpaths = ["webtool/server/tests"]
 python_files = ["test_*.py"]
 # --reuse-db spart bei jedem Lauf das Neuaufbauen der Test-DB.
 # Nach neuen Migrationen einmalig mit --create-db laufen lassen.
-addopts = "--reuse-db --strict-markers -ra"
+# --ds wins over the DJANGO_SETTINGS_MODULE=config.settings.local the web container sets via .env.
+addopts = "--ds=config.settings.test --reuse-db --strict-markers -ra"
