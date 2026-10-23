@@ -49,6 +49,10 @@
     }
   </div>
 
+  @if (isLoggedIn()) {
+    <avk-requirement-panel class="avk-dashboard-requirements" />
+  }
+
   @if (showMyEvents()) {
     <div class="avk-dashboard-my">
       <p-card subheader="Meine Touren">

@@ -5,6 +5,7 @@ from server.models.qualification import Qualification, QualificationGroup
 from server.models.instruction import Instruction, Topic
 from server.models.category import Category, CategoryGroup
 from server.models.tour import Tour
+from server.models.requirement import Requirement
 from server.models.equipment import Equipment
 from server.models.calendar import Calendar, Anniversary, Vacation
 from server.user_admin import UserAdmin
@@ -36,6 +37,25 @@ class CollectiveAdmin(admin.ModelAdmin):
     # The roles of a group can be edited right on the group as well.
     inlines = (RoleInline,)
 
+
+class RequirementAdmin(admin.ModelAdmin):
+    """Bedarf je Kurs- und Tourenart -- Quelle der Bedarfsanzeige im Dashboard.
+
+    Die Zahlen stehen direkt in der Liste, damit eine ganze Saison in einem
+    Durchgang gepflegt werden kann.
+    """
+    list_display = ('bedarf', 'season', 'kind', 'minimum', 'maximum', 'order', 'deprecated')
+    list_display_links = ('bedarf',)
+    list_editable = ('minimum', 'maximum', 'order', 'deprecated')
+    list_filter = ('season', 'kind', 'deprecated')
+    search_fields = ('category__code', 'category__name', 'category__category_topic__title')
+    list_select_related = ('season', 'category', 'category__category_topic')
+    fields = ('season', 'kind', 'category', 'minimum', 'maximum', 'order', 'deprecated')
+
+    @admin.display(description='Kurs-/Tourenart', ordering='category__name')
+    def bedarf(self, obj):
+        return obj.label
+
 # Register your models here.
 
 # Auth.User
@@ -65,3 +85,6 @@ admin.site.register(Equipment)
 # Instructions
 admin.site.register(Instruction, InstructionAdmin)
 admin.site.register(Topic)
+
+# Saisonplanung
+admin.site.register(Requirement, RequirementAdmin)

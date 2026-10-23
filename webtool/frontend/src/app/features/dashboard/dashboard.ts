@@ -7,9 +7,11 @@ import { PermissionLevel } from '../../core/services/permission';
 import { ToursStore } from '../../core/stores/tours.store';
 import { InstructionsStore } from '../../core/stores/instructions.store';
 import { ValuesStore } from '../../core/stores/values.store';
+import { RequirementsStore } from '../../core/stores/requirements.store';
 import { StatesGroup, getStatesOfGroup } from '../../models/value';
 import { TourCreateDialog } from '../../shared/dialogs/tour-create-dialog/tour-create-dialog';
 import { InstructionCreateDialog } from '../../shared/dialogs/instruction-create-dialog/instruction-create-dialog';
+import { RequirementPanel } from './requirement-panel/requirement-panel';
 
 interface DashboardTile {
   label: string;
@@ -35,7 +37,14 @@ const MY_EVENT_STATES: number[] = getStatesOfGroup(StatesGroup.Active);
 @Component({
   selector: 'avk-dashboard',
   standalone: true,
-  imports: [RouterModule, DatePipe, CardModule, TourCreateDialog, InstructionCreateDialog],
+  imports: [
+    RouterModule,
+    DatePipe,
+    CardModule,
+    TourCreateDialog,
+    InstructionCreateDialog,
+    RequirementPanel,
+  ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
@@ -44,6 +53,7 @@ export class Dashboard {
   private tours = inject(ToursStore);
   private instructions = inject(InstructionsStore);
   private values = inject(ValuesStore);
+  private requirements = inject(RequirementsStore);
 
   readonly user = this.auth.user;
   readonly isLoggedIn = this.auth.isLoggedIn;
@@ -110,6 +120,15 @@ export class Dashboard {
         this.values.loadValues();
         this.tours.ensureSummaries();
         this.instructions.ensureSummaries();
+      }
+    });
+
+    // Der Bedarf steht jedem Angemeldeten offen -- gerade Trainer sollen sehen,
+    // wo noch etwas fehlt. Wie oben an das Signal gehängt, nicht an ngOnInit:
+    // das Dashboard ist vor dem Login schon montiert.
+    effect(() => {
+      if (this.isLoggedIn()) {
+        this.requirements.ensureOverview();
       }
     });
   }

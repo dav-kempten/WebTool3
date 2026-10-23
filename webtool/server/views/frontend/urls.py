@@ -10,6 +10,7 @@ from . import SessionViewSet
 from . import TourcalendarViewSet
 from . import InstructioncalendarViewSet
 from . import GuideViewSet
+from . import RequirementViewSet
 
 router = DefaultRouter()
 router.register(r'names', NamesViewSet, basename='names')
@@ -22,3 +23,4 @@ router.register(r'sessions', SessionViewSet, basename='sessions')
 router.register(r'tourcalendar', TourcalendarViewSet, basename='tourcalendar')
 router.register(r'instructioncalendar', InstructioncalendarViewSet, basename='instructioncalendar')
 router.register(r'guides', GuideViewSet, basename='guides')
+router.register(r'requirements', RequirementViewSet, basename='requirements')
