@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
-from django.core.management.base import BaseCommand
+import datetime
+
+from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
 from server.models import Event, Instruction, Reference, Season, Session, Talk, Tour
+from server.models.defaults import season_year
 
 
 def event_groups():
@@ -20,18 +23,28 @@ def event_groups():
 class Command(BaseCommand):
 
     help = (
-        'Move every tour, course, talk and session whose start year differs from its '
-        'season into the season of its start year, together with its satellites '
-        '(deadline, preliminary, course meetings). Booking codes keep their string '
-        '-- they may be printed already. A group whose code already exists in the '
-        'target season is skipped and reported. Without --apply only a report.'
+        'Move every tour, course, talk and session whose start date falls outside its '
+        'season into the right one, together with its satellites (deadline, '
+        'preliminary, course meetings). The season starts on 1 December, see '
+        'defaults.season_year. Booking codes keep their string -- they may be printed '
+        'already. A group whose code already exists in the target season is skipped '
+        'and reported. Without --apply only a report.'
     )
 
     def add_arguments(self, parser):
         parser.add_argument('--apply', action='store_true', help='Actually move the events')
+        parser.add_argument(
+            '--since', default=None,
+            help=(
+                'Nur Veranstaltungen ab diesem Starttermin (YYYY-MM-DD) anfassen. '
+                'Ohne Angabe der gesamte Bestand -- nach einer Regeländerung gilt '
+                'sonst auch jede vergangene Veranstaltung als falsch einsortiert.'
+            ),
+        )
 
     def handle(self, *args, **options):
         apply = options['apply']
+        since = self.parse_since(options['since'])
         moved, skipped = 0, 0
         # Codes this run puts into a target season. Without it the dry run would
         # miss clashes between two legacy events moving into the same season.
@@ -44,7 +57,9 @@ class Command(BaseCommand):
         # Reference row alone are left as they are.
         misplaced = [
             (kind, main, satellites) for kind, main, satellites in event_groups()
-            if main.start_date and main.season.name != str(main.start_date.year)
+            if main.start_date
+            and (since is None or main.start_date >= since)
+            and main.season.name != str(season_year(main.start_date))
         ]
         # Two legacy events can carry the same code for one year (production has
         # two GKS-701 for January 2027). The one whose code row matches its event
@@ -56,7 +71,7 @@ class Command(BaseCommand):
         )
 
         for kind, main, satellites in misplaced:
-            target_name = str(main.start_date.year)
+            target_name = str(season_year(main.start_date))
             group = [main, *satellites]
             line = '{} {} (Start {}): Saison {} -> {}'.format(
                 kind, main.reference, main.start_date, main.season.name, target_name
@@ -74,7 +89,7 @@ class Command(BaseCommand):
             claimed.update(self.key(event.reference, target_name) for event in group)
             self.stdout.write(line)
             if apply:
-                self.move(group, Season.for_year(main.start_date.year))
+                self.move(group, Season.for_date(main.start_date))
 
         if not moved and not skipped:
             self.stdout.write('keine Veranstaltung mit abweichender Saison')
@@ -83,6 +98,15 @@ class Command(BaseCommand):
             moved, 'verschoben' if apply else 'zu verschieben', skipped,
             '' if apply else ' -- Probelauf, mit --apply ausführen',
         ))
+
+    @staticmethod
+    def parse_since(value):
+        if not value:
+            return None
+        try:
+            return datetime.date.fromisoformat(value)
+        except ValueError:
+            raise CommandError('--since erwartet YYYY-MM-DD, bekommen: {!r}'.format(value))
 
     @staticmethod
     def key(reference, season_name):

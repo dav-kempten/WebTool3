@@ -66,6 +66,15 @@ class Season(TimeMixin, models.Model):
         return cls.objects.filter(name__in=names).order_by('-name')
 
     @classmethod
+    def for_date(cls, date):
+        """Die Saison, in die ein Datum fällt, bei Bedarf angelegt.
+
+        Die Saison beginnt am 1. Dezember, siehe `defaults.season_year`: ein
+        Termin am 15.12.2026 gehört zur Saison 2027, einer am 15.01.2027 auch.
+        """
+        return cls.for_year(defaults.season_year(date))
+
+    @classmethod
     def for_year(cls, year):
         """The season of `year`, created on first use. Never changes `current`.
 

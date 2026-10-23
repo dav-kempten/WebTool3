@@ -14,10 +14,10 @@ def rollover(today):
 
 
 @pytest.mark.django_db
-def test_rollover_on_new_year_makes_the_new_year_current(make_season):
+def test_rollover_on_the_first_of_december_makes_the_new_season_current(make_season):
     make_season('2026', current=True)
 
-    rollover('2027-01-01')
+    rollover('2026-12-01')
 
     assert Season.objects.get(current=True).name == '2027'
 
@@ -26,13 +26,13 @@ def test_rollover_on_new_year_makes_the_new_year_current(make_season):
 def test_rollover_also_prepares_the_following_season(make_season):
     make_season('2026', current=True)
 
-    rollover('2027-01-01')
+    rollover('2026-12-01')
 
     assert Season.objects.filter(name='2028').exists()
 
 
 @pytest.mark.django_db
-def test_rollover_within_the_year_only_prepares_next_season(make_season):
+def test_rollover_within_the_season_only_prepares_the_next_one(make_season):
     make_season('2026', current=True)
 
     rollover('2026-06-15')
@@ -42,11 +42,33 @@ def test_rollover_within_the_year_only_prepares_next_season(make_season):
 
 
 @pytest.mark.django_db
+def test_rollover_does_not_switch_at_the_turn_of_the_year(make_season):
+    """Der 1. Januar ist keine Saisongrenze mehr -- im Januar läuft die Saison
+    weiter, die am 1. Dezember begonnen hat."""
+    make_season('2026', current=True)
+
+    rollover('2026-11-30')
+    assert Season.objects.get(current=True).name == '2026'
+
+    rollover('2026-12-01')
+    assert Season.objects.get(current=True).name == '2027'
+
+    rollover('2027-01-01')
+    assert Season.objects.get(current=True).name == '2027'
+
+    rollover('2027-11-30')
+    assert Season.objects.get(current=True).name == '2027'
+
+    rollover('2027-12-01')
+    assert Season.objects.get(current=True).name == '2028'
+
+
+@pytest.mark.django_db
 def test_rollover_is_idempotent(make_season):
     make_season('2026', current=True)
 
-    rollover('2027-01-01')
-    rollover('2027-01-01')
+    rollover('2026-12-01')
+    rollover('2026-12-01')
 
     assert Season.objects.filter(current=True).count() == 1
     assert Season.objects.get(current=True).name == '2027'
@@ -61,7 +83,7 @@ def test_rollover_works_when_the_new_season_already_exists(make_season):
     make_season('2026', current=True)
     make_season('2027')
 
-    rollover('2027-01-01')
+    rollover('2026-12-01')
 
     assert Season.objects.get(current=True).name == '2027'
     assert not Season.objects.get(name='2026').current
@@ -71,6 +93,6 @@ def test_rollover_works_when_the_new_season_already_exists(make_season):
 def test_rollover_reports_what_it_did(make_season):
     make_season('2026', current=True)
 
-    output = rollover('2027-01-01')
+    output = rollover('2026-12-01')
 
     assert '2027' in output and 'current' in output

@@ -3,6 +3,22 @@ from datetime import datetime
 
 from django.apps import apps
 
+# Die Saison beginnt am 1. Dezember und trägt die Jahreszahl, in der ihr
+# Hauptteil liegt: Saison 2027 läuft vom 1.12.2026 bis zum 30.11.2027. Damit
+# bleibt ein Winterprogramm in einer Saison, statt am Jahreswechsel zu
+# zerfallen -- eine Skitour im Dezember gehört zum selben Programm wie ihre
+# Schwestertour im Januar und trägt dieselbe Jahresziffer im Buchungscode.
+#
+# Die Regel steht hier, weil defaults.py von keinem anderen Modul des Pakets
+# abhängt und so von Models, Serializern und Befehlen gleichermaßen benutzt
+# werden kann.
+SEASON_START_MONTH = 12
+
+
+def season_year(date):
+    """Das Saisonjahr, zu dem ein Datum gehört."""
+    return date.year + 1 if date.month >= SEASON_START_MONTH else date.year
+
 
 def get_default_year():
     return datetime.now().year
@@ -74,4 +90,6 @@ def get_default_state():
 
 
 def get_default_prefix():
-    return int(str(datetime.now().year)[-1])
+    # Die Ziffer der laufenden Saison, nicht die des Kalenderjahres: im
+    # Dezember gehört ein neuer Code schon zur nächsten Saison.
+    return season_year(datetime.now().date()) % 10

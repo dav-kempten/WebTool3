@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
-"""Plan 3, Task 7: move events whose start year differs from their season."""
+"""Veranstaltungen in die Saison ihres Starttermins rücken.
+
+Die Saison beginnt am 1. Dezember, siehe `defaults.season_year` -- ein
+Dezembertermin gehört also schon zur folgenden Saison.
+"""
 from io import StringIO
 
 from django.core.management import call_command
@@ -106,6 +110,47 @@ def test_events_in_their_own_season_are_left_alone(api):
 
     assert Tour.objects.get(pk=tour.pk).tour.season.name == str(THIS)
     assert 'keine' in output
+
+
+def test_a_december_event_moves_into_the_following_season(api):
+    """Der Fall, für den die Saisongrenze verschoben wurde: eine Dezembertour
+    gehört zum Winter des Folgejahres."""
+    tour = post_tour(api, day(THIS, '12-20'), day(THIS, '12-01'))
+    legacy(tour_events(tour), str(THIS))
+
+    realign('--apply')
+
+    assert {e.season.name for e in tour_events(tour)} == {str(NEXT)}
+
+
+def test_a_november_event_stays_where_it_is(api):
+    tour = post_tour(api, day(THIS, '11-30'), day(THIS, '11-15'))
+
+    realign('--apply')
+
+    assert Tour.objects.get(pk=tour.pk).tour.season.name == str(THIS)
+
+
+def test_since_leaves_everything_before_the_cutoff_alone(api):
+    """Nach einer Regeländerung gilt sonst auch jede vergangene Veranstaltung
+    als falsch einsortiert -- die Vergangenheit wird nicht umgeschrieben."""
+    old = post_tour(api, day(THIS, '12-20'), day(THIS, '12-01'))
+    legacy(tour_events(old), str(THIS))
+    new = post_tour(api, day(NEXT, '12-20'), day(NEXT, '12-01'))
+    legacy(tour_events(new), str(NEXT))
+
+    realign('--apply', '--since', day(NEXT, '01-01'))
+
+    assert Tour.objects.get(pk=old.pk).tour.season.name == str(THIS)
+    assert Tour.objects.get(pk=new.pk).tour.season.name == str(NEXT + 1)
+
+
+def test_since_rejects_a_date_it_cannot_read(api):
+    from django.core.management.base import CommandError
+    import pytest
+
+    with pytest.raises(CommandError):
+        realign('--since', '01.12.2026')
 
 
 def test_two_legacy_events_with_the_same_code_for_one_year(api):

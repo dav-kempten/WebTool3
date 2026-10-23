@@ -5,15 +5,18 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
 from server.models import Season
+from server.models.defaults import season_year
 
 
 class Command(BaseCommand):
 
     help = (
-        "Make the season of today's year the current one and prepare next year's "
-        'season (Season.for_year). Meant to run daily from cron: on 1 January it '
-        'switches, on every other day it changes nothing beyond creating a missing '
-        "next season. Safe to run any number of times."
+        "Make the season of today the current one and prepare the following "
+        'season (Season.for_year). The season starts on 1 December, so that is '
+        'the day it switches -- a winter programme then stays in one season '
+        'instead of falling apart at the turn of the year. Meant to run daily '
+        'from cron: on every other day it changes nothing beyond creating a '
+        'missing next season. Safe to run any number of times.'
     )
 
     def add_arguments(self, parser):
@@ -25,9 +28,11 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         today = self.parse_today(options['today'])
 
+        year = season_year(today)
+
         with transaction.atomic():
-            target = Season.for_year(today.year)
-            following = Season.for_year(today.year + 1)
+            target = Season.for_year(year)
+            following = Season.for_year(year + 1)
 
             if target.current:
                 self.stdout.write('season {} is already current'.format(target.name))
