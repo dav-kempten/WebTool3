@@ -105,11 +105,31 @@ class Reference(SeasonMixin, TimeMixin, models.Model):
         return code, int(prefix), int(reference)
 
     @staticmethod
-    def get_reference(value, season=None):
+    def get_reference(value, season=None, seasons=None):
+        """The Reference a booking code string names.
 
+        season  -- look only there (a Season or its name)
+        seasons -- a window of seasons, e.g. Season.visible('client'): the season
+                   whose year ends in the code's digit is tried first, then the
+                   others newest first. That finds a legacy code too whose digit
+                   does not match its season (BGT-712 in season 2026).
+        neither -- the current season, as callers without a window always had it
+        """
         try:
             code, prefix, reference = Reference.parse_code(value)
         except ValueError:
+            # noinspection PyCallByClass
+            raise Reference.DoesNotExist("Reference matching query does not exist.")
+
+        if season is None and seasons is not None:
+            by_digit_then_newest = sorted(
+                seasons, key=lambda s: (s.name[-1] != str(prefix), -int(s.name))
+            )
+            for candidate in by_digit_then_newest:
+                try:
+                    return Reference._find(code, prefix, reference, candidate)
+                except Reference.DoesNotExist:
+                    continue
             # noinspection PyCallByClass
             raise Reference.DoesNotExist("Reference matching query does not exist.")
 
@@ -123,6 +143,10 @@ class Reference(SeasonMixin, TimeMixin, models.Model):
         if season is None:
             season = Season.objects.get(current=True)
 
+        return Reference._find(code, prefix, reference, season)
+
+    @staticmethod
+    def _find(code, prefix, reference, season):
         try:
             category = Category.objects.get(seasons=season, code=code)
         except Category.DoesNotExist:

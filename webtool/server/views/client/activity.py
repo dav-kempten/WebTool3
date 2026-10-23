@@ -8,15 +8,18 @@ from rest_framework.response import Response
 
 from server.filters.client import ActivityFilter
 from server.serializers.client import ActivityListSerializer, ActivitySerializer
-from server.models import Event, Tour, Talk, Instruction, Session, Reference
+from server.models import Event, Tour, Talk, Instruction, Session, Reference, Season
 
 
-class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
+def public_events(seasons):
+    """Events the client API may show, within `seasons`.
 
-    lookup_field = "reference"
-    lookup_url_kwarg = "reference"
-    queryset = Event.objects.filter(
-        season__current=True
+    The only place that knows the visibility rules. Deadlines, preliminary
+    meetings and course appointments are never listed; they exist only as
+    satellites of the event they belong to.
+    """
+    return Event.objects.filter(
+        season__in=seasons
     ).exclude(
         deprecated=True
     ).exclude(
@@ -36,8 +39,21 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
     ).exclude(
         session__isnull=False, session__state__public=False
     ).distinct()
+
+
+class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
+
+    lookup_field = "reference"
+    lookup_url_kwarg = "reference"
+    # Placeholder for the router; the real queryset depends on the current season
+    # and is built per request in get_queryset.
+    queryset = Event.objects.none()
     filterset_class = ActivityFilter
     filter_backends = [DjangoFilterBackend]
+
+    def get_queryset(self):
+        # D2: the client API shows this and next season only.
+        return public_events(Season.visible('client'))
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
@@ -90,7 +106,9 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
         )
 
         try:
-            reference = Reference.get_reference(self.kwargs[self.lookup_url_kwarg])
+            reference = Reference.get_reference(
+                self.kwargs[self.lookup_url_kwarg], seasons=Season.visible('client'),
+            )
             obj = get_object_or_404(queryset, reference=reference)
         except Reference.DoesNotExist:
             raise Http404('No %s matches the given query.' % 'Reference')

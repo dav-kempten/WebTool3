@@ -50,6 +50,21 @@ class Season(TimeMixin, models.Model):
     def __str__(self):
         return self.name
 
+    # Saisons relativ zur aktuellen: der Client (Homepage) sieht diese und die
+    # nächste, das Frontend zusätzlich die letzte.
+    VISIBLE_OFFSETS = {'client': (0, 1), 'frontend': (-1, 0, 1)}
+
+    @classmethod
+    def visible(cls, kind):
+        """The seasons `kind` ('client' or 'frontend') may show, newest first.
+
+        Computed on every call rather than once at import, so the window moves
+        with the current season without a restart. Only existing seasons."""
+        current = cls.objects.get(current=True)
+        year = int(current.name)
+        names = [str(year + offset) for offset in cls.VISIBLE_OFFSETS[kind]]
+        return cls.objects.filter(name__in=names).order_by('-name')
+
     @classmethod
     def for_year(cls, year):
         """The season of `year`, created on first use. Never changes `current`.
