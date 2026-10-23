@@ -456,6 +456,16 @@
     </form>
   </section>
 
+  <avk-ready-checklist-dialog
+    [(visible)]="showReadyChecklist"
+    kind="Tour"
+    [multiDay]="isMultiDay()"
+    [extraCharges]="tour()?.extraCharges ?? null"
+    [advances]="tour()?.advances ?? null"
+    [equipmentService]="tour()?.equipmentService ?? false"
+    (confirmed)="completeReady()"
+  />
+
   <!-- Event editing dialog -->
   <p-dialog
     header="Termin-Details"

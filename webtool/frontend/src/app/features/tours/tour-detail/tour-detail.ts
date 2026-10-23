@@ -31,6 +31,8 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { TextareaModule } from 'primeng/textarea';
 import { TooltipModule } from 'primeng/tooltip';
 import { ResponsiveTooltip } from '../../../shared/directives/responsive-tooltip';
+import { ReadyChecklistDialog } from '../../../shared/dialogs/ready-checklist-dialog/ready-checklist-dialog';
+import { guardReadyState, spansSeveralDays } from '../../../shared/util/ready-guard';
 import { MessageModule } from 'primeng/message';
 import { ConfirmationService } from 'primeng/api';
 
@@ -85,6 +87,7 @@ type EventKind = 'tour' | 'deadline' | 'preliminary';
     TooltipModule,
     ResponsiveTooltip,
     MessageModule,
+    ReadyChecklistDialog,
   ],
   providers: [AutoSaveService],
   templateUrl: './tour-detail.html',
@@ -158,10 +161,12 @@ export class TourDetail {
     if (!this.isOwner()) {
       return states;
     }
-    // Owners may only pick In Arbeit/Fertig, but the current state must stay
-    // in the list so the (locked) select can still display e.g. "Veröffentlicht".
+    // Owners may only pick In Arbeit; "Fertig" is reached through "Speichern +
+    // Fertig" and its checklist only. The current state must stay in the list,
+    // so the select can still display e.g. "Fertig" (and switch back) or the
+    // locked "Veröffentlicht".
     const currentId = this.tour()?.stateId;
-    return states.filter((s) => s.id <= 2 || s.id === currentId);
+    return states.filter((s) => s.id === States.WORKING || s.id === currentId);
   });
   readonly skillOptions = computed(() =>
     this.values.skills().filter((s) => s.categoryId === this.tour()?.categoryId),
@@ -311,6 +316,13 @@ export class TourDetail {
     });
 
     this.needsExtraCategories.set((tour.categoryIds?.length ?? 0) > 0);
+
+    guardReadyState(group.get('stateId')!, {
+      current: () => this.tour()?.stateId,
+      allowed: () => this.readyConfirmed,
+      onBlocked: () => this.showReadyChecklist.set(true),
+      destroyRef: this.destroyRef,
+    });
 
     group.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((value) => {
       this.tours.updateLocal(tour.id, value as Partial<Tour>);
@@ -534,13 +546,28 @@ export class TourDetail {
   /** "Speichern + Fertig" is only offered while the tour is still In Arbeit. */
   readonly isWorking = computed(() => this.tour()?.stateId === States.WORKING);
 
-  /**
-   * Hands the tour in for review: sets the state to Fertig and saves. The form
-   * mirrors the change into the store synchronously, so the save carries it,
-   * and the backend sends its In Arbeit → Fertig notification as usual.
-   */
+  readonly showReadyChecklist = signal(false);
+  /** Set only while the confirmed checklist hands the tour in, see guardReadyState(). */
+  private readyConfirmed = false;
+
+  /** Accommodation and advance items of the checklist only apply then. */
+  readonly isMultiDay = computed(() => spansSeveralDays(this.eventRows()[0]));
+
+  /** "Speichern + Fertig" goes through the checklist first. */
   saveAsReady(): void {
+    this.showReadyChecklist.set(true);
+  }
+
+  /**
+   * Hands the tour in for review once the checklist is ticked off: sets the
+   * state to Fertig and saves. The form mirrors the change into the store
+   * synchronously, so the save carries it, and the backend sends its
+   * In Arbeit → Fertig notification as usual.
+   */
+  completeReady(): void {
+    this.readyConfirmed = true;
     this.form()?.get('stateId')?.setValue(States.READY);
+    this.readyConfirmed = false;
     this.save();
   }
 

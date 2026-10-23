@@ -385,6 +385,16 @@
     </form>
   </section>
 
+  <avk-ready-checklist-dialog
+    [(visible)]="showReadyChecklist"
+    kind="Kurs"
+    [multiDay]="isMultiDay()"
+    [extraCharges]="instruction()?.extraCharges ?? null"
+    [advances]="instruction()?.advances ?? null"
+    [equipmentService]="instruction()?.equipmentService ?? false"
+    (confirmed)="completeReady()"
+  />
+
   <p-dialog
     header="Termin-Details"
     [modal]="true"
