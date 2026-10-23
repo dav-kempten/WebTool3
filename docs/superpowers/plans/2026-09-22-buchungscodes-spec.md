@@ -201,3 +201,10 @@ Gelten für **alle** Tasks in allen drei Plänen.
 
 Plan 1 und Plan 2 sind untereinander unabhängig und können in beliebiger
 Reihenfolge oder parallel bearbeitet werden.
+
+**Nachtrag 2026-10-23:** Plan 0 ist abgeschlossen. Mit
+`2026-10-23-plan-3-jahresbasierte-saisons.md` gilt: Saison = Jahr der
+Veranstaltung, automatischer Saisonwechsel, Sichtbarkeitsfenster. Plan 3 übernimmt
+Teile von Plan 1 und setzt Plan 2 Task 1–2 voraus; die Messung dort zeigt außerdem,
+dass die „Wiederverwendung" aus Abschnitt 2.2 fast nur Satelliten betrifft, die die
+Client-API nie ausliefert.
