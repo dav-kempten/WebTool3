@@ -36,6 +36,20 @@ class Requirement(SeasonMixin, TimeMixin, models.Model):
     )
     KIND_LABELS = {INSTRUCTION: 'Kurse', TOUR: 'Touren'}
 
+    # Winter- und Sommerprogramm werden getrennt geplant und auch getrennt
+    # angezeigt. Die Jahreszeit steht an der Kategorie (`Category.winter` /
+    # `Category.summer`) und nicht am Bedarf -- dort ist sie seit jeher
+    # gepflegt, und eine Kategorie wechselt sie nicht. Was keines von beiden
+    # trägt, läuft ganzjährig: Hallenklettern, Kinderkurse, Yoga.
+    WINTER = 'winter'
+    SUMMER = 'summer'
+    ALL_YEAR = 'other'
+    PART_CHOICES = (
+        (WINTER, 'Winter'),
+        (SUMMER, 'Sommer'),
+        (ALL_YEAR, 'Ganzjährig'),
+    )
+
     # Das Programmjahr ist die Saison: beide laufen vom 1. Dezember bis zum
     # 30. November, siehe `defaults.season_year`.
     PROGRAM_START_MONTH = defaults.SEASON_START_MONTH
@@ -103,6 +117,32 @@ class Requirement(SeasonMixin, TimeMixin, models.Model):
             if topic is not None:
                 return topic.title
         return self.category.name
+
+    @classmethod
+    def part_of(cls, category):
+        """Winter, Sommer oder ganzjährig -- abgelesen an der Kategorie."""
+        if category.winter:
+            return cls.WINTER
+        if category.summer:
+            return cls.SUMMER
+        return cls.ALL_YEAR
+
+    @classmethod
+    def part_label(cls, part, year):
+        """Die Überschrift des Abschnitts im Programmjahr `year`.
+
+        Der Winter einer Saison liegt über den Jahreswechsel, der Sommer nicht:
+        Saison 2027 heißt Winter 2026/27 und Sommer 2027.
+        """
+        if part == cls.WINTER:
+            return 'Winter {}/{}'.format(year - 1, str(year)[-2:])
+        if part == cls.SUMMER:
+            return 'Sommer {}'.format(year)
+        return 'Ganzjährig'
+
+    @property
+    def part(self):
+        return self.part_of(self.category)
 
     @property
     def upper(self):
@@ -210,38 +250,44 @@ class Requirement(SeasonMixin, TimeMixin, models.Model):
 
     @classmethod
     def overview(cls, season):
-        """Bedarf und Ist-Stand der Saison, nach Kursen und Touren gruppiert.
+        """Bedarf und Ist-Stand der Saison, nach Jahreszeit und Art gegliedert.
 
-        `entries` führt jede Art mit hinterlegtem Bedarf, `unplanned` jede Art
-        ohne Vorgabe, in der trotzdem etwas eingestellt ist -- so fällt auf, was
-        neben der Planung läuft, ohne die Summen zu verfälschen. Der Bedarfs-
-        stand einer Gruppe rechnet allein über `entries`; sonst würden z.B. die
-        Sommertouren einen Winterbedarf als erfüllt erscheinen lassen.
+        Die Antwort führt je Abschnitt (Winter, Sommer, ganzjährig) eine Gruppe
+        für Kurse und eine für Touren. `entries` führt jede Art mit hinterlegtem
+        Bedarf, `unplanned` jede Art ohne Vorgabe, in der trotzdem etwas
+        eingestellt ist -- so fällt auf, was neben der Planung läuft, ohne die
+        Summen zu verfälschen. Der Bedarfsstand rechnet allein über `entries`.
+
+        Leere Gruppen und Abschnitte fallen weg: im Sommer gibt es bislang nur
+        Kursbedarfe, dann soll dort keine leere Tourenliste stehen.
 
         Der gezählte Zeitraum steht mit in der Antwort, damit die Anzeige ihn
         benennen kann -- die Saisonbezeichnung allein wäre irreführend, weil das
         Programmjahr nicht das Kalenderjahr ist (siehe `program_window`).
         """
         start, end = cls.program_window(season)
+        year = int(season.name)
         requirements = (
             cls.objects
             .filter(season=season, deprecated=False)
             .select_related('category', 'category__category_topic')
         )
-        by_kind = {cls.INSTRUCTION: [], cls.TOUR: []}
-        for requirement in requirements:
-            by_kind[requirement.kind].append(requirement)
 
-        groups = []
+        entries = {}
+        unplanned = {}
+        for part, _ in cls.PART_CHOICES:
+            for kind, _ in cls.KIND_CHOICES:
+                entries[(part, kind)] = []
+                unplanned[(part, kind)] = []
+
         for kind, _ in cls.KIND_CHOICES:
             counts = cls.actual_counts(season, kind)
-            entries = []
             planned = set()
-            for requirement in by_kind[kind]:
-                if requirement.minimum == 0:
+            for requirement in requirements:
+                if requirement.kind != kind or requirement.minimum == 0:
                     continue
                 planned.add(requirement.category_id)
-                entries.append(dict(
+                entries[(requirement.part, kind)].append(dict(
                     id=requirement.pk,
                     categoryId=requirement.category_id,
                     code=requirement.category.code,
@@ -251,40 +297,51 @@ class Requirement(SeasonMixin, TimeMixin, models.Model):
                     actual=counts.get(requirement.category_id, 0),
                     order=requirement.order,
                 ))
-            entries.sort(key=lambda entry: (entry['order'], entry['name']))
+            for entry in cls._unplanned(kind, counts, planned):
+                unplanned[(entry.pop('part'), kind)].append(entry)
 
-            unplanned = cls._unplanned(kind, counts, planned)
-            unplanned.sort(key=lambda entry: (-entry['actual'], entry['name']))
-
-            groups.append(dict(
-                kind=kind,
-                label=cls.KIND_LABELS[kind],
-                entries=entries,
-                unplanned=unplanned,
-                minimum=sum(entry['minimum'] for entry in entries),
-                maximum=sum(entry['maximum'] for entry in entries),
-                actual=sum(entry['actual'] for entry in entries),
+        sections = []
+        for part, _ in cls.PART_CHOICES:
+            groups = []
+            for kind, _ in cls.KIND_CHOICES:
+                rows = sorted(entries[(part, kind)], key=lambda e: (e['order'], e['name']))
+                extra = sorted(unplanned[(part, kind)], key=lambda e: (-e['actual'], e['name']))
+                if not rows and not extra:
+                    continue
+                groups.append(dict(
+                    kind=kind,
+                    label=cls.KIND_LABELS[kind],
+                    entries=rows,
+                    unplanned=extra,
+                    minimum=sum(row['minimum'] for row in rows),
+                    maximum=sum(row['maximum'] for row in rows),
+                    actual=sum(row['actual'] for row in rows),
+                ))
+            if not groups:
+                continue
+            sections.append(dict(
+                part=part,
+                label=cls.part_label(part, year),
+                groups=groups,
+                minimum=sum(group['minimum'] for group in groups),
+                maximum=sum(group['maximum'] for group in groups),
+                actual=sum(group['actual'] for group in groups),
             ))
-        return cls._payload(season.name, start, end, groups)
+        return cls._payload(season.name, start, end, sections)
 
     @classmethod
     def empty_overview(cls, year):
         """Die Antwort für ein Programmjahr, dessen Saison es noch nicht gibt."""
         start, end = cls.window_for_year(year)
-        groups = [
-            dict(kind=kind, label=cls.KIND_LABELS[kind], entries=[], unplanned=[],
-                 minimum=0, maximum=0, actual=0)
-            for kind, _ in cls.KIND_CHOICES
-        ]
-        return cls._payload(str(year), start, end, groups)
+        return cls._payload(str(year), start, end, [])
 
     @staticmethod
-    def _payload(season_name, start, end, groups):
+    def _payload(season_name, start, end, sections):
         return dict(
             season=season_name,
             periodStart=start,
             periodEnd=end - datetime.timedelta(days=1),  # einschließlich, für die Anzeige
-            groups=groups,
+            sections=sections,
         )
 
     @classmethod
@@ -311,6 +368,7 @@ class Requirement(SeasonMixin, TimeMixin, models.Model):
                 except Topic.DoesNotExist:
                     pass
             entries.append(dict(
+                part=cls.part_of(category),
                 id=None,
                 categoryId=category.pk,
                 code=category.code,

@@ -30,10 +30,21 @@ class RequirementGroupSerializer(serializers.Serializer):
     unplanned = RequirementEntrySerializer(many=True, read_only=True)
 
 
+class RequirementSectionSerializer(serializers.Serializer):
+    """Winter, Sommer oder ganzjährig -- in der Anzeige je ein Aufklapper."""
+
+    part = serializers.CharField(read_only=True)
+    label = serializers.CharField(read_only=True)
+    minimum = serializers.IntegerField(read_only=True)
+    maximum = serializers.IntegerField(read_only=True)
+    actual = serializers.IntegerField(read_only=True)
+    groups = RequirementGroupSerializer(many=True, read_only=True)
+
+
 class RequirementOverviewSerializer(serializers.Serializer):
 
     season = serializers.CharField(read_only=True)
     # Das gezählte Programmjahr, beide Tage eingeschlossen.
     periodStart = serializers.DateField(read_only=True)
     periodEnd = serializers.DateField(read_only=True)
-    groups = RequirementGroupSerializer(many=True, read_only=True)
+    sections = RequirementSectionSerializer(many=True, read_only=True)

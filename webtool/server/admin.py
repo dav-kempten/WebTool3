@@ -44,10 +44,11 @@ class RequirementAdmin(admin.ModelAdmin):
     Die Zahlen stehen direkt in der Liste, damit eine ganze Saison in einem
     Durchgang gepflegt werden kann.
     """
-    list_display = ('bedarf', 'season', 'kind', 'minimum', 'maximum', 'order', 'deprecated')
+    list_display = ('bedarf', 'season', 'kind', 'jahreszeit', 'minimum', 'maximum', 'order', 'deprecated')
     list_display_links = ('bedarf',)
     list_editable = ('minimum', 'maximum', 'order', 'deprecated')
-    list_filter = ('season', 'kind', 'deprecated')
+    # Nach Jahreszeit filtert man über die Kategorie -- dort steht sie.
+    list_filter = ('season', 'kind', 'category__winter', 'category__summer', 'deprecated')
     search_fields = ('category__code', 'category__name', 'category__category_topic__title')
     list_select_related = ('season', 'category', 'category__category_topic')
     fields = ('season', 'kind', 'category', 'minimum', 'maximum', 'order', 'deprecated')
@@ -55,6 +56,10 @@ class RequirementAdmin(admin.ModelAdmin):
     @admin.display(description='Kurs-/Tourenart', ordering='category__name')
     def bedarf(self, obj):
         return obj.label
+
+    @admin.display(description='Jahreszeit', ordering='category__winter')
+    def jahreszeit(self, obj):
+        return dict(Requirement.PART_CHOICES)[obj.part]
 
 # Register your models here.
 

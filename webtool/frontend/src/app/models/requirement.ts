@@ -23,13 +23,23 @@ export interface RequirementGroup {
   unplanned: RequirementEntry[];
 }
 
+/** Winter, summer or all-year — one collapsible block each in the panel. */
+export interface RequirementSection {
+  part: 'winter' | 'summer' | 'other';
+  label: string;
+  minimum: number;
+  maximum: number;
+  actual: number;
+  groups: RequirementGroup[];
+}
+
 export interface RequirementOverview {
   season: string;
   /**
-   * The counted program year, both days inclusive — it starts in November, so
+   * The counted program year, both days inclusive — it starts in December, so
    * it is not the calendar year the season is named after.
    */
   periodStart: string;
   periodEnd: string;
-  groups: RequirementGroup[];
+  sections: RequirementSection[];
 }

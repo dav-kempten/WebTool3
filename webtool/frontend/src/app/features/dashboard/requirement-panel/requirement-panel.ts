@@ -3,7 +3,11 @@ import { DatePipe } from '@angular/common';
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { RequirementsStore } from '../../../core/stores/requirements.store';
-import { RequirementEntry, RequirementGroup } from '../../../models/requirement';
+import {
+  RequirementEntry,
+  RequirementGroup,
+  RequirementSection,
+} from '../../../models/requirement';
 
 /**
  * Where one kind of event stands against its target. Carried as data rather
@@ -43,7 +47,20 @@ export interface RequirementGroupView {
   missing: number;
   rows: RequirementRow[];
   unplanned: RequirementEntry[];
-  unplannedTotal: number;
+  /** "3 Veranstaltungen in 2 Arten ohne Bedarfsvorgabe", correctly declined. */
+  unplannedLabel: string;
+}
+
+export interface RequirementSectionView {
+  part: string;
+  label: string;
+  actual: number;
+  minimum: number;
+  missing: number;
+  status: RequirementStatus;
+  /** "Kurse 22/49 · Touren 5/68" — readable while the block is collapsed. */
+  summary: string;
+  groups: RequirementGroupView[];
 }
 
 const STATUS_ICONS: Record<RequirementStatus, string> = {
@@ -63,6 +80,15 @@ function statusOf(actual: number, minimum: number): RequirementStatus {
     return 'met';
   }
   return actual === 0 ? 'open' : 'short';
+}
+
+function unplannedLabel(entries: RequirementEntry[]): string {
+  const events = entries.reduce((sum, entry) => sum + entry.actual, 0);
+  const kinds = entries.length;
+  return (
+    `${events} ${events === 1 ? 'Veranstaltung' : 'Veranstaltungen'}` +
+    ` in ${kinds} ${kinds === 1 ? 'Art' : 'Arten'} ohne Bedarfsvorgabe`
+  );
 }
 
 function percentOf(actual: number, target: number): number {
@@ -93,17 +119,36 @@ export class RequirementPanel {
   readonly statusIcons = STATUS_ICONS;
   readonly legend: RequirementStatus[] = ['open', 'short', 'met'];
 
-  readonly groups = computed<RequirementGroupView[]>(() =>
-    this.store.groups().map((group) => this.toView(group)),
+  readonly sections = computed<RequirementSectionView[]>(() =>
+    this.store.sections().map((section) => this.toSection(section)),
   );
 
   /** True once there is a target to show — an empty season says so instead. */
   readonly hasTargets = computed(() =>
-    this.groups().some((group) => group.rows.length > 0),
+    this.sections().some((section) =>
+      section.groups.some((group) => group.rows.length > 0),
+    ),
   );
 
   refresh(): void {
     this.store.load();
+  }
+
+  private toSection(section: RequirementSection): RequirementSectionView {
+    const groups = section.groups.map((group) => this.toView(group));
+    return {
+      part: section.part,
+      label: section.label,
+      actual: section.actual,
+      minimum: section.minimum,
+      missing: Math.max(0, section.minimum - section.actual),
+      status: statusOf(section.actual, section.minimum),
+      summary: groups
+        .filter((group) => group.rows.length > 0)
+        .map((group) => `${group.label} ${group.actual}/${group.minimum}`)
+        .join(' · '),
+      groups,
+    };
   }
 
   private toView(group: RequirementGroup): RequirementGroupView {
@@ -119,7 +164,7 @@ export class RequirementPanel {
       missing,
       rows: group.entries.map((entry) => this.toRow(entry)),
       unplanned: group.unplanned,
-      unplannedTotal: group.unplanned.reduce((sum, entry) => sum + entry.actual, 0),
+      unplannedLabel: unplannedLabel(group.unplanned),
     };
   }
 

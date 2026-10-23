@@ -38,6 +38,90 @@
   opacity: 0.75;
 }
 
+// --- Abschnitte (Winter / Sommer / ganzjährig) ------------------------------
+//
+// Native <details>: standardmäßig zu, ohne JavaScript auf- und zuklappbar und
+// von Haus aus mit der Tastatur bedienbar.
+
+.avk-req-section {
+  border: 1px solid var(--avk-req-track);
+  border-radius: 6px;
+
+  & + & {
+    margin-top: 0.5rem;
+  }
+
+  > summary {
+    display: grid;
+    grid-template-columns: 1rem minmax(7rem, auto) 1fr auto;
+    gap: 0.75rem;
+    align-items: baseline;
+    padding: 0.7rem 0.85rem;
+    cursor: pointer;
+    border-radius: 5px;
+
+    &:hover {
+      background: var(--p-content-hover-background, rgba(0, 0, 0, 0.04));
+    }
+
+    // Der Standardpfeil weicht dem eigenen, der sich mitdreht.
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    list-style: none;
+  }
+
+  &[open] > summary {
+    border-bottom: 1px solid var(--avk-req-track);
+    border-radius: 5px 5px 0 0;
+  }
+}
+
+.avk-req-chevron {
+  font-size: 0.75rem;
+  opacity: 0.6;
+  transition: transform 0.15s ease;
+
+  .avk-req-section[open] & {
+    transform: rotate(90deg);
+  }
+}
+
+.avk-req-section-label {
+  font-weight: 600;
+}
+
+.avk-req-section-summary {
+  font-size: 0.9rem;
+  opacity: 0.75;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.avk-req-section-note {
+  white-space: nowrap;
+  font-size: 0.85rem;
+  font-weight: 600;
+
+  .avk-req-section[data-status='met'] & {
+    color: var(--avk-req-met);
+  }
+
+  .avk-req-section[data-status='short'] & {
+    color: var(--avk-req-short);
+  }
+
+  .avk-req-section[data-status='open'] & {
+    color: var(--avk-req-open);
+  }
+}
+
+.avk-req-section-body {
+  padding: 1rem 0.85rem 0.25rem;
+}
+
 // --- Gesamtstand je Gruppe --------------------------------------------------
 
 .avk-req-totals {
@@ -259,7 +343,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
-  margin: 0;
+  margin: 1rem 0 0;
   padding: 0.75rem 0.25rem 0;
   border-top: 1px solid var(--avk-req-track);
   font-size: 0.8rem;
@@ -291,6 +375,15 @@
   .avk-req-rows li {
     grid-template-columns: 1.25rem 1fr auto;
     row-gap: 0.25rem;
+  }
+
+  // Die Kurzfassung im zugeklappten Kopf weicht, der Stand bleibt.
+  .avk-req-section > summary {
+    grid-template-columns: 1rem 1fr auto;
+  }
+
+  .avk-req-section-summary {
+    display: none;
   }
 
   .avk-req-bar {

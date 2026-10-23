@@ -9,7 +9,7 @@ import {
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { pipe, switchMap, tap, catchError, of } from 'rxjs';
 import { RequirementService } from '../services/requirement.service';
-import { RequirementGroup, RequirementOverview } from '../../models/requirement';
+import { RequirementOverview, RequirementSection } from '../../models/requirement';
 
 interface RequirementsState {
   overview: RequirementOverview | null;
@@ -32,7 +32,7 @@ export const RequirementsStore = signalStore(
     season: computed<string>(() => store.overview()?.season ?? ''),
     periodStart: computed<string>(() => store.overview()?.periodStart ?? ''),
     periodEnd: computed<string>(() => store.overview()?.periodEnd ?? ''),
-    groups: computed<RequirementGroup[]>(() => store.overview()?.groups ?? []),
+    sections: computed<RequirementSection[]>(() => store.overview()?.sections ?? []),
   })),
   withMethods((store, service = inject(RequirementService)) => {
     /**

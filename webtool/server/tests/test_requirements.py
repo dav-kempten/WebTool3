@@ -20,7 +20,24 @@ def requirement(season, category, kind, minimum, maximum=None, order=0):
 
 
 def group(overview, kind):
-    return next(g for g in overview['groups'] if g['kind'] == kind)
+    """Die Gruppe einer Art über alle Abschnitte hinweg, zu einer verschmolzen.
+
+    Die meisten Tests arbeiten mit einer einzigen Kategorie und interessieren
+    sich nicht für die Jahreszeit; die Abschnitte prüfen eigene Tests.
+    """
+    groups = [g for section in overview['sections'] for g in section['groups'] if g['kind'] == kind]
+    if not groups:
+        return dict(kind=kind, entries=[], unplanned=[], minimum=0, maximum=0, actual=0)
+    merged = dict(groups[0])
+    for key in ('entries', 'unplanned'):
+        merged[key] = [row for g in groups for row in g[key]]
+    for key in ('minimum', 'maximum', 'actual'):
+        merged[key] = sum(g[key] for g in groups)
+    return merged
+
+
+def section(overview, part):
+    return next((s for s in overview['sections'] if s['part'] == part), None)
 
 
 def entry(overview, kind, code):
@@ -255,6 +272,87 @@ def test_one_requirement_per_season_kind_and_category(seeded, skitour):
         requirement(seeded, skitour, Requirement.TOUR, 4)
 
 
+# --- Winter, Sommer, ganzjährig ---------------------------------------------
+
+def test_winter_and_summer_are_separate_sections(seeded):
+    """Winter- und Sommerprogramm werden getrennt geplant und getrennt gezeigt."""
+    requirement(seeded, Category.objects.get(code='SKT'), Requirement.TOUR, 30)
+    requirement(seeded, Category.objects.get(code='BGT'), Requirement.TOUR, 12)
+
+    data = Requirement.overview(seeded)
+
+    assert [s['part'] for s in data['sections']] == ['winter', 'summer']
+    assert [e['code'] for e in section(data, 'winter')['groups'][0]['entries']] == ['SKT']
+    assert [e['code'] for e in section(data, 'summer')['groups'][0]['entries']] == ['BGT']
+
+
+def test_the_season_part_comes_from_the_category(seeded):
+    skitour = Category.objects.get(code='SKT')
+    bergtour = Category.objects.get(code='BGT')
+    indoor = Category.objects.create(code='HAL', name='Halle', order=10, topic=True)
+
+    assert (skitour.winter, bergtour.summer) == (True, True)
+    assert Requirement.part_of(skitour) == Requirement.WINTER
+    assert Requirement.part_of(bergtour) == Requirement.SUMMER
+    assert Requirement.part_of(indoor) == Requirement.ALL_YEAR
+
+
+def test_a_section_is_named_after_its_place_in_the_program_year(seeded):
+    """Der Winter liegt über den Jahreswechsel, der Sommer nicht."""
+    assert Requirement.part_label(Requirement.WINTER, 2027) == 'Winter 2026/27'
+    assert Requirement.part_label(Requirement.SUMMER, 2027) == 'Sommer 2027'
+    assert Requirement.part_label(Requirement.ALL_YEAR, 2027) == 'Ganzjährig'
+
+
+def test_a_year_round_category_gets_its_own_section(seeded):
+    indoor = Category.objects.create(code='HAL', name='Hallenkurs', order=10, topic=True)
+    indoor.seasons.add(seeded)
+    requirement(seeded, indoor, Requirement.INSTRUCTION, 3)
+
+    data = Requirement.overview(seeded)
+
+    assert [s['part'] for s in data['sections']] == ['other']
+    assert data['sections'][0]['label'] == 'Ganzjährig'
+
+
+def test_a_section_totals_only_its_own_groups(api, seeded):
+    requirement(seeded, Category.objects.get(code='SKT'), Requirement.TOUR, 10)
+    requirement(seeded, Category.objects.get(code='BGT'), Requirement.TOUR, 4)
+    post_tour(api, day(THIS, '02-01'), day(THIS, '01-15'))  # eine Skitour
+
+    data = Requirement.overview(seeded)
+
+    assert (section(data, 'winter')['actual'], section(data, 'winter')['minimum']) == (1, 10)
+    assert (section(data, 'summer')['actual'], section(data, 'summer')['minimum']) == (0, 4)
+
+
+def test_an_empty_group_is_left_out_of_its_section(seeded):
+    """Im Sommer gibt es bislang nur Kursbedarfe -- dann keine leere Tourenliste."""
+    requirement(seeded, Category.objects.get(code='SKT'), Requirement.TOUR, 5)
+
+    data = Requirement.overview(seeded)
+
+    assert [g['kind'] for g in section(data, 'winter')['groups']] == ['tour']
+    assert section(data, 'summer') is None
+
+
+def test_an_event_without_a_target_lands_in_its_own_section(api, seeded):
+    """Auch ohne Vorgabe entscheidet die Kategorie über den Abschnitt."""
+    requirement(seeded, Category.objects.get(code='SKT'), Requirement.TOUR, 5)
+    post_tour(api, day(THIS, '02-01'), day(THIS, '01-15'))
+
+    bergtour = Category.objects.get(code='BGT')
+    tour = post_tour(api, day(THIS, '07-01'), day(THIS, '06-15'))
+    reference = tour.tour.reference
+    reference.category = bergtour
+    reference.save()
+
+    data = Requirement.overview(seeded)
+
+    assert [e['code'] for e in section(data, 'summer')['groups'][0]['unplanned']] == ['BGT']
+    assert section(data, 'summer')['minimum'] == 0
+
+
 # --- Endpunkt ---------------------------------------------------------------
 
 @pytest.fixture
@@ -263,15 +361,19 @@ def planning_season(seeded):
     return Season.for_year(Requirement.program_year())
 
 
-def test_endpoint_returns_both_groups(api, planning_season, skitour):
+def test_endpoint_returns_the_sections(api, planning_season, skitour):
     requirement(planning_season, skitour, Requirement.TOUR, 3, 4)
 
     response = api.get('/api/frontend/requirements/')
     assert response.status_code == 200
     body = response.json()
     assert body['season'] == str(Requirement.program_year())
-    assert [g['kind'] for g in body['groups']] == ['instruction', 'tour']
-    assert body['groups'][1]['entries'][0]['maximum'] == 4
+    # Die Skitour ist eine Winterkategorie, also genau ein Abschnitt mit einer
+    # Gruppe -- leere Gruppen fallen weg.
+    assert [s['part'] for s in body['sections']] == ['winter']
+    tours = body['sections'][0]['groups'][0]
+    assert tours['kind'] == 'tour'
+    assert tours['entries'][0]['maximum'] == 4
 
 
 def test_endpoint_follows_the_program_year_not_the_current_season(api, planning_season, skitour):
@@ -286,7 +388,7 @@ def test_endpoint_follows_the_program_year_not_the_current_season(api, planning_
         requirement(current, skitour, Requirement.TOUR, 99)
 
     body = api.get('/api/frontend/requirements/').json()
-    assert body['groups'][1]['entries'][0]['minimum'] == 7
+    assert body['sections'][0]['groups'][0]['entries'][0]['minimum'] == 7
 
 
 def test_endpoint_answers_without_a_season_for_the_program_year(api, seeded):
@@ -297,7 +399,7 @@ def test_endpoint_answers_without_a_season_for_the_program_year(api, seeded):
     assert response.status_code == 200
     body = response.json()
     assert body['season'] == str(Requirement.program_year())
-    assert [g['entries'] for g in body['groups']] == [[], []]
+    assert body['sections'] == []
 
 
 def test_endpoint_is_not_cached(api, seeded):
