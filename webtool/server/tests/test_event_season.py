@@ -1,99 +1,11 @@
 # -*- coding: utf-8 -*-
 """Plan 3, Task 3: an event belongs to the season of its start year.
 
-These tests create real tours and courses through the frontend API, so they
-need reference data: init_season seeds a current season with categories,
-states, skills and fitness. The fixture renames it to the real current year,
-because the frontend API only serves recent events.
+The tests create real tours and courses through the frontend API; fixtures in
+conftest.py (seeded, api, course_topic), helpers in helpers.py.
 """
-import datetime
-
-import pytest
-from django.contrib.auth import get_user_model
-from django.core.management import call_command
-from rest_framework.test import APIClient
-
-from server.models import Category, Instruction, Season, State, Topic, Tour
-
-
-THIS = datetime.date.today().year
-NEXT = THIS + 1
-
-
-def day(year, month_day):
-    return "{}-{}".format(year, month_day)
-
-
-@pytest.fixture
-def seeded(db):
-    call_command("init_season")
-    season = Season.objects.get(current=True)
-    season.name = str(THIS)
-    season.save()
-    return season
-
-
-@pytest.fixture
-def api(seeded):
-    admin = get_user_model().objects.create_superuser('admin', 'admin@example.org', 'x')
-    client = APIClient(HTTP_HOST='localhost')
-    client.force_authenticate(admin)
-    return client
-
-
-def state(name):
-    return State.objects.get(name=name, seasons__current=True)
-
-
-def post_tour(api, start, deadline, preliminary=None, state_name='In Arbeit'):
-    season = Season.objects.get(current=True)
-    body = {
-        'category': Category.objects.get(code='SKT').pk,
-        'tour': {'startDate': start},
-        'deadline': {'startDate': deadline},
-        'guideId': None,
-        'skillId': season.skill_list.order_by('pk').first().pk,
-        'fitnessId': season.fitness_list.order_by('pk').first().pk,
-        'stateId': state(state_name).pk,
-    }
-    if preliminary:
-        body['preliminary'] = {'startDate': preliminary}
-    response = api.post('/api/frontend/tours/', body, format='json')
-    assert response.status_code == 201, response.content
-    return Tour.objects.get(pk=response.json()['id'])
-
-
-def put(api, url, change):
-    body = api.get(url).json()
-    change(body)
-    response = api.put(url, body, format='json')
-    assert response.status_code == 200, response.content
-    return response.json()
-
-
-@pytest.fixture
-def topic(seeded):
-    """init_season seeds no course topics and no course-meeting category."""
-    category = Category.objects.create(code='GKX', name='Grundkurs Test', order=10, topic=True)
-    category.seasons.add(seeded)
-    meeting = Category.objects.create(code='KT0', name='Kurstermin', order=99, meeting=True)
-    meeting.seasons.add(seeded)
-    topic = Topic.objects.create(category=category, title='Grundkurs Test', name='Grundkurs Test')
-    topic.seasons.add(seeded)
-    return topic
-
-
-def post_course(api, topic, start):
-    body = {
-        'topicId': topic.pk,
-        'instruction': {'startDate': start},
-        'guideId': None,
-        'stateId': state('In Arbeit').pk,
-        'isSpecial': False,
-    }
-    response = api.post('/api/frontend/instructions/', body, format='json')
-    assert response.status_code == 201, response.content
-    return Instruction.objects.get(pk=response.json()['id'])
+from server.models import Season, Tour
+from server.tests.helpers import NEXT, THIS, day, post_course, post_tour, put
 
 
 def test_a_tour_in_next_year_lands_in_next_season(api):
@@ -134,8 +46,8 @@ def test_a_preliminary_added_later_uses_the_tour_season(api):
     assert tour.preliminary.season.name == str(NEXT)
 
 
-def test_a_course_in_next_year_and_its_meetings_use_its_season(api, topic):
-    course = post_course(api, topic, day(NEXT, '03-01'))
+def test_a_course_in_next_year_and_its_meetings_use_its_season(api, course_topic):
+    course = post_course(api, course_topic, day(NEXT, '03-01'))
 
     def add_meeting(body):
         body['meetings'].append({'startDate': day(NEXT, '03-08')})

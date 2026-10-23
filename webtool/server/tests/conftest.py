@@ -46,3 +46,45 @@ def make_booking_code(db):
         )
         return str(ref)
     return make
+
+
+# --- Echte Touren und Kurse über die Frontend-API (Helfer in helpers.py) ------
+
+@pytest.fixture
+def seeded(db):
+    """Reference data from init_season, its season renamed to the real current
+    year so the frontend API's window includes the test events."""
+    from django.core.management import call_command
+
+    from server.tests.helpers import THIS
+
+    call_command('init_season')
+    season = Season.objects.get(current=True)
+    season.name = str(THIS)
+    season.save()
+    return season
+
+
+@pytest.fixture
+def api(seeded):
+    from django.contrib.auth import get_user_model
+    from rest_framework.test import APIClient
+
+    admin = get_user_model().objects.create_superuser('admin', 'admin@example.org', 'x')
+    client = APIClient(HTTP_HOST='localhost')
+    client.force_authenticate(admin)
+    return client
+
+
+@pytest.fixture
+def course_topic(seeded):
+    """init_season seeds no course topics and no course-meeting category."""
+    from server.models import Topic
+
+    category = Category.objects.create(code='GKX', name='Grundkurs Test', order=10, topic=True)
+    category.seasons.add(seeded)
+    meeting = Category.objects.create(code='KT0', name='Kurstermin', order=99, meeting=True)
+    meeting.seasons.add(seeded)
+    topic = Topic.objects.create(category=category, title='Grundkurs Test', name='Grundkurs Test')
+    topic.seasons.add(seeded)
+    return topic

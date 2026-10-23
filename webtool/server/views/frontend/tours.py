@@ -4,9 +4,8 @@ from rest_framework import permissions, mixins, viewsets, status
 from django.template.defaultfilters import date
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from datetime import datetime, date as datetime_date
 
-from server.models import Tour
+from server.models import Tour, Season
 from server.serializers.client.activity import ActivitySerializer
 from server.serializers.frontend.tours import TourListSerializer, TourSerializer
 
@@ -43,15 +42,13 @@ class TourViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
     permission_classes = (IsOwnerOrReadOnly, )
 
-    requested_year = datetime.now().year - 1
+    # Placeholder for the router; the real queryset is built per request.
+    queryset = Tour.objects.none()
 
-    queryset = (
-        Tour.objects
-        # .filter(deprecated=False, tour__season__current=True)
-        .filter(deprecated=False, tour__start_date__gte=datetime_date(requested_year, 1, 1))
-        # .exclude(state__done=True)
-        # .exclude(state__canceled=True)
-    )
+    def get_queryset(self):
+        # Last, this and next season. The former start-date filter was computed
+        # once at import time and went stale at the turn of the year.
+        return Tour.objects.filter(deprecated=False, tour__season__in=Season.visible('frontend'))
 
     def get_serializer_class(self):
         if self.action == 'list':

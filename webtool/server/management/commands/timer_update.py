@@ -19,6 +19,9 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
+        # Last, this and next season: after 1 January the events of late December
+        # belong to last season and still have to be completed.
+        seasons = Season.visible('frontend')
         season = Season.objects.get(current=True)
 
         published = season.state_list.get(name='Veröffentlicht')
@@ -28,7 +31,7 @@ class Command(BaseCommand):
 
         today = datetime.date.today()
 
-        for instruction in Instruction.objects.filter(topic__seasons=season, state_id=published):
+        for instruction in Instruction.objects.filter(instruction__season__in=seasons, state_id=published):
             event = instruction.instruction
             event_done = ((event.end_date is None and event.start_date < today) or
                           (event.end_date and event.end_date < today))
@@ -39,7 +42,7 @@ class Command(BaseCommand):
                 for event in instruction.meeting_list.all():
                     event.save()
 
-        for tour in Tour.objects.filter(tour__season=season, state_id=published):
+        for tour in Tour.objects.filter(tour__season__in=seasons, state_id=published):
             event = tour.tour
             event_done = ((event.end_date is None and event.start_date < today) or
                           (event.end_date and event.end_date < today))
@@ -51,7 +54,7 @@ class Command(BaseCommand):
                     tour.preliminary.save()
                 tour.tour.save()
 
-        for talk in Talk.objects.filter(talk__season=season, state_id=published):
+        for talk in Talk.objects.filter(talk__season__in=seasons, state_id=published):
             event = talk.talk
             event_done = ((event.end_date is None and event.start_date < today) or
                           (event.end_date and event.end_date < today))
@@ -60,7 +63,7 @@ class Command(BaseCommand):
                 talk.save()
                 talk.talk.save()
 
-        for session in Session.objects.filter(collective__seasons=season, state_id=published):
+        for session in Session.objects.filter(session__season__in=seasons, state_id=published):
             event = session.session
             event_done = ((event.end_date is None and event.start_date < today) or
                           (event.end_date and event.end_date < today))

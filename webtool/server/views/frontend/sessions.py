@@ -4,7 +4,7 @@ from django.template.defaultfilters import date
 from rest_framework import viewsets, permissions, status, mixins
 from rest_framework.response import Response
 
-from server.models import Session, Collective
+from server.models import Session, Collective, Season
 from server.serializers.frontend.sessions import SessionListSerializer, SessionSerializer
 
 
@@ -43,12 +43,17 @@ class SessionViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
     permission_classes = (IsOwnerOrReadOnly, )
 
-    queryset = (
-        Session.objects
-        .filter(deprecated=False)
-        .exclude(state__done=True)
-        .exclude(state__canceled=True)
-    )
+    # Placeholder for the router; the real queryset is built per request.
+    queryset = Session.objects.none()
+
+    def get_queryset(self):
+        # Last, this and next season (Season.visible).
+        return (
+            Session.objects
+            .filter(deprecated=False, session__season__in=Season.visible('frontend'))
+            .exclude(state__done=True)
+            .exclude(state__canceled=True)
+        )
 
     def get_serializer_class(self):
         if self.action == 'list':

@@ -20,9 +20,11 @@ from server.serializers.frontend.values import ValueSerializer
 
 class _Values(object):
 
-    def __init__(self, season):
-        self._season = season
-        self._updated = season.updated
+    def __init__(self, seasons):
+        # D3: the whole frontend window, so editing an older event still offers
+        # what was linked to its season.
+        self._seasons = list(seasons)
+        self._updated = max(season.updated for season in self._seasons)
 
         self.states = self._get_states()
         self.categories = self._get_categories()
@@ -55,24 +57,32 @@ class _Values(object):
             )
         )
 
+    def _touch(self, model):
+        """Move the ETag/Last-Modified time forward to the newest row of `model`.
+        latest() raises on an empty table -- a fresh installation without topics
+        or groups answered /values/ with HTTP 500."""
+        newest = model.objects.order_by('-updated').values_list('updated', flat=True).first()
+        if newest is not None:
+            self._updated = max(self._updated, newest)
+
     def _get_states(self):
-        self._updated = max(self._updated, State.objects.latest().updated)
+        self._touch(State)
         return [
             dict(id=x, state=y, description=z)
             for (x, y, z) in State.objects
             .exclude(deprecated=True)
-            .filter(seasons=self._season)
+            .filter(seasons__in=self._seasons).distinct()
             .order_by('order')
             .values_list('pk', 'name', 'description')
         ]
 
     def _get_categories(self):
-        self._updated = max(self._updated, Category.objects.latest().updated)
+        self._touch(Category)
         return [
             dict(id=a, code=b, name=c, tour=d, talk=e, instruction=f, collective=g, winter=h, summer=i, indoor=j)
             for (a, b, c, d, e, f, g, h, i, j) in Category.objects
             .exclude(deprecated=True)
-            .filter(seasons=self._season)
+            .filter(seasons__in=self._seasons).distinct()
             .exclude(deadline=True)
             .exclude(preliminary=True)
             .exclude(meeting=True)
@@ -80,44 +90,44 @@ class _Values(object):
         ]
 
     def _get_approximates(self):
-        self._updated = max(self._updated, Approximate.objects.latest().updated)
+        self._touch(Approximate)
         return [
             dict(id=a, name=b, description=c, startTime=d)
             for (a, b, c, d) in Approximate.objects
             .exclude(deprecated=True)
-            .filter(seasons=self._season)
+            .filter(seasons__in=self._seasons).distinct()
             .order_by('start_time')
             .values_list('pk', 'name', 'description', 'start_time')
         ]
 
     def _get_equipments(self):
-        self._updated = max(self._updated, Equipment.objects.latest().updated)
+        self._touch(Equipment)
         return [
             dict(id=a, code=b, name=c, description=d)
             for (a, b, c, d) in Equipment.objects
             .exclude(deprecated=True)
-            .filter(seasons=self._season)
+            .filter(seasons__in=self._seasons).distinct()
             .order_by('code')
             .values_list('pk', 'code', 'name', 'description')
         ]
 
     def _get_skills(self):
-        self._updated = max(self._updated, Skill.objects.latest().updated)
+        self._touch(Skill)
         return [
             dict(id=a, level=None if b == 'x' else len(b), categoryId=c, code=d, description=e)
             for (a, b, c, d, e) in SkillDescription.objects
             .exclude(deprecated=True)
-            .filter(skill__seasons=self._season)
+            .filter(skill__seasons__in=self._seasons).distinct()
             .values_list('pk', 'skill__code', 'category_id', 'category__code', 'description')
         ]
 
     def _get_fitness(self):
-        self._updated = max(self._updated, Fitness.objects.latest().updated)
+        self._touch(Fitness)
         return [
             dict(id=a, level=None if b == 'x' else len(b), categoryId=c, code=d, description=e)
             for (a, b, c, d, e) in FitnessDescription.objects
             .exclude(deprecated=True)
-            .filter(fitness__seasons=self._season)
+            .filter(fitness__seasons__in=self._seasons).distinct()
             .values_list('pk', 'fitness__code', 'category_id', 'category__code', 'description')
         ]
 
@@ -127,7 +137,7 @@ class _Values(object):
     # prefetch_related() loads them in a separate query and keeps one row each.
 
     def _get_topics(self):
-        self._updated = max(self._updated, Topic.objects.latest().updated)
+        self._touch(Topic)
         return [
             dict(
                 id=topic.pk,
@@ -142,14 +152,14 @@ class _Values(object):
             )
             for topic in Topic.objects
             .exclude(deprecated=True)
-            .filter(seasons=self._season)
+            .filter(seasons__in=self._seasons).distinct()
             .select_related('category')
             .prefetch_related('qualifications', 'equipments')
             .distinct()
         ]
 
     def _get_collectives(self):
-        self._updated = max(self._updated, Collective.objects.latest().updated)
+        self._touch(Collective)
         return [
             dict(
                 id=collective.pk,
@@ -161,7 +171,7 @@ class _Values(object):
             )
             for collective in Collective.objects
             .exclude(deprecated=True)
-            .filter(seasons=self._season)
+            .filter(seasons__in=self._seasons).distinct()
             .select_related('category')
             .prefetch_related('managers')
             .distinct()
@@ -187,7 +197,7 @@ class ValuesViewSet(viewsets.mixins.ListModelMixin, viewsets.GenericViewSet):
 
     def list(self, request, *args, **kwargs):
 
-        instance = _Values(Season.objects.get(current=True))
+        instance = _Values(Season.visible('frontend'))
         serializer = ValueSerializer(instance)
         response = Response(serializer.data)
 

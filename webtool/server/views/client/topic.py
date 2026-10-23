@@ -4,7 +4,7 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 
-from server.models import Topic
+from server.models import Topic, Season
 from server.serializers.client import TopicSerializer, TopicListSerializer
 from server.filters.client import TopicFilter
 
@@ -14,7 +14,13 @@ class TopicViewSet(viewsets.ReadOnlyModelViewSet):
     lookup_field = "category__code"
     lookup_url_kwarg = "code"
 
-    queryset = Topic.objects.filter(seasons__current=True).exclude(deprecated=True)
+    # Placeholder for the router; the real queryset depends on the current season
+    # and is built per request in get_queryset.
+    queryset = Topic.objects.none()
+
+    def get_queryset(self):
+        # The client API shows this and next season (Season.visible).
+        return Topic.objects.exclude(deprecated=True).filter(seasons__in=Season.visible('client')).distinct()
     search_fields = ('name',)
     filterset_class = TopicFilter
     filter_backends = [DjangoFilterBackend]
