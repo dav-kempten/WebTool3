@@ -81,24 +81,51 @@ def test_create_event_reports_exhaustion_as_a_validation_error(
 
 
 @pytest.mark.django_db
-def test_check_reference_space_reports_usage(make_season, make_category):
+def test_check_reference_space_measures_a_public_category_per_year_digit(
+        make_season, make_category):
+    """A public code carries the year digit, so BGT has 99 codes per year, not
+    990: overflowing into the next digit would print the wrong year."""
     from io import StringIO
 
     from django.core.management import call_command
 
-    season = make_season('2025', current=True)
-    category = make_category('KT1')
+    season = make_season('2026', current=True)
+    category = make_category('BGT')
+    Reference.objects.bulk_create(
+        [Reference(season=season, category=category, prefix=6, reference=r) for r in range(1, 58)]
+        + [Reference(season=season, category=category, prefix=7, reference=r) for r in range(1, 5)]
+    )
+
+    out = StringIO()
+    call_command('check_reference_space', '--threshold', '100', stdout=out)
+    lines = out.getvalue().splitlines()
+
+    assert any('BGT' in line and ' 6 ' in line and '57/99' in line for line in lines)
+    assert any('BGT' in line and ' 7 ' in line and '4/99' in line for line in lines)
+
+
+@pytest.mark.django_db
+def test_check_reference_space_measures_a_satellite_category_as_a_whole(
+        make_season, make_category):
+    """Course meetings and deadlines never reach the homepage; they may spread
+    over all ten digits."""
+    from io import StringIO
+
+    from django.core.management import call_command
+
+    season = make_season('2026', current=True)
+    category = make_category('KT9')
+    category.meeting = True
+    category.save()
     Reference.objects.bulk_create([
-        Reference(season=season, category=category, prefix=0, reference=r)
-        for r in range(1, 100)
+        Reference(season=season, category=category, prefix=p, reference=r)
+        for p in (6, 7) for r in range(1, 100)
     ])
 
     out = StringIO()
     call_command('check_reference_space', stdout=out)
-    output = out.getvalue()
 
-    assert 'KT1' in output
-    assert '99/990' in output
+    assert '198/990' in out.getvalue()
 
 
 @pytest.mark.django_db
@@ -107,12 +134,11 @@ def test_check_reference_space_fails_above_the_threshold(make_season, make_categ
 
     from django.core.management import call_command
 
-    season = make_season('2025', current=True)
-    category = make_category('KT1')
+    season = make_season('2026', current=True)
+    category = make_category('BGT')
     Reference.objects.bulk_create([
-        Reference(season=season, category=category, prefix=p, reference=r)
-        for p in range(10)
-        for r in range(1, 100)
+        Reference(season=season, category=category, prefix=6, reference=r)
+        for r in range(1, 60)
     ])
 
     with pytest.raises(CommandError):

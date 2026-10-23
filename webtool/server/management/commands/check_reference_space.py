@@ -1,21 +1,28 @@
 # -*- coding: utf-8 -*-
 from django.core.management.base import BaseCommand, CommandError
-from django.db.models import Count
+from django.db.models import Count, Q
 
 from server.models import Reference
 from server.models.reference import REFERENCE_RANGE
 
-# 10 Prefixe (0..9) mal die Referenzen 1..99
-CAPACITY = len(REFERENCE_RANGE) * 10
+# Ein öffentlicher Code trägt die Jahresziffer (BGT-6NN), es zählen also nur die
+# Nummern 1..99 dieser einen Ziffer. Ein Überlauf in die nächste Ziffer würde ein
+# falsches Jahr drucken -- deshalb ist das die eigentliche Grenze.
+PUBLIC_CAPACITY = len(REFERENCE_RANGE)
+# Satelliten (Anmeldeschluss, Vorbesprechung, Kurstermin) werden nie veröffentlicht
+# und dürfen sich über alle zehn Ziffern verteilen.
+SATELLITE_CAPACITY = len(REFERENCE_RANGE) * 10
+
+SATELLITE = Q(category__deadline=True) | Q(category__preliminary=True) | Q(category__meeting=True)
 
 
 class Command(BaseCommand):
 
     help = (
-        'Report how full the booking code space of every (season, category) pair is. '
-        'A pair holds {} codes; once they are gone no further event can be created in '
-        'that category and season, and create_reference raises '
-        'ReferenceSpaceExhausted.'.format(CAPACITY)
+        'Report how full the booking code space is. A public category holds {} codes '
+        'per season and year digit; a satellite category (deadline, preliminary, '
+        'meeting) holds {} per season. Once they are gone no further event can be '
+        'created there.'.format(PUBLIC_CAPACITY, SATELLITE_CAPACITY)
     )
 
     def add_arguments(self, parser):
@@ -25,7 +32,7 @@ class Command(BaseCommand):
         )
         parser.add_argument(
             '--threshold', type=int, default=50,
-            help='Exit with an error if a pair is at or above this percentage (default 50)'
+            help='Exit with an error if a row is at or above this percentage (default 50)'
         )
 
     def handle(self, *args, **options):
@@ -36,19 +43,34 @@ class Command(BaseCommand):
         if season:
             queryset = queryset.filter(season__name=str(season))
 
-        rows = (
-            queryset
-            .values('season__name', 'category__code')
-            .annotate(used=Count('pk'))
-            .order_by('-used')
-        )
+        rows = [
+            (row['season__name'], row['category__code'], str(row['prefix']), row['used'], PUBLIC_CAPACITY)
+            for row in (
+                queryset.exclude(SATELLITE)
+                .values('season__name', 'category__code', 'prefix')
+                .annotate(used=Count('pk'))
+            )
+        ] + [
+            (row['season__name'], row['category__code'], '*', row['used'], SATELLITE_CAPACITY)
+            for row in (
+                queryset.filter(SATELLITE)
+                .values('season__name', 'category__code')
+                .annotate(used=Count('pk'))
+            )
+        ]
+
+        if not rows:
+            self.stdout.write('no booking codes found')
+            return
+
+        # Fullest first; '*' in the digit column marks a satellite category.
+        rows.sort(key=lambda row: row[3] / row[4], reverse=True)
 
         breached = []
-        for row in rows:
-            used = row['used']
-            percent = 100.0 * used / CAPACITY
-            line = '{}  {:4s}  {:4d}/{}  {:5.1f}%'.format(
-                row['season__name'], row['category__code'], used, CAPACITY, percent
+        for season_name, code, prefix, used, capacity in rows:
+            percent = 100.0 * used / capacity
+            line = '{}  {:4s}  {}  {:4d}/{:<4d}  {:5.1f}%'.format(
+                season_name, code, prefix, used, capacity, percent
             )
             if percent >= threshold:
                 breached.append(line)
@@ -56,13 +78,7 @@ class Command(BaseCommand):
             else:
                 self.stdout.write(line)
 
-        if not rows:
-            self.stdout.write('no booking codes found')
-            return
-
         if breached:
             raise CommandError(
-                '{} (season, category) pair(s) at or above {}% of {} codes.'.format(
-                    len(breached), threshold, CAPACITY
-                )
+                '{} row(s) at or above {}% of their capacity.'.format(len(breached), threshold)
             )

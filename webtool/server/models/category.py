@@ -105,6 +105,13 @@ class Category(SeasonsMixin, TimeMixin, models.Model):
     def __str__(self):
         return "{} ({})".format(self.name, self.code)
 
+    @property
+    def is_satellite(self):
+        """Deadlines, preliminary meetings and course meetings. Their codes are
+        only used internally and never published, so they need not stay on the
+        year digit -- unlike every public category."""
+        return self.deadline or self.preliminary or self.meeting
+
     class Meta:
         get_latest_by = "updated"
         verbose_name = "Kategorie"
