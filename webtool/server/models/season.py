@@ -1,11 +1,20 @@
 # -*- coding: utf-8 -*-
 import datetime
 
-from django.db import models
+from django.apps import apps
+from django.db import models, transaction
 from django.db.models import Q
 
 from .time_base import TimeMixin
 from . import defaults
+
+# Every model with a `seasons` ManyToMany (SeasonsMixin). A new season takes over
+# their links from the previous one -- see Season.for_year. Names, not classes:
+# this module is imported before those models exist.
+SEASON_LINKED_MODELS = (
+    'Approximate', 'Category', 'CategoryGroup', 'Collective', 'Equipment', 'Fitness',
+    'Guide', 'Part', 'Skill', 'State', 'Topic',
+)
 
 
 class SeasonManager(models.Manager):
@@ -40,6 +49,61 @@ class Season(TimeMixin, models.Model):
 
     def __str__(self):
         return self.name
+
+    @classmethod
+    def for_year(cls, year):
+        """The season of `year`, created on first use. Never changes `current`.
+
+        A new season takes over from the newest season before it (or, if there
+        is none, the newest at all): its params, the links of every model in
+        SEASON_LINKED_MODELS -- so whatever was unlinked there stays out, nothing
+        deleted is revived -- and its tariffs. It gets its own calendar with the
+        anniversaries of the newest existing calendar; vacations are specific to
+        a year and are not copied.
+        """
+        name = str(year)
+        season = cls.objects.filter(name=name).first()
+        if season:
+            return season
+
+        with transaction.atomic():
+            source = (
+                cls.objects.filter(name__lt=name).order_by('-name').first()
+                or cls.objects.order_by('-name').first()
+            )
+            season = cls.objects.create(
+                name=name, current=False,
+                params=source.params if source else defaults.get_default_params(),
+            )
+
+            Calendar = apps.get_model('server', 'Calendar')
+            calendar = Calendar.objects.create(season=season)
+            latest_calendar = (
+                Calendar.objects.exclude(season=season).order_by('-season__name').first()
+            )
+            if latest_calendar:
+                calendar.anniversary_list.add(*latest_calendar.anniversary_list.all())
+
+            if source:
+                for model_name in SEASON_LINKED_MODELS:
+                    model = apps.get_model('server', model_name)
+                    through = model.seasons.through
+                    column = '{}_id'.format(model._meta.model_name)
+                    through.objects.bulk_create(
+                        [
+                            through(**{column: pk, 'season_id': season.pk})
+                            for pk in model.objects.filter(seasons=source).values_list('pk', flat=True)
+                        ],
+                        ignore_conflicts=True,
+                    )
+
+                Tariff = apps.get_model('server', 'Tariff')
+                for tariff in Tariff.objects.filter(season=source):
+                    tariff.pk = None
+                    tariff.season = season
+                    tariff.save()
+
+        return season
 
     class Meta:
         get_latest_by = "updated"
