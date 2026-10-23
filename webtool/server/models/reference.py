@@ -106,6 +106,17 @@ class Reference(SeasonMixin, TimeMixin, models.Model):
 
         return Reference.objects.get(season=season, category=category, prefix=prefix, reference=reference)
 
+    def move_to(self, season):
+        """Re-key this booking code into `season`: its year digit and the lowest
+        free number there. The row itself stays -- it is the primary key of its
+        event, so tours and courses keep pointing at it."""
+        slot = find_free_slot(category=self.category, prefix=int(season.name[-1]), season=season)
+        if slot is None:
+            raise ReferenceSpaceExhausted(self.category, season)
+        self.season = season
+        self.prefix, self.reference = slot
+        self.save()
+
     @staticmethod
     def create_reference(category=None, prefix=None, season=None, **kwargs):
 
@@ -144,32 +155,39 @@ class Reference(SeasonMixin, TimeMixin, models.Model):
         return reference
 
 
-def find_free_references(category=None, prefix=None, season=None):
+def find_free_slot(category=None, prefix=None, season=None):
+    """(prefix, number) of the lowest free booking code, or None if all are taken."""
     prefix_idx = int(prefix)
-    free_references = set()
-    reference = None
+    # Bis Plan 3 landeten Veranstaltungen des Folgejahres in der laufenden Saison,
+    # mit der Ziffer des Folgejahres (BGT-701 in Saison 2026). Diese Nummern sind
+    # für die Saison ihres Jahres mitbelegt, sonst gäbe es den Code-String doppelt.
+    seasons = [season]
+    if season is not None and season.name.isdigit():
+        previous = Season.objects.filter(name=str(int(season.name) - 1)).first()
+        if previous:
+            seasons.append(previous)
 
     while True:
         cur_references = set(
-            Reference.objects.filter(category=category, prefix=prefix_idx, season=season).values_list(
-                'reference',flat=True)
+            Reference.objects.filter(category=category, prefix=prefix_idx, season__in=seasons).values_list(
+                'reference', flat=True)
         )
 
         free_references = REFERENCE_RANGE - cur_references
 
         if free_references:
-            break
+            return prefix_idx, min(free_references)
 
         # Maintain prefixes between 0 and 9
         prefix_idx = (prefix_idx + 1) % 10
 
         if int(prefix) == prefix_idx:
-            reference = None
-            break
+            return None
 
-    if free_references:
-        reference = Reference.objects.create(
-            season=season, category=category, prefix=prefix_idx, reference=min(free_references)
-        )
 
-    return reference
+def find_free_references(category=None, prefix=None, season=None):
+    slot = find_free_slot(category=category, prefix=prefix, season=season)
+    if slot is None:
+        return None
+    prefix_idx, number = slot
+    return Reference.objects.create(season=season, category=category, prefix=prefix_idx, reference=number)

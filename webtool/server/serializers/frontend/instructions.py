@@ -4,9 +4,9 @@ from rest_framework.reverse import reverse
 from django.core.mail import send_mail
 
 from server.models import (
-    Instruction, Equipment, Guide, Topic, Category, State, Event, get_default_season, get_default_state
+    Instruction, Equipment, Guide, Topic, Category, State, Event, get_default_state
 )
-from server.serializers.frontend.core import EventSerializer, MoneyField, create_event, update_event
+from server.serializers.frontend.core import EventSerializer, MoneyField, create_event, update_event, move_to_year_season
 
 
 class InstructionListSerializer(serializers.ModelSerializer):
@@ -180,11 +180,10 @@ class InstructionSerializer(serializers.ModelSerializer):
             state = validated_data.pop('state', get_default_state())
             topic = validated_data.get('topic')
             category = topic.category
-            season = get_default_season()
-            event = create_event(event_data, dict(category=category, season=season, type=dict(topic=True)))
+            event = create_event(event_data, dict(category=category, type=dict(topic=True)))
             instruction = Instruction.objects.create(instruction=event, state=state, **validated_data)
             for meeting_data in meeting_list:
-                meeting = create_event(meeting_data, dict(season=season, type=dict(meeting=True)))
+                meeting = create_event(meeting_data, dict(season=event.season, type=dict(meeting=True)))
                 meeting.instruction = instruction
                 meeting.save()
             instruction.team.set(team)
@@ -203,7 +202,10 @@ class InstructionSerializer(serializers.ModelSerializer):
             update_event(instruction, instruction_data, self.context)
         meeting_list = validated_data.get('meeting_list')
         if meeting_list is not None:
-            season = instance.topic.seasons.get(current=True)
+            # Meetings share the course's season. The former
+            # topic.seasons.get(current=True) raised once the topic was not
+            # linked to the current season, and ignored the course's own year.
+            season = Event.objects.get(pk=instance.instruction_id).season
             for meeting_data in meeting_list:
                 new_meeting = meeting_data.get('pk') is None
                 meeting = create_event(meeting_data, dict(season=season, type=dict(meeting=True)))
@@ -238,6 +240,13 @@ class InstructionSerializer(serializers.ModelSerializer):
         instance.kv_link = validated_data.get('kv_link', instance.kv_link)
         instance.comment = validated_data.get('comment', instance.comment)
         instance.message = validated_data.get('message', instance.message)
+        # D1: a start date moved into another year takes the course and its
+        # meetings along. Fresh rows -- update_event used other instances.
+        move_to_year_season(
+            Event.objects.get(pk=instance.instruction_id),
+            list(Event.objects.filter(instruction=instance)),
+            instance.state,
+        )
         instance.save()
         return instance
 

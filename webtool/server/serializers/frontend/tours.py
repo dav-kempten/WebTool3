@@ -3,9 +3,9 @@ from rest_framework.reverse import reverse
 from django.core.mail import send_mail
 
 from server.models import (
-    Tour, Guide, Category, Equipment, State, get_default_state, get_default_season, Event,
+    Tour, Guide, Category, Equipment, State, get_default_state, Event,
     Skill, Fitness, Topic)
-from server.serializers.frontend.core import EventSerializer, MoneyField, create_event, update_event
+from server.serializers.frontend.core import EventSerializer, MoneyField, create_event, update_event, move_to_year_season
 
 #: Obergrenze für Zusatzkategorien einer Tour, siehe validate_categoryIds.
 MAX_EXTRA_CATEGORIES = 3
@@ -220,26 +220,25 @@ class TourSerializer(serializers.ModelSerializer):
             else:
                 youth_on_tour = validated_data.pop('youth_on_tour')
             categories = validated_data.pop('categories')
-            season = get_default_season()
 
             if not 'start_date' in tour_data:
                 raise serializers.ValidationError("Tour 'start_date' have to be defined")
 
             if category:
-                tour_event = create_event(tour_data, dict(category=category, season=season, type=dict(tour=True)))
+                tour_event = create_event(tour_data, dict(category=category, type=dict(tour=True)))
             else:
                 raise serializers.ValidationError("Tour needs a category for creation")
 
             if not deadline_data:
                 raise serializers.ValidationError("Deadline have to be defined")
 
-            deadline_event = create_event(deadline_data, dict(category=None, season=season, type=dict(deadline=True)))
+            deadline_event = create_event(deadline_data, dict(category=None, season=tour_event.season, type=dict(deadline=True)))
 
             if not preliminary_data:
                 tour = Tour.objects.create(tour=tour_event, deadline=deadline_event, preliminary=None,
                                            state=state, youth_on_tour=youth_on_tour, **validated_data)
             else:
-                preliminary_event = create_event(preliminary_data, dict(category=None, season=season, type=dict(preliminary=True)))
+                preliminary_event = create_event(preliminary_data, dict(category=None, season=tour_event.season, type=dict(preliminary=True)))
                 tour = Tour.objects.create(tour=tour_event, deadline=deadline_event, preliminary=preliminary_event,
                                         state=state, youth_on_tour=youth_on_tour, **validated_data)
                 update_event(Event.objects.get(pk=tour.preliminary.pk), dict(title="VB " + str(tour.tour.reference),
@@ -278,7 +277,7 @@ class TourSerializer(serializers.ModelSerializer):
                     # First time a preliminary is added after tour creation.
                     preliminary_event = create_event(
                         preliminary_data,
-                        dict(category=None, season=get_default_season(), type=dict(preliminary=True)),
+                        dict(category=None, season=instance.tour.season, type=dict(preliminary=True)),
                     )
                     instance.preliminary = preliminary_event
                 else:
@@ -329,6 +328,13 @@ class TourSerializer(serializers.ModelSerializer):
         instance.state = validated_data.get('state', instance.state)
         instance.message = validated_data.get('message', instance.message)
         instance.comment = validated_data.get('comment', instance.comment)
+        # D1: a start date moved into another year takes the tour along. Fresh
+        # rows -- update_event changed the events through other instances.
+        move_to_year_season(
+            Event.objects.get(pk=instance.tour_id),
+            [Event.objects.filter(pk=pk).first() for pk in (instance.deadline_id, instance.preliminary_id)],
+            instance.state,
+        )
         instance.save()
 
         return instance
