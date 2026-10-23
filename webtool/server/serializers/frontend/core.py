@@ -3,7 +3,7 @@ from decimal import Decimal
 
 from rest_framework import serializers
 
-from server.models import Event, Approximate, Reference
+from server.models import Event, Approximate, Reference, ReferenceSpaceExhausted
 
 
 class MoneyField(serializers.DecimalField):
@@ -105,12 +105,17 @@ def create_event(validated_data, context):
         event_type = context.get('type', {})
         season = context.get('season')
         start_date = validated_data.get('start_date')
-        reference = Reference.create_reference(
-            category=category,
-            prefix=str(start_date.year)[-1] if start_date else season.name[-1],
-            season=season,
-            **event_type
-        )
+        try:
+            reference = Reference.create_reference(
+                category=category,
+                prefix=str(start_date.year)[-1] if start_date else season.name[-1],
+                season=season,
+                **event_type
+            )
+        except ReferenceSpaceExhausted as exception:
+            # Ohne diese Übersetzung landet die Erschöpfung als HTTP 500 beim
+            # Leiter, der gerade eine Veranstaltung anlegen will.
+            raise serializers.ValidationError({'reference': str(exception)})
         return Event.objects.create(season=season, reference=reference, **validated_data)
 
 

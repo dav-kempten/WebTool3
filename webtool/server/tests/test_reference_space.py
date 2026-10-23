@@ -54,3 +54,27 @@ def test_a_full_category_is_not_cloned(make_season, make_category):
 
     assert Category.objects.count() == 1
     assert not Category.objects.filter(code='KT2').exists()
+
+
+@pytest.mark.django_db
+def test_create_event_reports_exhaustion_as_a_validation_error(
+        make_season, make_category):
+    """Unhandled, this used to surface as HTTP 500 when a guide tried to create
+    an event in a full category."""
+    import datetime
+
+    from rest_framework import serializers as drf_serializers
+
+    from server.serializers.frontend.core import create_event
+
+    season = make_season('2025', current=True)
+    category = make_category('KT1')
+    fill(season, category)
+
+    with pytest.raises(drf_serializers.ValidationError) as excinfo:
+        create_event(
+            {'pk': None, 'deprecated': False, 'start_date': datetime.date(2025, 6, 1)},
+            {'category': category, 'season': season, 'type': {}},
+        )
+
+    assert 'reference' in excinfo.value.detail
