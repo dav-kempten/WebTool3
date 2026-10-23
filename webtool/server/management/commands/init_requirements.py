@@ -51,6 +51,28 @@ class Command(BaseCommand):
         ))
         if source:
             self.stdout.write('Zahlen übernommen aus Saison {}'.format(source.name))
+        self.report_skipped(season)
+
+    def report_skipped(self, season):
+        """Interne Kursinhalte bekommen keine Bedarfszeile -- aber sichtbar.
+
+        Ein Kursinhalt, der versehentlich als intern markiert ist, fehlte sonst
+        stillschweigend in der Bedarfsanzeige, obwohl seine Kurse gezählt
+        werden: dort entscheidet das Flag der Veranstaltung, nicht das des
+        Kursinhalts.
+        """
+        skipped = (
+            Topic.objects
+            .filter(seasons=season, deprecated=False, internal=True)
+            .select_related('category')
+            .order_by('category__code')
+        )
+        for topic in skipped:
+            self.stdout.write(self.style.WARNING(
+                'übersprungen: {} ({}) ist als interner Kursinhalt markiert'.format(
+                    topic.title, topic.category.code
+                )
+            ))
 
     @staticmethod
     def targets(season):

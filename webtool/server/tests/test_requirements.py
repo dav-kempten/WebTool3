@@ -433,6 +433,25 @@ def test_init_requirements_is_idempotent(seeded, course_topic):
     assert target.minimum == 9
 
 
+def test_init_requirements_names_the_internal_topics_it_skips(seeded, course_topic):
+    """Sonst fehlt ein versehentlich als intern markierter Kursinhalt
+    stillschweigend, obwohl seine Kurse gezählt werden."""
+    from io import StringIO
+    from django.core.management import call_command
+
+    course_topic.internal = True
+    course_topic.save()
+    out = StringIO()
+
+    call_command('init_requirements', '--season', seeded.name, stdout=out)
+
+    output = out.getvalue()
+    assert 'Grundkurs Test' in output and 'GKX' in output
+    assert not Requirement.objects.filter(
+        season=seeded, kind=Requirement.INSTRUCTION, category=course_topic.category
+    ).exists()
+
+
 def test_init_requirements_defaults_to_the_program_year(planning_season):
     """Ohne --season dieselbe Saison, die auch die Anzeige führt."""
     from django.core.management import call_command
