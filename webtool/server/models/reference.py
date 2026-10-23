@@ -13,6 +13,26 @@ from . import defaults
 REFERENCE_RANGE = set(range(1, 100))
 
 
+class ReferenceSpaceExhausted(Exception):
+    """All booking codes of one (season, category) pair are taken.
+
+    Replaces the former category-cloning escape hatch. That path derived a new
+    category code by incrementing the last character, which raised DataError
+    for codes ending in 9 (four characters against a varchar(3) column),
+    IntegrityError when the incremented code already existed, and a misleading
+    Category.DoesNotExist for the 118 codes that do not end in a digit at all.
+    """
+
+    def __init__(self, category, season):
+        self.category = category
+        self.season = season
+        super().__init__(
+            'Alle {} Buchungscodes der Kategorie "{}" sind in Saison {} vergeben.'.format(
+                len(REFERENCE_RANGE) * 10, category.code, season.name
+            )
+        )
+
+
 class ReferenceManager(models.Manager):
 
     def get_by_natural_key(self, season, category, prefix, reference):
@@ -120,18 +140,7 @@ class Reference(SeasonMixin, TimeMixin, models.Model):
         reference = find_free_references(category=category, prefix=prefix, season=season)
 
         if reference is None:
-            category_code = category.code
-            category_index = category_code[-1]
-            if category_index < "0" or category_index > "9":
-                print('Category "{}" hat keinen Zähler'.format(category_code))
-                # noinspection PyCallByClass
-                raise Category.DoesNotExist("Reference matching query does not exist.")
-            category.pk = None
-            category_index = int(category_index) + 1
-            category.code = "{}{:1d}".format(category_code[:2], category_index)
-            category.save()
-            category.seasons.add(season)
-            reference = Reference.create_reference(category=category, prefix=prefix, season=season, **kwargs)
+            raise ReferenceSpaceExhausted(category, season)
         return reference
 
 
