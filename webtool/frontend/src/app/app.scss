@@ -30,4 +30,24 @@
   font-size: 0.8rem;
   opacity: 0.55;
   user-select: none;
+
+  /* Version und Copyright stehen untereinander, auf breiten Schirmen
+     nebeneinander -- beide rechtsbündig am selben Rand. */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.1rem;
+}
+
+@media (min-width: 40rem) {
+  .avk-footer {
+    flex-direction: row;
+    justify-content: flex-end;
+    gap: 0.75rem;
+  }
+
+  .avk-footer-copyright::before {
+    content: '·';
+    margin-right: 0.75rem;
+  }
 }

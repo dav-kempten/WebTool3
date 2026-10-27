@@ -7,7 +7,13 @@
 </main>
 
 <footer class="avk-footer">
-  Version {{ build.version }} · Build vom {{ build.builtAt | date: 'dd.MM.yyyy, HH:mm' }} Uhr
+  <span>
+    Version {{ build.version }} · Build vom
+    {{ build.builtAt | date: 'dd.MM.yyyy, HH:mm' }} Uhr
+  </span>
+  <span class="avk-footer-copyright">
+    © {{ build.builtAt | date: 'yyyy' }} Johannes Büttner @ DAV Allgäu-Kempten
+  </span>
 </footer>
 
 <p-toast position="top-right" />

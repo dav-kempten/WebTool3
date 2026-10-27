@@ -4,21 +4,61 @@
   display: block;
 }
 
-// Ohne vorangestelltes Symbol: Überschrift und Text fluchten so mit den
-// Beschriftungen der Felder darunter -- und mit dem Kopf der Bedarfskarte,
-// die unmittelbar darüber steht.
-.avk-support-head {
-  margin-bottom: 1.25rem;
+// Standardmäßig zu, wie die Abschnitte der Bedarfskarte darüber: natives
+// <details>, ohne JavaScript und mit der Tastatur bedienbar.
+.avk-support {
+  // Das Dreieck steht rechts, nicht vor der Überschrift: so fluchten
+  // Überschrift, Einzeiler und die Felder darunter auf einer Kante.
+  > summary {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 0.75rem;
+    align-items: baseline;
+    padding: 0.25rem 0;
+    cursor: pointer;
+    list-style: none;
 
-  h2 {
-    margin: 0 0 0.25rem;
-    font-size: 1.15rem;
+    &::-webkit-details-marker {
+      display: none;
+    }
   }
 
-  p {
+  h2 {
     margin: 0;
-    font-size: 0.9rem;
-    opacity: 0.75;
+    font-size: 1.15rem;
+  }
+}
+
+// Das Dreieck dreht sich beim Aufklappen mit.
+.avk-support-chevron {
+  font-size: 0.75rem;
+  opacity: 0.6;
+  transition: transform 0.15s ease;
+
+  .avk-support[open] & {
+    transform: rotate(90deg);
+  }
+}
+
+.avk-support-sub {
+  font-size: 0.9rem;
+  opacity: 0.75;
+}
+
+// Der Inhalt fluchtet mit dem Kartenrand, nicht mit der Überschrift hinter
+// dem Dreieck -- die Felder sollen die volle Breite behalten.
+.avk-support-body {
+  margin-top: 1.25rem;
+}
+
+@media (max-width: 40rem) {
+  // Der Einzeiler im Kopf passt nicht mehr daneben, die Überschrift genügt.
+  .avk-support > summary {
+    grid-template-columns: 1fr auto;
+  }
+
+  .avk-support-sub {
+    display: none;
   }
 }
 
