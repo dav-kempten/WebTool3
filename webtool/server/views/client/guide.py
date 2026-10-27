@@ -4,7 +4,7 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 
-from server.models import Guide
+from server.models import Guide, Season
 from server.serializers.client import GuideSerializer, GuideListSerializer
 from server.filters.client import GuideFilter
 
@@ -14,7 +14,13 @@ class GuideViewSet(viewsets.ReadOnlyModelViewSet):
     lookup_field = "user__username"
     lookup_url_kwarg = "username"
 
-    queryset = Guide.objects.filter(seasons__current=True, user__is_active=True).exclude(deprecated=True)
+    # Placeholder for the router; the real queryset depends on the current season
+    # and is built per request in get_queryset.
+    queryset = Guide.objects.none()
+
+    def get_queryset(self):
+        # The client API shows this and next season (Season.visible).
+        return Guide.objects.filter(user__is_active=True).exclude(deprecated=True).filter(seasons__in=Season.visible('client')).distinct()
     search_fields = ('user__last_name', 'user__first_name')
     filterset_class = GuideFilter
     filter_backends = [DjangoFilterBackend]

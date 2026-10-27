@@ -2,10 +2,10 @@ from rest_framework import serializers
 from rest_framework.reverse import reverse
 
 from server.models import (
-    Talk, State, get_default_state, Event, get_default_season
+    Talk, State, get_default_state, Event
 )
 
-from server.serializers.frontend.core import create_event, update_event, EventSerializer
+from server.serializers.frontend.core import create_event, update_event, EventSerializer, move_to_year_season
 
 
 class TalkListSerializer(serializers.ModelSerializer):
@@ -98,8 +98,7 @@ class TalkSerializer(serializers.ModelSerializer):
             admission = validated_data.pop('admission')
             # max_quantity = validated_data.pop('max_quantity')
             state = validated_data.pop('state', get_default_state())
-            season = get_default_season()
-            talk_event = create_event(talk_data, dict(season=season, type=dict(talk=True)))
+            talk_event = create_event(talk_data, dict(type=dict(talk=True)))
             talk = Talk.objects.create(talk=talk_event, state=state, **validated_data)
             talk.speaker = speaker
             talk.admission = admission
@@ -118,5 +117,7 @@ class TalkSerializer(serializers.ModelSerializer):
         instance.max_quantity = validated_data.get('max_quantity', instance.max_quantity)
         instance.tariffs = validated_data.get('tariffs', instance.tariffs)
         instance.state = validated_data.get('state', instance.state)
+        # D1: a start date moved into another year takes the talk along.
+        move_to_year_season(Event.objects.get(pk=instance.talk_id), [], instance.state)
         instance.save()
         return instance

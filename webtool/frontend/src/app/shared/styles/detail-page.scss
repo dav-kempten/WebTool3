@@ -14,6 +14,55 @@
   color: var(--p-red-500, #ef4444);
 }
 
+/* Bestätigender Hinweis unter einem Feld — grün wie die übrige
+   Primärfarbe, mit leichtem Hintergrund statt Rahmen, damit er auffällt
+   ohne wie eine Warnung zu wirken. */
+.avk-notice {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.75rem 0 0;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.9rem;
+  color: var(--p-primary-700, #047857);
+  background: var(--p-primary-50, rgb(16 185 129 / 10%));
+
+  i {
+    font-size: 1rem;
+    opacity: 0.8;
+  }
+}
+
+/* Link inside a notice that has to be clicked (download, e-mail): framed and
+   bold like a small button, so it does not read as plain text in the hint. */
+.avk-notice-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin: 0.1rem 0.15rem;
+  padding: 0.1rem 0.55rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-weight: 600;
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  white-space: nowrap;
+  background: var(--p-content-background, #fff);
+  transition: background-color 0.15s;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--p-primary-100, rgb(16 185 129 / 20%));
+  }
+
+  i {
+    font-size: 0.85rem;
+    opacity: 1;
+  }
+}
+
 .avk-grid-2 {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -24,6 +73,63 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1rem;
+}
+
+/* Zeile für wenige schmale Felder — anders als die avk-grid-* Raster nimmt
+   sie höchstens ein Drittel der Kartenbreite ein. Kein Umbruch: die Felder
+   stehen immer nebeneinander und schrumpfen stattdessen mit. */
+.avk-row-compact {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.75rem;
+  max-width: 33.333%;
+}
+
+/* Teilen sich die Zeile zu gleichen Teilen. min-width hebt die Vorgabe auf,
+   mit der ein Eingabefeld sonst seine Inhaltsbreite erzwingt. */
+.avk-field-narrow {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* Das eigentliche Eingabefeld steckt in PrimeNGs eigenem Template und bringt
+   dort eine Grundbreite mit. Ohne diese Regel wächst es über seine Spalte
+   hinaus — in der schmalen Zeile über das Drittel, in der Betragszeile unter
+   das Feld daneben. */
+:host ::ng-deep .avk-field-narrow .p-inputnumber,
+:host ::ng-deep .avk-row-amount .p-inputnumber {
+  min-width: 0;
+
+  .p-inputnumber-input {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+/* Betrag samt zugehöriger Erläuterung in einer Zeile: die Zahl braucht
+   wenig Platz, der Text umso mehr. Steht kein Erläuterungsfeld daneben,
+   bleibt die zweite Spalte einfach leer und die Beträge fluchten. */
+.avk-row-amount {
+  display: grid;
+  grid-template-columns: 8rem minmax(0, 1fr);
+  /* Zeilenabstand 1rem, dazwischen etwas mehr, damit Betrag und Erläuterung
+     nicht aneinanderkleben. */
+  gap: 1rem 1.5rem;
+  align-items: start;
+
+  > .avk-field {
+    min-width: 0;
+  }
+
+  + .avk-row-amount {
+    margin-top: 1rem;
+  }
+}
+
+@media (max-width: 40rem) {
+  .avk-row-amount {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .avk-field {
@@ -38,6 +144,12 @@
   p-inputnumber,
   p-datepicker {
     width: 100%;
+  }
+
+  /* Einzeilig starten, aber vom Benutzer aufziehbar bleiben. Nur senkrecht,
+     damit ein breitgezogenes Feld das Raster nicht sprengt. */
+  textarea {
+    resize: vertical;
   }
 
   label {
@@ -56,6 +168,26 @@
   flex-wrap: wrap;
   gap: 1.25rem;
   align-items: center;
+}
+
+/* Verteilt unterschiedlich lang beschriftete Optionen über die ganze Zeile:
+   die Elemente behalten ihre Inhaltsbreite, der übrige Platz geht zu gleichen
+   Teilen in die Abstände dazwischen. */
+.avk-checkbox-row-spread {
+  justify-content: space-between;
+  row-gap: 0.75rem;
+
+  /* Beschriftungen dürfen nicht umbrechen — sonst rutscht der Text unter
+     seine Box und die Zeile wird ungleich hoch. */
+  label {
+    white-space: nowrap;
+  }
+
+  /* Der Trenner steht zwischen zwei Gruppen und braucht dafür mehr Luft als
+     der Abstand zweier Optionen derselben Gruppe. */
+  > .avk-checkbox-separator {
+    padding: 0 1.25rem;
+  }
 }
 
 .avk-checkbox-item {
@@ -143,4 +275,15 @@
 
 .avk-error-text {
   color: var(--p-red-500, #ef4444);
+}
+
+/* Visual divider inside a checkbox row, setting a group apart from the rest. */
+.avk-checkbox-separator {
+  color: var(--p-content-border-color, rgb(0 0 0 / 25%));
+  user-select: none;
+}
+
+/* A field that follows a checkbox row needs to breathe. */
+.avk-field-spaced {
+  margin-top: 1.25rem;
 }

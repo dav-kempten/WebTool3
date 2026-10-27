@@ -12,6 +12,7 @@ import { DialogModule } from 'primeng/dialog';
 import { SelectModule } from 'primeng/select';
 import { DatePickerModule } from 'primeng/datepicker';
 import { TooltipModule } from 'primeng/tooltip';
+import { ResponsiveTooltip } from '../../directives/responsive-tooltip';
 
 import { Topic, isSpecialTopic } from '../../../models/value';
 import { InstructionsStore } from '../../../core/stores/instructions.store';
@@ -34,6 +35,7 @@ import { toIsoDate, tomorrow } from '../../util/date';
     SelectModule,
     DatePickerModule,
     TooltipModule,
+    ResponsiveTooltip,
   ],
   templateUrl: './instruction-create-dialog.html',
   styleUrl: '../../styles/create-dialog.scss',

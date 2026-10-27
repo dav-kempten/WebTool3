@@ -1,0 +1,75 @@
+<p-card>
+  <details class="avk-support">
+    <summary>
+      <h2>Support</h2>
+      <span class="avk-support-sub">
+        Etwas klemmt oder fehlt? Die Nachricht geht an die Geschäftsstelle.
+      </span>
+      <i class="pi pi-chevron-right avk-support-chevron" aria-hidden="true"></i>
+    </summary>
+
+    <div class="avk-support-body">
+      @if (state() === 'sent') {
+        <p class="avk-support-done">
+          <i class="pi pi-check-circle" aria-hidden="true"></i>
+          <span>{{ feedback() }}</span>
+          <button type="button" pButton text size="small" (click)="reset()">
+            Noch etwas melden
+          </button>
+        </p>
+      } @else {
+        <form class="avk-support-form" (ngSubmit)="send()">
+          <div class="avk-field">
+            <label for="avk-support-subject">Betreff</label>
+            <input
+              id="avk-support-subject"
+              pInputText
+              name="subject"
+              maxlength="120"
+              placeholder="Worum geht es?"
+              [ngModel]="subject()"
+              (ngModelChange)="subject.set($event)"
+              [disabled]="state() === 'sending'"
+            />
+          </div>
+
+          <div class="avk-field">
+            <label for="avk-support-message">Nachricht</label>
+            <textarea
+              id="avk-support-message"
+              pTextarea
+              name="message"
+              rows="4"
+              maxlength="5000"
+              placeholder="Was ist passiert, und was hattest du erwartet?"
+              [ngModel]="message()"
+              (ngModelChange)="message.set($event)"
+              [disabled]="state() === 'sending'"
+            ></textarea>
+          </div>
+
+          <div class="avk-support-actions">
+            @if (state() === 'failed') {
+              <span class="avk-support-error">
+                <i class="pi pi-exclamation-circle" aria-hidden="true"></i>
+                {{ feedback() }}
+              </span>
+            } @else {
+              <span class="avk-support-hint">
+                Name und E-Mail-Adresse werden mitgeschickt.
+              </span>
+            }
+            <button
+              type="submit"
+              pButton
+              icon="pi pi-send"
+              label="Senden"
+              [disabled]="!canSend()"
+              [loading]="state() === 'sending'"
+            ></button>
+          </div>
+        </form>
+      }
+    </div>
+  </details>
+</p-card>

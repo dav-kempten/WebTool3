@@ -70,7 +70,38 @@
               inputId="isSpecialCheckbox" />
             <label for="isSpecialCheckbox">Sonderkurs</label>
           </div>
+          <span class="avk-checkbox-separator" aria-hidden="true">|</span>
+          <!-- UI-only switch: the backend has no such flag, it just reveals the
+               field below (see toggleExtraCategory). -->
+          <div class="avk-checkbox-item">
+            <p-checkbox
+              [ngModel]="needsExtraCategory()"
+              [ngModelOptions]="{ standalone: true }"
+              (onChange)="toggleExtraCategory($event.checked)"
+              [binary]="true"
+              [disabled]="locked()"
+              inputId="needsExtraCategoryCheckbox"
+            />
+            <label for="needsExtraCategoryCheckbox">Zusatzkategorie benötigt?</label>
+          </div>
         </div>
+        @if (needsExtraCategory()) {
+          <div class="avk-field avk-field-spaced">
+            <label>Zusatzkategorie</label>
+            <p-select
+              formControlName="categoryId"
+              [options]="categoryOptions()"
+              optionLabel="name"
+              optionValue="id"
+              [filter]="true"
+              filterBy="name"
+              placeholder="Kategorie wählen"
+              styleClass="w-full"
+              [disabled]="locked()"
+              pTooltip="Weitere Kurskategorie zusätzlich zur Hauptkategorie"
+            />
+          </div>
+        }
       </p-card>
 
       <p-card subheader="Kurs-Termine">
@@ -162,11 +193,11 @@
             </div>
             <div class="avk-field">
               <label>Spezielle Voraussetzungen</label>
-              <input pInputText formControlName="preconditions" [disabled]="locked()" pTooltip="Sonstige spezielle Voraussetzungen (z.B. Trittsicherheit o.ä.)" />
+              <input pInputText formControlName="preconditions" [attr.disabled]="locked() ? '' : null" pTooltip="Sonstige spezielle Voraussetzungen (z.B. Trittsicherheit o.ä.)" />
             </div>
           </div>
         }
-        <div class="avk-grid-3">
+        <div class="avk-grid-2">
           <div class="avk-field">
             <label>Ausrüstung</label>
             <p-multiselect formControlName="equipmentIds" [options]="equipmentOptions()" optionLabel="name"
@@ -174,79 +205,178 @@
           </div>
           <div class="avk-field">
             <label>Zusätzliche Ausrüstung</label>
-            <input pInputText formControlName="miscEquipment" maxlength="75" [disabled]="locked()" pTooltip="Ergänzungsfeld für Ausrüstung, die in keinem Ausrüstungsset ist" />
-          </div>
-          <div class="avk-field avk-field-checkbox">
-            <div class="avk-checkbox-item">
-              <p-checkbox formControlName="equipmentService" [binary]="true" inputId="equipmentServiceCheckbox" />
-              <label for="equipmentServiceCheckbox">Ausrüstungsservice gewünscht</label>
-            </div>
+            <input pInputText formControlName="miscEquipment" maxlength="75" [attr.disabled]="locked() ? '' : null" pTooltip="Ergänzungsfeld für Ausrüstung, die in keinem Ausrüstungsset ist" />
           </div>
         </div>
       </p-card>
 
       <p-card subheader="Teilnehmer*innenanzahl">
-        <div class="avk-grid-3">
-          <div class="avk-field">
+        <!-- "Aktuell" (curQuantity) ist vorerst ausgeblendet, weil die Zahl
+             derzeit nicht hier gepflegt wird. Das Formularfeld bleibt bestehen
+             und der Wert läuft unverändert durch, sodass zum Wiedereinschalten
+             der Block hier genügt:
+               <div class="avk-field avk-field-narrow">
+                 <label>Aktuell</label>
+                 <p-inputnumber formControlName="curQuantity" [min]="0" [max]="99"
+                   [maxFractionDigits]="0" [disabled]="locked()"></p-inputnumber>
+               </div> -->
+        <div class="avk-row-compact">
+          <div class="avk-field avk-field-narrow">
             <label>Mindestens</label>
-            <p-inputnumber formControlName="minQuantity" [min]="0" [disabled]="locked()"></p-inputnumber>
+            <p-inputnumber
+              formControlName="minQuantity"
+              [min]="0"
+              [max]="99"
+              [maxFractionDigits]="0"
+              [disabled]="locked()"
+            ></p-inputnumber>
           </div>
-          <div class="avk-field">
+          <div class="avk-field avk-field-narrow">
             <label>Maximal</label>
-            <p-inputnumber formControlName="maxQuantity" [min]="0" [disabled]="locked()"></p-inputnumber>
-          </div>
-          <div class="avk-field">
-            <label>Aktuell</label>
-            <p-inputnumber formControlName="curQuantity" [min]="0" [disabled]="locked()"></p-inputnumber>
+            <p-inputnumber
+              formControlName="maxQuantity"
+              [min]="0"
+              [max]="99"
+              [maxFractionDigits]="0"
+              [disabled]="locked()"
+            ></p-inputnumber>
           </div>
         </div>
       </p-card>
 
       <p-card subheader="Gebühr, Zusatzkosten, Anzahlung">
-        <div class="avk-grid-3">
-          <div class="avk-field">
-            <label>TN-Gebühr (€)</label>
-            <p-inputnumber formControlName="admission" [min]="0" [max]="999" [disabled]="locked()" pTooltip="Die TN-Gebühr wird von der Geschäftsstelle entsprechend ergänzt."></p-inputnumber>
+        <!-- Die TN-Gebühr legt die Geschäftsstelle fest, Trainer*innen bekommen
+             sie gar nicht erst zu sehen (siehe isOffice). -->
+        @if (isOffice()) {
+          <div class="avk-row-amount">
+            <div class="avk-field">
+              <label>TN-Gebühr (€)</label>
+              <p-inputnumber
+                formControlName="admission"
+                [min]="0"
+                [max]="999"
+                [maxFractionDigits]="0"
+                suffix=".00 €"
+                [disabled]="locked()"
+                pTooltip="Die TN-Gebühr wird von der Geschäftsstelle entsprechend ergänzt."
+              ></p-inputnumber>
+            </div>
           </div>
+        }
+        <div class="avk-row-amount">
           <div class="avk-field">
             <label>Zusatzkosten (€)</label>
-            <p-inputnumber formControlName="extraCharges" [min]="0" [max]="999" [disabled]="locked()" pTooltip="Zusatzkosten wie Maut, Übernachtungen etc."></p-inputnumber>
+            <p-inputnumber
+              formControlName="extraCharges"
+              [min]="0"
+              [max]="999"
+              [maxFractionDigits]="0"
+              suffix=".00 €"
+              [disabled]="locked()"
+              pTooltip="Zusatzkosten wie Maut, Übernachtungen etc. – keine Fahrtkosten, die werden automatisch aus der Gesamtfahrstrecke berechnet"
+            ></p-inputnumber>
           </div>
-          <div class="avk-field">
-            <label>Anzahlung (€)</label>
-            <p-inputnumber formControlName="advances" [min]="0" [max]="999" [disabled]="locked()" pTooltip="Anzahlungen für den Kurs, Hütten, Liftkarten etc."></p-inputnumber>
-          </div>
-        </div>
-        <div class="avk-grid-2">
           <div class="avk-field">
             <label>Zusatzkosten Details</label>
-            <textarea pTextarea formControlName="extraChargesInfo" rows="2" maxlength="75" pTooltip="Aufstellung der Zusatzkosten"></textarea>
+            <textarea
+              pTextarea
+              formControlName="extraChargesInfo"
+              rows="1"
+              maxlength="75"
+              pTooltip="Aufstellung der Zusatzkosten"
+            ></textarea>
+          </div>
+        </div>
+        <div class="avk-row-amount">
+          <div class="avk-field">
+            <label>Anzahlung (€)</label>
+            <p-inputnumber
+              formControlName="advances"
+              [min]="0"
+              [max]="999"
+              [maxFractionDigits]="0"
+              suffix=".00 €"
+              [disabled]="locked()"
+              pTooltip="Anzahlungen für den Kurs, Hütten, Liftkarten etc. – also alles an Zahlungen, die ein Trainer pro Teilnehmer vorstrecken muss"
+            ></p-inputnumber>
           </div>
           <div class="avk-field">
             <label>Anzahlung Details</label>
-            <textarea pTextarea formControlName="advancesInfo" rows="2" maxlength="75" pTooltip="Aufstellung der Anzahlung"></textarea>
+            <textarea
+              pTextarea
+              formControlName="advancesInfo"
+              rows="1"
+              maxlength="75"
+              pTooltip="Aufstellung der Anzahlung"
+            ></textarea>
           </div>
         </div>
       </p-card>
 
-      @if (!isOwner()) {
+      <!-- Der KV-Manager ist ein Werkzeug der Geschäftsstelle; der Link hat im
+           Trainerformular nichts zu suchen. -->
+      @if (isOffice()) {
         <p-card subheader="Verlinkung KV">
           <textarea pTextarea formControlName="kvLink" rows="1" placeholder="Link zum KV-Manager" class="avk-full"></textarea>
         </p-card>
       }
 
-      <p-card subheader="Bemerkungen">
-        <textarea pTextarea formControlName="comment" rows="3" class="avk-full"></textarea>
+      <p-card subheader="Bemerkungen (öffentlich)">
+        <textarea
+          pTextarea
+          formControlName="comment"
+          rows="3"
+          class="avk-full"
+          placeholder="Erscheint auf der Homepage als „Hinweis: …“ – Internes bitte in die Nachricht an die Geschäftsstelle"
+        ></textarea>
       </p-card>
 
       <p-card subheader="Nachricht an die Geschäftsstelle (intern)">
-        <textarea pTextarea formControlName="message" rows="5" class="avk-full"></textarea>
+        <textarea
+          pTextarea
+          formControlName="message"
+          rows="5"
+          class="avk-full"
+          placeholder="Interna für die Geschäftsstelle – z. B. Stornofristen, Absprachen zu Kosten oder Hinweise zur Abrechnung"
+        ></textarea>
+        <div class="avk-field-spaced">
+          <p-message severity="warn" styleClass="avk-full-message">
+            <b>Ab sofort</b> bitten wir euch, den Ausrüstungsbedarf für euren Kurs ausschließlich über
+            „Ausrüstungsbedarf Kurs“ und das dort verlinkte Formular an die Geschäftsstelle zu melden.
+            Wenn ihr Ausrüstung benötigt, setzt dafür bitte den Haken bei „Ausrüstungsbedarf Kurs“.
+            Vielen Dank!
+          </p-message>
+        </div>
+        <div class="avk-checkbox-item">
+          <p-checkbox formControlName="equipmentService" [binary]="true" inputId="equipmentServiceCheckbox" />
+          <label for="equipmentServiceCheckbox">Ausrüstungsbedarf Kurs</label>
+        </div>
+        @if (instruction()?.equipmentService) {
+          <p class="avk-notice">
+            <i class="pi pi-info-circle" aria-hidden="true"></i>
+            <span>
+              Dann lade die
+              <a class="avk-notice-link" [href]="equipmentListUrl" target="_blank" rel="noopener" title="Excel-Datei herunterladen"><i class="pi pi-file-excel" aria-hidden="true"></i>Ausrüstungsliste</a>
+              herunter, trag ein, was du für deinen Kurs benötigst, und schicke sie an
+              <a class="avk-notice-link" href="mailto:kurse@dav-kempten.de" title="E-Mail an die Geschäftsstelle schreiben"><i class="pi pi-envelope" aria-hidden="true"></i>kurse&#64;dav-kempten.de</a>.
+            </span>
+          </p>
+        }
       </p-card>
 
       <div class="avk-detail-actions">
         @if (!locked()) {
           <p-button label="Speichern" icon="pi pi-save" (onClick)="save()" />
+          @if (isWorking()) {
+            <p-button
+              label="Speichern + Fertig"
+              icon="pi pi-check"
+              (onClick)="saveAsReady()"
+              pTooltip="Speichert und setzt den Status auf „Fertig“. Danach prüfen Geschäftsstelle oder Fachbereichssprecher den Kurs und geben ihn frei."
+            />
+          }
         }
+        <p-button label="Vorschau Homepage" icon="pi pi-eye" severity="secondary" (onClick)="openPreview()" pTooltip="Speichert und zeigt, wie der Kurs auf dav-kempten.de erscheint" />
         <a routerLink="/instructions"><p-button label="Zurück" severity="secondary" /></a>
         @if (!isOwner()) {
           <span class="avk-spacer"></span>
@@ -255,6 +385,18 @@
       </div>
     </form>
   </section>
+
+  <avk-ready-checklist-dialog
+    [(visible)]="showReadyChecklist"
+    kind="Kurs"
+    [multiDay]="isMultiDay()"
+    [extraCharges]="instruction()?.extraCharges ?? null"
+    [advances]="instruction()?.advances ?? null"
+    [equipmentService]="instruction()?.equipmentService ?? false"
+    (confirmed)="completeReady()"
+  />
+
+  <avk-homepage-preview-dialog [(visible)]="showPreview" [preview]="homepagePreview()" [loading]="previewLoading()" />
 
   <p-dialog
     header="Termin-Details"
@@ -279,18 +421,22 @@
         <div class="avk-grid-3">
           <div class="avk-field">
             <label>Tageszeit (ca.)</label>
-            <p-select formControlName="approximateId" [options]="approximateOptions()" optionLabel="name" optionValue="id" [showClear]="true" appendTo="body" pTooltip="Ungefähre Startzeit (wenn keine genaue Zeit angegeben werden kann)" />
+            <!-- Tageszeit and Startzeit lock each other, see lockStartTimeOrApproximate(). -->
+            <p-select formControlName="approximateId" [options]="approximateOptions()" optionLabel="name" optionValue="id" [showClear]="true" appendTo="body"
+                      pTooltip="Ungefähre Startzeit (wenn keine genaue Zeit angegeben werden kann) – gesperrt, solange eine Startzeit eingetragen ist" />
           </div>
           <div class="avk-field">
             <label>Startzeit</label>
-            <input pInputText formControlName="startTime" placeholder="HH:MM" pTooltip="Startzeit" />
+            <input pInputText formControlName="startTime" placeholder="HH:MM" pTooltip="Startzeit – gesperrt, solange eine Tageszeit gewählt ist" />
           </div>
           <div class="avk-field">
             <label>Endzeit</label>
             <input pInputText formControlName="endTime" placeholder="HH:MM" pTooltip="Endzeit" />
           </div>
         </div>
-        <div class="avk-grid-2">
+        <!-- Three across on the main event. The distance only applies there, so
+             follow-up meetings drop back to two columns instead of leaving a gap. -->
+        <div [class]="selectedIsMain() ? 'avk-grid-3' : 'avk-grid-2'">
           <div class="avk-field">
             <label>Startdatum</label>
             <p-datepicker formControlName="startDate" dateFormat="dd.mm.yy" appendTo="body" [minDate]="minDate()" pTooltip="Startdatum"></p-datepicker>
@@ -313,14 +459,29 @@
               </small>
             }
           </div>
+          @if (selectedIsMain()) {
+            <div class="avk-field">
+              <label>Gesamtfahrstrecke (km)</label>
+              <p-inputnumber
+                formControlName="distance"
+                [min]="0"
+                [max]="9999"
+                pTooltip="Gesamtfahrstrecke der Veranstaltung – Fahrten innerhalb des Kurses bitte mitrechnen, auch wenn nur geschätzt"
+              ></p-inputnumber>
+            </div>
+          }
         </div>
-        <div class="avk-grid-2">
+        <div class="avk-grid-3">
           <div class="avk-field">
             <label>Treffpunkt</label>
             <input pInputText formControlName="rendezvous" maxlength="75" pTooltip="Treffpunkt für die Abfahrt" />
           </div>
           <div class="avk-field">
-            <label>Ort</label>
+            <label>Kursort</label>
+            <input pInputText formControlName="source" maxlength="75" pTooltip="Treffpunkt vor Ort" />
+          </div>
+          <div class="avk-field">
+            <label>Übernachtungsort</label>
             <input pInputText formControlName="location" maxlength="75" />
           </div>
         </div>

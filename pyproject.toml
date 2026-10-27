@@ -2,7 +2,7 @@
 name = "webtool"
 version = "0.1.0"
 description = "Add your description here"
-readme = "README.md"
+readme = "README.rst"
 requires-python = ">=3.12"
 dependencies = [
     "django",
@@ -11,7 +11,35 @@ dependencies = [
     'django-filter',
     'django-cors-headers',
     'django-modeladmin-reorder',
-    "psycopg2-binary>=2.9.12",
-    "django-environ>=0.13.0",
-    "icalendar>=7.1.2",
+    'psycopg2-binary>=2.9.12',
+    'django-environ>=0.13.0',
+    'icalendar>=7.1.2',
+    'debugpy'
 ]
+
+[project.optional-dependencies]
+prod = [
+    "uwsgi>=2.0.20; sys_platform == 'linux'",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "pytest-django>=4.9",
+    "pytest-cov>=6.0",
+]
+
+[tool.setuptools.packages.find]
+include = ["webtool*", "dicts*"]
+exclude = ["venv312*"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings.test"
+# manage.py liegt in webtool/, also muss dieses Verzeichnis auf den Importpfad.
+pythonpath = ["webtool"]
+testpaths = ["webtool/server/tests"]
+python_files = ["test_*.py"]
+# --reuse-db spart bei jedem Lauf das Neuaufbauen der Test-DB.
+# Nach neuen Migrationen einmalig mit --create-db laufen lassen.
+# --ds wins over the DJANGO_SETTINGS_MODULE=config.settings.local the web container sets via .env.
+addopts = "--ds=config.settings.test --reuse-db --strict-markers -ra"

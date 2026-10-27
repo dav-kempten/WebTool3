@@ -13,6 +13,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { TooltipModule } from 'primeng/tooltip';
+import { ResponsiveTooltip } from '../../../shared/directives/responsive-tooltip';
 import { ConfirmationService } from 'primeng/api';
 
 import { SessionsStore } from '../../../core/stores/sessions.store';
@@ -47,6 +48,7 @@ interface SessionRow extends SessionSummary {
     IconFieldModule,
     InputIconModule,
     TooltipModule,
+    ResponsiveTooltip,
   ],
   templateUrl: './session-list.html',
   styleUrl: '../../../shared/styles/list-page.scss',

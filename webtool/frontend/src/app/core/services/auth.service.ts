@@ -52,6 +52,27 @@ export class AuthService {
     return { permissionLevel: convertRole(user.role), guideId: user.id };
   });
 
+  constructor() {
+    this.refresh();
+  }
+
+  /**
+   * Asks the server who owns the session cookie. sessionStorage is per tab, so
+   * a newly opened tab starts out anonymous although the cookie is valid; this
+   * picks the login up, and it also notices a session that expired meanwhile.
+   * On a network or server error the current state is kept.
+   */
+  refresh(): void {
+    this.http.get<RawUser>('/api/login/').subscribe({
+      next: (rawUser) => {
+        this.setUser(rawUser && rawUser.id ? convertUser(rawUser) : ANONYMOUS_USER);
+      },
+      error: () => {
+        /* keep what sessionStorage restored */
+      },
+    });
+  }
+
   login(username = '', password = '', memberId = '') {
     return this.http
       .post<RawUser>('/api/login/', {

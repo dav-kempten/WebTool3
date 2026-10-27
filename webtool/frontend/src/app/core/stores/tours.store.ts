@@ -20,7 +20,8 @@ import { TourService, CreateTourPayload } from '../services/tour.service';
 import { EventsStore } from './events.store';
 import { RawTour, Tour, TourSummary } from '../../models/tour';
 import { Event } from '../../models/event';
-import { SaveError, describeSaveError } from '../../shared/util/save-error';
+import { States } from '../../models/value';
+import { SaveError, describeSaveError, describeSaveErrors } from '../../shared/util/save-error';
 
 interface ToursState {
   summaries: TourSummary[];
@@ -102,21 +103,39 @@ export const ToursStore = signalStore(
       };
     }
 
-    /** Reassembles the wire payload for a clone (POST) directly from a fresh raw tour. */
+    /**
+     * Reassembles the wire payload for a clone (POST) from a fresh raw tour.
+     *
+     * Everything identifying the source has to go: with an `id` present the
+     * backend's create() delegates to update() and silently rewrites the source
+     * tour instead of cloning it. The sub-events need their ids stripped too, so
+     * the clone gets freshly generated booking codes throughout.
+     */
     function buildCloneBody(raw: RawTour, startDate: string, endDate: string | null): unknown {
-      const flat = { ...raw } as RawTour & Record<string, unknown>;
-      delete (flat as Record<string, unknown>)['tour'];
-      delete (flat as Record<string, unknown>)['deadline'];
-      delete (flat as Record<string, unknown>)['preliminary'];
+      const withoutId = (event: Event): Record<string, unknown> => {
+        const copy = { ...event } as Record<string, unknown>;
+        delete copy['id'];
+        return copy;
+      };
+
+      const flat = { ...raw } as Record<string, unknown>;
+      delete flat['tour'];
+      delete flat['deadline'];
+      delete flat['preliminary'];
+      delete flat['id'];
+      delete flat['reference'];
+      // On read the category arrives as `categoryId` (a nested source); creation
+      // expects the write-only `category` and fails without it.
+      flat['category'] = raw.categoryId;
+      // A clone starts over: editable by the guide again, no participants yet.
+      flat['stateId'] = States.WORKING;
+      flat['curQuantity'] = 0;
 
       return {
         ...flat,
-        tourId: raw.tour.id,
-        deadlineId: raw.deadline.id,
-        preliminaryId: raw.preliminary ? raw.preliminary.id : null,
-        tour: { ...raw.tour, startDate, endDate: endDate || null },
-        deadline: raw.deadline,
-        preliminary: raw.preliminary ?? null,
+        tour: { ...withoutId(raw.tour), startDate, endDate: endDate || null },
+        deadline: withoutId(raw.deadline),
+        preliminary: raw.preliminary ? withoutId(raw.preliminary) : null,
         admission: String(raw.admission ?? 0),
         advances: String(raw.advances ?? 0),
         extraCharges: String(raw.extraCharges ?? 0),
@@ -171,15 +190,16 @@ export const ToursStore = signalStore(
       pipe(
         switchMap((payload) =>
           tourService.createTour(payload).pipe(
-            tap((tour) => {
-              if (tour.id !== 0) {
+            tap(({ data: tour, errors }) => {
+              if (tour) {
                 loadSummaries();
                 void router.navigate(['tours', tour.id]);
               } else {
                 messages.add({
                   severity: 'error',
                   summary: 'Tourerstellung fehlgeschlagen',
-                  detail: 'Bitte Eingaben noch einmal überprüfen.',
+                  detail: describeSaveErrors(errors, 'Bitte Eingaben noch einmal überprüfen.'),
+                  life: 10000,
                 });
               }
             }),
@@ -202,15 +222,16 @@ export const ToursStore = signalStore(
                 return EMPTY;
               }
               return tourService.cloneTour(buildCloneBody(raw, startDate, endDate)).pipe(
-                tap((created) => {
-                  if (created.id !== 0) {
+                tap(({ data: created, errors }) => {
+                  if (created) {
                     loadSummaries();
                     void router.navigate(['tours', created.id]);
                   } else {
                     messages.add({
                       severity: 'error',
                       summary: 'Klonen fehlgeschlagen',
-                      detail: 'Die Tour konnte nicht kopiert werden.',
+                      detail: describeSaveErrors(errors, 'Die Tour konnte nicht kopiert werden.'),
+                      life: 10000,
                     });
                   }
                 }),
@@ -237,13 +258,15 @@ export const ToursStore = signalStore(
       ),
     );
 
-    const save = rxMethod<{ tour: Tour; silent?: boolean }>(
+    const save = rxMethod<{ tour: Tour; silent?: boolean; onSaved?: () => void }>(
       pipe(
-        switchMap(({ tour, silent }) =>
+        switchMap(({ tour, silent, onSaved }) =>
           tourService.upsertTour(tour.id, buildSaveBody(tour)).pipe(
             tap(({ data, errors }) => {
               if (data) {
                 patchState(store, setEntity(rawToEntity(data)), { lastSaveErrors: [] });
+                // Runs only after a successful save, e.g. to open the homepage preview.
+                onSaved?.();
                 loadSummaries();
                 if (!silent) {
                   messages.add({

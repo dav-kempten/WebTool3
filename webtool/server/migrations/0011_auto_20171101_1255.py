@@ -6,6 +6,55 @@ from django.db import migrations, models
 import django.db.models.deletion
 
 
+# Gleiches Muster wie in 0007, hier für Collective: der Primärschlüssel wandert
+# von `id` auf ein neu angelegtes `category_id`. Auch hier scheiterte die
+# ursprünglich generierte Reihenfolge auf einer leeren Datenbank daran, dass die
+# Fremdschlüssel der abhängigen Tabellen noch auf `id` zeigen.
+#
+# Siehe 0007 für die ausführliche Begründung; das SQL läuft nur auf frisch
+# aufgesetzten Datenbanken, wo die Tabellen an dieser Stelle leer sind.
+COLLECTIVE_PRIMARY_KEY_SQL = """
+DO $$
+DECLARE
+    con RECORD;
+    restore_statements TEXT[] := ARRAY[]::TEXT[];
+    statement TEXT;
+BEGIN
+    -- Fremdschlüssel auf server_collective einsammeln, umschreiben und lösen.
+    FOR con IN
+        SELECT conrelid::regclass::text AS table_name,
+               conname,
+               pg_get_constraintdef(oid) AS definition
+        FROM pg_constraint
+        WHERE confrelid = 'server_collective'::regclass AND contype = 'f'
+    LOOP
+        restore_statements := restore_statements || format(
+            'ALTER TABLE %s ADD CONSTRAINT %I %s',
+            con.table_name,
+            con.conname,
+            replace(con.definition,
+                    'REFERENCES server_collective(id)',
+                    'REFERENCES server_collective(category_id)')
+        );
+        EXECUTE format('ALTER TABLE %s DROP CONSTRAINT %I', con.table_name, con.conname);
+    END LOOP;
+
+    -- Alten Primärschlüssel abräumen, neue Spalte als Primärschlüssel anlegen.
+    EXECUTE 'ALTER TABLE server_collective DROP CONSTRAINT server_collective_pkey';
+    EXECUTE 'ALTER TABLE server_collective DROP COLUMN id';
+    EXECUTE 'ALTER TABLE server_collective ADD COLUMN category_id integer NOT NULL';
+    EXECUTE 'ALTER TABLE server_collective ADD CONSTRAINT server_collective_pkey PRIMARY KEY (category_id)';
+    EXECUTE 'ALTER TABLE server_collective ADD FOREIGN KEY (category_id) '
+            'REFERENCES server_category(id) DEFERRABLE INITIALLY DEFERRED';
+
+    -- Fremdschlüssel wieder anlegen, jetzt gegen category_id.
+    FOREACH statement IN ARRAY restore_statements LOOP
+        EXECUTE statement;
+    END LOOP;
+END $$;
+"""
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -17,14 +66,24 @@ class Migration(migrations.Migration):
             model_name='collective',
             name='categories',
         ),
-        migrations.RemoveField(
-            model_name='collective',
-            name='id',
-        ),
-        migrations.AddField(
-            model_name='collective',
-            name='category',
-            field=models.OneToOneField(default=None, on_delete=django.db.models.deletion.CASCADE, primary_key=True, related_name='category_collective', serialize=False, to='server.Category', verbose_name='Kategorie'),
-            preserve_default=False,
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.RemoveField(
+                    model_name='collective',
+                    name='id',
+                ),
+                migrations.AddField(
+                    model_name='collective',
+                    name='category',
+                    field=models.OneToOneField(default=None, on_delete=django.db.models.deletion.CASCADE, primary_key=True, related_name='category_collective', serialize=False, to='server.Category'),
+                    preserve_default=False,
+                ),
+            ],
+            database_operations=[
+                migrations.RunSQL(
+                    sql=COLLECTIVE_PRIMARY_KEY_SQL,
+                    reverse_sql=migrations.RunSQL.noop,
+                ),
+            ],
         ),
     ]

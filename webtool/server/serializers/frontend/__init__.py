@@ -11,4 +11,6 @@ from .values import ValueSerializer
 from .tourcalendar import TourcalendarSerializerList
 from .instructioncalendar import InstructioncalendarSerializerList
 from .guides import GuideListSerializer, GuideSerializer
+from .requirements import RequirementOverviewSerializer
+from .support import SupportRequestSerializer
 # from .retrainings import RetrainingListSerializer

@@ -1,0 +1,164 @@
+<p-card styleClass="avk-requirement-card">
+  <div class="avk-req-head">
+    <div>
+      <h2>
+        Bedarf der Saison {{ season() }}
+        <span
+          class="avk-req-beta"
+          title="Neue Funktion — Zahlen bitte gegenprüfen und Rückmeldung geben."
+          >Beta</span
+        >
+      </h2>
+      <p>
+        Was an Kursen und Touren gebraucht wird und was schon eingestellt ist.
+        @if (periodStart()) {
+          <br />
+          Gezählt wird vom {{ periodStart() | date: 'dd.MM.yyyy' }} bis zum
+          {{ periodEnd() | date: 'dd.MM.yyyy' }}.
+        }
+      </p>
+    </div>
+    <button
+      type="button"
+      pButton
+      text
+      rounded
+      icon="pi pi-refresh"
+      [disabled]="loading()"
+      (click)="refresh()"
+      aria-label="Bedarfsanzeige aktualisieren"
+      title="Bedarfsanzeige aktualisieren"
+    ></button>
+  </div>
+
+  @if (failed() && !loaded()) {
+    <p class="avk-req-empty">Der Bedarf konnte nicht geladen werden.</p>
+  } @else if (!loaded()) {
+    <p class="avk-req-empty">Bedarf wird geladen …</p>
+  } @else if (!hasTargets()) {
+    <p class="avk-req-empty">
+      Für diese Saison ist noch kein Bedarf hinterlegt. Die Zahlen werden im
+      Django-Admin unter „Bedarfe“ gepflegt.
+    </p>
+  } @else {
+    @for (section of sections(); track section.part) {
+      <details class="avk-req-section" [attr.data-status]="section.status">
+        <summary>
+          <i class="pi pi-chevron-right avk-req-chevron" aria-hidden="true"></i>
+          <span class="avk-req-section-label">{{ section.label }}</span>
+          <span class="avk-req-section-summary">{{ section.summary }}</span>
+          <span class="avk-req-section-note">
+            @if (section.missing > 0) {
+              noch {{ section.missing }}
+            } @else {
+              gedeckt
+            }
+          </span>
+        </summary>
+
+        <div class="avk-req-section-body">
+          <div class="avk-req-totals">
+            @for (group of section.groups; track group.kind) {
+              @if (group.rows.length) {
+                <div class="avk-req-total" [attr.data-status]="group.status">
+                  <svg
+                    class="avk-donut"
+                    viewBox="0 0 42 42"
+                    role="img"
+                    [attr.aria-label]="
+                      group.label + ': ' + group.actual + ' von ' + group.minimum + ' eingestellt'
+                    "
+                  >
+                    <circle class="avk-donut-track" cx="21" cy="21" r="15.915" />
+                    @if (group.percent > 0) {
+                      <circle
+                        class="avk-donut-value"
+                        cx="21"
+                        cy="21"
+                        r="15.915"
+                        [attr.stroke-dasharray]="group.percent + ' ' + (100 - group.percent)"
+                        stroke-dashoffset="25"
+                      />
+                    }
+                    <text class="avk-donut-figure" x="21" y="22">{{ group.percent }}%</text>
+                  </svg>
+                  <div class="avk-req-total-text">
+                    <h3>{{ group.label }}</h3>
+                    <p class="avk-req-total-count">
+                      <strong>{{ group.actual }}</strong> von {{ group.minimum }}
+                    </p>
+                    <p class="avk-req-total-note">
+                      @if (group.missing > 0) {
+                        noch {{ group.missing }} gebraucht
+                      } @else {
+                        Bedarf gedeckt
+                      }
+                    </p>
+                  </div>
+                </div>
+              }
+            }
+          </div>
+
+          @for (group of section.groups; track group.kind) {
+            <section class="avk-req-group">
+              @if (group.rows.length) {
+                <h3>{{ group.label }}</h3>
+                <ul class="avk-req-rows">
+                  @for (row of group.rows; track row.code) {
+                    <li [attr.data-status]="row.status" [attr.title]="row.hint">
+                      <i [class]="row.icon" aria-hidden="true"></i>
+                      <span class="avk-req-name">{{ row.name }}</span>
+                      <span
+                        class="avk-req-bar"
+                        role="progressbar"
+                        [attr.aria-valuenow]="row.actual"
+                        [attr.aria-valuemin]="0"
+                        [attr.aria-valuemax]="row.maximum"
+                        [attr.aria-label]="row.hint"
+                      >
+                        @if (row.tick !== null) {
+                          <span class="avk-req-tick" [style.left.%]="row.tick"></span>
+                        }
+                        @if (row.fill > 0) {
+                          <span class="avk-req-fill" [style.width.%]="row.fill"></span>
+                        }
+                      </span>
+                      <span class="avk-req-count">
+                        <strong>{{ row.actual }}</strong> / {{ row.target }}
+                      </span>
+                      <span class="avk-req-note">{{ row.note }}</span>
+                    </li>
+                  }
+                </ul>
+              }
+
+              @if (group.unplanned.length) {
+                <details class="avk-req-unplanned">
+                  <summary>{{ group.unplannedLabel }}</summary>
+                  <ul>
+                    @for (entry of group.unplanned; track entry.categoryId) {
+                      <li>
+                        <span class="avk-req-name">{{ entry.name }}</span>
+                        <span class="avk-req-count">{{ entry.actual }}</span>
+                      </li>
+                    }
+                  </ul>
+                </details>
+              }
+            </section>
+          }
+        </div>
+      </details>
+    }
+
+    <ul class="avk-req-legend">
+      @for (status of legend; track status) {
+        <li [attr.data-status]="status">
+          <i [class]="statusIcons[status]" aria-hidden="true"></i>
+          {{ statusLabels[status] }}
+        </li>
+      }
+    </ul>
+  }
+</p-card>

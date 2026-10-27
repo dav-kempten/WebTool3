@@ -3,15 +3,17 @@ from rest_framework.response import Response
 
 from django.template.defaultfilters import date
 
-from server.models import Tour
+from server.models import Tour, Season
 from server.serializers.frontend.tourcalendar import TourcalendarSerializerList
 
 
 class TourcalendarViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
-    queryset = (
-        Tour.objects
-        .filter(deprecated=False, tour__season__current=True)
-    )
+    # Placeholder for the router; the real queryset is built per request.
+    queryset = Tour.objects.none()
+
+    def get_queryset(self):
+        # Last, this and next season (Season.visible).
+        return Tour.objects.filter(deprecated=False, tour__season__in=Season.visible('frontend'))
 
     def get_serializer_class(self):
         return TourcalendarSerializerList

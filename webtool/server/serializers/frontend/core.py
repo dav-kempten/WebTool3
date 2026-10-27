@@ -3,7 +3,12 @@ from decimal import Decimal
 
 from rest_framework import serializers
 
-from server.models import Event, Approximate, Reference
+from server.models import Event, Approximate, Reference, ReferenceSpaceExhausted, Season, get_default_season
+from server.models.defaults import season_year
+
+# D1: bis einschließlich "Fertig" darf eine Veranstaltung beim Wechsel ins andere
+# Jahr umgeschlüsselt werden; ab "Freigegeben" kann ihr Code schon gedruckt sein.
+REKEYABLE_STATES = ('In Arbeit', 'Fertig')
 
 
 class MoneyField(serializers.DecimalField):
@@ -103,15 +108,51 @@ def create_event(validated_data, context):
         validated_data.pop('deprecated')
         category = context.get('category')
         event_type = context.get('type', {})
-        season = context.get('season')
         start_date = validated_data.get('start_date')
-        reference = Reference.create_reference(
-            category=category,
-            prefix=str(start_date.year)[-1] if start_date else season.name[-1],
-            season=season,
-            **event_type
-        )
+        # A main event belongs to the season its start date falls in (created on
+        # first use) -- the season starts on 1 December, so a December event
+        # already belongs to the next one. Satellites pass their main event's
+        # season in the context, so a November deadline of a December tour stays
+        # with the tour.
+        season = context.get('season')
+        if season is None:
+            season = Season.for_date(start_date) if start_date else get_default_season()
+        try:
+            reference = Reference.create_reference(
+                category=category,
+                prefix=season.name[-1],
+                season=season,
+                **event_type
+            )
+        except ReferenceSpaceExhausted as exception:
+            # Ohne diese Übersetzung landet die Erschöpfung als HTTP 500 beim
+            # Leiter, der gerade eine Veranstaltung anlegen will.
+            raise serializers.ValidationError({'reference': str(exception)})
         return Event.objects.create(season=season, reference=reference, **validated_data)
+
+
+def move_to_year_season(main_event, satellites, state):
+    """D1: once a start date moves into another season, move the event and its
+    satellites into that season with booking codes for it -- but only while the
+    state is In Arbeit or Fertig. Later the code may be printed, so season and
+    code stay; the mismatch then shows in the admin.
+
+    Die Saison beginnt am 1. Dezember, siehe `defaults.season_year`: ein Termin,
+    der vom 30.11. auf den 1.12. rutscht, wechselt dabei die Saison.
+    """
+    start_date = main_event.start_date
+    if not start_date or main_event.season.name == str(season_year(start_date)):
+        return
+    if state is None or state.name not in REKEYABLE_STATES:
+        return
+    season = Season.for_date(start_date)
+    for event in [main_event, *[s for s in satellites if s is not None]]:
+        try:
+            event.reference.move_to(season)
+        except ReferenceSpaceExhausted as exception:
+            raise serializers.ValidationError({'reference': str(exception)})
+        event.season = season
+        event.save()
 
 
 class EventSerializer(serializers.ModelSerializer):

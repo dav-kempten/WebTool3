@@ -94,11 +94,14 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
         help_text = 'Kreative Kursinhalte'
     )
 
-    # category is valid only, if instruction is_special
-    category = models.OneToOneField(
+    # Optional extra course category, shown next to the topic's own category.
+    # Several courses may share one, hence a ForeignKey (formerly OneToOne, see
+    # migration 0051). No index: production never had one on this column.
+    category = models.ForeignKey(
         'Category',
-        verbose_name='Sonder Kategorie',
-        related_name='special_instruction',
+        verbose_name='Zusatzkategorie',
+        related_name='+',
+        db_index=False,
         blank=True, null=True,
         on_delete=models.PROTECT,
     )
@@ -200,6 +203,8 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
         output.write('<br />'.join(lines))
         output.write('</p>')
 
+        output.write(self.remark())
+
         output.write('<p>Es gelten unsere '
                      '<a href="/aktivitaeten/teilnahmebedingungen/" '
                      'title="Teilnahmebedingungen">Teilnahme-</a>'
@@ -208,7 +213,7 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
                      'title="Stornobedingungen">Stornobedingungen</a>.'
                      '</p>')
 
-        output.write('<p><strong>Hinweis:</strong> Spezielle Fragen zu Touren & Kursen kannst du unter '
+        output.write('<p><strong>Fragen:</strong> Spezielle Fragen zu Touren & Kursen kannst du unter '
                      '<strong>kurse@dav-kempten.de</strong> stellen. Bitte gib hierbei immer den '
                      '<strong>Buchungscode</strong> der entsprechenden Veranstaltung mit an.</p>')
 

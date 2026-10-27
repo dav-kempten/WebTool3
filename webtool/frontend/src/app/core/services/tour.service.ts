@@ -3,6 +3,7 @@ import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http
 import { Observable, catchError, map, of } from 'rxjs';
 import { RawTour, Tour, TourSummary } from '../../models/tour';
 import { Event } from '../../models/event';
+import { ActivityPreview } from '../../models/preview';
 import { SaveResult, toSaveError } from '../../shared/util/save-error';
 
 const JSON_HEADERS = new HttpHeaders({
@@ -45,7 +46,14 @@ export class TourService {
       .pipe(catchError(() => of(null)));
   }
 
-  createTour(payload: CreateTourPayload): Observable<Tour> {
+  /** The tour as the homepage receives it, also before it is published. */
+  getPreview(id: number): Observable<ActivityPreview | null> {
+    return this.http
+      .get<ActivityPreview>(`/api/frontend/tours/${id}/preview/`, { headers: READ_HEADERS })
+      .pipe(catchError(() => of(null)));
+  }
+
+  createTour(payload: CreateTourPayload): Observable<SaveResult<Tour>> {
     const body: Record<string, unknown> = {
       category: payload.categoryId,
       tour: { startDate: payload.startDate } as Event,
@@ -58,16 +66,20 @@ export class TourService {
     if (payload.preliminary !== null) {
       body['preliminary'] = { startDate: payload.preliminary } as Event;
     }
-    return this.http
-      .post<Tour>('/api/frontend/tours/', body)
-      .pipe(catchError(() => of({ id: 0 } as Tour)));
+    return this.postTour(body);
   }
 
   /** `body` is a fully assembled RawTour stripped of ids + carrying `category`. */
-  cloneTour(body: unknown): Observable<Tour> {
-    return this.http
-      .post<Tour>('/api/frontend/tours/', body)
-      .pipe(catchError(() => of({ id: 0 } as Tour)));
+  cloneTour(body: unknown): Observable<SaveResult<Tour>> {
+    return this.postTour(body);
+  }
+
+  /** Keeps the backend's validation errors (e.g. a full booking code space) for the message. */
+  private postTour(body: unknown): Observable<SaveResult<Tour>> {
+    return this.http.post<Tour>('/api/frontend/tours/', body).pipe(
+      map((data) => ({ data, errors: [] }) as SaveResult<Tour>),
+      catchError((error: HttpErrorResponse) => of(toSaveError<Tour>(error))),
+    );
   }
 
   /** `body` is a fully assembled RawTour (nested events, decimal strings). */

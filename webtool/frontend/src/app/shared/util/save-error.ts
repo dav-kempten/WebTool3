@@ -41,10 +41,11 @@ const FIELD_LABELS: Record<string, string> = {
   nonFieldErrors: 'Allgemein',
   non_field_errors: 'Allgemein',
   detail: 'Allgemein',
+  reference: 'Buchungscode',
   guideId: 'Leiter',
   teamIds: 'Team',
   categoryId: 'Kategorie',
-  categoryIds: 'Tourenart',
+  categoryIds: 'Kategorien',
   info: 'Zusatzinfo',
   stateId: 'Status',
   skillId: 'Können',
@@ -69,7 +70,7 @@ const FIELD_LABELS: Record<string, string> = {
   rendezvous: 'Treffpunkt',
   location: 'Ort',
   reservationService: 'Reservierungsservice',
-  distance: 'Strecke',
+  distance: 'Gesamtfahrstrecke',
   shuttleService: 'Shuttleservice',
   link: 'Link',
   topicId: 'Thema',
@@ -100,5 +101,17 @@ export function describeSaveErrorPath(path: string[]): string {
 export function describeSaveError(error: SaveError): string {
   const label = describeSaveErrorPath(error.path);
   const message = error.messages.join('; ');
+  if (!label) {
+    // A bare list from the backend (e.g. ["Tour needs a category for creation"]) has no field.
+    return message;
+  }
   return message ? `${label}: ${message}` : label;
+}
+
+/**
+ * Message detail for a failed create/clone/save: what the backend said, or the
+ * fallback when the response carried nothing readable (network error, HTTP 500).
+ */
+export function describeSaveErrors(errors: SaveError[], fallback: string): string {
+  return errors.length ? errors.map((e) => describeSaveError(e)).join(', ') : fallback;
 }

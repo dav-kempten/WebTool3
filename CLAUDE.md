@@ -118,35 +118,64 @@ python manage.py replication          # Replicate data to external system
 
 ### Backend tests
 
-pytest + pytest-django. Tests live in `webtool/server/tests/`; shared fixtures are in
-`webtool/conftest.py`. Config sits in `pyproject.toml` (`[tool.pytest.ini_options]`).
+pytest + pytest-django, run inside the `web` container (the host has no Python).
+Tests live in `webtool/server/tests/`, shared fixtures in
+`webtool/server/tests/conftest.py`. Config sits in `pyproject.toml`
+(`[tool.pytest.ini_options]`), settings in `config/settings/test.py`.
 
 ```bash
-# Requires the PostgreSQL container: docker compose up -d db
-uv pip install "pytest>=8.0" "pytest-django>=4.9" "pytest-cov>=6.0"
-
-pytest                       # from the project root
-pytest --create-db           # rebuild the test DB after model changes
-pytest --cov=server          # with coverage
+docker compose exec web pytest                 # all tests
+docker compose exec web pytest --create-db     # rebuild the test DB after model changes
+docker compose exec web pytest --cov=server    # with coverage
 ```
 
-One thing to know about the setup:
+Things to know about the setup:
 
-- **Reference data comes from `init_season`**, seeded once per session by the
-  `django_db_setup` fixture. Nearly every model default (`defaults.get_default_state`
-  and friends) resolves through `Season.objects.get(current=True)`, so without a
-  current season no event can be created at all. The command seeds season **2018**,
-  while `TourViewSet.queryset` only returns tours starting on or after 1 January of
-  the previous year — test tours therefore need a current-year `start_date`.
+- **The image installs exact versions from `uv.lock`**, including the `dev` group
+  with pytest — the same Django as production. After changing dependencies, run
+  `uv lock` and rebuild: `docker compose build web && docker compose up -d web`.
+- **`--ds=config.settings.test` sits in `addopts`**, because the container sets
+  `DJANGO_SETTINGS_MODULE=config.settings.local` through `.env`, which would
+  otherwise take precedence.
+- **Fixtures are deliberately narrow:** `make_season`, `make_category` and
+  `make_booking_code` create just the rows a test needs; there is no seeded
+  reference data. `Reference.get_reference` only finds categories assigned to the
+  season, so `make_booking_code` adds that assignment. Tests that create real tours
+  or courses need more: nearly every model default (`defaults.get_default_state`
+  and friends) resolves through `Season.objects.get(current=True)`, and
+  `TourViewSet.queryset` only returns tours starting on or after 1 January of the
+  previous year.
 
 ### Frontend
 
 ```bash
 cd webtool/frontend
 npm run build     # Production build
-npm test          # ng test (Karma) — no specs written yet beyond app.spec.ts
+npm test          # ng test — vitest + jsdom (@angular/build:unit-test)
 npm run watch     # Rebuild on change (development configuration)
 ```
+
+Specs live next to their subject (`*.spec.ts`); `src/test-setup.ts` polyfills the
+browser APIs PrimeNG expects but jsdom lacks.
+
+Version and build time are shown in the page footer. The version lives in
+`package.json`; `scripts/build-info.mjs` writes it and a timestamp to the
+generated, gitignored `src/app/build-info.ts`.
+
+The timestamp is only refreshed by `npm run package` (the script runs with
+`--stamp`), so it names the state that was shipped rather than the last local
+build. The `prebuild`/`prestart`/`pretest` hooks run it without arguments,
+which only creates the file when it is missing. Bump the minor version
+whenever a new ZIP goes to the server.
+
+```bash
+npm run package   # build + ZIP in dist/webtool-frontend-v<version>-<date>.zip
+```
+
+The ZIP holds the contents of `dist/frontend-new/browser` without a wrapping
+folder, ready to unpack into the web root. `scripts/package.ps1` builds it
+entry by entry: PowerShell 5.1 writes backslashes into zip paths, which Linux
+unpacks as files named `media\primeicons-…` instead of a `media/` folder.
 
 Production build for deployment at the web root — the app is served at `/`,
 `src/index.html` already carries `<base href="/">`, so no `--base-href` is needed:
@@ -154,6 +183,11 @@ Production build for deployment at the web root — the app is served at `/`,
 ```bash
 npm run build     # output: dist/frontend-new/browser
 ```
+
+The Angular config files (`package.json`, `angular.json`, `tsconfig*.json`,
+`proxy.conf.json`) are only tracked thanks to explicit `!` exceptions in the root
+`.gitignore` — a blanket `*.json` rule there would otherwise leave them
+unversioned.
 
 ## Settings
 

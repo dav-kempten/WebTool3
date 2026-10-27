@@ -4,7 +4,7 @@ from django.template.defaultfilters import date
 from rest_framework import permissions, mixins, viewsets, status
 from rest_framework.response import Response
 
-from server.models import Talk
+from server.models import Talk, Season
 from server.serializers.frontend.talks import TalkListSerializer, TalkSerializer
 
 
@@ -24,12 +24,17 @@ class TalkViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
     permission_classes = (IsStaffOrReadOnly, )
 
-    queryset = (
-        Talk.objects
-        .filter(deprecated=False)
-        .exclude(state__done=True)
-        .exclude(state__canceled=True)
-    )
+    # Placeholder for the router; the real queryset is built per request.
+    queryset = Talk.objects.none()
+
+    def get_queryset(self):
+        # Last, this and next season (Season.visible).
+        return (
+            Talk.objects
+            .filter(deprecated=False, talk__season__in=Season.visible('frontend'))
+            .exclude(state__done=True)
+            .exclude(state__canceled=True)
+        )
 
     def get_serializer_class(self):
         if self.action == 'list':

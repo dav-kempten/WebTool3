@@ -1,0 +1,38 @@
+<p-dialog
+  [header]="'Checkliste vor „Fertig“ – ' + kind()"
+  [modal]="true"
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+  (onShow)="onShow()"
+  [style]="{ width: '40rem' }"
+  [breakpoints]="{ '640px': '95vw' }"
+>
+  <p class="avk-checklist-intro">
+    Bitte prüfe vor der Abgabe als „Fertig“ die folgenden Punkte und hake sie ab.
+  </p>
+  <ul class="avk-checklist">
+    @for (item of items(); track item.key) {
+      <li>
+        <p-checkbox
+          [ngModel]="isChecked(item.key)"
+          (onChange)="toggle(item.key, $event.checked)"
+          [binary]="true"
+          [inputId]="'checklist-' + item.key"
+        />
+        <label [for]="'checklist-' + item.key">
+          {{ item.label }}
+          <small>{{ item.hint }}</small>
+        </label>
+      </li>
+    }
+  </ul>
+  <ng-template #footer>
+    <p-button label="Abbrechen" severity="secondary" (onClick)="visible.set(false)" />
+    <p-button
+      label="Als „Fertig“ speichern"
+      icon="pi pi-check"
+      [disabled]="!allChecked()"
+      (onClick)="confirm()"
+    />
+  </ng-template>
+</p-dialog>

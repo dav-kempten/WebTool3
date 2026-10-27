@@ -3,9 +3,9 @@ from rest_framework import serializers
 from rest_framework.reverse import reverse
 
 from server.models import (
-    Guide, Session, Collective, Category, Equipment, State, Event, get_default_state, get_default_season
+    Guide, Session, Collective, Category, Equipment, State, Event, get_default_state
 )
-from server.serializers.frontend.core import EventSerializer, create_event, update_event
+from server.serializers.frontend.core import EventSerializer, create_event, update_event, move_to_year_season
 
 
 class SessionListSerializer(serializers.ModelSerializer):
@@ -129,8 +129,7 @@ class SessionSerializer(serializers.ModelSerializer):
             categories = validated_data.pop('categories')
             team = validated_data.pop('team')
             category = collective.category
-            season = get_default_season()
-            event = create_event(session_data, dict(category=category, season=season, type=dict(collective=True)))
+            event = create_event(session_data, dict(category=category, type=dict(collective=True)))
 
             if not speaker_data:
                 # speaker = collective.managers
@@ -171,5 +170,7 @@ class SessionSerializer(serializers.ModelSerializer):
         instance.comment = validated_data.get('comment', instance.comment)
         instance.deprecated = validated_data.get('deprecated', instance.deprecated)
         instance.state = validated_data.get('state', instance.state)
+        # D1: a start date moved into another year takes the session along.
+        move_to_year_season(Event.objects.get(pk=instance.session_id), [], instance.state)
         instance.save()
         return instance

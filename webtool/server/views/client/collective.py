@@ -4,7 +4,7 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 
-from server.models import Collective
+from server.models import Collective, Season
 from server.serializers.client import CollectiveSerializer, CollectiveListSerializer
 from server.filters.client import CollectiveFilter
 
@@ -16,7 +16,13 @@ class CollectiveViewSet(viewsets.ReadOnlyModelViewSet):
     filterset_class = CollectiveFilter
     filter_backends = [DjangoFilterBackend]
 
-    queryset = Collective.objects.filter(seasons__current=True).exclude(deprecated=True)
+    # Placeholder for the router; the real queryset depends on the current season
+    # and is built per request in get_queryset.
+    queryset = Collective.objects.none()
+
+    def get_queryset(self):
+        # The client API shows this and next season (Season.visible).
+        return Collective.objects.exclude(deprecated=True).filter(seasons__in=Season.visible('client')).distinct()
     search_fields = ('name',)
 
     def list(self, request, *args, **kwargs):

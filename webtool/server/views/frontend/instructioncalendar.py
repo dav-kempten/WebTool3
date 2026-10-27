@@ -3,15 +3,19 @@ from rest_framework.response import Response
 
 from django.template.defaultfilters import date
 
-from server.models import Instruction
+from server.models import Instruction, Season
 from server.serializers.frontend.instructioncalendar import InstructioncalendarSerializerList
 
 
 class InstructioncalendarViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
-    queryset = (
-        Instruction.objects
-        .filter(deprecated=False, instruction__season__current=True)
-    )
+    # Placeholder for the router; the real queryset is built per request.
+    queryset = Instruction.objects.none()
+
+    def get_queryset(self):
+        # Last, this and next season (Season.visible).
+        return Instruction.objects.filter(
+            deprecated=False, instruction__season__in=Season.visible('frontend'),
+        )
 
     def get_serializer_class(self):
         return InstructioncalendarSerializerList

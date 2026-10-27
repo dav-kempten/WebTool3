@@ -12,6 +12,7 @@ import { RouterModule } from '@angular/router';
 import {
   FormBuilder,
   FormGroup,
+  FormsModule,
   ReactiveFormsModule,
 } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -28,10 +29,16 @@ import { InputTextModule } from 'primeng/inputtext';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { TextareaModule } from 'primeng/textarea';
 import { TooltipModule } from 'primeng/tooltip';
+import { ResponsiveTooltip } from '../../../shared/directives/responsive-tooltip';
+import { ReadyChecklistDialog } from '../../../shared/dialogs/ready-checklist-dialog/ready-checklist-dialog';
+import { guardReadyState, spansSeveralDays } from '../../../shared/util/ready-guard';
 import { MessageModule } from 'primeng/message';
 import { ConfirmationService } from 'primeng/api';
 
 import { InstructionsStore } from '../../../core/stores/instructions.store';
+import { InstructionService } from '../../../core/services/instruction.service';
+import { ActivityPreview } from '../../../models/preview';
+import { HomepagePreviewDialog } from '../../../shared/dialogs/homepage-preview-dialog/homepage-preview-dialog';
 import { ValuesStore } from '../../../core/stores/values.store';
 import { NamesStore } from '../../../core/stores/names.store';
 import { EventsStore } from '../../../core/stores/events.store';
@@ -41,7 +48,7 @@ import { AutoSaveService } from '../../../core/services/auto-save.service';
 import { BreadcrumbService } from '../../../core/layout/breadcrumb.service';
 import { Instruction } from '../../../models/instruction';
 import { Event } from '../../../models/event';
-import { isSpecialTopic } from '../../../models/value';
+import { States, isSpecialTopic } from '../../../models/value';
 import {
   formatIsoDateRangeDe,
   fromIsoDate,
@@ -54,12 +61,15 @@ import {
   timeFormatValidator,
 } from '../../../shared/util/validators';
 import { describeSaveErrorPath } from '../../../shared/util/save-error';
+import { EQUIPMENT_LIST_URL } from '../../../shared/util/links';
+import { lockStartTimeOrApproximate } from '../../../shared/util/event-time';
 
 @Component({
   selector: 'avk-instruction-detail',
   standalone: true,
   imports: [
     RouterModule,
+    FormsModule,
     ReactiveFormsModule,
     DatePipe,
     CardModule,
@@ -74,7 +84,10 @@ import { describeSaveErrorPath } from '../../../shared/util/save-error';
     InputNumberModule,
     TextareaModule,
     TooltipModule,
+    ResponsiveTooltip,
     MessageModule,
+    ReadyChecklistDialog,
+    HomepagePreviewDialog,
   ],
   providers: [AutoSaveService],
   templateUrl: './instruction-detail.html',
@@ -84,6 +97,7 @@ export class InstructionDetail {
   readonly id = input.required<string>();
 
   private instructions = inject(InstructionsStore);
+  private instructionService = inject(InstructionService);
   private values = inject(ValuesStore);
   private names = inject(NamesStore);
   private events = inject(EventsStore);
@@ -147,9 +161,15 @@ export class InstructionDetail {
       .filter(Boolean)
       .join(', ');
   });
-  readonly isIndoor = computed(
-    () => this.values.categoryById().get(this.instruction()?.categoryId ?? -1)?.indoor ?? false,
-  );
+  /** Indoor follows the main category (the topic's), never the optional extra one. */
+  /** Download offered once "Ausrüstungsbedarf Kurs" is ticked. */
+  readonly equipmentListUrl = EQUIPMENT_LIST_URL;
+
+
+  readonly isIndoor = computed(() => {
+    const code = this.topic()?.code;
+    return this.values.categories().some((c) => c.code === code && c.indoor);
+  });
 
   private readonly permission = this.auth.permission;
   readonly isOwner = computed(
@@ -165,6 +185,18 @@ export class InstructionDetail {
     }
     return false;
   });
+  /**
+   * Nur die Geschäftsstelle (und Administration) sieht TN-Gebühr und
+   * KV-Verlinkung. Die Formularfelder bleiben bestehen, damit die
+   * gespeicherten Werte beim Speichern unverändert durchlaufen.
+   *
+   * Achtung: Das gleichnamige isStaff in den Gruppenterminen ist weiter
+   * gefasst und schließt Fachbereichssprecher ein — daher der eigene Name.
+   */
+  readonly isOffice = computed(
+    () => this.permission().permissionLevel >= PermissionLevel.staff,
+  );
+
   readonly locked = computed(
     () => this.isOwner() && (this.instruction()?.stateId ?? 0) > 2,
   );
@@ -174,10 +206,17 @@ export class InstructionDetail {
     if (!this.isOwner()) {
       return states;
     }
-    // Owners may only pick In Arbeit/Fertig, but the current state must stay
-    // in the list so the (locked) select can still display e.g. "Veröffentlicht".
+    // Owners may only pick In Arbeit; "Fertig" is reached through "Speichern +
+    // Fertig" and its checklist only. The current state must stay in the list,
+    // so the select can still display e.g. "Fertig" (and switch back) or the
+    // locked "Veröffentlicht".
     const currentId = this.instruction()?.stateId;
-    return states.filter((s) => s.id <= 2 || s.id === currentId);
+    return states.filter((s) => s.id === States.WORKING || s.id === currentId);
+  });
+  /** Course categories for the optional extra category, minus the topic's own one. */
+  readonly categoryOptions = computed(() => {
+    const ownCode = this.topic()?.code;
+    return this.values.categories().filter((c) => c.instruction && c.code !== ownCode);
   });
   readonly equipmentOptions = this.values.equipments;
   readonly qualificationOptions = this.values.topics;
@@ -192,6 +231,12 @@ export class InstructionDetail {
   form = signal<FormGroup | undefined>(undefined);
   /** Id of the course the form was last built for; rebuilds when navigating to a different course. */
   private builtId: number | null = null;
+
+  /**
+   * Whether the extra-category picker is shown. Pure UI state, as on the tour
+   * form: derived from the stored category whenever a course is loaded.
+   */
+  readonly needsExtraCategory = signal(false);
 
   /** See tour-detail: relaxed for events that already lie in the past. */
   readonly minDate = signal<Date>(tomorrow());
@@ -262,11 +307,31 @@ export class InstructionDetail {
       message: [instruction.message],
     });
 
+    this.needsExtraCategory.set(instruction.categoryId != null);
+
+    guardReadyState(group.get('stateId')!, {
+      current: () => this.instruction()?.stateId,
+      allowed: () => this.readyConfirmed,
+      onBlocked: () => this.showReadyChecklist.set(true),
+      destroyRef: this.destroyRef,
+    });
+
     group.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((value) => {
       this.instructions.updateLocal(instruction.id, value as Partial<Instruction>);
     });
 
     this.form.set(group);
+  }
+
+  /**
+   * Unticking clears the category so the stored data matches what the form
+   * shows; otherwise it would stay saved but invisible.
+   */
+  toggleExtraCategory(checked: boolean): void {
+    this.needsExtraCategory.set(checked);
+    if (!checked) {
+      this.form()?.get('categoryId')?.setValue(null);
+    }
   }
 
   // --- meetings table ---
@@ -304,7 +369,9 @@ export class InstructionDetail {
       endDate: [fromIsoDate(event.endDate), endNotBeforeStartValidator()],
       endTime: [event.endTime, timeFormatValidator()],
       rendezvous: [event.rendezvous],
+      source: [event.source],
       location: [event.location],
+      distance: [event.distance],
     });
 
     // The end-date validator reads the start date, so moving the start has to
@@ -316,6 +383,7 @@ export class InstructionDetail {
       .subscribe(() =>
         group.get('endDate')!.updateValueAndValidity({ emitEvent: false }),
       );
+    lockStartTimeOrApproximate(group, this.destroyRef);
 
     this.selectedEventForm.set(group);
     this.showEvent.set(true);
@@ -366,9 +434,68 @@ export class InstructionDetail {
     }
   }
 
+  readonly showPreview = signal(false);
+  readonly homepagePreview = signal<ActivityPreview | null>(null);
+  readonly previewLoading = signal(false);
+
+  /**
+   * Saves first, so the preview shows the current state, then opens what the
+   * homepage would show. A failed save reports its errors and opens nothing.
+   * A locked course cannot be saved by its guide, so it is previewed as stored.
+   */
+  openPreview(): void {
+    const instruction = this.instruction();
+    if (!instruction) {
+      return;
+    }
+    const load = () => {
+      this.homepagePreview.set(null);
+      this.previewLoading.set(true);
+      this.showPreview.set(true);
+      this.instructionService.getPreview(instruction.id).subscribe((preview) => {
+        this.homepagePreview.set(preview);
+        this.previewLoading.set(false);
+      });
+    };
+    if (this.locked()) {
+      load();
+      return;
+    }
+    this.instructions.save({ instruction, silent: true, onSaved: load });
+    this.form()?.markAsPristine();
+  }
+
   save(): void {
     this.persist(false);
     this.form()?.markAsPristine();
+  }
+
+  /** "Speichern + Fertig" is only offered while the course is still In Arbeit. */
+  readonly isWorking = computed(() => this.instruction()?.stateId === States.WORKING);
+
+  readonly showReadyChecklist = signal(false);
+  /** Set only while the confirmed checklist hands the course in, see guardReadyState(). */
+  private readyConfirmed = false;
+
+  /** Accommodation and advance items of the checklist only apply then (main event or any meeting). */
+  readonly isMultiDay = computed(() => this.eventRows().some((event) => spansSeveralDays(event)));
+
+  /** "Speichern + Fertig" goes through the checklist first. */
+  saveAsReady(): void {
+    this.showReadyChecklist.set(true);
+  }
+
+  /**
+   * Hands the course in for review once the checklist is ticked off: sets the
+   * state to Fertig and saves. The form mirrors the change into the store
+   * synchronously, so the save carries it, and the backend sends its
+   * In Arbeit → Fertig notification as usual.
+   */
+  completeReady(): void {
+    this.readyConfirmed = true;
+    this.form()?.get('stateId')?.setValue(States.READY);
+    this.readyConfirmed = false;
+    this.save();
   }
 
   confirmDelete(): void {

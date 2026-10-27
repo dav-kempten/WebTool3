@@ -19,6 +19,7 @@ import { SelectModule } from 'primeng/select';
 import { DatePickerModule } from 'primeng/datepicker';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { TooltipModule } from 'primeng/tooltip';
+import { ResponsiveTooltip } from '../../directives/responsive-tooltip';
 
 import { Category } from '../../../models/value';
 import { ToursStore } from '../../../core/stores/tours.store';
@@ -44,6 +45,7 @@ import { toIsoDate, tomorrow } from '../../util/date';
     DatePickerModule,
     ToggleButtonModule,
     TooltipModule,
+    ResponsiveTooltip,
   ],
   templateUrl: './tour-create-dialog.html',
   styleUrl: '../../styles/create-dialog.scss',

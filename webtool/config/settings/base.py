@@ -100,9 +100,6 @@ DATABASES = {
         'NAME': get_env('DJCODE_DB_NAME'),
         'USER': get_env('DJCODE_DB_USER'),
         'PASSWORD': get_env('DJCODE_DB_PASSWORD'),
-        'OPTIONS': {
-            'charset': 'utf8mb4',
-        },
     }
 }
 
@@ -177,9 +174,16 @@ STATIC_URL = '/static/'
 ADMIN_REORDER = (
     {'app': 'auth', 'models': ('auth.User', 'auth.Group')},
     {'app': 'server', 'label': 'Kalender', 'models': ('server.Vacation', 'server.Anniversary', 'server.Calendar')},
-    {'app': 'server', 'label': 'Gruppen', 'models': ('server.Collective', 'server.Session')},
+    {'app': 'server', 'label': 'Gruppen', 'models': ('server.Collective', 'server.Session', 'server.Role')},
     {'app': 'server', 'label': 'Qualifikationen', 'models': ('server.Qualification', 'server.QualificationGroup')},
     {'app': 'server', 'label': 'Events', 'models': ('server.Equipment', 'server.Tour', 'server.Category', 'server.CategoryGroup')},
     {'app': 'server', 'label': 'Instructions', 'models': ('server.Instruction', 'server.Topic',)},
     'sites'
 )
+
+
+# Supportanfragen aus dem Dashboard. Der Absender bleibt der Server, damit die
+# Mail den SPF-Prüfungen standhält; die Antwortadresse ist die des Fragenden.
+SUPPORT_SUBJECT_PREFIX = '[Webtool-Support]'
+SUPPORT_FROM_EMAIL = 'django@dav-kempten.de'
+SUPPORT_RECIPIENTS = ['johannes.buettner@dav-kempten.de']

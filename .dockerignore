@@ -1,0 +1,16 @@
+.git
+.gitignore
+.idea
+.env
+node_modules
+**/node_modules
+webtool/frontend/dist
+docs
+Skripte
+Archive
+__pycache__
+**/__pycache__
+*.pyc
+*.log
+venv*
+.venv

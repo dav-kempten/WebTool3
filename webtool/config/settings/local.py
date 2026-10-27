@@ -17,3 +17,16 @@ STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
 DATABASES = {
     'default': env.db('DATABASE_URL')
 }
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:4200",
+    "http://localhost:4201",
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:4200",
+    "http://localhost:4201",
+]
+
+# Falls du Cookies oder Credentials (wie Session-IDs) mitsendest:
+CORS_ALLOW_CREDENTIALS = True

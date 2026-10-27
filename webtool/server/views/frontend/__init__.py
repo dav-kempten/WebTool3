@@ -11,4 +11,6 @@ from .instructioncalendar import InstructioncalendarViewSet
 # from .retrainings import RetrainingViewSet
 # from .qualifications import UserQualificationViewSet
 from .guides import GuideViewSet
+from .requirements import RequirementViewSet
+from .support import SupportViewSet
 from .urls import router as frontend_router

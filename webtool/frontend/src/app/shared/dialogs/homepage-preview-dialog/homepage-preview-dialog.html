@@ -1,0 +1,70 @@
+<p-dialog
+  header="Vorschau Homepage"
+  [modal]="true"
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+  [style]="{ width: '60rem' }"
+  [breakpoints]="{ '960px': '95vw' }"
+>
+  <p-message severity="info" styleClass="avk-preview-note">
+    So erscheint die Veranstaltung auf dav-kempten.de – der Inhalt ist exakt der der Homepage,
+    die Gestaltung ist angenähert. Unveröffentlichte Veranstaltungen erscheinen dort erst nach der Freigabe.
+  </p-message>
+
+  @if (loading()) {
+    <p>Vorschau wird geladen …</p>
+  } @else if (preview(); as p) {
+    <article class="avk-hp">
+      <h1 class="avk-hp-title"><span class="avk-hp-code">{{ p.id }} — </span>{{ p.title }}</h1>
+      <ul class="avk-hp-facts">
+        <li><span>Termin:</span> {{ dates() }}</li>
+        <li><span>Leitung:</span> {{ guide() }}</li>
+        <li><span>Teilnehmer:</span> {{ participants() }}</li>
+        <li><span>Buchungscode:</span> {{ p.id }}</li>
+        <li><span>Gebühr:</span> {{ fee() }}</li>
+      </ul>
+      <div class="avk-hp-body">
+        <!-- Backend-generated HTML (details()); Angular sanitises it on binding. -->
+        <div class="avk-hp-description" [innerHTML]="p.description"></div>
+
+        <!-- The homepage's right-hand sidebar ("secondary"). -->
+        <aside class="avk-hp-secondary">
+          @if (p.preconditions) {
+            <p class="avk-hp-text"><strong>Besonderheit:</strong> {{ p.preconditions }}</p>
+          }
+          @if (skillLevel(); as level) {
+            <p class="avk-hp-level">
+              <span class="avk-hp-dots" [attr.aria-label]="'Stufe ' + level + ' von 3'">
+                @for (dot of levelDots; track dot) {
+                  <span [class.filled]="dot <= level"></span>
+                }
+              </span>
+              <strong>Technische Anforderung</strong>
+            </p>
+          }
+          @if (fitnessLevel(); as level) {
+            <p class="avk-hp-level">
+              <span class="avk-hp-dots" [attr.aria-label]="'Stufe ' + level + ' von 3'">
+                @for (dot of levelDots; track dot) {
+                  <span [class.filled]="dot <= level"></span>
+                }
+              </span>
+              <strong>Anforderung Kondition</strong>
+            </p>
+          }
+          @if (equipment().length) {
+            <p>
+              <strong>Benötigte Ausrüstung:</strong>
+              @for (item of equipment(); track $index) {
+                <span class="avk-hp-equipment">{{ item }}</span>
+              }
+              <a [href]="materialListUrl" target="_blank" rel="noopener">Hier geht's zu unserer Materialliste</a>
+            </p>
+          }
+        </aside>
+      </div>
+    </article>
+  } @else {
+    <p-message severity="error">Die Vorschau konnte nicht geladen werden. Bitte erneut versuchen.</p-message>
+  }
+</p-dialog>

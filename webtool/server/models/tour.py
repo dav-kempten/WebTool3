@@ -420,6 +420,8 @@ class Tour(
         output.write('<br />'.join(lines))
         output.write('</p>')
 
+        output.write(self.remark())
+
         output.write('<p>Es gelten unsere '
                      '<a href="/aktivitaeten/teilnahmebedingungen/" '
                      'title="Teilnahmebedingungen">Teilnahme-</a>'
@@ -428,7 +430,7 @@ class Tour(
                      'title="Stornobedingungen">Stornobedingungen</a>.'
                      '</p>')
 
-        output.write('<p><strong>Hinweis:</strong> Spezielle Fragen zu Touren & Kursen kannst du unter '
+        output.write('<p><strong>Fragen:</strong> Spezielle Fragen zu Touren & Kursen kannst du unter '
                      '<strong>kurse@dav-kempten.de</strong> stellen. Bitte gib hierbei immer den '
                      '<strong>Buchungscode</strong> der entsprechenden Veranstaltung mit an.</p>')
 

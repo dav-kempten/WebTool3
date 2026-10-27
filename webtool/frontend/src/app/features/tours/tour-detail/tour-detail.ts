@@ -13,6 +13,7 @@ import {
   FormArray,
   FormBuilder,
   FormGroup,
+  FormsModule,
   ReactiveFormsModule,
 } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -29,10 +30,16 @@ import { InputTextModule } from 'primeng/inputtext';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { TextareaModule } from 'primeng/textarea';
 import { TooltipModule } from 'primeng/tooltip';
+import { ResponsiveTooltip } from '../../../shared/directives/responsive-tooltip';
+import { ReadyChecklistDialog } from '../../../shared/dialogs/ready-checklist-dialog/ready-checklist-dialog';
+import { guardReadyState, spansSeveralDays } from '../../../shared/util/ready-guard';
 import { MessageModule } from 'primeng/message';
 import { ConfirmationService } from 'primeng/api';
 
 import { ToursStore } from '../../../core/stores/tours.store';
+import { TourService } from '../../../core/services/tour.service';
+import { ActivityPreview } from '../../../models/preview';
+import { HomepagePreviewDialog } from '../../../shared/dialogs/homepage-preview-dialog/homepage-preview-dialog';
 import { ValuesStore } from '../../../core/stores/values.store';
 import { NamesStore } from '../../../core/stores/names.store';
 import { EventsStore } from '../../../core/stores/events.store';
@@ -55,6 +62,9 @@ import {
   timeFormatValidator,
 } from '../../../shared/util/validators';
 import { describeSaveErrorPath } from '../../../shared/util/save-error';
+import { EQUIPMENT_LIST_URL } from '../../../shared/util/links';
+import { lockStartTimeOrApproximate } from '../../../shared/util/event-time';
+import { States } from '../../../models/value';
 
 type EventKind = 'tour' | 'deadline' | 'preliminary';
 
@@ -63,6 +73,7 @@ type EventKind = 'tour' | 'deadline' | 'preliminary';
   standalone: true,
   imports: [
     RouterModule,
+    FormsModule,
     ReactiveFormsModule,
     DatePipe,
     CardModule,
@@ -77,7 +88,10 @@ type EventKind = 'tour' | 'deadline' | 'preliminary';
     InputNumberModule,
     TextareaModule,
     TooltipModule,
+    ResponsiveTooltip,
     MessageModule,
+    ReadyChecklistDialog,
+    HomepagePreviewDialog,
   ],
   providers: [AutoSaveService],
   templateUrl: './tour-detail.html',
@@ -88,6 +102,7 @@ export class TourDetail {
   readonly id = input.required<string>();
 
   private tours = inject(ToursStore);
+  private tourService = inject(TourService);
   private values = inject(ValuesStore);
   private names = inject(NamesStore);
   private events = inject(EventsStore);
@@ -128,6 +143,18 @@ export class TourDetail {
     }
     return false;
   });
+  /**
+   * Nur die Geschäftsstelle (und Administration) sieht TN-Gebühr und
+   * KV-Verlinkung. Die Formularfelder bleiben bestehen, damit die
+   * gespeicherten Werte beim Speichern unverändert durchlaufen.
+   *
+   * Achtung: Das gleichnamige isStaff in den Gruppenterminen ist weiter
+   * gefasst und schließt Fachbereichssprecher ein — daher der eigene Name.
+   */
+  readonly isOffice = computed(
+    () => this.permission().permissionLevel >= PermissionLevel.staff,
+  );
+
   /** Owner may only edit while the tour is still In Arbeit/Fertig (state <= 2). */
   readonly locked = computed(
     () => this.isOwner() && (this.tour()?.stateId ?? 0) > 2,
@@ -139,10 +166,12 @@ export class TourDetail {
     if (!this.isOwner()) {
       return states;
     }
-    // Owners may only pick In Arbeit/Fertig, but the current state must stay
-    // in the list so the (locked) select can still display e.g. "Veröffentlicht".
+    // Owners may only pick In Arbeit; "Fertig" is reached through "Speichern +
+    // Fertig" and its checklist only. The current state must stay in the list,
+    // so the select can still display e.g. "Fertig" (and switch back) or the
+    // locked "Veröffentlicht".
     const currentId = this.tour()?.stateId;
-    return states.filter((s) => s.id <= 2 || s.id === currentId);
+    return states.filter((s) => s.id === States.WORKING || s.id === currentId);
   });
   readonly skillOptions = computed(() =>
     this.values.skills().filter((s) => s.categoryId === this.tour()?.categoryId),
@@ -165,6 +194,13 @@ export class TourDetail {
       : [],
   );
 
+  /**
+   * Whether the extra-category picker is shown. Pure UI state — there is no
+   * such flag on the backend — so it is derived from the stored selection
+   * whenever a tour is loaded.
+   */
+  readonly needsExtraCategories = signal(false);
+
   // --- forms ---
   form = signal<FormGroup | undefined>(undefined);
   eventForms = signal<FormArray | undefined>(undefined);
@@ -182,6 +218,14 @@ export class TourDetail {
   readonly showEvent = signal(false);
   readonly selectedKind = signal<EventKind>('tour');
   selectedEventForm = signal<FormGroup | undefined>(undefined);
+  /**
+   * Treffpunkt-Optionen der Vorbesprechung. Reine UI-Zustände — gespeichert
+   * wird nur der Freitext `rendezvous` (plus der daraus folgende
+   * Reservierungswunsch). Die beiden Signale spiegeln ihn und schließen sich
+   * gegenseitig aus; steht dort etwas anderes, ist keins von beiden gesetzt.
+   */
+  readonly meetingSeminarRoom = signal(false);
+  readonly meetingOnline = signal(false);
 
   constructor() {
     // Trigger loads.
@@ -229,7 +273,7 @@ export class TourDetail {
       if (tour.preliminaryId != null && !hasSlot) {
         const [preliminaryEvent] = this.events.eventsByIds([tour.preliminaryId]);
         if (preliminaryEvent) {
-          array.push(this.buildEventForm(preliminaryEvent));
+          array.push(this.buildEventForm(preliminaryEvent, false));
         }
       } else if (tour.preliminaryId == null && hasSlot) {
         array.removeAt(2);
@@ -276,18 +320,28 @@ export class TourDetail {
       message: [tour.message],
     });
 
+    this.needsExtraCategories.set((tour.categoryIds?.length ?? 0) > 0);
+
+    guardReadyState(group.get('stateId')!, {
+      current: () => this.tour()?.stateId,
+      allowed: () => this.readyConfirmed,
+      onBlocked: () => this.showReadyChecklist.set(true),
+      destroyRef: this.destroyRef,
+    });
+
     group.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((value) => {
       this.tours.updateLocal(tour.id, value as Partial<Tour>);
     });
 
     const array = new FormArray(
-      events.map((event) => this.buildEventForm(event)),
+      events.map((event, index) => this.buildEventForm(event, index === 0)),
     );
     this.form.set(group);
     this.eventForms.set(array);
   }
 
-  private buildEventForm(event: Event): FormGroup {
+  /** @param isTour the tour itself (index 0) — the only event with a "Tageszeit" field. */
+  private buildEventForm(event: Event, isTour: boolean): FormGroup {
     const group = this.fb.group({
       id: [event.id],
       title: [event.title],
@@ -320,7 +374,30 @@ export class TourDetail {
         group.get('endDate')!.updateValueAndValidity({ emitEvent: false }),
       );
 
-    group.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((value) => {
+    // Only where the "Tageszeit" field is shown, or a stored time of day would
+    // lock the start time with no way to clear it.
+    if (isTour) {
+      lockStartTimeOrApproximate(group, this.destroyRef);
+    }
+
+    // Der Freitext führt: jede Änderung setzt die Optionen neu und zieht den
+    // Reservierungswunsch nach. Das Abo hängt am Feld, nicht an der Gruppe,
+    // damit das Nachziehen von 'reservationService' es nicht erneut auslöst.
+    group
+      .get('rendezvous')!
+      .valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        const seminar = this.deriveMeetingOptions(group);
+        const reservation = group.get('reservationService')!;
+        if (reservation.value !== seminar) {
+          reservation.setValue(seminar);
+        }
+      });
+
+    group.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      // getRawValue(), not the emitted value: that one leaves out locked fields,
+      // so a start time cleared and locked in one go would never reach the store.
+      const value: typeof group.value = group.getRawValue();
       // Route through the store so the list summary updates immediately too.
       this.tours.updateEventLocal(event.id, {
         ...(value as Partial<Event>),
@@ -344,6 +421,27 @@ export class TourDetail {
       tour.preliminaryId,
     ]);
   });
+
+  /**
+   * Das Alpin-Shuttle wird am Haupttermin angehakt, gebraucht wird der
+   * Hinweis aber bei der Nachricht an die Geschäftsstelle.
+   */
+  readonly wantsShuttle = computed(() => this.eventRows()[0]?.shuttleService ?? false);
+
+  /** Download offered once "Ausrüstungsbedarf Tour" is ticked. */
+  readonly equipmentListUrl = EQUIPMENT_LIST_URL;
+
+
+  /**
+   * Der Seminarraum ist genauso reservierungspflichtig wie das Shuttle. Es
+   * zählt der Freitext der Vorbesprechung, nicht nur die Checkbox — wer
+   * "Seminarraum 2. OG" einträgt, meint denselben Wunsch.
+   */
+  readonly wantsSeminarRoom = computed(() =>
+    /seminarraum/i.test(
+      this.events.eventsByIds([this.tour()?.preliminaryId])[0]?.rendezvous ?? '',
+    ),
+  );
 
   readonly hasPreliminary = computed(() => this.tour()?.preliminaryId != null);
 
@@ -391,8 +489,50 @@ export class TourDetail {
     );
     const group = array.at(index) as FormGroup;
     this.minDate.set(relaxedMinDate(group.get('startDate')?.value));
+    this.deriveMeetingOptions(group);
     this.selectedEventForm.set(group);
     this.showEvent.set(true);
+  }
+
+  /**
+   * Schreibt die Treffpunkt-Optionen der Vorbesprechung zurück. "Seminarraum"
+   * ist zugleich der Reservierungswunsch — genau deshalb entfällt die frühere
+   * Checkbox "Schulungsraum-Reservierung".
+   */
+  toggleMeetingOption(option: 'seminar' | 'online', checked: boolean): void {
+    const group = this.selectedEventForm();
+    if (!group) {
+      return;
+    }
+    // Entweder-oder: die gewählte Option ersetzt die andere, Abwählen leert
+    // das Feld. Alles Weitere erledigt das Abo auf `rendezvous`.
+    group.get('rendezvous')!.setValue(checked ? (option === 'seminar' ? 'Seminarraum' : 'online') : '');
+    group.markAsDirty();
+  }
+
+  /**
+   * Leitet die beiden Optionen aus dem Treffpunkt-Freitext ab und meldet
+   * zurück, ob der Seminarraum gewählt ist. Verglichen wird exakt: sobald
+   * etwas anderes im Feld steht, ist keine Option angehakt.
+   */
+  private deriveMeetingOptions(group: FormGroup): boolean {
+    const text = String(group.get('rendezvous')?.value ?? '').trim().toLowerCase();
+    const seminar = text === 'seminarraum';
+    this.meetingSeminarRoom.set(seminar);
+    this.meetingOnline.set(text === 'online');
+    return seminar;
+  }
+
+  /**
+   * Unticking clears the selection so the stored data matches what the form
+   * shows. Otherwise categories would stay saved but invisible, and the box
+   * would tick itself again on the next load.
+   */
+  toggleExtraCategories(checked: boolean): void {
+    this.needsExtraCategories.set(checked);
+    if (!checked) {
+      this.form()?.get('categoryIds')?.setValue([]);
+    }
   }
 
   // --- actions ---
@@ -403,9 +543,68 @@ export class TourDetail {
     }
   }
 
+  readonly showPreview = signal(false);
+  readonly homepagePreview = signal<ActivityPreview | null>(null);
+  readonly previewLoading = signal(false);
+
+  /**
+   * Saves first, so the preview shows the current state, then opens what the
+   * homepage would show. A failed save reports its errors and opens nothing.
+   * A locked tour cannot be saved by its guide, so it is previewed as stored.
+   */
+  openPreview(): void {
+    const tour = this.tour();
+    if (!tour) {
+      return;
+    }
+    const load = () => {
+      this.homepagePreview.set(null);
+      this.previewLoading.set(true);
+      this.showPreview.set(true);
+      this.tourService.getPreview(tour.id).subscribe((preview) => {
+        this.homepagePreview.set(preview);
+        this.previewLoading.set(false);
+      });
+    };
+    if (this.locked()) {
+      load();
+      return;
+    }
+    this.tours.save({ tour, silent: true, onSaved: load });
+    this.form()?.markAsPristine();
+  }
+
   save(): void {
     this.persist(false);
     this.form()?.markAsPristine();
+  }
+
+  /** "Speichern + Fertig" is only offered while the tour is still In Arbeit. */
+  readonly isWorking = computed(() => this.tour()?.stateId === States.WORKING);
+
+  readonly showReadyChecklist = signal(false);
+  /** Set only while the confirmed checklist hands the tour in, see guardReadyState(). */
+  private readyConfirmed = false;
+
+  /** Accommodation and advance items of the checklist only apply then. */
+  readonly isMultiDay = computed(() => spansSeveralDays(this.eventRows()[0]));
+
+  /** "Speichern + Fertig" goes through the checklist first. */
+  saveAsReady(): void {
+    this.showReadyChecklist.set(true);
+  }
+
+  /**
+   * Hands the tour in for review once the checklist is ticked off: sets the
+   * state to Fertig and saves. The form mirrors the change into the store
+   * synchronously, so the save carries it, and the backend sends its
+   * In Arbeit → Fertig notification as usual.
+   */
+  completeReady(): void {
+    this.readyConfirmed = true;
+    this.form()?.get('stateId')?.setValue(States.READY);
+    this.readyConfirmed = false;
+    this.save();
   }
 
   confirmDelete(): void {

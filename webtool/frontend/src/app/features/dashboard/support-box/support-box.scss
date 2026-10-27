@@ -1,0 +1,128 @@
+// Ergänzt .avk-field und .avk-dialog-form aus shared/styles/create-dialog.scss,
+// das die Komponente als erstes Stylesheet einbindet.
+:host {
+  display: block;
+}
+
+// Standardmäßig zu, wie die Abschnitte der Bedarfskarte darüber: natives
+// <details>, ohne JavaScript und mit der Tastatur bedienbar.
+.avk-support {
+  // Das Dreieck steht rechts, nicht vor der Überschrift: so fluchten
+  // Überschrift, Einzeiler und die Felder darunter auf einer Kante.
+  > summary {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 0.75rem;
+    align-items: baseline;
+    padding: 0.25rem 0;
+    cursor: pointer;
+    list-style: none;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 1.15rem;
+  }
+}
+
+// Das Dreieck dreht sich beim Aufklappen mit.
+.avk-support-chevron {
+  font-size: 0.75rem;
+  opacity: 0.6;
+  transition: transform 0.15s ease;
+
+  .avk-support[open] & {
+    transform: rotate(90deg);
+  }
+}
+
+.avk-support-sub {
+  font-size: 0.9rem;
+  opacity: 0.75;
+}
+
+// Der Inhalt fluchtet mit dem Kartenrand, nicht mit der Überschrift hinter
+// dem Dreieck -- die Felder sollen die volle Breite behalten.
+.avk-support-body {
+  margin-top: 1.25rem;
+}
+
+@media (max-width: 40rem) {
+  // Der Einzeiler im Kopf passt nicht mehr daneben, die Überschrift genügt.
+  .avk-support > summary {
+    grid-template-columns: 1fr auto;
+  }
+
+  .avk-support-sub {
+    display: none;
+  }
+}
+
+.avk-support-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+// create-dialog.scss bringt nur das Layout der Felder mit. Die Beschriftungen
+// bekommen dieselbe Typografie wie auf den Detailseiten (detail-page.scss) --
+// klein und halbfett gehören sie sichtbar zu ihrem Feld, in voller Textgröße
+// stehen sie wie eine eigene Zeile darüber.
+.avk-field {
+  label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    opacity: 0.8;
+  }
+
+  input,
+  textarea {
+    width: 100%;
+  }
+
+  textarea {
+    resize: vertical;
+  }
+}
+
+.avk-support-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  flex-wrap: wrap;
+}
+
+// Hinweis und Fehlermeldung stehen an derselben Stelle links vom Knopf: beide
+// gehören zu dem Text, den der Absender gerade noch im Feld hat.
+.avk-support-hint,
+.avk-support-error {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+}
+
+.avk-support-hint {
+  opacity: 0.7;
+}
+
+.avk-support-error {
+  color: #d03b3b;
+}
+
+.avk-support-done {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin: 0;
+
+  i {
+    color: #0ca30c;
+  }
+}

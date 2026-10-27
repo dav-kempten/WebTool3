@@ -73,3 +73,18 @@ a {
 .p-datepicker-panel {
   font-size: 1.05rem;
 }
+
+/*
+ * Tooltips hängen wie die Select-Overlays an <body>, deshalb auch diese Regel
+ * global. Ohne Obergrenze wird ein langer Hinweis zu einer einzigen sehr
+ * breiten Zeile. PrimeNG versucht dann der Reihe nach rechts, links, oben und
+ * unten, findet in einem schmalen Fenster nirgends Platz und lässt die Box am
+ * zuletzt probierten Rand stehen — halb außerhalb des Bildes.
+ */
+.p-tooltip {
+  max-width: min(22rem, calc(100vw - 2rem));
+}
+
+.p-tooltip .p-tooltip-text {
+  overflow-wrap: anywhere;
+}

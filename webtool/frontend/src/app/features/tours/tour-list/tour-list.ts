@@ -1,7 +1,7 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { TableModule } from 'primeng/table';
@@ -27,6 +27,7 @@ import {
 } from '../../../models/value';
 import { TourSummary } from '../../../models/tour';
 import { toIsoDate } from '../../../shared/util/date';
+import { endNotBeforeStartValidator } from '../../../shared/util/validators';
 import { TourCreateDialog } from '../../../shared/dialogs/tour-create-dialog/tour-create-dialog';
 
 interface TourRow extends TourSummary {
@@ -134,8 +135,18 @@ export class TourList implements OnInit {
   readonly cloneForm = this.fb.group({
     tourId: this.fb.control<number | null>(null),
     startDate: this.fb.control<Date | null>(null),
-    endDate: this.fb.control<Date | null>(null),
+    endDate: this.fb.control<Date | null>(null, endNotBeforeStartValidator()),
   });
+
+  constructor() {
+    // The end-date validator reads the start date, so moving the start has to
+    // re-run it — otherwise a newly created overlap would go unflagged.
+    this.cloneForm.controls.startDate.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe(() =>
+        this.cloneForm.controls.endDate.updateValueAndValidity({ emitEvent: false }),
+      );
+  }
 
   ngOnInit(): void {
     // ensureSummaries: a hard reload here would overwrite locally synced,

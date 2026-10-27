@@ -17,7 +17,8 @@ from .skill import Skill, SkillDescription
 from .state import State
 from .talk import Talk
 from .tour import Tour
-from .reference import Reference
+from .reference import Reference, ReferenceSpaceExhausted
+from .requirement import Requirement
 from .section import Section
 from .calendar import Calendar, Anniversary, Vacation, OCCURRENCE_CHOICES, DAY_CHOICES, MONTH_CHOICES
 from .tariff import Tariff

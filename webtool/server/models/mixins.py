@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.db import models
+from django.utils.html import escape
 
 from . import fields, defaults
 
@@ -168,11 +169,18 @@ class AdminMixin(StateMixin, models.Model):
     )
 
     budget_info = models.JSONField(blank=True, null=True)  # JSON data as base for calculation of budget
-    message = models.TextField(blank=True, default='')  # Info vom Guide an Referat
-    comment = models.TextField(blank=True, default='')  # Interna!
+    message = models.TextField(blank=True, default='')  # Info vom Guide an Referat, intern
+    comment = models.TextField(blank=True, default='')  # Öffentlich: "Hinweis" auf der Homepage (bis 2026 intern, siehe Migration 0052)
 
     class Meta:
         abstract = True
+
+    def remark(self):
+        """The comment as a "Hinweis" paragraph for details(), or '' if there is none."""
+        text = self.comment.strip().replace('\r\n', '\n')
+        if not text:
+            return ''
+        return '<p><strong>Hinweis:</strong> {}</p>'.format(escape(text).replace('\n', '<br />'))
 
 
 class EquipmentMixin(models.Model):
