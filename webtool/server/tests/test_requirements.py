@@ -188,17 +188,17 @@ def test_the_window_is_named_in_the_overview(seeded):
     assert data['periodEnd'] == datetime.date(THIS, 11, 30)
 
 
-def test_the_program_year_switches_in_october_not_in_january():
+def test_the_program_year_switches_in_september_not_in_january():
     """Der Kern der Datumslogik: im Januar bleibt die Anzeige beim laufenden
-    Winter, und ab Oktober zeigt sie auf den kommenden."""
+    Winter, und ab September zeigt sie auf den kommenden."""
     year = Requirement.program_year
 
-    assert year(datetime.date(2026, 9, 30)) == 2026
-    assert year(datetime.date(2026, 10, 1)) == 2027   # Planung beginnt
+    assert year(datetime.date(2026, 8, 31)) == 2026
+    assert year(datetime.date(2026, 9, 1)) == 2027    # Planung beginnt
     assert year(datetime.date(2026, 12, 1)) == 2027   # Programm beginnt
     assert year(datetime.date(2027, 1, 15)) == 2027   # kein Sprung im Januar
-    assert year(datetime.date(2027, 9, 30)) == 2027
-    assert year(datetime.date(2027, 10, 1)) == 2028
+    assert year(datetime.date(2027, 8, 31)) == 2027
+    assert year(datetime.date(2027, 9, 1)) == 2028
 
 
 def test_last_winter_does_not_count_but_this_one_does(api, seeded, skitour):

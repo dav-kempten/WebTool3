@@ -54,11 +54,11 @@ class Requirement(SeasonMixin, TimeMixin, models.Model):
     # 30. November, siehe `defaults.season_year`.
     PROGRAM_START_MONTH = defaults.SEASON_START_MONTH
 
-    # Ab Oktober zeigt die Anzeige auf das Programm, das im Dezember beginnt:
-    # zwei Monate Vorlauf, weil im Herbst der kommende Winter geplant wird.
+    # Ab September zeigt die Anzeige auf das Programm, das im Dezember beginnt:
+    # drei Monate Vorlauf, weil im Spätsommer der kommende Winter geplant wird.
     # Darum folgt sie nicht einfach `Season.current` -- die schaltet erst am
     # 1. Dezember um, wenn die Planung längst läuft.
-    PLANNING_LEAD_MONTH = 10
+    PLANNING_LEAD_MONTH = 9
 
     objects = RequirementManager()
 
