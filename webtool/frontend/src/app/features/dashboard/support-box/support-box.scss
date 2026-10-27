@@ -1,0 +1,82 @@
+:host {
+  display: block;
+}
+
+.avk-support-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+
+  i {
+    font-size: 1.6rem;
+    color: var(--p-primary-color, #10b981);
+  }
+
+  h2 {
+    margin: 0 0 0.25rem;
+    font-size: 1.15rem;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+    opacity: 0.75;
+  }
+}
+
+.avk-support-form {
+  display: grid;
+  gap: 0.35rem;
+
+  label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    opacity: 0.8;
+  }
+
+  label + * {
+    margin-bottom: 0.5rem;
+  }
+
+  input,
+  textarea {
+    width: 100%;
+    font: inherit;
+  }
+
+  textarea {
+    resize: vertical;
+  }
+}
+
+.avk-support-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+// Die Fehlermeldung steht neben dem Knopf, nicht als Toast: sie gehört zu dem
+// Text, den der Absender gerade noch im Feld hat.
+.avk-support-error {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-right: auto;
+  font-size: 0.85rem;
+  color: #d03b3b;
+}
+
+.avk-support-done {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin: 0;
+
+  i {
+    color: #0ca30c;
+  }
+}

@@ -12,6 +12,7 @@ import { StatesGroup, getStatesOfGroup } from '../../models/value';
 import { TourCreateDialog } from '../../shared/dialogs/tour-create-dialog/tour-create-dialog';
 import { InstructionCreateDialog } from '../../shared/dialogs/instruction-create-dialog/instruction-create-dialog';
 import { RequirementPanel } from './requirement-panel/requirement-panel';
+import { SupportBox } from './support-box/support-box';
 
 interface DashboardTile {
   label: string;
@@ -44,6 +45,7 @@ const MY_EVENT_STATES: number[] = getStatesOfGroup(StatesGroup.Active);
     TourCreateDialog,
     InstructionCreateDialog,
     RequirementPanel,
+    SupportBox,
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
@@ -62,6 +64,13 @@ export class Dashboard {
   readonly canCreate = computed(
     () => this.auth.permission().permissionLevel >= PermissionLevel.guide,
   );
+
+  /**
+   * The support box is for the people who work with the tool — trainers,
+   * coordinators and the office. Someone merely logged in without a role has
+   * nothing to report from here.
+   */
+  readonly canAskForSupport = this.canCreate;
 
   readonly showCreateTour = signal(false);
   readonly showCreateInstruction = signal(false);

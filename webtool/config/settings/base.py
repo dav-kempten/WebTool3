@@ -180,3 +180,10 @@ ADMIN_REORDER = (
     {'app': 'server', 'label': 'Instructions', 'models': ('server.Instruction', 'server.Topic',)},
     'sites'
 )
+
+
+# Supportanfragen aus dem Dashboard. Der Absender bleibt der Server, damit die
+# Mail den SPF-Prüfungen standhält; die Antwortadresse ist die des Fragenden.
+SUPPORT_SUBJECT_PREFIX = '[Webtool-Support]'
+SUPPORT_FROM_EMAIL = 'django@dav-kempten.de'
+SUPPORT_RECIPIENTS = ['johannes.buettner@dav-kempten.de']

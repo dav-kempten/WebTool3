@@ -53,6 +53,10 @@
     <avk-requirement-panel class="avk-dashboard-requirements" />
   }
 
+  @if (canAskForSupport()) {
+    <avk-support-box class="avk-dashboard-support" />
+  }
+
   @if (showMyEvents()) {
     <div class="avk-dashboard-my">
       <p-card subheader="Meine Touren">

@@ -1,0 +1,67 @@
+<p-card>
+  <div class="avk-support-head">
+    <i class="pi pi-life-ring" aria-hidden="true"></i>
+    <div>
+      <h2>Support</h2>
+      <p>
+        Etwas klemmt oder fehlt? Schreib es hier auf, die Nachricht geht an die
+        Geschäftsstelle. Dein Name und deine Adresse werden mitgeschickt, damit
+        du eine Antwort bekommst.
+      </p>
+    </div>
+  </div>
+
+  @if (state() === 'sent') {
+    <p class="avk-support-done">
+      <i class="pi pi-check-circle" aria-hidden="true"></i>
+      {{ feedback() }}
+      <button type="button" pButton text size="small" (click)="reset()">
+        Noch etwas melden
+      </button>
+    </p>
+  } @else {
+    <form class="avk-support-form" (ngSubmit)="send()">
+      <label for="avk-support-subject">Betreff</label>
+      <input
+        id="avk-support-subject"
+        pInputText
+        name="subject"
+        maxlength="120"
+        placeholder="Worum geht es?"
+        [ngModel]="subject()"
+        (ngModelChange)="subject.set($event)"
+        [disabled]="state() === 'sending'"
+      />
+
+      <label for="avk-support-message">Nachricht</label>
+      <textarea
+        id="avk-support-message"
+        pTextarea
+        name="message"
+        rows="4"
+        maxlength="5000"
+        placeholder="Was ist passiert, und was hattest du erwartet?"
+        [ngModel]="message()"
+        (ngModelChange)="message.set($event)"
+        [disabled]="state() === 'sending'"
+      ></textarea>
+
+      <div class="avk-support-actions">
+        @if (state() === 'failed') {
+          <span class="avk-support-error">
+            <i class="pi pi-exclamation-circle" aria-hidden="true"></i>
+            {{ feedback() }}
+          </span>
+        }
+        <button
+          type="submit"
+          pButton
+          icon="pi pi-send"
+          label="Senden"
+          [disabled]="!canSend()"
+          [loading]="state() === 'sending'"
+        ></button>
+      </div>
+    </form>
+  }
+</p-card>
