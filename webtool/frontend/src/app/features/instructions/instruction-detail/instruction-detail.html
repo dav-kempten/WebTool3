@@ -434,7 +434,9 @@
             <input pInputText formControlName="endTime" placeholder="HH:MM" pTooltip="Endzeit" />
           </div>
         </div>
-        <div class="avk-grid-2">
+        <!-- Three across on the main event. The distance only applies there, so
+             follow-up meetings drop back to two columns instead of leaving a gap. -->
+        <div [class]="selectedIsMain() ? 'avk-grid-3' : 'avk-grid-2'">
           <div class="avk-field">
             <label>Startdatum</label>
             <p-datepicker formControlName="startDate" dateFormat="dd.mm.yy" appendTo="body" [minDate]="minDate()" pTooltip="Startdatum"></p-datepicker>
@@ -457,18 +459,6 @@
               </small>
             }
           </div>
-        </div>
-        <!-- Three across on the main event. The distance only applies there, so
-             follow-up meetings drop back to two columns instead of leaving a gap. -->
-        <div [class]="selectedIsMain() ? 'avk-grid-3' : 'avk-grid-2'">
-          <div class="avk-field">
-            <label>Treffpunkt</label>
-            <input pInputText formControlName="rendezvous" maxlength="75" pTooltip="Treffpunkt für die Abfahrt" />
-          </div>
-          <div class="avk-field">
-            <label>Kursort</label>
-            <input pInputText formControlName="location" maxlength="75" />
-          </div>
           @if (selectedIsMain()) {
             <div class="avk-field">
               <label>Gesamtfahrstrecke (km)</label>
@@ -480,6 +470,20 @@
               ></p-inputnumber>
             </div>
           }
+        </div>
+        <div class="avk-grid-3">
+          <div class="avk-field">
+            <label>Treffpunkt</label>
+            <input pInputText formControlName="rendezvous" maxlength="75" pTooltip="Treffpunkt für die Abfahrt" />
+          </div>
+          <div class="avk-field">
+            <label>Kursort</label>
+            <input pInputText formControlName="source" maxlength="75" pTooltip="Treffpunkt vor Ort" />
+          </div>
+          <div class="avk-field">
+            <label>Übernachtungsort</label>
+            <input pInputText formControlName="location" maxlength="75" />
+          </div>
         </div>
         @if (selectedIsMain()) {
           <div class="avk-field">

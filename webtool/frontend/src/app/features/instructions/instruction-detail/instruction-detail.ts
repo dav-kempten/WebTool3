@@ -369,6 +369,7 @@ export class InstructionDetail {
       endDate: [fromIsoDate(event.endDate), endNotBeforeStartValidator()],
       endTime: [event.endTime, timeFormatValidator()],
       rendezvous: [event.rendezvous],
+      source: [event.source],
       location: [event.location],
       distance: [event.distance],
     });
