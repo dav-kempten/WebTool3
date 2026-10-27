@@ -19,7 +19,9 @@ type SupportState = 'idle' | 'sending' | 'sent' | 'failed';
   standalone: true,
   imports: [FormsModule, CardModule, ButtonModule, InputTextModule, TextareaModule],
   templateUrl: './support-box.html',
-  styleUrl: './support-box.scss',
+  // Dasselbe .avk-field wie in den Dialogen: Beschriftung und Feld gehören
+  // zusammen und sollen hier nicht anders aussehen als anderswo im Tool.
+  styleUrls: ['../../../shared/styles/create-dialog.scss', './support-box.scss'],
 })
 export class SupportBox {
   private auth = inject(AuthService);
