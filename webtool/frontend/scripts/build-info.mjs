@@ -26,18 +26,17 @@ if (!stamp && existsSync(target)) {
   process.exit(0);
 }
 
+// Die Version wird genommen, wie sie in package.json steht. Früher fiel ein
+// abschließendes ".0" weg, damit "2.0.0" als "2.0" erschien -- das passte
+// nicht mehr, sobald ein Release ausdrücklich 2.1.0 heißt.
 const { version } = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
-
-// package.json braucht eine dreiteilige Version; angezeigt wird "2.0" statt
-// "2.0.0", solange wir nur die mittlere Stelle hochzählen.
-const display = version.replace(/\.0$/, '');
 const builtAt = new Date().toISOString();
 
 writeFileSync(
   target,
   `/* Automatisch erzeugt von scripts/build-info.mjs — nicht von Hand ändern. */\n` +
     `export const BUILD_INFO = {\n` +
-    `  version: '${display}',\n` +
+    `  version: '${version}',\n` +
     `  builtAt: '${builtAt}',\n` +
     `} as const;\n`,
   'utf8',
@@ -45,6 +44,6 @@ writeFileSync(
 
 console.log(
   stamp
-    ? `build-info: Version ${display}, Stand ${builtAt}`
-    : `build-info: angelegt (Version ${display})`,
+    ? `build-info: Version ${version}, Stand ${builtAt}`
+    : `build-info: angelegt (Version ${version})`,
 );

@@ -24,7 +24,7 @@ $FS = [char]47
 
 $src = (Resolve-Path $Dist).Path
 $pkg = Get-Content (Join-Path $PSScriptRoot '..\package.json') -Raw | ConvertFrom-Json
-$version = $pkg.version -replace '\.0$', ''
+$version = $pkg.version
 $name = 'webtool-frontend-v{0}-{1}.zip' -f $version, (Get-Date -Format 'yyyy-MM-dd')
 $zip = Join-Path ((Resolve-Path $OutDir).Path) $name
 
