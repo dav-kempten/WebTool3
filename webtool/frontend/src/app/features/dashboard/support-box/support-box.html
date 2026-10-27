@@ -1,10 +1,7 @@
 <p-card>
   <div class="avk-support-head">
-    <i class="pi pi-life-ring" aria-hidden="true"></i>
-    <div>
-      <h2>Support</h2>
-      <p>Etwas klemmt oder fehlt? Die Nachricht geht an die Geschäftsstelle.</p>
-    </div>
+    <h2>Support</h2>
+    <p>Etwas klemmt oder fehlt? Die Nachricht geht an die Geschäftsstelle.</p>
   </div>
 
   @if (state() === 'sent') {
@@ -54,7 +51,7 @@
           </span>
         } @else {
           <span class="avk-support-hint">
-            Dein Name und deine Adresse werden mitgeschickt.
+            Name, E-Mail-Adresse und Rolle werden mitgeschickt.
           </span>
         }
         <button
