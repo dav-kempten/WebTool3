@@ -24,6 +24,9 @@
   h2 {
     margin: 0 0 0.25rem;
     font-size: 1.15rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 
   p {
@@ -31,6 +34,22 @@
     font-size: 0.9rem;
     opacity: 0.75;
   }
+}
+
+// Kennzeichnet die Anzeige als noch nicht abgenommen. Eigene Farbe statt einer
+// Statusfarbe: Beta ist kein Bedarfsstand und soll mit rot/gelb/grün in den
+// Zeilen nicht verwechselt werden.
+.avk-req-beta {
+  flex: none;
+  padding: 0.1rem 0.45rem;
+  border: 1px solid var(--p-primary-color, #10b981);
+  border-radius: 999px;
+  color: var(--p-primary-color, #10b981);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: help;
 }
 
 .avk-req-empty {

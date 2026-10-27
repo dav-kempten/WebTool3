@@ -1,7 +1,14 @@
 <p-card styleClass="avk-requirement-card">
   <div class="avk-req-head">
     <div>
-      <h2>Bedarf der Saison {{ season() }}</h2>
+      <h2>
+        Bedarf der Saison {{ season() }}
+        <span
+          class="avk-req-beta"
+          title="Neue Funktion — Zahlen bitte gegenprüfen und Rückmeldung geben."
+          >Beta</span
+        >
+      </h2>
       <p>
         Was an Kursen und Touren gebraucht wird und was schon eingestellt ist.
         @if (periodStart()) {
