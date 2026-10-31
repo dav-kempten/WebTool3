@@ -23,7 +23,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { PermissionLevel } from '../../../core/services/permission';
 import { States, StatesGroup, getStatesOfGroup } from '../../../models/value';
 import { SessionSummary } from '../../../models/session';
-import { toIsoDate } from '../../../shared/util/date';
+import { toIsoDate, tomorrow } from '../../../shared/util/date';
 
 interface SessionRow extends SessionSummary {
   stateName: string;
@@ -123,6 +123,9 @@ export class SessionList implements OnInit {
     collectiveId: this.fb.control<number | null>(null),
     startDate: this.fb.control<Date | null>(null),
   });
+
+  /** A new session can only be dated ahead, so the picker starts tomorrow. */
+  readonly minCreateDate = tomorrow();
 
   ngOnInit(): void {
     // ensureSummaries: a hard reload here would overwrite locally synced,

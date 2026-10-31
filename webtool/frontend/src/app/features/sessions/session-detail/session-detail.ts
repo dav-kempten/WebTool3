@@ -49,6 +49,7 @@ import {
   endNotBeforeStartValidator,
   timeFormatValidator,
 } from '../../../shared/util/validators';
+import { lockStartTimeOrApproximate } from '../../../shared/util/event-time';
 import { describeSaveErrorPath } from '../../../shared/util/save-error';
 
 @Component({
@@ -255,6 +256,11 @@ export class SessionDetail {
       .subscribe(() =>
         group.get('endDate')!.updateValueAndValidity({ emitEvent: false }),
       );
+
+    // Exact start time and time of day exclude each other, as on tours and
+    // courses. applyEvent() reads the form with getRawValue(), so the locked
+    // field still reaches the store.
+    lockStartTimeOrApproximate(group, this.destroyRef);
 
     this.eventForm.set(group);
     this.showEvent.set(true);

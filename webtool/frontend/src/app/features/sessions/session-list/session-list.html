@@ -103,7 +103,13 @@
     </div>
     <div class="avk-field">
       <label>Startdatum</label>
-      <p-datepicker formControlName="startDate" dateFormat="dd.mm.yy" appendTo="body" />
+      <p-datepicker
+        formControlName="startDate"
+        dateFormat="dd.mm.yy"
+        appendTo="body"
+        [minDate]="minCreateDate"
+        pTooltip="Startdatum des neuen Gruppentermins – nur Tage in der Zukunft"
+      />
     </div>
     <p-button label="Bestätigen" (onClick)="create()" [disabled]="createForm.invalid" />
   </form>
