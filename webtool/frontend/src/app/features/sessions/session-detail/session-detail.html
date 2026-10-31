@@ -124,9 +124,15 @@
   >
     @if (eventForm(); as ef) {
       <form [formGroup]="ef" class="avk-event-form">
-        <div class="avk-field">
-          <label>Titel</label>
-          <input pInputText formControlName="name" maxlength="125" />
+        <div class="avk-grid-2">
+          <div class="avk-field">
+            <label>Kurztitel</label>
+            <input pInputText formControlName="title" maxlength="30" pTooltip="Kurztitel (max. 30 Zeichen) für die Terminliste und die Darstellung auf der Homepage" />
+          </div>
+          <div class="avk-field">
+            <label>Langtitel</label>
+            <input pInputText formControlName="name" maxlength="125" pTooltip="Langtitel (max. 125 Zeichen) für die Detailansicht auf der Homepage (kann mit dem Kurztitel übereinstimmen)" />
+          </div>
         </div>
         <div class="avk-grid-3">
           <div class="avk-field">
@@ -178,6 +184,35 @@
         <div class="avk-field">
           <label>Beschreibung</label>
           <textarea pTextarea formControlName="description" rows="3" class="avk-full"></textarea>
+        </div>
+        <div class="avk-checkbox-row avk-checkbox-row-spread">
+          <div class="avk-checkbox-item" pTooltip="Reservierungswunsch für den Schulungsraum">
+            <p-checkbox formControlName="reservationService" [binary]="true" inputId="reservationServiceCheckbox" />
+            <label for="reservationServiceCheckbox">Schulungsraum</label>
+          </div>
+          <div class="avk-checkbox-item">
+            <p-checkbox formControlName="distal" [binary]="true" inputId="distalCheckbox" />
+            <label for="distalCheckbox">Gemeinschaftsanreise</label>
+          </div>
+          <div class="avk-checkbox-item" pTooltip="Reservierungswunsch für das Alpin-Shuttle">
+            <p-checkbox formControlName="shuttleService" [binary]="true" inputId="shuttleServiceCheckbox" />
+            <label for="shuttleServiceCheckbox">Alpin-Shuttle</label>
+          </div>
+        </div>
+        <div class="avk-grid-2">
+          <div class="avk-field">
+            <label>Gesamtfahrstrecke (km)</label>
+            <p-inputnumber
+              formControlName="distance"
+              [min]="0"
+              [max]="9999"
+              pTooltip="Gesamtfahrstrecke der Veranstaltung – Fahrten innerhalb des Termins bitte mitrechnen, auch wenn nur geschätzt"
+            ></p-inputnumber>
+          </div>
+          <div class="avk-field">
+            <label>Kartenausschnitt-URL</label>
+            <input pInputText formControlName="map" maxlength="100" />
+          </div>
         </div>
         <div class="avk-detail-actions">
           <p-button label="Übernehmen" icon="pi pi-check" (onClick)="applyEvent()" />
