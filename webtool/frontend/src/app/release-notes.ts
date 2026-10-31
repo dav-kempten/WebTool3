@@ -15,7 +15,7 @@ export interface ReleaseNote {
 
 export const RELEASE_NOTES: readonly ReleaseNote[] = [
   {
-    version: '2.3.0',
+    version: '2.2.1',
     changes: [
       'Der Termin-Dialog eines Gruppentermins kennt wieder einen Kurztitel — er steht in der Terminliste und im Programm auf der Homepage; bisher ließ er sich gar nicht eintragen.',
       'Der Kurztitel erscheint in der Terminliste, sobald der Dialog übernommen ist, und nicht erst nach dem Speichern.',
