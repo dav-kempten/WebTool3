@@ -4,7 +4,7 @@ from urllib.parse import urlparse
 from rest_framework import serializers
 from server.models import Booklet
 
-from server.models import Reference
+from server.models import Reference, Season
 
 
 class BookletListSerializer(serializers.ModelSerializer):
@@ -68,9 +68,13 @@ class BookletSerializer(BookletRetrieveSerializer):
     def validate_references(self, value):
         invalid_codes = set()
         value_set = set(value)
+        # Same window as the activities the homepage builds the booklet from;
+        # the current season alone rejected next year's codes (AVS-701 in
+        # November 2026).
+        seasons = Season.visible('client')
         for code in value_set:
             try:
-                reference = Reference.get_reference(code)
+                reference = Reference.get_reference(code, seasons=seasons)
                 if reference.deprecated:
                     invalid_codes.add(code)
                 elif reference.event.deprecated:

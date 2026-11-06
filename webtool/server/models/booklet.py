@@ -6,7 +6,7 @@ import io
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 
-from server.models import Reference, Event
+from server.models import Reference, Event, Season
 from .time_base import TimeMixin
 
 
@@ -274,9 +274,12 @@ class Booklet(TimeMixin, models.Model):
     def render_source(self):
         with io.StringIO() as s:
             events = set()
+            # The window the homepage lists from (activities), not just the
+            # current season: in November it already shows next year's events.
+            seasons = Season.visible('client')
             for value in set(self.references):
                 try:
-                    reference = Reference.get_reference(value)
+                    reference = Reference.get_reference(value, seasons=seasons)
                 except Reference.DoesNotExist:
                     continue
                 if reference.deprecated:
