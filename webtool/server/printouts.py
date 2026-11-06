@@ -130,8 +130,11 @@ class Sheet:
     def _close(self):
         if self._fields and self._fields[1]:
             title, lines = self._fields
+            # Upper-cased here, umlauts braced, as the booklet does for its
+            # titles: the soul of TeX Live 2022 on the server cannot letterspace
+            # an "ü" inside \MakeUppercase and stopped the whole printout.
             self.parts.append(
-                f'\\davSection{{{tex(title)}}}\n\\begin{{davFields}}\n'
+                f'\\davSection{{{Booklet.to_upper(tex(title))}}}\n\\begin{{davFields}}\n'
                 + '\n'.join(lines)
                 + '\n\\end{davFields}'
             )

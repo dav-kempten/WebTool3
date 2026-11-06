@@ -100,10 +100,12 @@ contents={%
 {\color{davGreen}\soDavName{#1}}}
 
 % A heading per card of the detail form, in the booklet's green. It moves to
-% the next page only with less than four lines left, never alone.
+% the next page only with less than four lines left, never alone. The text
+% arrives upper-cased with its umlauts braced (Booklet.to_upper): soul before
+% TeX Live 2023 fails on an umlaut inside \MakeUppercase.
 \newcommand{\davSection}[1]{%
 \par\Needspace{4\baselineskip}\vspace{1.2ex}%
-{\color{davGreen}\soDavSection{\MakeUppercase{#1}}}\par\nopagebreak\vspace{-0.6ex}}
+{\color{davGreen}\soDavSection{#1}}\par\nopagebreak\vspace{-0.6ex}}
 
 % One field per line: label in bold like the booklet's "Anmeldung:". A
 % section's fields sit close together; the half-line parskip stays between

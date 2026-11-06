@@ -206,6 +206,18 @@ def test_empty_fields_leave_no_empty_section(api, seeded):
     assert 'Bemerkungen' not in source
 
 
+def test_section_headings_arrive_upper_cased_with_braced_umlauts(tour):
+    """
+    The soul of TeX Live 2022 on the server failed on an umlaut inside
+    \\MakeUppercase ("Argument of \\@firstofone has an extra }") and stopped
+    every printout with a 503. Locally, TeX Live 2025 never showed it.
+    """
+    source = printouts.tour_source(tour)
+    assert '\\davSection{ANFORDERUNGEN UND AUSR{Ü}STUNG}' in source
+    assert '\\davSection{BEMERKUNGEN {(}{Ö}FFENTLICH{)}}' in source
+    assert '\\MakeUppercase' not in printouts.template('printout.tex').split('\\newcommand{\\davSection}')[1].split('\\newcommand')[0]
+
+
 def test_unsettable_characters_are_dropped_but_levels_stay():
     assert printouts.tex('Grat △△ ✓ 50%') == 'Grat △△  50\\%'
 
