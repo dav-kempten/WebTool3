@@ -21,6 +21,7 @@ export const RELEASE_NOTES: readonly ReleaseNote[] = [
       'Ist das Alpin-Shuttle angehakt, steht der Reservierungswunsch auch beim Kurs unter der Nachricht an die Geschäftsstelle.',
       'Touren und Kurse lassen sich als Übernachtung kennzeichnen: „Übernachtungstour“ bei den Tourenspezifika, „Kurs mit Übernachtung“ bei den Kursspezifika.',
       'Bei mehrtägigen Touren und Kursen fragt die Checkliste vor „Fertig“, ob übernachtet wird und der Haken gesetzt ist.',
+      '„Ausdruck“ im Touren- und Kursformular speichert und lädt die Tour bzw. den Kurs mit allen Angaben als PDF im Stil des Programmhefts – zum Abheften. Neu auch für Kurse.',
     ],
   },
   {
