@@ -21,6 +21,7 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { DatePickerModule } from 'primeng/datepicker';
 import { CheckboxModule } from 'primeng/checkbox';
 import { InputTextModule } from 'primeng/inputtext';
+import { InputNumberModule } from 'primeng/inputnumber';
 import { TextareaModule } from 'primeng/textarea';
 import { TooltipModule } from 'primeng/tooltip';
 import { ResponsiveTooltip } from '../../../shared/directives/responsive-tooltip';
@@ -48,6 +49,7 @@ import {
   endNotBeforeStartValidator,
   timeFormatValidator,
 } from '../../../shared/util/validators';
+import { lockStartTimeOrApproximate } from '../../../shared/util/event-time';
 import { describeSaveErrorPath } from '../../../shared/util/save-error';
 
 @Component({
@@ -66,6 +68,7 @@ import { describeSaveErrorPath } from '../../../shared/util/save-error';
     DatePickerModule,
     CheckboxModule,
     InputTextModule,
+    InputNumberModule,
     TextareaModule,
     TooltipModule,
     ResponsiveTooltip,
@@ -227,6 +230,7 @@ export class SessionDetail {
     }
     this.minDate.set(relaxedMinDate(fromIsoDate(event.startDate)));
     const group = this.fb.group({
+      title: [event.title],
       name: [event.name],
       description: [event.description],
       startDate: [fromIsoDate(event.startDate)],
@@ -236,6 +240,11 @@ export class SessionDetail {
       endTime: [event.endTime, timeFormatValidator()],
       rendezvous: [event.rendezvous],
       location: [event.location],
+      reservationService: [event.reservationService],
+      distal: [event.distal],
+      distance: [event.distance],
+      shuttleService: [event.shuttleService],
+      map: [event.map],
     });
 
     // The end-date validator reads the start date, so moving the start has to
@@ -248,6 +257,11 @@ export class SessionDetail {
         group.get('endDate')!.updateValueAndValidity({ emitEvent: false }),
       );
 
+    // Exact start time and time of day exclude each other, as on tours and
+    // courses. applyEvent() reads the form with getRawValue(), so the locked
+    // field still reaches the store.
+    lockStartTimeOrApproximate(group, this.destroyRef);
+
     this.eventForm.set(group);
     this.showEvent.set(true);
   }
@@ -259,7 +273,8 @@ export class SessionDetail {
       return;
     }
     const value = form.getRawValue();
-    this.events.updateEvent(event.id, {
+    // Route through the store so the list summary picks up the title too.
+    this.sessions.updateEventLocal(event.id, {
       ...value,
       startDate: toIsoDate(value.startDate) ?? '',
       endDate: toIsoDate(value.endDate),

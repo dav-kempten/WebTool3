@@ -228,6 +228,12 @@ export const SessionsStore = signalStore(
       },
       updateEventLocal(id: number, changes: Partial<Event>): void {
         eventsStore.updateEvent(id, changes);
+        // The event carries the title column of the list, so mirror it into
+        // the summary instead of waiting for the next save.
+        const session = store.entities().find((s) => s.sessionId === id);
+        if (session) {
+          syncSummary(session.id, { title: changes.title } as Partial<SessionSummary>);
+        }
       },
       create,
       cloneById,

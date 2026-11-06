@@ -14,7 +14,39 @@
   <span class="avk-footer-copyright">
     © {{ build.builtAt | date: 'yyyy' }} Johannes Büttner @ DAV Allgäu-Kempten
   </span>
+  @if (notes) {
+    <p-button
+      class="avk-footer-info"
+      icon="pi pi-info-circle"
+      [text]="true"
+      [rounded]="true"
+      size="small"
+      severity="secondary"
+      ariaLabel="Änderungen dieser Version"
+      [pTooltip]="'Was ist neu in Version ' + build.version + '?'"
+      (onClick)="showNotes.set(true)"
+    />
+  }
 </footer>
+
+<p-dialog
+  [header]="'Neu in Version ' + build.version"
+  [modal]="true"
+  [visible]="showNotes()"
+  (visibleChange)="showNotes.set($event)"
+  [style]="{ width: '34rem' }"
+>
+  @if (notes; as note) {
+    @if (previousVersion) {
+      <p class="avk-notes-intro">Gegenüber Version {{ previousVersion }}:</p>
+    }
+    <ul class="avk-notes">
+      @for (change of note.changes; track change) {
+        <li>{{ change }}</li>
+      }
+    </ul>
+  }
+</p-dialog>
 
 <p-toast position="top-right" />
 <p-confirmdialog />

@@ -43,11 +43,42 @@
   .avk-footer {
     flex-direction: row;
     justify-content: flex-end;
+    align-items: center;
     gap: 0.75rem;
   }
 
   .avk-footer-copyright::before {
     content: '·';
     margin-right: 0.75rem;
+  }
+}
+
+/* Steht als Letztes in der Fusszeile, ganz rechts, und oeffnet die Neuerungen
+   der gebauten Version. Auf Zeilenhoehe gestutzt, damit die Fusszeile dadurch
+   nicht hoeher wird. */
+.avk-footer-info {
+  display: inline-flex;
+  align-self: center;
+}
+
+:host ::ng-deep .avk-footer-info .p-button {
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  color: inherit;
+}
+
+.avk-notes-intro {
+  margin: 0 0 0.5rem;
+  opacity: 0.7;
+}
+
+.avk-notes {
+  margin: 0;
+  padding-left: 1.2rem;
+  line-height: 1.5;
+
+  li + li {
+    margin-top: 0.4rem;
   }
 }
