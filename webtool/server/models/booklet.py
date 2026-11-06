@@ -89,7 +89,10 @@ class Booklet(TimeMixin, models.Model):
 
     @classmethod
     def to_upper(cls, text):
-        return re.sub(r"([^A-Z\s])", r"{\1}", text.upper())
+        # soul letterspaces everything but braced groups. A braced hyphen,
+        # though, makes it drop the next letter ("SKI{-}HOCHTOUR" came out as
+        # "SKI-HOCHTOU"), so hyphens stay bare; soul handles those itself.
+        return re.sub(r"([^A-Z\s-])", r"{\1}", text.upper())
 
     @classmethod
     def texify(cls, text):
