@@ -10,15 +10,15 @@ function create(multiDay: boolean) {
 }
 
 describe('ReadyChecklistDialog', () => {
-  it('asks three questions for a one-day event and five for a multi-day one', () => {
-    expect(create(false).items().map((i) => i.key)).toEqual(['extraCharges', 'overnight', 'equipment']);
+  it('asks two questions for a one-day event and five for a multi-day one', () => {
+    expect(create(false).items().map((i) => i.key)).toEqual(['extraCharges', 'equipment']);
     expect(create(true).items().map((i) => i.key)).toEqual([
       'extraCharges', 'cancellation', 'advances', 'overnight', 'equipment',
     ]);
   });
 
   it('names the overnight checkbox of the form it belongs to', () => {
-    const course = create(false);
+    const course = create(true);
     expect(course.items().find((i) => i.key === 'overnight')?.label).toContain(
       '„Kurs mit Übernachtung“ bei den Kursspezifika',
     );
@@ -28,6 +28,7 @@ describe('ReadyChecklistDialog', () => {
 
     const fixture = TestBed.createComponent(ReadyChecklistDialog);
     fixture.componentRef.setInput('kind', 'Tour');
+    fixture.componentRef.setInput('multiDay', true);
     fixture.componentRef.setInput('overnight', true);
     const tour = fixture.componentInstance.items().find((i) => i.key === 'overnight');
     expect(tour?.label).toContain('„Übernachtungstour“ bei den Tourenspezifika');

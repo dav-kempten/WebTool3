@@ -15,7 +15,8 @@ interface ChecklistItem {
 /**
  * Checklist a guide ticks off before handing a tour or course in as "Fertig".
  * The confirm button stays disabled until every item is ticked; the items on
- * accommodation and advances only apply to events spanning several days.
+ * accommodation, advances and overnight stays only apply to events spanning
+ * several days.
  */
 @Component({
   selector: 'avk-ready-checklist-dialog',
@@ -63,16 +64,19 @@ export class ReadyChecklistDialog {
         },
       );
     }
-    const isTour = this.kind() === 'Tour';
-    const overnightLabel = isTour ? 'Übernachtungstour' : 'Kurs mit Übernachtung';
-    const specificsCard = isTour ? 'Tourenspezifika' : 'Kursspezifika';
-    items.push({
-      key: 'overnight',
-      label: `Wird übernachtet? Dann bitte „${overnightLabel}“ bei den ${specificsCard} anhaken.`,
-      hint: this.overnight()
-        ? `„${overnightLabel}“ ist angehakt`
-        : `„${overnightLabel}“ ist nicht angehakt`,
-    });
+    // Only a stay of several days can include a night away.
+    if (this.multiDay()) {
+      const isTour = this.kind() === 'Tour';
+      const overnightLabel = isTour ? 'Übernachtungstour' : 'Kurs mit Übernachtung';
+      const specificsCard = isTour ? 'Tourenspezifika' : 'Kursspezifika';
+      items.push({
+        key: 'overnight',
+        label: `Wird übernachtet? Dann bitte „${overnightLabel}“ bei den ${specificsCard} anhaken.`,
+        hint: this.overnight()
+          ? `„${overnightLabel}“ ist angehakt`
+          : `„${overnightLabel}“ ist nicht angehakt`,
+      });
+    }
     items.push({
       key: 'equipment',
       label: 'Wenn ich als Trainer Ausrüstung brauche: Ausrüstungsbedarf der Geschäftsstelle mitgeteilt?',
