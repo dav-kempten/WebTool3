@@ -19,16 +19,7 @@ STATICFILES_DIRS = [
     # '/usr/local/lib/python3.6/site-packages/django/contrib/admin/static',
 ]
 
-CORS_ORIGIN_ALLOW_ALL = False
-
-CORS_URLS_REGEX = r'^/api/.*$'
-
-CORS_ORIGIN_WHITELIST = (
-    'https://dav-kempten.de',
-    'https://*.dav-kempten.de',
-    'https://dav-kempten-neue-homepage.de',
-    'https://*.dav-kempten-neue-homepage.de',
-)
+from .cors import *
 
 CSRF_TRUSTED_ORIGINS = ['https://*.dav-kempten.de']
 CSRF_COOKIE_SECURE = True
