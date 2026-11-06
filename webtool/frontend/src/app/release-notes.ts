@@ -19,6 +19,8 @@ export const RELEASE_NOTES: readonly ReleaseNote[] = [
     changes: [
       'Die Termin-Details eines Kurses führen jetzt wie bei den Touren Low Emission Adventure, Gemeinschaftsanreise, Öffentliche Anreise und Alpin-Shuttle — am Haupttermin des Kurses.',
       'Ist das Alpin-Shuttle angehakt, steht der Reservierungswunsch auch beim Kurs unter der Nachricht an die Geschäftsstelle.',
+      'Touren und Kurse lassen sich als Übernachtung kennzeichnen: „Übernachtungstour“ bei den Tourenspezifika, „Kurs mit Übernachtung“ bei den Kursspezifika.',
+      'Bei mehrtägigen Touren und Kursen fragt die Checkliste vor „Fertig“, ob übernachtet wird und der Haken gesetzt ist.',
     ],
   },
   {
