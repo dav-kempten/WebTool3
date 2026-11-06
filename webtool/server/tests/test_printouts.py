@@ -230,13 +230,21 @@ def test_hyphenated_title_is_printed_whole(tour):
 @pytest.mark.parametrize('kind', ['tours', 'instructions'])
 def test_printout_endpoint_returns_a_pdf(api, kind, request):
     item = request.getfixturevalue('tour' if kind == 'tours' else 'course')
-    response = api.get(f'/api/frontend/{kind}/{item.pk}/printout/')
-    assert response.status_code == 200
+    # The header the frontend sends; without a PDF renderer DRF answered 406.
+    response = api.get(f'/api/frontend/{kind}/{item.pk}/printout/', HTTP_ACCEPT='application/pdf')
+    assert response.status_code == 200, response.content[:200]
     assert response['Content-Type'] == 'application/pdf'
     assert response.content.startswith(b'%PDF')
     assert 'attachment; filename="' in response['Content-Disposition']
 
 
-def test_printout_needs_a_login(api, tour):
+@pytest.mark.parametrize('accept', ['application/pdf', 'application/json, text/plain, */*'])
+def test_printout_needs_a_login(api, tour, accept):
     api.force_authenticate(None)
-    assert api.get(f'/api/frontend/tours/{tour.pk}/printout/').status_code in (401, 403)
+    response = api.get(f'/api/frontend/tours/{tour.pk}/printout/', HTTP_ACCEPT=accept)
+    assert response.status_code in (401, 403)
+
+
+def test_unknown_tour_is_a_404_also_for_pdf_requests(api, seeded):
+    response = api.get('/api/frontend/tours/999999/printout/', HTTP_ACCEPT='application/pdf')
+    assert response.status_code == 404

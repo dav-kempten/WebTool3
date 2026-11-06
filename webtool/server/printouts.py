@@ -14,6 +14,7 @@ from decimal import Decimal
 
 from django.template.defaultfilters import date as date_format
 from django.template.defaultfilters import time as time_format
+from rest_framework.renderers import BaseRenderer, JSONRenderer
 
 from server.latex import GRAPHICS_PATH, compile_latex, template
 from server.models import Booklet
@@ -386,6 +387,27 @@ def tour_pdf(tour):
 
 def instruction_pdf(instruction):
     return render_pdf(document(instruction_source(instruction)))
+
+
+class PDFRenderer(BaseRenderer):
+    """
+    Lets DRF's content negotiation accept "Accept: application/pdf", which the
+    frontend sends; with only the JSON renderers it answered 406 before the
+    action ran. The PDF itself is a plain HttpResponse, so only errors (403,
+    404) are ever rendered here, as JSON bytes.
+    """
+    media_type = 'application/pdf'
+    format = 'pdf'
+    charset = None
+    render_style = 'binary'
+
+    def render(self, data, accepted_media_type=None, renderer_context=None):
+        if isinstance(data, (bytes, bytearray)):
+            return data
+        return JSONRenderer().render(data)
+
+
+RENDERERS = [JSONRenderer, PDFRenderer]
 
 
 def download(pdf, event):

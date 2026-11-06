@@ -125,7 +125,8 @@ class InstructionViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         response['Cache-Control'] = 'no-store'
         return response
 
-    @action(detail=True, methods=['get'], permission_classes=[permissions.IsAuthenticated])
+    @action(detail=True, methods=['get'], permission_classes=[permissions.IsAuthenticated],
+            renderer_classes=printouts.RENDERERS)
     def printout(self, request, pk=None):
         """The trainer printout of this course as an A5 PDF, see server/printouts.py."""
         instance = self.get_object()
