@@ -11,6 +11,27 @@ from server.models.defaults import season_year
 REKEYABLE_STATES = ('In Arbeit', 'Fertig')
 
 
+class InternalFieldsMixin:
+    """
+    Leaves out what only the Webtool may show for a request without a login.
+
+    The frontend API answers GET requests without a login (IsOwnerOrReadOnly),
+    so the "Nachricht an die Geschäftsstelle" was readable by anyone who knew
+    a tour's id. Logged-in users of the Webtool still get it; so does every
+    write, since those need a login anyway.
+    """
+    INTERNAL_FIELDS = ('message',)
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        request = self.context.get('request')
+        user = getattr(request, 'user', None)
+        if not (user and user.is_authenticated):
+            for name in self.INTERNAL_FIELDS:
+                data.pop(name, None)
+        return data
+
+
 class MoneyField(serializers.DecimalField):
 
     def __init__(self, source=None, default=None, read_only=False):

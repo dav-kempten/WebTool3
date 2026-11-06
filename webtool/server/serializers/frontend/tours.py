@@ -5,7 +5,7 @@ from django.core.mail import send_mail
 from server.models import (
     Tour, Guide, Category, Equipment, State, get_default_state, Event,
     Skill, Fitness, Topic)
-from server.serializers.frontend.core import EventSerializer, MoneyField, create_event, update_event, move_to_year_season
+from server.serializers.frontend.core import EventSerializer, InternalFieldsMixin, MoneyField, create_event, update_event, move_to_year_season
 
 #: Obergrenze für Zusatzkategorien einer Tour, siehe validate_categoryIds.
 MAX_EXTRA_CATEGORIES = 3
@@ -55,7 +55,7 @@ class TourListSerializer(serializers.ModelSerializer):
         return obj.tour.title
 
 
-class TourSerializer(serializers.ModelSerializer):
+class TourSerializer(InternalFieldsMixin, serializers.ModelSerializer):
     id = serializers.PrimaryKeyRelatedField(source='pk', queryset=Tour.objects.all(), default=None, allow_null=True)
     reference = serializers.CharField(source='tour.reference.__str__', read_only=True)
 

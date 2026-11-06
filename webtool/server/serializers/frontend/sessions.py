@@ -5,7 +5,7 @@ from rest_framework.reverse import reverse
 from server.models import (
     Guide, Session, Collective, Category, Equipment, State, Event, get_default_state
 )
-from server.serializers.frontend.core import EventSerializer, create_event, update_event, move_to_year_season
+from server.serializers.frontend.core import EventSerializer, InternalFieldsMixin, create_event, update_event, move_to_year_season
 
 
 class SessionListSerializer(serializers.ModelSerializer):
@@ -43,7 +43,7 @@ class SessionListSerializer(serializers.ModelSerializer):
     def get_title(self, obj):
         return obj.session.title
 
-class SessionSerializer(serializers.ModelSerializer):
+class SessionSerializer(InternalFieldsMixin, serializers.ModelSerializer):
 
     id = serializers.PrimaryKeyRelatedField(source='pk', queryset=Session.objects.all(), default=None, allow_null=True)
     reference = serializers.CharField(source='session.reference.__str__', read_only=True)

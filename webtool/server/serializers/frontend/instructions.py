@@ -6,7 +6,7 @@ from django.core.mail import send_mail
 from server.models import (
     Instruction, Equipment, Guide, Topic, Category, State, Event, get_default_state
 )
-from server.serializers.frontend.core import EventSerializer, MoneyField, create_event, update_event, move_to_year_season
+from server.serializers.frontend.core import EventSerializer, InternalFieldsMixin, MoneyField, create_event, update_event, move_to_year_season
 
 
 class InstructionListSerializer(serializers.ModelSerializer):
@@ -56,7 +56,7 @@ class InstructionListSerializer(serializers.ModelSerializer):
             return obj.topic.name
 
 
-class InstructionSerializer(serializers.ModelSerializer):
+class InstructionSerializer(InternalFieldsMixin, serializers.ModelSerializer):
 
     id = serializers.PrimaryKeyRelatedField(source='pk', queryset=Instruction.objects.all(), default=None, allow_null=True)
     reference = serializers.CharField(source='instruction.reference.__str__', read_only=True)
