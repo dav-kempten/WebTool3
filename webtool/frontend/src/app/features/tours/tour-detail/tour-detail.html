@@ -460,7 +460,14 @@
         }
         <p-button label="Vorschau Homepage" icon="pi pi-eye" severity="secondary" (onClick)="openPreview()" pTooltip="Speichert und zeigt, wie die Tour auf dav-kempten.de erscheint" />
         <a routerLink="/tours"><p-button label="Zurück" severity="secondary" /></a>
-        <p-button label="Ausdruck" icon="pi pi-print" severity="secondary" (onClick)="preview()" />
+        <p-button
+          label="Ausdruck"
+          icon="pi pi-print"
+          severity="secondary"
+          [loading]="printing()"
+          (onClick)="print()"
+          pTooltip="Speichert und lädt die Tour mit allen Angaben als PDF im Stil des Programmhefts – zum Abheften"
+        />
         @if (!isOwner()) {
           <span class="avk-spacer"></span>
           <p-button label="Tour löschen" icon="pi pi-trash" severity="danger" (onClick)="confirmDelete()" />

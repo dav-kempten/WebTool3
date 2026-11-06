@@ -62,6 +62,7 @@ import {
 } from '../../../shared/util/validators';
 import { describeSaveErrorPath } from '../../../shared/util/save-error';
 import { EQUIPMENT_LIST_URL } from '../../../shared/util/links';
+import { PrintoutService } from '../../../core/services/printout.service';
 import { lockStartTimeOrApproximate } from '../../../shared/util/event-time';
 
 @Component({
@@ -107,6 +108,7 @@ export class InstructionDetail {
   private destroyRef = inject(DestroyRef);
   private breadcrumb = inject(BreadcrumbService);
   readonly autoSave = inject(AutoSaveService);
+  private printout = inject(PrintoutService);
 
   private readonly instructionId = computed(() => Number(this.id()));
   readonly instruction = computed<Instruction | undefined>(
@@ -483,6 +485,29 @@ export class InstructionDetail {
         this.homepagePreview.set(preview);
         this.previewLoading.set(false);
       });
+    };
+    if (this.locked()) {
+      load();
+      return;
+    }
+    this.instructions.save({ instruction, silent: true, onSaved: load });
+    this.form()?.markAsPristine();
+  }
+
+  readonly printing = signal(false);
+
+  /**
+   * The trainer printout for filing. Saved first like the preview, so the PDF
+   * shows what is in the form; a locked course is printed as stored.
+   */
+  print(): void {
+    const instruction = this.instruction();
+    if (!instruction || this.printing()) {
+      return;
+    }
+    const load = () => {
+      this.printing.set(true);
+      this.printout.download('instructions', instruction.id, () => this.printing.set(false));
     };
     if (this.locked()) {
       load();

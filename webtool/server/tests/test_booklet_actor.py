@@ -20,6 +20,7 @@ dramatiq.set_broker(StubBroker())
 from django import db  # noqa: E402
 
 from server.actors import booklet as actor  # noqa: E402
+from server import latex as latex_module  # noqa: E402
 from server.models import Booklet  # noqa: E402
 
 pytestmark = pytest.mark.django_db
@@ -43,7 +44,7 @@ def latex(monkeypatch, tmp_path):
 
     out = tmp_path / 'booklets'
     out.mkdir()
-    monkeypatch.setattr(actor, 'run', run)
+    monkeypatch.setattr(latex_module, 'run', run)
     monkeypatch.setattr(actor, 'request', lambda *a, **k: None)
     monkeypatch.setattr(actor, 'BOOKLET_DIR', str(out))
     monkeypatch.setattr(db.connections, 'close_all', lambda: None)

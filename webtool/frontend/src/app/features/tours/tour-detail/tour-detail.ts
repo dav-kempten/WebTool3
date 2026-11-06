@@ -47,7 +47,7 @@ import { EventsStore } from '../../../core/stores/events.store';
 import { AuthService } from '../../../core/services/auth.service';
 import { PermissionLevel } from '../../../core/services/permission';
 import { AutoSaveService } from '../../../core/services/auto-save.service';
-import { PdfExportService } from '../../../core/services/pdf-export.service';
+import { PrintoutService } from '../../../core/services/printout.service';
 import { BreadcrumbService } from '../../../core/layout/breadcrumb.service';
 import { Tour } from '../../../models/tour';
 import { Event } from '../../../models/event';
@@ -111,7 +111,7 @@ export class TourDetail {
   private confirm = inject(ConfirmationService);
   private fb = inject(FormBuilder);
   private destroyRef = inject(DestroyRef);
-  private pdf = inject(PdfExportService);
+  private printout = inject(PrintoutService);
   private breadcrumb = inject(BreadcrumbService);
   readonly autoSave = inject(AutoSaveService);
 
@@ -589,6 +589,29 @@ export class TourDetail {
     this.form()?.markAsPristine();
   }
 
+  readonly printing = signal(false);
+
+  /**
+   * The trainer printout for filing. Saved first like the preview, so the PDF
+   * shows what is in the form; a locked tour is printed as stored.
+   */
+  print(): void {
+    const tour = this.tour();
+    if (!tour || this.printing()) {
+      return;
+    }
+    const load = () => {
+      this.printing.set(true);
+      this.printout.download('tours', tour.id, () => this.printing.set(false));
+    };
+    if (this.locked()) {
+      load();
+      return;
+    }
+    this.tours.save({ tour, silent: true, onSaved: load });
+    this.form()?.markAsPristine();
+  }
+
   save(): void {
     this.persist(false);
     this.form()?.markAsPristine();
@@ -635,15 +658,5 @@ export class TourDetail {
       rejectLabel: 'Abbrechen',
       accept: () => this.tours.remove(tour.id),
     });
-  }
-
-  preview(): void {
-    const tour = this.tour();
-    if (!tour) {
-      return;
-    }
-    this.pdf.exportTour(tour, this.category(), this.eventRows(), (id) =>
-      this.approximateName(id),
-    );
   }
 }

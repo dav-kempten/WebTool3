@@ -5,6 +5,7 @@ from django.template.defaultfilters import date
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from server import printouts
 from server.models import Tour, Season
 from server.serializers.client.activity import ActivitySerializer
 from server.serializers.frontend.tours import TourListSerializer, TourSerializer
@@ -114,6 +115,12 @@ class TourViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         response = Response(ActivitySerializer(instance.tour, context=dict(request=request)).data)
         response['Cache-Control'] = 'no-store'
         return response
+
+    @action(detail=True, methods=['get'], permission_classes=[permissions.IsAuthenticated])
+    def printout(self, request, pk=None):
+        """The trainer printout of this tour as an A5 PDF, see server/printouts.py."""
+        instance = self.get_object()
+        return printouts.download(printouts.tour_pdf(instance), instance.tour)
 
     def destroy(self, request, pk=None, *args, **kwargs):
 
