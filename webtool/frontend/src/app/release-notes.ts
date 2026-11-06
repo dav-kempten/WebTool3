@@ -15,6 +15,13 @@ export interface ReleaseNote {
 
 export const RELEASE_NOTES: readonly ReleaseNote[] = [
   {
+    version: '2.2.2',
+    changes: [
+      'Die Termin-Details eines Kurses führen jetzt wie bei den Touren Low Emission Adventure, Gemeinschaftsanreise, Öffentliche Anreise und Alpin-Shuttle — am Haupttermin des Kurses.',
+      'Ist das Alpin-Shuttle angehakt, steht der Reservierungswunsch auch beim Kurs unter der Nachricht an die Geschäftsstelle.',
+    ],
+  },
+  {
     version: '2.2.1',
     changes: [
       'Der Termin-Dialog eines Gruppentermins kennt wieder einen Kurztitel — er steht in der Terminliste und im Programm auf der Homepage; bisher ließ er sich gar nicht eintragen.',

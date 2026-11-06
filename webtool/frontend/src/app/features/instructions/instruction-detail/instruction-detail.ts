@@ -346,6 +346,12 @@ export class InstructionDetail {
     ]);
   });
 
+  /**
+   * Das Alpin-Shuttle wird am Haupttermin angehakt, gebraucht wird der
+   * Hinweis aber bei der Nachricht an die Geschäftsstelle.
+   */
+  readonly wantsShuttle = computed(() => this.eventRows()[0]?.shuttleService ?? false);
+
   approximateName(id: number | null): string {
     return id == null ? '' : (this.values.approximateById().get(id)?.name ?? '');
   }
@@ -372,6 +378,10 @@ export class InstructionDetail {
       source: [event.source],
       location: [event.location],
       distance: [event.distance],
+      lea: [event.lea],
+      distal: [event.distal],
+      publicTransport: [event.publicTransport],
+      shuttleService: [event.shuttleService],
     });
 
     // The end-date validator reads the start date, so moving the start has to
