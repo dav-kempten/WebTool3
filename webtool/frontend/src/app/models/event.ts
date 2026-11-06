@@ -12,6 +12,7 @@ export interface Event {
   location: string;
   reservationService: boolean;
   lea: boolean;
+  overnight: boolean;
   source: string;
   link: string;
   map: string;

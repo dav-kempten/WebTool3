@@ -51,6 +51,7 @@ class ActivityFilter(filters.FilterSet):
     mountainBus = filters.BooleanFilter(label='mountainBus', method='mountainbus_filter')
     publicTransport = filters.BooleanFilter(label='publicTransport', method='public_transport_filter')
     lowEmissionAdventure = filters.BooleanFilter(label='lowEmissionAdventure', method='low_emission_adventure_filter')
+    overnight = filters.BooleanFilter(label='overnight', method='overnight_filter')
     state = filters.ChoiceFilter(label='state', method='state_filter', choices=STATE_CHOICES)
     open = filters.BooleanFilter(label='open', method='open_filter')
     next = filters.NumberFilter(label='next', method='next_filter', min_value=1, max_value=10)
@@ -166,6 +167,9 @@ class ActivityFilter(filters.FilterSet):
     def low_emission_adventure_filter(self, queryset, name, value):
         return queryset.filter(lea=value).exclude(deprecated=True)
 
+    def overnight_filter(self, queryset, name, value):
+        return queryset.filter(overnight=value).exclude(deprecated=True)
+
     def state_filter(self, queryset, name, value):
         queryset = queryset.exclude(deprecated=True)
         if value == "public":
@@ -237,6 +241,7 @@ class ActivityFilter(filters.FilterSet):
             'ladiesOnly',
             'publicTransport',
             'lowEmissionAdventure',
+            'overnight',
             'relaxed',
             'mountainBus',
             'state',

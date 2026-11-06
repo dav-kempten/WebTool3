@@ -12,6 +12,7 @@ import { DestroyRef } from '@angular/core';
 import {
   FormArray,
   FormBuilder,
+  FormControl,
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
@@ -356,6 +357,7 @@ export class TourDetail {
       location: [event.location],
       reservationService: [event.reservationService],
       lea: [event.lea],
+      overnight: [event.overnight],
       source: [event.source],
       link: [event.link],
       map: [event.map],
@@ -427,6 +429,19 @@ export class TourDetail {
    * Hinweis aber bei der Nachricht an die Geschäftsstelle.
    */
   readonly wantsShuttle = computed(() => this.eventRows()[0]?.shuttleService ?? false);
+
+  /**
+   * "Übernachtungstour" gehört zum Haupttermin, steht aber bei den
+   * Tourenspezifika. Das Feld hängt deshalb am Formular des Haupttermins.
+   */
+  readonly overnightControl = computed(
+    () => (this.eventForms()?.at(0)?.get('overnight') as FormControl | null) ?? null,
+  );
+
+  /** Der Auto-Save beobachtet nur das Tourformular, nicht die Terminformulare. */
+  markTourDirty(): void {
+    this.form()?.markAsDirty();
+  }
 
   /** Download offered once "Ausrüstungsbedarf Tour" is ticked. */
   readonly equipmentListUrl = EQUIPMENT_LIST_URL;

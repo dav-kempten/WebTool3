@@ -70,6 +70,17 @@
               inputId="isSpecialCheckbox" />
             <label for="isSpecialCheckbox">Sonderkurs</label>
           </div>
+          <!-- Feld des Haupttermins, nicht des Kurses, siehe setOvernight(). -->
+          <div class="avk-checkbox-item">
+            <p-checkbox
+              [ngModel]="overnight()"
+              [ngModelOptions]="{ standalone: true }"
+              (onChange)="setOvernight($event.checked)"
+              [binary]="true"
+              inputId="overnightCheckbox"
+            />
+            <label for="overnightCheckbox">Kurs mit Übernachtung</label>
+          </div>
           <span class="avk-checkbox-separator" aria-hidden="true">|</span>
           <!-- UI-only switch: the backend has no such flag, it just reveals the
                field below (see toggleExtraCategory). -->
@@ -401,6 +412,7 @@
     [extraCharges]="instruction()?.extraCharges ?? null"
     [advances]="instruction()?.advances ?? null"
     [equipmentService]="instruction()?.equipmentService ?? false"
+    [overnight]="overnight()"
     (confirmed)="completeReady()"
   />
 

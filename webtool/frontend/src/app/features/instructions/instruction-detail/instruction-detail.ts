@@ -352,6 +352,23 @@ export class InstructionDetail {
    */
   readonly wantsShuttle = computed(() => this.eventRows()[0]?.shuttleService ?? false);
 
+  /**
+   * "Kurs mit Übernachtung" gehört zum Haupttermin, steht aber bei den
+   * Kursspezifika. Dessen Formular entsteht erst mit dem Termin-Dialog, also
+   * geht der Haken wie applyEvent() direkt in den Store.
+   */
+  readonly overnight = computed(() => this.eventRows()[0]?.overnight ?? false);
+
+  setOvernight(checked: boolean): void {
+    const id = this.instruction()?.instructionId;
+    if (id == null) {
+      return;
+    }
+    this.instructions.updateEventLocal(id, { overnight: checked });
+    // Mark the main form dirty so the next save/auto-save persists it.
+    this.form()?.markAsDirty();
+  }
+
   approximateName(id: number | null): string {
     return id == null ? '' : (this.values.approximateById().get(id)?.name ?? '');
   }

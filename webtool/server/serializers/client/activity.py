@@ -25,6 +25,7 @@ class ActivityListSerializer(serializers.ModelSerializer):
     tourLink = serializers.URLField(source='link')
     publicTransport = serializers.BooleanField(source='public_transport')
     lowEmissionAdventure = serializers.BooleanField(source='lea')
+    overnight = serializers.BooleanField()
     detail = serializers.SerializerMethodField()
 
     def get_categories(self, obj):
@@ -100,7 +101,7 @@ class ActivityListSerializer(serializers.ModelSerializer):
             'fitness',
             'ladiesOnly', 'youthOnTour', 'relaxed', 'mountainBus',
             'kvLink', 'tourLink',
-            'publicTransport', 'lowEmissionAdventure',
+            'publicTransport', 'lowEmissionAdventure', 'overnight',
             'state',
             'new',
             'detail'
@@ -150,7 +151,7 @@ class ActivitySerializer(ActivityListSerializer):
             'equipments',
             'ladiesOnly', 'youthOnTour', 'relaxed', 'mountainBus',
             'kvLink',
-            'publicTransport', 'lowEmissionAdventure',
+            'publicTransport', 'lowEmissionAdventure', 'overnight',
             'state',
             'new',
             'cover', 'portal', 'map', 'ics'

@@ -32,6 +32,8 @@ export class ReadyChecklistDialog {
   readonly extraCharges = input<number | null>(null);
   readonly advances = input<number | null>(null);
   readonly equipmentService = input(false);
+  /** Overnight flag of the main event ("Übernachtungstour" / "Kurs mit Übernachtung"). */
+  readonly overnight = input(false);
 
   /** Emitted once all items are ticked and the guide confirms. */
   readonly confirmed = output<void>();
@@ -61,6 +63,16 @@ export class ReadyChecklistDialog {
         },
       );
     }
+    const isTour = this.kind() === 'Tour';
+    const overnightLabel = isTour ? 'Übernachtungstour' : 'Kurs mit Übernachtung';
+    const specificsCard = isTour ? 'Tourenspezifika' : 'Kursspezifika';
+    items.push({
+      key: 'overnight',
+      label: `Wird übernachtet? Dann bitte „${overnightLabel}“ bei den ${specificsCard} anhaken.`,
+      hint: this.overnight()
+        ? `„${overnightLabel}“ ist angehakt`
+        : `„${overnightLabel}“ ist nicht angehakt`,
+    });
     items.push({
       key: 'equipment',
       label: 'Wenn ich als Trainer Ausrüstung brauche: Ausrüstungsbedarf der Geschäftsstelle mitgeteilt?',

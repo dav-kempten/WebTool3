@@ -44,6 +44,7 @@ def update_event(instance, validated_data, context):
         instance.location = validated_data.get('location', instance.location)
         instance.reservation_service = validated_data.get('reservation_service', instance.reservation_service)
         instance.lea = validated_data.get('lea', instance.lea)
+        instance.overnight = validated_data.get('overnight', instance.overnight)
         instance.source = validated_data.get('source', instance.source)
         instance.link = validated_data.get('link', instance.link)
         instance.map = validated_data.get('map', instance.map)
@@ -175,6 +176,7 @@ class EventSerializer(serializers.ModelSerializer):
     location = serializers.CharField(max_length=75, default='', allow_blank=True)
     reservationService = serializers.BooleanField(source='reservation_service', default=False)
     lea = serializers.BooleanField(default=False)
+    overnight = serializers.BooleanField(default=False)
     source = serializers.CharField(max_length=75, default='', allow_blank=True)
     link = serializers.CharField(max_length=200, default='', allow_blank=True)
     map = serializers.CharField(max_length=100, default='', allow_blank=True)
@@ -190,7 +192,7 @@ class EventSerializer(serializers.ModelSerializer):
             'title', 'name', 'description',
             'startDate', 'startTime', 'approximateId',
             'endDate', 'endTime',
-            'rendezvous', 'location', 'reservationService', 'lea', 'source',
+            'rendezvous', 'location', 'reservationService', 'lea', 'overnight', 'source',
             'link', 'map',
             'distal', 'distance', 'publicTransport', 'shuttleService'
         )

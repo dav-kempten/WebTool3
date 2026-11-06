@@ -129,6 +129,12 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
         blank=True, default=False
     )
 
+    overnight = models.BooleanField(
+        'Übernachtungstour',
+        db_index=True,
+        blank=True, default=False
+    )
+
     new = models.BooleanField(
         'Markierung für Neue Veranstaltungen',
         db_index=True,

@@ -100,6 +100,18 @@
             <p-checkbox formControlName="mountainBus" [binary]="true" inputId="mountainBusCheckbox" />
             <label for="mountainBusCheckbox">Bergbus</label>
           </div>
+          <!-- Feld des Haupttermins, nicht der Tour, siehe overnightControl. -->
+          @if (overnightControl(); as overnight) {
+            <div class="avk-checkbox-item">
+              <p-checkbox
+                [formControl]="overnight"
+                (onChange)="markTourDirty()"
+                [binary]="true"
+                inputId="overnightCheckbox"
+              />
+              <label for="overnightCheckbox">Übernachtungstour</label>
+            </div>
+          }
           <span class="avk-checkbox-separator" aria-hidden="true">|</span>
           <!-- UI-only switch: the backend has no such flag, it just reveals the
                field below (see toggleExtraCategories). -->
@@ -464,6 +476,7 @@
     [extraCharges]="tour()?.extraCharges ?? null"
     [advances]="tour()?.advances ?? null"
     [equipmentService]="tour()?.equipmentService ?? false"
+    [overnight]="eventRows()[0]?.overnight ?? false"
     (confirmed)="completeReady()"
   />
 
