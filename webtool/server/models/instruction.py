@@ -2,7 +2,7 @@
 import io
 from django.db import models
 
-from . import fields
+from . import fields, homepage
 from .event import Event
 from .mixins import DescriptionMixin, QualificationMixin, ChapterMixin, SeasonsMixin
 from .mixins import EquipmentMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, OnlineMixin
@@ -127,47 +127,34 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
         return ""
 
     def details(self):
+        """
+        Der Text des Kurses für die Homepage: Titel, Beschreibung, Voraussetzungen,
+        Haupttermin mit Treffpunkt, Kursort und Übernachtung in eigenen Zeilen,
+        weitere Termine mit denselben Angaben im Fließtext, Teilnehmerzahl,
+        Kosten, Organisation, Hinweis, Bedingungen und Fragen.
+        """
         output = io.StringIO()
 
-        output.write('<h3>{}</h3>'.format(self.instruction.name if self.is_special else self.topic.name))
-        output.write('<p>{}</p>'.format(self.instruction.description if self.is_special else self.topic.description))
+        output.write('<h3>{}</h3>'.format(homepage.text(self.instruction.name if self.is_special else self.topic.name)))
+        output.write('<p>{}</p>'.format(homepage.rich(self.instruction.description if self.is_special else self.topic.description)))
 
-        if (self.is_special and self.qualifications.exists()) or (not self.is_special and self.topic.qualifications.exists()):
-            if self.is_special:
-                qs = self.qualifications.values_list('name', flat=True)
-            else:
-                qs = self.topic.qualifications.values_list('name', flat=True)
-            if qs.exists():
-                output.write('<div class="additional">')
-                output.write(
-                    "<p>Für die Teilnahme an diesem Kurs ist die Beherrschung folgender "
-                    "Kursinhalte Voraussetzung: <b>{}</b>. Die entsprechenden Kurse mit verwandten "
-                    "Kursinhalten müssen nicht in unserer Sektion absolviert worden sein.</p>".format(
-                        ', '.join([q for q in qs])
-                    )
-                )
-                output.write('</div>')
+        qualifications = (self.qualifications if self.is_special else self.topic.qualifications).values_list('name', flat=True)
+        if qualifications.exists():
+            output.write(homepage.qualifications(qualifications, 'diesem Kurs'))
 
         # Haupttermin: Treffpunkt, Kursort und Übernachtung stehen
         # jeweils in einer eigenen, beschrifteten Zeile unter dem Termin.
-        output.write('<p>')
-        lines = []
         if self.instruction.distal:
-            lines.append('<strong>Abfahrt:</strong> {}'.format(self.instruction.departure(with_places=False)))
+            lines = [homepage.line('Abfahrt', homepage.text(self.instruction.departure(with_places=False)))]
         else:
-            lines.append('<strong>Termin:</strong> {}'.format(self.instruction.appointment(with_places=False)))
-        for label, value in self.instruction.places():
-            lines.append('<strong>{}:</strong> {}'.format(label, value))
-        output.write('<br />'.join(lines))
-        output.write('</p>')
+            lines = [homepage.line('Termin', homepage.text(self.instruction.appointment(with_places=False)))]
+        lines += [homepage.line(label, homepage.text(value)) for label, value in self.instruction.places()]
+        output.write(homepage.paragraph(lines))
 
         # Weitere Termine: dieselben Angaben, beschriftet im Fließtext.
         if self.meeting_list.exists():
             output.write('<p><strong>Weitere Termine:</strong><br />')
-            output.write('<br />'.join([
-                ', '.join([e.appointment(with_places=False)] + ['{}: {}'.format(label, value) for label, value in e.places()])
-                for e in self.meeting_list.all()
-            ]))
+            output.write('<br />'.join([homepage.text(e.homepage_appointment()) for e in self.meeting_list.all()]))
             output.write('<br /><br />')
             output.write('<strong>Obacht!</strong> Alle Theorieteile sind verpflichtend und Voraussetzung für die '
                          'Teilnahme an den Praxisterminen. Die Theorieteile müssen in Präsenz wahrgenommen werden, '
@@ -175,83 +162,23 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
             output.write('</p>')
 
         if not self.is_special and self.instruction.description:
-            output.write('<div class="additional"><p>{}</p></div>'.format(self.instruction.description))
+            output.write('<div class="additional"><p>{}</p></div>'.format(homepage.rich(self.instruction.description)))
 
-        output.write('<p>')
         lines = [
             "<strong>Teilnehmerzahl:</strong>{} maximal {} {}Teilnehmer".format(
                 " Mindestens {},".format(self.min_quantity) if self.min_quantity else '',
                 self.max_quantity, "weibliche " if self.ladies_only else ''
             )
         ]
-        if self.advances:
-            advances = "<strong>Anzahlung:</strong> {} €{}".format(
-                int(self.advances), " für {}".format(self.advances_info) if self.advances_info else ''
-            )
-            lines.append(advances)
-        if self.admission > 0:
-            lines.append("<strong>Teilnahmegebühr:</strong> {} €".format(int(self.admission)))
-        if self.extra_charges:
-            extra_charges = "<strong>Zusatzkosten:</strong> {} €{}".format(
-                self.extra_charges, " für {}".format(self.extra_charges_info) if self.extra_charges_info else ''
-            )
-            lines.append(extra_charges)
-        if self.instruction.distance:
-            travel_cost = "<strong>Fahrtkostenbeteiligung:</strong> ca. {} € für ungefähr {} km".format(
-                int(0.07 * float(self.instruction.distance)), self.instruction.distance
-            )
-            lines.append(travel_cost)
+        lines += homepage.costs(self, self.instruction, always_admission=False)
         guides = self.guides()
         if guides:
-            lines.append('<strong>Organisation:</strong> {}'.format(guides))
-        output.write('<br />'.join(lines))
-        output.write('</p>')
+            lines.append(homepage.line('Organisation', homepage.text(guides)))
+        output.write(homepage.paragraph(lines))
 
         output.write(self.remark())
-
-        output.write('<p>Es gelten unsere '
-                     '<a href="/aktivitaeten/teilnahmebedingungen/" '
-                     'title="Teilnahmebedingungen">Teilnahme-</a>'
-                     ' und '
-                     '<a href="/aktivitaeten/stornobedingungen/" '
-                     'title="Stornobedingungen">Stornobedingungen</a>.'
-                     '</p>')
-
-        output.write('<p><strong>Fragen:</strong> Spezielle Fragen zu Touren & Kursen kannst du unter '
-                     '<strong>kurse@dav-kempten.de</strong> stellen. Bitte gib hierbei immer den '
-                     '<strong>Buchungscode</strong> der entsprechenden Veranstaltung mit an.</p>')
-
-        return output.getvalue()
-
-        """
-            {name}
-            Vorausgesetzte Kursinhalte: {qualifications}
-            Abfahrt: {start_date}, {start_time}, {rendezvous}, Heimkehr am {end_date} gegen {end_time} Uhr
-            Ausgangspunkt: {source}
-            Übernachtung: {location}
-            Beschreibung: {description}
-            Anmeldung bis zum {deadline}, Mindestens {min_quantity}, Maximal {max_quantity} Teilnehmer.
-            Vorbesprechung: {preliminary_date}, {preliminary_time} Uhr
-            Toureninformation: {info}
-            Organisation: {guides}
-            Anzahlung: {advances} € {advances_info}
-            Teilnahmegebühr: {admission} € {admission_info}
-            Zusatzkosten: {extra_charges} € {extra_charges_info}
-            Fahrtkostenbeteiligung: ca. {travel_cost} € für {distance} km
-        """
-
-        output.write('<p>')
-        lines = []
-        preliminary = self._preliminary()
-        if preliminary[0]:
-            lines.append("<strong>{}:</strong> {}".format(*preliminary))
-        lines.append('<strong>Abfahrt:</strong> {}'.format(self.tour.departure()))
-        if self.tour.source:
-            lines.append('<strong>Ausgangspunkt:</strong> {}'.format(self.tour.source))
-        if self.tour.location:
-            lines.append('<strong>Übernachtung:</strong> {}'.format(self.tour.location))
-        output.write('<br />'.join(lines))
-        output.write('</p>')
+        output.write(homepage.CONDITIONS)
+        output.write(homepage.QUESTIONS)
 
         return output.getvalue()
 

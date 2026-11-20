@@ -360,6 +360,16 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
             ) if value
         ]
 
+    def homepage_appointment(self):
+        """
+        Ein weiterer Kurstermin als eine Zeile, die Orte beschriftet:
+        "21.3., 9 bis 16 Uhr, Praxistag, Treffpunkt: …, Kursort: …, Übernachtung: …"
+        (reiner Text — escapen bzw. texifizieren muss der Aufrufer).
+        """
+        return ', '.join(
+            [self.appointment(with_places=False)] + ['{}: {}'.format(label, value) for label, value in self.places()]
+        )
+
     def prefixed_date(self, prefix, formatter, with_year=False):
         """
         Beispiel: "Anmeldung bis 10.03."

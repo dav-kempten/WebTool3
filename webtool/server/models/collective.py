@@ -8,7 +8,7 @@ from .mixins import (
     SectionMixin, DescriptionMixin, GuidedEventMixin,
     RequirementMixin, EquipmentMixin, StateMixin, ChapterMixin, SeasonsMixin)
 from .time_base import TimeMixin
-from . import fields
+from . import fields, homepage
 
 
 class CollectiveManager(models.Manager):
@@ -149,8 +149,8 @@ class Session(TimeMixin, GuidedEventMixin, RequirementMixin, EquipmentMixin, Sta
     def details(self):
         output = io.StringIO()
 
-        output.write('<h3>{}</h3>'.format(self.session.name))
-        output.write('<p>{}</p>'.format(self.session.description))
+        output.write('<h3>{}</h3>'.format(homepage.text(self.session.name)))
+        output.write('<p>{}</p>'.format(homepage.rich(self.session.description)))
 
         #output.write('<p><strong>Termin:</strong>')
         #output.write(self.session.appointment())
@@ -158,7 +158,7 @@ class Session(TimeMixin, GuidedEventMixin, RequirementMixin, EquipmentMixin, Sta
 
         guides = self.guides()
         if guides:
-            output.write('<p><strong>Organisation:</strong> {}</p>'.format(self.guides()))
+            output.write('<p><strong>Organisation:</strong> {}</p>'.format(homepage.text(guides)))
 
         return output.getvalue()
 

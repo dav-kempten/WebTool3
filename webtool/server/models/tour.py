@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 import io
 from django.db import models
-from django.template.defaultfilters import date, time
 
 from .event import Event
 from .mixins import QualificationMixin, EquipmentMixin, GuidedEventMixin, AdminMixin, SeasonMixin, ChapterMixin
 from .mixins import RequirementMixin, AdmissionMixin, OnlineMixin
 from .time_base import TimeMixin
-from . import fields
+from . import fields, homepage
 
 
 class TourManager(models.Manager):
@@ -140,257 +139,42 @@ class Tour(
         else:
             return '', ''
 
-    def _tour_date(self):
-        season_year = int(self.season.name)
-        with_year = self.tour.start_date.year != season_year or (self.tour.end_date and self.tour.end_date.year != season_year)
-        return self.tour.long_date(with_year=with_year)
-
-    def _title(self):
-        return "{} ({})".format(self.tour.title, self.category_list())
-
-    def description(self):
-        """
-            Datum: {tour_date}.
-            Hinweis: Bus, Bahn, Bike
-            Hinweis: LEA
-            {title}
-            Buchungscode: {reference}
-            {name}
-            Ausrüstung: {equipment}
-            Anforderungen: {skill} , {fitness}
-            Vorausgesetzte Kursinhalte: {qualifications}
-            Spezielle Voraussetzungen: {preconditions}
-            Abfahrt: {start_date}, {start_time}, {rendezvous}, Heimkehr am {end_date} gegen {end_time} Uhr
-            Ausgangspunkt: {source}
-            Übernachtung: {location}
-            Beschreibung: {description}
-            Anmeldung bis zum {deadline}, Mindestens {min_quantity}, Maximal {max_quantity} Teilnehmer.
-            Vorbesprechung: {preliminary_date}, {preliminary_time} Uhr
-            Toureninformation: {info}
-            Organisation: {guides}
-            Anzahlung: {advances} € {advances_info}
-            Teilnahmegebühr: {admission} € {admission_info}
-            Zusatzkosten: {extra_charges}
-            Fahrtkostenbeteiligung: ca. {travel_cost} € für {distance} km
-        """
-        output = []
-
-        if self.tour.lea:
-            output.append('Hinweis: LEA')
-        elif self.tour.public_transport:
-            output.append('Hinweis: Bus, Bahn, Bike')
-
-        tour_date = "Datum: {}".format(self._tour_date())
-        output.append(tour_date)
-
-        title = self._title()
-        output.append(title)
-
-        reference = "Buchungscode: {}".format(self.tour.reference)
-        output.append(reference)
-
-        long_title = "Langtitel: {}".format(self.tour.name)
-        output.append(long_title)
-
-        equipment = "Ausrüstung: {}".format(self.equipment_list())
-        output.append(equipment)
-
-        requirements = "Anforderungen: Technik {}, Kondition {}".format(self.skill.code, self.fitness.code)
-        output.append(requirements)
-
-        if self.qualifications.exists():
-            qualifications = "Vorausgesetzte Kursinhalte: {}".format(self.qualification_list())
-            output.append(qualifications)
-
-        if self.preconditions:
-            preconditions = "Spezielle Voraussetzungen: {}".format(self.preconditions)
-            output.append(preconditions)
-
-        departure = "Abfahrt: {}".format(self.tour.departure())
-        output.append(departure)
-
-        if self.tour.source:
-            source = "Ausgangspunkt: {}".format(self.tour.source)
-            output.append(source)
-
-        if self.tour.location:
-            location = "Übernachtung: {}".format(self.tour.location)
-            output.append(location)
-
-        description = "Beschreibung: {}".format(self.tour.description)
-        output.append(description)
-
-        deadline = "Anmeldung bis zum {}, mindestens {}, maximal {} Teilnehmer".format(
-            self._deadline(), self.min_quantity, self.max_quantity
-        )
-        output.append(deadline)
-
-        if self.preliminary:
-            preliminary = "{}: {}".format(*self._preliminary())
-            output.append(preliminary)
-
-        guides = "Organisation: {}".format(self.guides())
-        output.append(guides)
-
-        advances = ''
-        if self.advances:
-            advances = "Anzahlung: {} €{}".format(int(self.advances), " {}".format(self.advances_info) if self.advances_info else '')
-            output.append(advances)
-
-        admission = "Teilnahmegebühr: {} €".format(int(self.admission))
-        if advances:
-            admission = (
-                "{}, im Teilnehmerbeitrag ist eine Anzahlung von {} € enthalten. "
-                "Diese Anzahlung wird bei Stornierung der Teilnahme nur zurückerstattet, wenn der freigewordene Platz wieder besetzt werden kann"
-            ).format(admission, int(self.advances))
-        output.append(admission)
-
-        if self.extra_charges:
-            extra_charges = "Zusatzkosten: {} für {}".format(self.extra_charges, self.extra_charges_info)
-            output.append(extra_charges)
-
-        if self.tour.distance:
-            travel_cost = "Fahrtkostenbeteiligung: ca. {} € für {} km".format(int(0.07 * float(self.tour.distance)), self.tour.distance)
-            output.append(travel_cost)
-
-        return output
-
-    def calendar(self):
-        """
-            Buchungscode: {reference} {tour_date}, {title}
-            {name}
-            Ausrüstung: {equipment}
-            Anforderungen: {skill} , {fitness}
-            Spezielle Voraussetzungen: {preconditions}
-            Abfahrt: {start_date}, {start_time}, {rendezvous}, Heimkehr am {end_date} gegen {end_time} Uhr
-            Ausgangspunkt: {source}
-            Übernachtung: {location}
-            Anmeldung bis zum {deadline}, Mindestens {min_quantity}, Maximal {max_quantity} Teilnehmer.
-            Vorbesprechung: {preliminary_date}, {preliminary_time} Uhr
-            Toureninformation: {info}
-            Organisation: {guides}
-            Anzahlung: {advances} € {advances_info}
-            Teilnahmegebühr: {admission} € {admission_info}
-            Zusatzkosten: {extra_charges}
-            Fahrtkostenbeteiligung: ca. {travel_cost} € für {distance} km
-        """
-        output = []
-
-        reference = "{} {}, {}".format(self.tour.reference, self.tour.title, self._tour_date())
-        output.append(reference)
-
-        name = "Langtitel: {}".format(self.tour.name)
-        output.append(name)
-
-        #equipment = "Ausrüstung: {}".format(self.equipment_list())
-        #output.append(equipment)
-
-        requirements = "Anforderungen: Technik {}, Kondition {}".format(self.skill.code, self.fitness.code)
-        output.append(requirements)
-
-        #if self.preconditions:
-        #    preconditions = "Spezielle Voraussetzungen: {}".format(self.preconditions)
-        #    output.append(preconditions)
-
-        #departure = "Abfahrt: {}".format(self.tour.departure())
-        #output.append(departure)
-
-        #if self.tour.source:
-        #    source = "Ausgangspunkt: {}".format(self.tour.source)
-        #    output.append(source)
-
-        #if self.tour.location:
-        #    location = "Übernachtung: {}".format(self.tour.location)
-        #    output.append(location)
-
-        #description = "Beschreibung: {}".format(self.tour.description)
-        #output.append(description)
-
-        deadline = "Anmeldung bis zum {}, mindestens {}, maximal {} Teilnehmer".format(
-            self._deadline(), self.min_quantity, self.max_quantity
-        )
-        output.append(deadline)
-
-        #if self.preliminary:
-        #    preliminary = "{}: {}".format(*self._preliminary())
-        #    output.append(preliminary)
-
-        guides = "Organisation: {}".format(self.guides())
-        output.append(guides)
-
-        advances = ''
-        if self.advances:
-            advances = "Anzahlung: {} €{}".format(int(self.advances), " {}".format(self.advances_info) if self.advances_info else '')
-            output.append(advances)
-
-        admission = "Teilnahmegebühr: {} €".format(int(self.admission))
-        if advances:
-            admission = (
-                "{}, im Teilnehmerbeitrag ist eine Anzahlung von {} € enthalten."
-            ).format(admission, int(self.advances))
-        output.append(admission)
-
-        #if self.extra_charges:
-        #    extra_charges = "Zusatzkosten: {}".format(self.extra_charges)
-        #    output.append(extra_charges)
-
-        #if self.tour.distance:
-        #    travel_cost = "Fahrtkostenbeteiligung: ca. {} € für {} km".format(int(0.07 * float(self.tour.distance)), self.tour.distance)
-        #    output.append(travel_cost)
-
-        info = "Alle Info's zur Tour unter: dav-ke.info/{}".format(self.tour.reference)
-        output.append(info)
-
-        return output
-
     def subject(self):
         return ""
 
     def details(self):
         """
+        Der Text der Tour für die Homepage:
+
             {name}
+            {description}
             Vorausgesetzte Kursinhalte: {qualifications}
+            Vorbesprechung: {preliminary} | Toureninformation: {info}
             Abfahrt: {start_date}, {start_time}, {rendezvous}, Heimkehr am {end_date} gegen {end_time} Uhr
             Ausgangspunkt: {source}
             Übernachtung: {location}
-            Beschreibung: {description}
-            Anmeldung bis zum {deadline}, Mindestens {min_quantity}, Maximal {max_quantity} Teilnehmer.
-            Vorbesprechung: {preliminary_date}, {preliminary_time} Uhr
-            Toureninformation: {info}
-            Organisation: {guides}
-            Anzahlung: {advances} € {advances_info}
-            Teilnahmegebühr: {admission} € {admission_info}
-            Zusatzkosten: {extra_charges} € {extra_charges_info}
-            Fahrtkostenbeteiligung: ca. {travel_cost} € für {distance} km
+            Anmeldung bis zum {deadline}, mindestens {min_quantity}, maximal {max_quantity} Teilnehmer.
+            Anzahlung, Teilnahmegebühr, Zusatzkosten, Fahrtkostenbeteiligung, Organisation
+            Hinweis, Teilnahme- und Stornobedingungen, Fragen
         """
         output = io.StringIO()
 
-        output.write('<h3>{}</h3>'.format(self.tour.name))
-        output.write('<p>{}</p>'.format(self.tour.description))
+        output.write('<h3>{}</h3>'.format(homepage.text(self.tour.name)))
+        output.write('<p>{}</p>'.format(homepage.rich(self.tour.description)))
 
         if self.qualifications.exists():
-            output.write('<div class="additional">')
-            output.write(
-                "<p>Für die Teilnahme an dieser Tour ist die Beherrschung folgender "
-                "Kursinhalte Voraussetzung: <b>{}</b>. Die entsprechenden Kurse mit verwandten "
-                "Kursinhalten müssen nicht in unserer Sektion absolviert worden sein.</p>".format(
-                    ', '.join([q for q in self.qualifications.values_list('name', flat=True)])
-                )
-            )
-            output.write('</div>')
+            output.write(homepage.qualifications(self.qualifications.values_list('name', flat=True), 'dieser Tour'))
 
-        output.write('<p>')
         lines = []
-        preliminary = self._preliminary()
-        if preliminary[0]:
-            lines.append("<strong>{}:</strong> {}".format(*preliminary))
-        lines.append('<strong>Abfahrt:</strong> {}'.format(self.tour.departure()))
+        label, value = self._preliminary()
+        if label:
+            lines.append(homepage.line(label, homepage.text(value)))
+        lines.append(homepage.line('Abfahrt', homepage.text(self.tour.departure())))
         if self.tour.source:
-            lines.append('<strong>Ausgangspunkt:</strong> {}'.format(self.tour.source))
+            lines.append(homepage.line('Ausgangspunkt', homepage.text(self.tour.source)))
         if self.tour.location:
-            lines.append('<strong>Übernachtung:</strong> {}'.format(self.tour.location))
-        output.write('<br />'.join(lines))
-        output.write('</p>')
+            lines.append(homepage.line('Übernachtung', homepage.text(self.tour.location)))
+        output.write(homepage.paragraph(lines))
 
         output.write('<div class="additional">')
         output.write("<p>Anmeldung bis zum {}, mindestens {}, maximal {} {}Teilnehmer.</p>".format(
@@ -398,40 +182,12 @@ class Tour(
         )
         output.write('</div>')
 
-        output.write('<p>')
-        lines = []
-        if self.advances:
-            advances = "<strong>Anzahlung:</strong> {} €{}".format(
-                int(self.advances), " für {}".format(self.advances_info) if self.advances_info else ''
-            )
-            lines.append(advances)
-        lines.append("<strong>Teilnahmegebühr:</strong> {} €".format(int(self.admission)))
-        if self.extra_charges:
-            extra_charges = "<strong>Zusatzkosten:</strong> {} €{}".format(
-                self.extra_charges, " für {}".format(self.extra_charges_info) if self.extra_charges_info else ''
-            )
-            lines.append(extra_charges)
-        if self.tour.distance:
-            travel_cost = "<strong>Fahrtkostenbeteiligung:</strong> ca. {} € für ungefähr {} km".format(
-                int(0.07 * float(self.tour.distance)), self.tour.distance
-            )
-            lines.append(travel_cost)
-        lines.append('<strong>Organisation:</strong> {}'.format(self.guides()))
-        output.write('<br />'.join(lines))
-        output.write('</p>')
+        lines = homepage.costs(self, self.tour, always_admission=True)
+        lines.append(homepage.line('Organisation', homepage.text(self.guides())))
+        output.write(homepage.paragraph(lines))
 
         output.write(self.remark())
-
-        output.write('<p>Es gelten unsere '
-                     '<a href="/aktivitaeten/teilnahmebedingungen/" '
-                     'title="Teilnahmebedingungen">Teilnahme-</a>'
-                     ' und '
-                     '<a href="/aktivitaeten/stornobedingungen/" '
-                     'title="Stornobedingungen">Stornobedingungen</a>.'
-                     '</p>')
-
-        output.write('<p><strong>Fragen:</strong> Spezielle Fragen zu Touren & Kursen kannst du unter '
-                     '<strong>kurse@dav-kempten.de</strong> stellen. Bitte gib hierbei immer den '
-                     '<strong>Buchungscode</strong> der entsprechenden Veranstaltung mit an.</p>')
+        output.write(homepage.CONDITIONS)
+        output.write(homepage.QUESTIONS)
 
         return output.getvalue()

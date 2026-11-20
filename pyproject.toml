@@ -18,7 +18,9 @@ dependencies = [
     # REFRESH an Varnish.
     'dramatiq[rabbitmq]>=1.17',
     'requests>=2.32',
-    'debugpy'
+    'debugpy',
+    # Erlaubte Tags in Beschreibungen für die Homepage (server/models/homepage.py).
+    'nh3>=0.2.18',
 ]
 
 [project.optional-dependencies]

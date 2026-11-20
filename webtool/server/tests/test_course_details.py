@@ -83,3 +83,16 @@ def test_appointment_keeps_places_for_other_callers(course):
     event = course.instruction
     assert event.appointment().endswith('Otto-Mayr-Hütte, Alpinzentrum Kempten, Seminarraum')
     assert 'Alpinzentrum Kempten, Seminarraum' in event.departure()
+
+
+def test_places_are_escaped(course):
+    meeting = course.meeting_list.first()
+    meeting.rendezvous = 'Hütte <b>Alpenrose</b> & Co'
+    meeting.save()
+    event = course.instruction
+    event.location = '<script>x()</script>'
+    event.save()
+    details = course.details()
+    assert 'Treffpunkt: Hütte &lt;b&gt;Alpenrose&lt;/b&gt; &amp; Co' in details
+    assert '<strong>Übernachtung:</strong> &lt;script&gt;x()&lt;/script&gt;' in details
+    assert '<script>' not in details
