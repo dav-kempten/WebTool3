@@ -11,6 +11,10 @@ import { RequirementsStore } from '../../core/stores/requirements.store';
 import { StatesGroup, getStatesOfGroup } from '../../models/value';
 import { TourCreateDialog } from '../../shared/dialogs/tour-create-dialog/tour-create-dialog';
 import { InstructionCreateDialog } from '../../shared/dialogs/instruction-create-dialog/instruction-create-dialog';
+import {
+  SessionCreateDialog,
+  creatableCollectives,
+} from '../../shared/dialogs/session-create-dialog/session-create-dialog';
 import { RequirementPanel } from './requirement-panel/requirement-panel';
 import { SupportBox } from './support-box/support-box';
 
@@ -44,6 +48,7 @@ const MY_EVENT_STATES: number[] = getStatesOfGroup(StatesGroup.Active);
     CardModule,
     TourCreateDialog,
     InstructionCreateDialog,
+    SessionCreateDialog,
     RequirementPanel,
     SupportBox,
   ],
@@ -74,6 +79,16 @@ export class Dashboard {
 
   readonly showCreateTour = signal(false);
   readonly showCreateInstruction = signal(false);
+  readonly showCreateSession = signal(false);
+
+  /**
+   * "Neuer Gruppentermin" für Gruppenleiter (nur ihre eigenen Gruppen) sowie
+   * Fachbereichssprecher und Geschäftsstelle (alle Gruppen) — dieselbe Regel
+   * wie "Termin hinzufügen" in der Terminliste.
+   */
+  readonly canCreateSession = computed(
+    () => creatableCollectives(this.values.collectives(), this.auth.permission()).length > 0,
+  );
 
   private readonly guideId = computed(() => this.auth.permission().guideId);
   /**

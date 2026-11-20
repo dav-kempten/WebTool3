@@ -47,6 +47,20 @@
         </p-card>
       </button>
     }
+
+    @if (canCreateSession()) {
+      <button type="button" class="avk-tile avk-tile-action" (click)="showCreateSession.set(true)">
+        <p-card>
+          <div class="avk-tile-body">
+            <i class="pi pi-plus-circle"></i>
+            <div>
+              <h2>Neuer Gruppentermin</h2>
+              <p>Einen neuen Termin für eine Gruppe anlegen.</p>
+            </div>
+          </div>
+        </p-card>
+      </button>
+    }
   </div>
 
   @if (showMyEvents()) {
@@ -102,3 +116,4 @@
 
 <avk-tour-create-dialog [(visible)]="showCreateTour" />
 <avk-instruction-create-dialog [(visible)]="showCreateInstruction" />
+<avk-session-create-dialog [(visible)]="showCreateSession" />

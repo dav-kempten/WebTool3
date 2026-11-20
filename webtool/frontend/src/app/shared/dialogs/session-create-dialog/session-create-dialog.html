@@ -1,0 +1,34 @@
+<p-dialog
+  header="Neuer Gruppentermin"
+  [modal]="true"
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+  (onShow)="onOpen()"
+  [style]="{ width: '32rem' }"
+>
+  <form [formGroup]="form" class="avk-dialog-form">
+    <div class="avk-field">
+      <label>Gruppe</label>
+      <p-select
+        formControlName="collectiveId"
+        [options]="collectives()"
+        optionLabel="title"
+        optionValue="id"
+        placeholder="Gruppe wählen"
+        appendTo="body"
+        pTooltip="Auswahl der Gruppe des Gruppentermins"
+      />
+    </div>
+    <div class="avk-field">
+      <label>Startdatum</label>
+      <p-datepicker
+        formControlName="startDate"
+        dateFormat="dd.mm.yy"
+        appendTo="body"
+        [minDate]="minDate"
+        pTooltip="Startdatum des neuen Gruppentermins – nur Tage in der Zukunft"
+      />
+    </div>
+    <p-button label="Bestätigen" (onClick)="create()" [disabled]="form.invalid" />
+  </form>
+</p-dialog>

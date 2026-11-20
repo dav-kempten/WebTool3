@@ -23,6 +23,7 @@ export const RELEASE_NOTES: readonly ReleaseNote[] = [
       'Für die Geschäftsstelle steht im Termin-Dialog eines Kurses unter diesen Feldern, wo sie auf der Homepage landen.',
       'Auf der Homepage, im Programmheft und im Ausdruck heißt es jetzt „Teilnahmegebühr“ statt „Teilnehmergebühr“.',
       'Auf dem Dashboard stehen „Meine Touren“ und „Meine Kurse“ jetzt über dem Bedarf der Saison.',
+      'Gruppenleiter, Fachbereichssprecher und Geschäftsstelle können auf dem Dashboard über „Neuer Gruppentermin“ direkt einen Termin anlegen, wie bei Touren und Kursen. Gruppenleiter sehen dabei nur ihre eigenen Gruppen.',
     ],
   },
   {

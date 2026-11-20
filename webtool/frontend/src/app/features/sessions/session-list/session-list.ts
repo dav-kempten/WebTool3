@@ -1,19 +1,15 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
-import { DialogModule } from 'primeng/dialog';
 import { SelectModule } from 'primeng/select';
 import { SelectButtonModule } from 'primeng/selectbutton';
-import { DatePickerModule } from 'primeng/datepicker';
 import { InputTextModule } from 'primeng/inputtext';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
-import { TooltipModule } from 'primeng/tooltip';
-import { ResponsiveTooltip } from '../../../shared/directives/responsive-tooltip';
 import { ConfirmationService } from 'primeng/api';
 
 import { SessionsStore } from '../../../core/stores/sessions.store';
@@ -23,7 +19,10 @@ import { AuthService } from '../../../core/services/auth.service';
 import { PermissionLevel } from '../../../core/services/permission';
 import { States, StatesGroup, getStatesOfGroup } from '../../../models/value';
 import { SessionSummary } from '../../../models/session';
-import { toIsoDate, tomorrow } from '../../../shared/util/date';
+import {
+  SessionCreateDialog,
+  creatableCollectives,
+} from '../../../shared/dialogs/session-create-dialog/session-create-dialog';
 
 interface SessionRow extends SessionSummary {
   stateName: string;
@@ -36,19 +35,15 @@ interface SessionRow extends SessionSummary {
   standalone: true,
   imports: [
     RouterModule,
-    ReactiveFormsModule,
     FormsModule,
     TableModule,
     ButtonModule,
-    DialogModule,
     SelectModule,
     SelectButtonModule,
-    DatePickerModule,
     InputTextModule,
     IconFieldModule,
     InputIconModule,
-    TooltipModule,
-    ResponsiveTooltip,
+    SessionCreateDialog,
   ],
   templateUrl: './session-list.html',
   styleUrl: '../../../shared/styles/list-page.scss',
@@ -60,7 +55,6 @@ export class SessionList implements OnInit {
   private auth = inject(AuthService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
-  private fb = inject(FormBuilder);
   private confirm = inject(ConfirmationService);
 
   readonly part = toSignal(this.route.fragment, { initialValue: null });
@@ -92,10 +86,8 @@ export class SessionList implements OnInit {
   readonly isStaff = computed(
     () => this.permission().permissionLevel >= PermissionLevel.coordinator,
   );
-  readonly canAdd = computed(() => this.isStaff() || this.managedCollectives().length > 0);
-
-  readonly creatableCollectives = computed(() =>
-    this.isStaff() ? this.values.collectives() : this.managedCollectives(),
+  readonly canAdd = computed(
+    () => creatableCollectives(this.values.collectives(), this.permission()).length > 0,
   );
 
   readonly rows = computed<SessionRow[]>(() => {
@@ -119,13 +111,6 @@ export class SessionList implements OnInit {
   });
 
   readonly showCreate = signal(false);
-  readonly createForm = this.fb.group({
-    collectiveId: this.fb.control<number | null>(null),
-    startDate: this.fb.control<Date | null>(null),
-  });
-
-  /** A new session can only be dated ahead, so the picker starts tomorrow. */
-  readonly minCreateDate = tomorrow();
 
   ngOnInit(): void {
     // ensureSummaries: a hard reload here would overwrite locally synced,
@@ -160,20 +145,7 @@ export class SessionList implements OnInit {
   }
 
   openCreate(): void {
-    this.createForm.reset();
     this.showCreate.set(true);
-  }
-
-  create(): void {
-    const value = this.createForm.getRawValue();
-    if (!value.collectiveId || !value.startDate) {
-      return;
-    }
-    this.sessions.create({
-      collectiveId: value.collectiveId,
-      startDate: toIsoDate(value.startDate)!,
-    });
-    this.showCreate.set(false);
   }
 
   cloneRow(row: SessionSummary): void {

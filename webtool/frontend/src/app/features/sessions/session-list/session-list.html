@@ -81,36 +81,4 @@
   </p-table>
 </section>
 
-<p-dialog
-  header="Neuer Gruppentermin"
-  [modal]="true"
-  [visible]="showCreate()"
-  (visibleChange)="showCreate.set($event)"
-  [style]="{ width: '32rem' }"
->
-  <form [formGroup]="createForm" class="avk-dialog-form">
-    <div class="avk-field">
-      <label>Gruppe</label>
-      <p-select
-        formControlName="collectiveId"
-        [options]="creatableCollectives()"
-        optionLabel="title"
-        optionValue="id"
-        placeholder="Gruppe wählen"
-        appendTo="body"
-        pTooltip="Auswahl der Gruppe des Gruppentermins"
-      />
-    </div>
-    <div class="avk-field">
-      <label>Startdatum</label>
-      <p-datepicker
-        formControlName="startDate"
-        dateFormat="dd.mm.yy"
-        appendTo="body"
-        [minDate]="minCreateDate"
-        pTooltip="Startdatum des neuen Gruppentermins – nur Tage in der Zukunft"
-      />
-    </div>
-    <p-button label="Bestätigen" (onClick)="create()" [disabled]="createForm.invalid" />
-  </form>
-</p-dialog>
+<avk-session-create-dialog [(visible)]="showCreate" />
