@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, effect, inject, signal, untracked } from '@angular/core';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
@@ -6,7 +6,6 @@ import { FormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
-import { SelectButtonModule } from 'primeng/selectbutton';
 import { InputTextModule } from 'primeng/inputtext';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
@@ -38,7 +37,6 @@ interface SessionRow extends SessionSummary {
     TableModule,
     ButtonModule,
     SelectModule,
-    SelectButtonModule,
     InputTextModule,
     IconFieldModule,
     InputIconModule,
@@ -59,15 +57,24 @@ export class SessionList implements OnInit {
   readonly part = toSignal(this.route.fragment, { initialValue: null });
   readonly stateGroup = signal<StatesGroup>(StatesGroup.Active);
 
-  readonly partOptions = [
-    { label: 'Alle', value: null },
-    { label: 'Jungmannschaft', value: 'gjm' },
-    { label: 'Bergwandern', value: 'gbw' },
-    { label: 'Obergünzburg', value: 'obg' },
-    { label: 'HiKE', value: 'hkw' },
-    { label: 'Abendschule', value: 'aas' },
-    { label: 'Vollmond', value: 'vst' },
-  ];
+  /**
+   * Gruppenfilter aus den Stammdaten: alle Gruppen, die in der Liste Termine
+   * haben, dazu die eigenen Gruppen eines Gruppenleiters, alphabetisch. Der Wert ist der Gruppencode in Kleinbuchstaben, so
+   * bleiben Links wie /sessions#gjm gültig.
+   */
+  readonly partOptions = computed(() => {
+    const withSessions = new Set(this.sessions.summaries().map((s) => s.collectiveId));
+    const managed = new Set(this.managedCollectives().map((c) => c.id));
+    return this.values
+      .collectives()
+      .filter((c) => withSessions.has(c.id) || managed.has(c.id))
+      .map((c) => ({ label: c.title, value: c.code.toLowerCase() }))
+      .sort((a, b) => a.label.localeCompare(b.label, 'de'));
+  });
+
+  private readonly codeByCollectiveId = computed(
+    () => new Map(this.values.collectives().map((c) => [c.id, c.code.toLowerCase()])),
+  );
 
   readonly stateGroupOptions = [
     { label: 'Aktive Termine', value: StatesGroup.Active },
@@ -88,6 +95,32 @@ export class SessionList implements OnInit {
     () => creatableCollectives(this.values.collectives(), this.permission()).length > 0,
   );
 
+  /**
+   * Ein Gruppenleiter sieht beim Öffnen der Liste gleich seine eigene Gruppe
+   * (leitet er mehrere, die alphabetisch erste). Das passiert nur einmal je
+   * Aufruf und nur, wenn die Adresse keine Gruppe nennt — wer danach „Alle
+   * Gruppen“ wählt, behält das. Fachbereichssprecher und Geschäftsstelle
+   * starten wie bisher mit allen Gruppen.
+   */
+  private ownGroupChecked = false;
+  private readonly preselectOwnGroup = effect(() => {
+    if (this.ownGroupChecked) {
+      return;
+    }
+    if (this.part() || !this.auth.isGuideOnly()) {
+      this.ownGroupChecked = this.auth.isLoggedIn();
+      return;
+    }
+    const own = [...this.managedCollectives()].sort((a, b) => a.title.localeCompare(b.title, 'de'))[0];
+    if (!own) {
+      return; // Stammdaten noch nicht geladen, oder keine eigene Gruppe
+    }
+    this.ownGroupChecked = true;
+    untracked(() =>
+      this.router.navigate(['/sessions'], { fragment: own.code.toLowerCase(), replaceUrl: true }),
+    );
+  });
+
   readonly rows = computed<SessionRow[]>(() => {
     const part = this.part();
     const group = getStatesOfGroup(this.stateGroup());
@@ -96,7 +129,7 @@ export class SessionList implements OnInit {
 
     return this.sessions
       .summaries()
-      .filter((s) => !part || s.reference.slice(0, 3).toLowerCase() === part)
+      .filter((s) => !part || this.codeByCollectiveId().get(s.collectiveId) === part)
       .filter((s) => group.includes(s.stateId))
       .map((s) => {
         const name = nameMap.get(s.guideId);

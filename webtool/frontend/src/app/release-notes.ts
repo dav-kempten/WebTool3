@@ -28,6 +28,7 @@ export const RELEASE_NOTES: readonly ReleaseNote[] = [
       'Kurstermine ohne Start- und Tageszeit zeigen auf der Homepage wieder ihr Datum. Bisher fehlte es dort, und die Zeile begann mit einem Komma.',
       'In Beschreibungen bleiben die üblichen Formatierungen erhalten: Zeilenumbruch, fett, kursiv, Absätze, Listen und Links. Andere HTML-Befehle werden auf der Homepage entfernt, alle übrigen Felder erscheinen dort genau so, wie sie eingetippt wurden.',
       'Start- und Endzeit: Der Uhr-Knopf bietet nur noch Viertelstunden an. Eine Uhrzeit, die sich nicht lesen lässt, wird rot markiert, und darunter steht, wie sie aussehen muss.',
+      'Die Terminliste filtert über eine Auswahlliste „Gruppe“ mit allen Gruppen, die Termine haben – statt der festen Knöpfe, in denen manche Gruppen fehlten. Gruppenleiter sehen beim Öffnen gleich ihre eigene Gruppe.',
     ],
   },
   {

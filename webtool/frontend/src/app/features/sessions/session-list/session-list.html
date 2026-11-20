@@ -1,12 +1,16 @@
 <section class="avk-page">
   <div class="avk-list-toolbar">
-    <p-selectButton
-      [options]="partOptions"
+    <p-select
+      [options]="partOptions()"
       [ngModel]="part()"
       (onChange)="setPart($event.value)"
       optionLabel="label"
       optionValue="value"
-      [allowEmpty]="false"
+      placeholder="Alle Gruppen"
+      [showClear]="true"
+      [filter]="partOptions().length > 10"
+      filterBy="label"
+      ariaLabel="Gruppe"
     />
     <span class="avk-spacer"></span>
     @if (canAdd()) {
