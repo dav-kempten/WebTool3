@@ -37,10 +37,6 @@ export class AuthService {
   readonly user = this.userSignal.asReadonly();
   readonly isLoggedIn = computed(() => !!this.userSignal().id);
   readonly isLoggedOut = computed(() => !this.isLoggedIn());
-  readonly isAdministrator = computed(() => this.userSignal().role === Role.administrator);
-  readonly isStaff = computed(() => this.userSignal().role === Role.staff);
-  readonly isCoordinator = computed(() => this.userSignal().role === Role.coordinator);
-  readonly isGuide = computed(() => this.userSignal().role === Role.guide);
   readonly guideId = computed(() => this.userSignal().id);
 
   /** Permission level + guide id derived from the current user's role. */
@@ -51,6 +47,26 @@ export class AuthService {
     }
     return { permissionLevel: convertRole(user.role), guideId: user.id };
   });
+
+  /*
+   * Die Rechteprüfungen der Seiten — hier an einer Stelle, damit "Staff" nicht
+   * auf der einen Seite die Geschäftsstelle und auf der anderen schon die
+   * Fachbereichssprecher meint. Jede Stufe schließt die höheren ein.
+   */
+
+  /** Genau Trainer, ohne weitergehende Rechte: sieht nur die eigenen Touren und Kurse. */
+  readonly isGuideOnly = computed(() => this.permission().permissionLevel === PermissionLevel.guide);
+
+  /** Ab Trainer: alle, die mit dem Tool arbeiten (Anlegen, Support, eigene Termine). */
+  readonly isGuideOrAbove = computed(() => this.permission().permissionLevel >= PermissionLevel.guide);
+
+  /** Ab Fachbereichssprecher: sieht und bearbeitet alle Touren, Kurse, Gruppen und Trainer. */
+  readonly isCoordinatorOrAbove = computed(
+    () => this.permission().permissionLevel >= PermissionLevel.coordinator,
+  );
+
+  /** Ab Geschäftsstelle: TN-Gebühr, KV-Verlinkung, Homepage-Hinweise. */
+  readonly isOfficeOrAbove = computed(() => this.permission().permissionLevel >= PermissionLevel.staff);
 
   constructor() {
     this.refresh();

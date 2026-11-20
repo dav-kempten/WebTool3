@@ -5,7 +5,6 @@ import { ButtonModule } from 'primeng/button';
 
 import { GuidesStore } from '../../../core/stores/guides.store';
 import { AuthService } from '../../../core/services/auth.service';
-import { PermissionLevel } from '../../../core/services/permission';
 
 @Component({
   selector: 'avk-guide-detail',
@@ -26,7 +25,7 @@ export class GuideDetail {
   readonly canView = computed(() => {
     const perm = this.permission();
     return (
-      perm.permissionLevel >= PermissionLevel.coordinator ||
+      this.auth.isCoordinatorOrAbove() ||
       perm.guideId === this.guideId()
     );
   });

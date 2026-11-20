@@ -25,7 +25,6 @@ import { Category } from '../../../models/value';
 import { ToursStore } from '../../../core/stores/tours.store';
 import { ValuesStore } from '../../../core/stores/values.store';
 import { AuthService } from '../../../core/services/auth.service';
-import { PermissionLevel } from '../../../core/services/permission';
 import { toIsoDate, tomorrow } from '../../util/date';
 
 /**
@@ -119,9 +118,7 @@ export class TourCreateDialog implements OnInit {
         ? toIsoDate(value.preliminary)
         : null,
       guideId:
-        perm.permissionLevel === PermissionLevel.guide
-          ? (perm.guideId ?? null)
-          : null,
+        this.auth.isGuideOnly() ? (perm.guideId ?? null) : null,
     });
     this.visible.set(false);
   }

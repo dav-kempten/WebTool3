@@ -35,7 +35,6 @@ import { ValuesStore } from '../../../core/stores/values.store';
 import { NamesStore } from '../../../core/stores/names.store';
 import { EventsStore } from '../../../core/stores/events.store';
 import { AuthService } from '../../../core/services/auth.service';
-import { PermissionLevel } from '../../../core/services/permission';
 import { AutoSaveService } from '../../../core/services/auto-save.service';
 import { BreadcrumbService } from '../../../core/layout/breadcrumb.service';
 import { Session } from '../../../models/session';
@@ -122,15 +121,14 @@ export class SessionDetail {
         .map((c) => c.id),
     );
   });
-  readonly isStaff = computed(
-    () => this.permission().permissionLevel >= PermissionLevel.coordinator,
-  );
+  /** Fachbereichssprecher und darüber: alle Gruppen, nicht nur die eigenen. */
+  readonly isCoordinator = this.auth.isCoordinatorOrAbove;
   readonly canView = computed(() => {
     const session = this.session();
     if (!session) {
-      return this.isStaff();
+      return this.isCoordinator();
     }
-    return this.isStaff() || this.managedCollectiveIds().has(session.collectiveId);
+    return this.isCoordinator() || this.managedCollectiveIds().has(session.collectiveId);
   });
 
   readonly stateOptions = this.values.states;

@@ -5,7 +5,6 @@ import { InputTextModule } from 'primeng/inputtext';
 
 import { GuidesStore } from '../../../core/stores/guides.store';
 import { AuthService } from '../../../core/services/auth.service';
-import { PermissionLevel } from '../../../core/services/permission';
 import { GuideSummary } from '../../../models/guide';
 
 @Component({
@@ -27,7 +26,7 @@ export class GuideList implements OnInit {
     return this.guides
       .summaries()
       .filter((g) =>
-        perm.permissionLevel === PermissionLevel.guide ? g.id === perm.guideId : true,
+        this.auth.isGuideOnly() ? g.id === perm.guideId : true,
       );
   });
 
@@ -38,7 +37,7 @@ export class GuideList implements OnInit {
   canOpen(guide: GuideSummary): boolean {
     const perm = this.permission();
     return (
-      perm.permissionLevel >= PermissionLevel.coordinator || perm.guideId === guide.id
+      this.auth.isCoordinatorOrAbove() || perm.guideId === guide.id
     );
   }
 

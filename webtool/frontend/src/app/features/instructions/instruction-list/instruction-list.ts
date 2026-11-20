@@ -19,7 +19,6 @@ import { InstructionsStore } from '../../../core/stores/instructions.store';
 import { ValuesStore } from '../../../core/stores/values.store';
 import { NamesStore } from '../../../core/stores/names.store';
 import { AuthService } from '../../../core/services/auth.service';
-import { PermissionLevel } from '../../../core/services/permission';
 import { States, StatesGroup, getStatesOfGroup } from '../../../models/value';
 import { InstructionSummary } from '../../../models/instruction';
 import { toIsoDate } from '../../../shared/util/date';
@@ -82,9 +81,7 @@ export class InstructionList implements OnInit {
 
   private readonly permission = this.auth.permission;
 
-  readonly canAdd = computed(
-    () => this.permission().permissionLevel >= PermissionLevel.coordinator,
-  );
+  readonly canAdd = this.auth.isCoordinatorOrAbove;
 
   readonly rows = computed<InstructionRow[]>(() => {
     const part = this.part();
@@ -92,7 +89,7 @@ export class InstructionList implements OnInit {
     const stateMap = this.values.stateById();
     const nameMap = this.names.nameById();
     const perm = this.permission();
-    const isGuide = perm.permissionLevel === PermissionLevel.guide;
+    const isGuide = this.auth.isGuideOnly();
 
     const rows = this.instructions
       .summaries()
@@ -159,14 +156,14 @@ export class InstructionList implements OnInit {
   canModify(row: InstructionSummary): boolean {
     const perm = this.permission();
     return (
-      perm.permissionLevel >= PermissionLevel.coordinator ||
+      this.auth.isCoordinatorOrAbove() ||
       perm.guideId === row.guideId
     );
   }
 
   canDelete(row: InstructionSummary): boolean {
     return (
-      this.permission().permissionLevel >= PermissionLevel.coordinator &&
+      this.auth.isCoordinatorOrAbove() &&
       !getStatesOfGroup(StatesGroup.Finished).includes(row.stateId as States)
     );
   }

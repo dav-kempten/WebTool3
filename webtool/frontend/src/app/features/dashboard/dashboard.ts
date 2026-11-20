@@ -3,7 +3,6 @@ import { DatePipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { CardModule } from 'primeng/card';
 import { AuthService } from '../../core/services/auth.service';
-import { PermissionLevel } from '../../core/services/permission';
 import { ToursStore } from '../../core/stores/tours.store';
 import { InstructionsStore } from '../../core/stores/instructions.store';
 import { ValuesStore } from '../../core/stores/values.store';
@@ -66,9 +65,7 @@ export class Dashboard {
   readonly isLoggedIn = this.auth.isLoggedIn;
 
   /** Guides may create too — the new event is then assigned to them. */
-  readonly canCreate = computed(
-    () => this.auth.permission().permissionLevel >= PermissionLevel.guide,
-  );
+  readonly canCreate = this.auth.isGuideOrAbove;
 
   /**
    * The support box is for the people who work with the tool — trainers,
@@ -96,8 +93,7 @@ export class Dashboard {
    * coordinators). Staff/admins only manage and approve — no lists for them.
    */
   readonly showMyEvents = computed(() => {
-    const perm = this.auth.permission();
-    return perm.guideId != null && perm.permissionLevel < PermissionLevel.staff;
+    return this.auth.permission().guideId != null && !this.auth.isOfficeOrAbove();
   });
 
   readonly myTours = computed<MyEventRow[]>(() =>

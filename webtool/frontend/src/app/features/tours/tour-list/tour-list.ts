@@ -19,7 +19,6 @@ import { ToursStore } from '../../../core/stores/tours.store';
 import { ValuesStore } from '../../../core/stores/values.store';
 import { NamesStore } from '../../../core/stores/names.store';
 import { AuthService } from '../../../core/services/auth.service';
-import { PermissionLevel } from '../../../core/services/permission';
 import {
   States,
   StatesGroup,
@@ -86,9 +85,7 @@ export class TourList implements OnInit {
 
   private readonly permission = this.auth.permission;
 
-  readonly canAdd = computed(
-    () => this.permission().permissionLevel >= PermissionLevel.coordinator,
-  );
+  readonly canAdd = this.auth.isCoordinatorOrAbove;
 
   readonly rows = computed<TourRow[]>(() => {
     const part = this.part();
@@ -96,7 +93,7 @@ export class TourList implements OnInit {
     const stateMap = this.values.stateById();
     const nameMap = this.names.nameById();
     const perm = this.permission();
-    const isGuide = perm.permissionLevel === PermissionLevel.guide;
+    const isGuide = this.auth.isGuideOnly();
 
     const rows = this.tours
       .summaries()
@@ -163,14 +160,14 @@ export class TourList implements OnInit {
   canModify(tour: TourSummary): boolean {
     const perm = this.permission();
     return (
-      perm.permissionLevel >= PermissionLevel.coordinator ||
+      this.auth.isCoordinatorOrAbove() ||
       perm.guideId === tour.guideId
     );
   }
 
   canDelete(tour: TourSummary): boolean {
     return (
-      this.permission().permissionLevel >= PermissionLevel.coordinator &&
+      this.auth.isCoordinatorOrAbove() &&
       !getStatesOfGroup(StatesGroup.Finished).includes(tour.stateId as States)
     );
   }

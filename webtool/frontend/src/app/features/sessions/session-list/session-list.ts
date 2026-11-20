@@ -16,7 +16,6 @@ import { SessionsStore } from '../../../core/stores/sessions.store';
 import { ValuesStore } from '../../../core/stores/values.store';
 import { NamesStore } from '../../../core/stores/names.store';
 import { AuthService } from '../../../core/services/auth.service';
-import { PermissionLevel } from '../../../core/services/permission';
 import { States, StatesGroup, getStatesOfGroup } from '../../../models/value';
 import { SessionSummary } from '../../../models/session';
 import {
@@ -83,9 +82,8 @@ export class SessionList implements OnInit {
     const guideId = this.permission().guideId;
     return this.values.collectives().filter((c) => c.managers.includes(guideId ?? -1));
   });
-  readonly isStaff = computed(
-    () => this.permission().permissionLevel >= PermissionLevel.coordinator,
-  );
+  /** Fachbereichssprecher und darüber: alle Gruppen, nicht nur die eigenen. */
+  readonly isCoordinator = this.auth.isCoordinatorOrAbove;
   readonly canAdd = computed(
     () => creatableCollectives(this.values.collectives(), this.permission()).length > 0,
   );
@@ -126,14 +124,14 @@ export class SessionList implements OnInit {
 
   canModify(row: SessionSummary): boolean {
     return (
-      this.isStaff() ||
+      this.isCoordinator() ||
       this.managedCollectives().some((c) => c.id === row.collectiveId)
     );
   }
 
   canDelete(row: SessionSummary): boolean {
     return (
-      this.isStaff() &&
+      this.isCoordinator() &&
       !getStatesOfGroup(StatesGroup.Finished).includes(row.stateId as States)
     );
   }

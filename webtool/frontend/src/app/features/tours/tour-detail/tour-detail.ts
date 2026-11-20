@@ -47,7 +47,6 @@ import { ValuesStore } from '../../../core/stores/values.store';
 import { NamesStore } from '../../../core/stores/names.store';
 import { EventsStore } from '../../../core/stores/events.store';
 import { AuthService } from '../../../core/services/auth.service';
-import { PermissionLevel } from '../../../core/services/permission';
 import { AutoSaveService } from '../../../core/services/auto-save.service';
 import { PrintoutService } from '../../../core/services/printout.service';
 import { BreadcrumbService } from '../../../core/layout/breadcrumb.service';
@@ -138,27 +137,15 @@ export class TourDetail {
   readonly isOwner = computed(
     () => this.permission().guideId === this.tour()?.guideId,
   );
-  readonly canView = computed(() => {
-    const level = this.permission().permissionLevel;
-    if (level >= PermissionLevel.coordinator) {
-      return true;
-    }
-    if (level === PermissionLevel.guide) {
-      return this.isOwner();
-    }
-    return false;
-  });
+  readonly canView = computed(
+    () => this.auth.isCoordinatorOrAbove() || (this.auth.isGuideOnly() && this.isOwner()),
+  );
   /**
    * Nur die Geschäftsstelle (und Administration) sieht TN-Gebühr und
    * KV-Verlinkung. Die Formularfelder bleiben bestehen, damit die
    * gespeicherten Werte beim Speichern unverändert durchlaufen.
-   *
-   * Achtung: Das gleichnamige isStaff in den Gruppenterminen ist weiter
-   * gefasst und schließt Fachbereichssprecher ein — daher der eigene Name.
    */
-  readonly isOffice = computed(
-    () => this.permission().permissionLevel >= PermissionLevel.staff,
-  );
+  readonly isOffice = this.auth.isOfficeOrAbove;
 
   /** Owner may only edit while the tour is still In Arbeit/Fertig (state <= 2). */
   readonly locked = computed(

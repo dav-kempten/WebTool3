@@ -18,7 +18,6 @@ import { Topic, isSpecialTopic } from '../../../models/value';
 import { InstructionsStore } from '../../../core/stores/instructions.store';
 import { ValuesStore } from '../../../core/stores/values.store';
 import { AuthService } from '../../../core/services/auth.service';
-import { PermissionLevel } from '../../../core/services/permission';
 import { toIsoDate, tomorrow } from '../../util/date';
 
 /**
@@ -103,9 +102,7 @@ export class InstructionCreateDialog implements OnInit {
       topicId: value.topicId,
       startDate: toIsoDate(value.startDate)!,
       guideId:
-        perm.permissionLevel === PermissionLevel.guide
-          ? (perm.guideId ?? null)
-          : null,
+        this.auth.isGuideOnly() ? (perm.guideId ?? null) : null,
       isSpecial: isSpecialTopic(this.values.topicById().get(value.topicId)),
     });
     this.visible.set(false);

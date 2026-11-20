@@ -107,7 +107,7 @@
       <div class="avk-detail-actions">
         <p-button label="Speichern" icon="pi pi-save" (onClick)="save()" />
         <a routerLink="/sessions"><p-button label="Zurück" severity="secondary" /></a>
-        @if (isStaff()) {
+        @if (isCoordinator()) {
           <span class="avk-spacer"></span>
           <p-button label="Termin löschen" icon="pi pi-trash" severity="danger" (onClick)="confirmDelete()" />
         }
