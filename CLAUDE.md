@@ -164,8 +164,9 @@ generated, gitignored `src/app/build-info.ts`.
 
 The timestamp is only refreshed by `npm run package` (the script runs with
 `--stamp`), so it names the state that was shipped rather than the last local
-build. The `prebuild`/`prestart`/`pretest` hooks run it without arguments,
-which only creates the file when it is missing. Bump the minor version
+build. The `prebuild`/`prestart`/`pretest` hooks run it without arguments:
+they keep the version in step with `package.json` but leave the timestamp
+alone, and create the file only when it is missing. Bump the minor version
 whenever a new ZIP goes to the server.
 
 ```bash

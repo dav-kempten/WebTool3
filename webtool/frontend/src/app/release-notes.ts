@@ -15,8 +15,9 @@ export interface ReleaseNote {
 
 export const RELEASE_NOTES: readonly ReleaseNote[] = [
   {
-    version: '2.2.3',
+    version: '3.0.0',
     changes: [
+      'Der Trainer-Bereich ist da: Unter „Trainer“ stehen Liste und Detailseite. Jeder Trainer kann dort seinen Steckbrief selbst pflegen, die Geschäftsstelle alle.',
       'Touren, Kurse und Gruppentermine: Der Treffpunkt bietet über den Pfeil neben dem Feld „Alpinzentrum Kempten, Seminarraum“ und „Alpinzentrum Kempten, Parkplatz“ zur Auswahl an. Alles andere lässt sich wie bisher frei eintragen, mit höchstens 75 Zeichen.',
       'Start- und Endzeit lassen sich eintippen oder über den Uhr-Knopf auswählen. Getippte Zeiten werden vereinheitlicht, aus „930“ wird z. B. 09:30.',
       'Auf der Homepage stehen Treffpunkt, Kursort und Übernachtung eines Kurses jetzt beschriftet: beim ersten Termin je in einer eigenen Zeile unter „Termin:“ bzw. „Abfahrt:“, bei den weiteren Terminen in der jeweiligen Terminzeile. Der Kursort erscheint dort jetzt auch bei den weiteren Terminen.',
