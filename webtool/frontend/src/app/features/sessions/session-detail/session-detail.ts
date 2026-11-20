@@ -26,6 +26,7 @@ import { TextareaModule } from 'primeng/textarea';
 import { TooltipModule } from 'primeng/tooltip';
 import { ResponsiveTooltip } from '../../../shared/directives/responsive-tooltip';
 import { RendezvousInput } from '../../../shared/components/rendezvous-input/rendezvous-input';
+import { TimeInput } from '../../../shared/components/time-input/time-input';
 import { MessageModule } from 'primeng/message';
 import { ConfirmationService } from 'primeng/api';
 
@@ -74,6 +75,7 @@ import { describeSaveErrorPath } from '../../../shared/util/save-error';
     TooltipModule,
     ResponsiveTooltip,
     RendezvousInput,
+    TimeInput,
     MessageModule,
   ],
   providers: [AutoSaveService],

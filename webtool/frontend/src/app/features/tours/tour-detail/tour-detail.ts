@@ -33,6 +33,7 @@ import { TextareaModule } from 'primeng/textarea';
 import { TooltipModule } from 'primeng/tooltip';
 import { ResponsiveTooltip } from '../../../shared/directives/responsive-tooltip';
 import { RendezvousInput } from '../../../shared/components/rendezvous-input/rendezvous-input';
+import { TimeInput } from '../../../shared/components/time-input/time-input';
 import { ReadyChecklistDialog } from '../../../shared/dialogs/ready-checklist-dialog/ready-checklist-dialog';
 import { guardReadyState, spansSeveralDays } from '../../../shared/util/ready-guard';
 import { MessageModule } from 'primeng/message';
@@ -92,6 +93,7 @@ type EventKind = 'tour' | 'deadline' | 'preliminary';
     TooltipModule,
     ResponsiveTooltip,
     RendezvousInput,
+    TimeInput,
     MessageModule,
     ReadyChecklistDialog,
     HomepagePreviewDialog,

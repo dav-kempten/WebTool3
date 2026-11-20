@@ -455,11 +455,11 @@
           </div>
           <div class="avk-field">
             <label>Startzeit</label>
-            <input pInputText formControlName="startTime" placeholder="HH:MM" pTooltip="Startzeit – gesperrt, solange eine Tageszeit gewählt ist" />
+            <avk-time-input formControlName="startTime" tooltip="Startzeit – gesperrt, solange eine Tageszeit gewählt ist" />
           </div>
           <div class="avk-field">
             <label>Endzeit</label>
-            <input pInputText formControlName="endTime" placeholder="HH:MM" pTooltip="Endzeit" />
+            <avk-time-input formControlName="endTime" tooltip="Endzeit" />
           </div>
         </div>
         <!-- Three across on the main event. The distance only applies there, so
@@ -503,17 +503,23 @@
           <div class="avk-field">
             <label>Treffpunkt</label>
             <avk-rendezvous-input formControlName="rendezvous" tooltip="Treffpunkt für die Abfahrt" />
-            <small>{{ homepagePlace('Treffpunkt') }}</small>
+            @if (isOffice()) {
+              <small>{{ homepagePlace('Treffpunkt') }}</small>
+            }
           </div>
           <div class="avk-field">
             <label>Kursort</label>
             <input pInputText formControlName="source" maxlength="75" pTooltip="Treffpunkt vor Ort" />
-            <small>{{ homepagePlace('Kursort') }}</small>
+            @if (isOffice()) {
+              <small>{{ homepagePlace('Kursort') }}</small>
+            }
           </div>
           <div class="avk-field">
             <label>Übernachtungsort</label>
             <input pInputText formControlName="location" maxlength="75" />
-            <small>{{ homepagePlace('Übernachtung') }}</small>
+            @if (isOffice()) {
+              <small>{{ homepagePlace('Übernachtung') }}</small>
+            }
           </div>
         </div>
         @if (selectedIsMain()) {

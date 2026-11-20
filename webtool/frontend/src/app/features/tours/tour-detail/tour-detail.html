@@ -555,16 +555,11 @@
             }
             <div class="avk-field">
               <label>Startzeit</label>
-              <input
-                pInputText
-                formControlName="startTime"
-                placeholder="HH:MM"
-                pTooltip="Startzeit – gesperrt, solange eine Tageszeit gewählt ist"
-              />
+              <avk-time-input formControlName="startTime" tooltip="Startzeit – gesperrt, solange eine Tageszeit gewählt ist" />
             </div>
             <div class="avk-field">
               <label>Endzeit</label>
-              <input pInputText formControlName="endTime" placeholder="HH:MM" pTooltip="Endzeit" />
+              <avk-time-input formControlName="endTime" tooltip="Endzeit" />
             </div>
           </div>
         }
