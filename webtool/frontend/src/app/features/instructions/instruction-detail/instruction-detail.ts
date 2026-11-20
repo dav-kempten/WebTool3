@@ -43,6 +43,7 @@ import { InstructionsStore } from '../../../core/stores/instructions.store';
 import { InstructionService } from '../../../core/services/instruction.service';
 import { ActivityPreview } from '../../../models/preview';
 import { HomepagePreviewDialog } from '../../../shared/dialogs/homepage-preview-dialog/homepage-preview-dialog';
+import { ClaimDialog } from '../../../shared/dialogs/claim-dialog/claim-dialog';
 import { ValuesStore } from '../../../core/stores/values.store';
 import { NamesStore } from '../../../core/stores/names.store';
 import { EventsStore } from '../../../core/stores/events.store';
@@ -93,6 +94,7 @@ import { lockStartTimeOrApproximate } from '../../../shared/util/event-time';
     MessageModule,
     ReadyChecklistDialog,
     HomepagePreviewDialog,
+    ClaimDialog,
   ],
   providers: [AutoSaveService],
   templateUrl: './instruction-detail.html',
@@ -190,6 +192,14 @@ export class InstructionDetail {
    * gespeicherten Werte beim Speichern unverändert durchlaufen.
    */
   readonly isOffice = this.auth.isOfficeOrAbove;
+
+  /** Abrechnen dürfen Leitung und Team sowie die Geschäftsstelle (das Backend prüft es noch einmal). */
+  readonly canClaim = computed(() => {
+    const item = this.instruction();
+    const me = this.auth.permission().guideId;
+    return this.isOffice() || this.isOwner() || (!!item && me != null && item.teamIds.includes(me));
+  });
+  readonly showClaim = signal(false);
 
   readonly locked = computed(
     () => this.isOwner() && (this.instruction()?.stateId ?? 0) > 2,
@@ -535,6 +545,23 @@ export class InstructionDetail {
    * The trainer printout for filing. Saved first like the preview, so the PDF
    * shows what is in the form; a locked course is printed as stored.
    */
+  /**
+   * Öffnet die Abrechnung. Wie beim Ausdruck wird vorher gespeichert, damit
+   * die Vorbelegung (Zeiten, km …) dem Formular entspricht.
+   */
+  openClaim(): void {
+    const item = this.instruction();
+    if (!item) {
+      return;
+    }
+    if (this.locked()) {
+      this.showClaim.set(true);
+      return;
+    }
+    this.instructions.save({ instruction: item, silent: true, onSaved: () => this.showClaim.set(true) });
+    this.form()?.markAsPristine();
+  }
+
   print(): void {
     const instruction = this.instruction();
     if (!instruction || this.printing()) {

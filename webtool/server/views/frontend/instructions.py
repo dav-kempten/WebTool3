@@ -5,7 +5,7 @@ from rest_framework import viewsets, permissions, status, mixins
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from server import printouts
+from server import claims, printouts
 from server.models import Instruction, Season
 from server.serializers.client.activity import ActivitySerializer
 from server.serializers.frontend.instructions import InstructionListSerializer, InstructionSerializer
@@ -131,6 +131,12 @@ class InstructionViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         """The trainer printout of this course as an A5 PDF, see server/printouts.py."""
         instance = self.get_object()
         return printouts.download(printouts.instruction_pdf(instance), instance.instruction)
+
+    @action(detail=True, methods=['get', 'post'], permission_classes=[permissions.IsAuthenticated],
+            renderer_classes=printouts.RENDERERS)
+    def claim(self, request, pk=None):
+        """Abrechnung: GET Vorbelegung, POST Vorschau (JSON) oder PDF, see server/claims.py."""
+        return claims.respond(request, self.get_object(), 'course')
 
     def destroy(self, request, pk=None, *args, **kwargs):
 

@@ -134,6 +134,10 @@ Things to know about the setup:
 - **The image installs exact versions from `uv.lock`**, including the `dev` group
   with pytest — the same Django as production. After changing dependencies, run
   `uv lock` and rebuild: `docker compose build web && docker compose up -d web`.
+- **The image carries TeX Live and poppler**, as the server does, so the
+  printout, the claim ("Abrechnung", `server/claims.py`) and the PDF tests work
+  locally too. Locally that is TeX Live 2025, the server runs 2022 with fewer
+  packages: try a template with a new package on the server before relying on it.
 - **`--ds=config.settings.test` sits in `addopts`**, because the container sets
   `DJANGO_SETTINGS_MODULE=config.settings.local` through `.env`, which would
   otherwise take precedence.

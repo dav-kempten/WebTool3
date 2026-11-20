@@ -25,7 +25,7 @@ export class PrintoutService {
       })
       .subscribe({
         next: (response) => {
-          save(response, `${kind === 'tours' ? 'Tour' : 'Kurs'}-${id}.pdf`);
+          saveDownload(response, `${kind === 'tours' ? 'Tour' : 'Kurs'}-${id}.pdf`);
           done?.();
         },
         error: () => {
@@ -47,7 +47,8 @@ export function filenameOf(response: HttpResponse<Blob>, fallback: string): stri
   return /filename="([^"]+)"/.exec(header)?.[1] ?? fallback;
 }
 
-function save(response: HttpResponse<Blob>, fallback: string): void {
+/** Speichert die PDF-Antwort unter dem Namen, den das Backend vorgibt. */
+export function saveDownload(response: HttpResponse<Blob>, fallback: string): void {
   if (!response.body) {
     return;
   }

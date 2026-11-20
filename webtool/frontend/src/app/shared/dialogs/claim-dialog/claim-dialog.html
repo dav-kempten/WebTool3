@@ -1,0 +1,225 @@
+<p-dialog
+  header="Abrechnung"
+  [modal]="true"
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+  [style]="{ width: '60rem' }"
+  [breakpoints]="{ '960px': '95vw' }"
+>
+  @if (loadError()) {
+    <p-message severity="error" text="Die Abrechnung konnte nicht geladen werden. Abrechnen können nur Leitung und Team sowie die Geschäftsstelle." />
+  } @else if (!defaults() || !claim()) {
+    <p>Daten der Veranstaltung werden geladen …</p>
+  } @else {
+    @let d = defaults()!;
+    @let c = claim()!;
+    <div class="avk-claim">
+      <p class="avk-claim-muted">
+        <strong>{{ d.reference }}</strong> · {{ d.title }} · {{ d.begin }} – {{ d.end }} ·
+        {{ isCourse() ? 'Kurs' : 'Tourenbetrieb' }}. Alles ist korrigierbar; gespeichert wird nichts.
+      </p>
+
+      <!-- Person und Konto -->
+      <section>
+        <h3>Trainer*in &amp; Konto</h3>
+        <div class="avk-claim-grid">
+          @if (canChooseTrainer()) {
+            <label class="avk-claim-field">
+              <span>Abrechnende Person</span>
+              <p-select [options]="d.trainers" optionLabel="name" optionValue="id" [ngModel]="c.trainerId"
+                        (ngModelChange)="chooseTrainer($event)" appendTo="body" size="small" />
+            </label>
+          }
+          <label class="avk-claim-field">
+            <span>Name</span>
+            <input pInputText pSize="small" maxlength="100" [ngModel]="c.name" (ngModelChange)="patch({ name: $event })" />
+          </label>
+          <label class="avk-claim-field">
+            <span>Telefon</span>
+            <input pInputText pSize="small" maxlength="75" [ngModel]="c.phone" (ngModelChange)="patch({ phone: $event })" />
+          </label>
+          <label class="avk-claim-field">
+            <span>Mitgliedsnummer</span>
+            <input pInputText pSize="small" maxlength="20" [ngModel]="c.memberId" (ngModelChange)="patch({ memberId: $event })" />
+          </label>
+          <label class="avk-claim-field avk-claim-span2">
+            <span>Anschrift</span>
+            <input pInputText pSize="small" maxlength="300" [ngModel]="c.address" (ngModelChange)="patch({ address: $event })"
+                   placeholder="Straße, PLZ Ort – leer lassen = von Hand" />
+          </label>
+          <label class="avk-claim-field">
+            <span>Qualifikation</span>
+            <input pInputText pSize="small" maxlength="200" [ngModel]="c.qualification" (ngModelChange)="patch({ qualification: $event })" />
+          </label>
+          <label class="avk-claim-field avk-claim-span2">
+            <span>IBAN</span>
+            <input pInputText pSize="small" maxlength="42" [ngModel]="c.iban" (ngModelChange)="patch({ iban: $event })"
+                   (blur)="tidyIban()" [class.p-invalid]="ibanInvalid()"
+                   placeholder="leer = „lt. Mitgliederverwaltung“ zum Ankreuzen" />
+            @if (ibanInvalid()) {
+              <small class="avk-claim-error">Die IBAN stimmt nicht (Länge oder Prüfziffer).</small>
+            }
+          </label>
+          <label class="avk-claim-field">
+            <span>Bank</span>
+            <input pInputText pSize="small" maxlength="80" [ngModel]="c.bank" (ngModelChange)="patch({ bank: $event })" />
+          </label>
+        </div>
+      </section>
+
+      <!-- Aufwandsentschädigung -->
+      <section>
+        <h3>
+          Aufwandsentschädigung
+          @if (isCourse()) {
+            <p-select class="avk-claim-level" [options]="levelOptions()" optionLabel="label" optionValue="value"
+                      [ngModel]="c.level" (ngModelChange)="patch({ level: $event })" appendTo="body" size="small" />
+          }
+        </h3>
+        <p class="avk-claim-muted">
+          @if (isCourse()) {
+            bis 3 Std. {{ euro(d.rates.course[c.level][0]) }}/Std. · bis 6 Std. {{ euro(d.rates.course[c.level][1]) }} ·
+            ab 6 Std. {{ euro(d.rates.course[c.level][2]) }} · Vorbesprechung {{ euro(d.rates.preliminary) }}
+            @if (suggestedLevel() && suggestedLevel() !== c.level) {
+              · laut Qualifikation: {{ d.rates.levels[suggestedLevel()!] }}
+            }
+          } @else {
+            je Tag bis 6 Std. {{ euro(d.rates.tour.short) }}, ab 6 Std. {{ euro(d.rates.tour.long) }} – ab Treffpunkt mit der Gruppe
+          }
+        </p>
+        @if (hasEstimatedDays()) {
+          <p class="avk-claim-warn-text">⚠ Ohne genaue Zeiten im WebTool sind 8 Std. angenommen – bitte prüfen.</p>
+        }
+        <div class="avk-claim-days">
+          @for (day of c.days; track $index; let i = $index) {
+            <div class="avk-claim-day">
+              <input pInputText pSize="small" type="date" [ngModel]="day.date" (ngModelChange)="setDay(i, { date: $event })" aria-label="Datum" />
+              <p-inputnumber [ngModel]="day.hours" (ngModelChange)="setDay(i, { hours: $event ?? 0 })" [min]="0" [max]="24"
+                             [step]="0.25" [maxFractionDigits]="2" suffix=" h" size="small" ariaLabel="Stunden"
+                             [class.avk-claim-estimated]="day.estimated" />
+              @if (isCourse()) {
+                <p-select [options]="dayKinds" optionLabel="label" optionValue="value" [ngModel]="day.kind"
+                          (ngModelChange)="setDay(i, { kind: $event })" appendTo="body" size="small" />
+              }
+              <span class="avk-claim-amount">{{ dayAmount(i) }}</span>
+              <p-button icon="pi pi-times" [text]="true" size="small" severity="secondary" (onClick)="removeDay(i)" ariaLabel="Tag entfernen" />
+            </div>
+          }
+        </div>
+        <p-button label="Tag" icon="pi pi-plus" [text]="true" size="small" (onClick)="addDay()" />
+
+        <div class="avk-claim-subhead">
+          Übernachtungen
+          <span class="avk-claim-muted">pauschal {{ euro(d.rates.nightFlat) }}, mit Beleg bis {{ euro(d.rates.nightMax) }} (ohne Verpflegung)</span>
+        </div>
+        <div class="avk-claim-days">
+          @for (night of c.nights; track $index; let i = $index) {
+            <div class="avk-claim-day">
+              <span class="avk-claim-muted">Nacht {{ i + 1 }}</span>
+              <p-inputnumber [ngModel]="night.receipt" (ngModelChange)="setNight(i, $event)" mode="currency" currency="EUR"
+                             locale="de-DE" [min]="0" placeholder="Beleg (leer = pauschal)" size="small" ariaLabel="Betrag laut Beleg" />
+              <span class="avk-claim-amount">{{ nightAmount(i) }}</span>
+              <p-button icon="pi pi-times" [text]="true" size="small" severity="secondary" (onClick)="removeNight(i)" ariaLabel="Nacht entfernen" />
+            </div>
+          }
+        </div>
+        <p-button label="Nacht" icon="pi pi-plus" [text]="true" size="small" (onClick)="addNight()" />
+      </section>
+
+      <!-- Fahrtkosten -->
+      <section>
+        <h3>Fahrtkosten</h3>
+        @if (d.shuttle) {
+          <p class="avk-claim-muted">Sektionsbus/Alpin-Shuttle gebucht: dafür gibt es kein km-Geld, die Spritkosten tragen die Teilnehmer*innen.</p>
+        }
+        <div class="avk-claim-grid">
+          <label class="avk-claim-field">
+            <span>Ort Fahrtbeginn</span>
+            <input pInputText pSize="small" maxlength="80" [ngModel]="c.travelFrom" (ngModelChange)="patch({ travelFrom: $event })" />
+          </label>
+          <label class="avk-claim-field">
+            <span>Ort Fahrtziel</span>
+            <input pInputText pSize="small" maxlength="80" [ngModel]="c.travelTo" (ngModelChange)="patch({ travelTo: $event })" />
+          </label>
+          <label class="avk-claim-field">
+            <span>PKW ({{ euro(d.rates.kmCar) }}/km)</span>
+            <p-inputnumber [ngModel]="c.carKm" (ngModelChange)="patch({ carKm: $event ?? 0 })" [min]="0" [max]="20000" suffix=" km" size="small" />
+          </label>
+          <label class="avk-claim-field">
+            <span>Leiter als Mitfahrer ({{ euro(d.rates.kmPassenger) }}/km)</span>
+            <p-inputnumber [ngModel]="c.passengerKm" (ngModelChange)="patch({ passengerKm: $event ?? 0 })" [min]="0" [max]="20000" suffix=" km" size="small" />
+          </label>
+          <label class="avk-claim-field">
+            <span>Fahrrad ({{ euro(d.rates.kmBike) }}/km)</span>
+            <p-inputnumber [ngModel]="c.bikeKm" (ngModelChange)="patch({ bikeKm: $event ?? 0 })" [min]="0" [max]="20000" suffix=" km" size="small" />
+          </label>
+          <label class="avk-claim-field">
+            <span>Bahn/ÖPNV nach Beleg</span>
+            <span class="avk-claim-inline">
+              <p-inputnumber [ngModel]="c.publicTransport" (ngModelChange)="patch({ publicTransport: $event })" mode="currency"
+                             currency="EUR" locale="de-DE" [min]="0" size="small" />
+              <p-select [options]="bahncards" optionLabel="label" optionValue="value" [ngModel]="c.bahncard"
+                        (ngModelChange)="patch({ bahncard: $event })" appendTo="body" size="small" />
+            </span>
+          </label>
+        </div>
+      </section>
+
+      <!-- Sonstiges -->
+      <section>
+        <h3>Sonstiges <span class="avk-claim-muted">nur mit Originalbeleg – z. B. Lift (Saisonkarte 80 % Tageskarte), Parken, Maut, Vignette 50 %</span></h3>
+        <div class="avk-claim-days">
+          @for (expense of c.expenses; track $index; let i = $index) {
+            <div class="avk-claim-day">
+              <input pInputText pSize="small" maxlength="80" class="avk-claim-grow" [ngModel]="expense.label"
+                     (ngModelChange)="setExpense(i, { label: $event })" placeholder="Beschreibung" aria-label="Beschreibung" />
+              <p-inputnumber [ngModel]="expense.amount" (ngModelChange)="setExpense(i, { amount: $event })" mode="currency"
+                             currency="EUR" locale="de-DE" [min]="0" size="small" ariaLabel="Betrag" />
+              <p-button icon="pi pi-times" [text]="true" size="small" severity="secondary" (onClick)="removeExpense(i)" ariaLabel="Beleg entfernen" />
+            </div>
+          }
+        </div>
+        <p-button label="Beleg" icon="pi pi-plus" [text]="true" size="small" (onClick)="addExpense()" />
+      </section>
+
+      <!-- Abschluss -->
+      <section class="avk-claim-bottom">
+        <div class="avk-claim-grid avk-claim-left">
+          <label class="avk-claim-field">
+            <span>Teilnehmer*innen</span>
+            <p-inputnumber [ngModel]="c.participants" (ngModelChange)="patch({ participants: $event })" [min]="0" [max]="999" size="small" />
+          </label>
+          <label class="avk-claim-field">
+            <span>Land</span>
+            <input pInputText pSize="small" maxlength="60" [ngModel]="c.country" (ngModelChange)="patch({ country: $event })" />
+          </label>
+          <label class="avk-claim-field">
+            <span>Datum</span>
+            <input pInputText pSize="small" type="date" [ngModel]="c.invoiceDate" (ngModelChange)="patch({ invoiceDate: $event || null })" />
+          </label>
+          <label class="avk-claim-field avk-claim-span3">
+            <span>Bemerkung</span>
+            <input pInputText pSize="small" maxlength="1000" [ngModel]="c.note" (ngModelChange)="patch({ note: $event })"
+                   placeholder="z. B. Tour wetterbedingt verkürzt" />
+          </label>
+        </div>
+        @if (result(); as r) {
+          <div class="avk-claim-total">
+            <div>Aufwandsentschädigung <span>{{ euro(r.subtotals.compensation) }}</span></div>
+            <div>Fahrtkosten <span>{{ euro(r.subtotals.travel) }}</span></div>
+            <div>Sonstiges <span>{{ euro(r.subtotals.expenses) }}</span></div>
+            <div class="avk-claim-sum">Ergebnis <span>{{ euro(r.total) }}</span></div>
+          </div>
+        }
+      </section>
+
+      <div class="avk-claim-actions">
+        <small class="avk-claim-muted">Sätze nach {{ d.rates.leitfaden }}.</small>
+        <span class="avk-claim-spacer"></span>
+        <p-button label="Schließen" severity="secondary" (onClick)="visible.set(false)" />
+        <p-button label="PDF erstellen" icon="pi pi-file-pdf" [loading]="downloading()" [disabled]="ibanInvalid()" (onClick)="download()"
+                  [pTooltip]="ibanInvalid() ? 'Bitte zuerst die IBAN korrigieren oder leeren' : ''" />
+      </div>
+    </div>
+  }
+</p-dialog>

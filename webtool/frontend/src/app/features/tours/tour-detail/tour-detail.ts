@@ -46,6 +46,7 @@ import { ToursStore } from '../../../core/stores/tours.store';
 import { TourService } from '../../../core/services/tour.service';
 import { ActivityPreview } from '../../../models/preview';
 import { HomepagePreviewDialog } from '../../../shared/dialogs/homepage-preview-dialog/homepage-preview-dialog';
+import { ClaimDialog } from '../../../shared/dialogs/claim-dialog/claim-dialog';
 import { ValuesStore } from '../../../core/stores/values.store';
 import { NamesStore } from '../../../core/stores/names.store';
 import { EventsStore } from '../../../core/stores/events.store';
@@ -99,6 +100,7 @@ type EventKind = 'tour' | 'deadline' | 'preliminary';
     MessageModule,
     ReadyChecklistDialog,
     HomepagePreviewDialog,
+    ClaimDialog,
   ],
   providers: [AutoSaveService],
   templateUrl: './tour-detail.html',
@@ -149,6 +151,14 @@ export class TourDetail {
    * gespeicherten Werte beim Speichern unverändert durchlaufen.
    */
   readonly isOffice = this.auth.isOfficeOrAbove;
+
+  /** Abrechnen dürfen Leitung und Team sowie die Geschäftsstelle (das Backend prüft es noch einmal). */
+  readonly canClaim = computed(() => {
+    const item = this.tour();
+    const me = this.auth.permission().guideId;
+    return this.isOffice() || this.isOwner() || (!!item && me != null && item.teamIds.includes(me));
+  });
+  readonly showClaim = signal(false);
 
   /** Owner may only edit while the tour is still In Arbeit/Fertig (state <= 2). */
   readonly locked = computed(
@@ -606,6 +616,23 @@ export class TourDetail {
    * The trainer printout for filing. Saved first like the preview, so the PDF
    * shows what is in the form; a locked tour is printed as stored.
    */
+  /**
+   * Öffnet die Abrechnung. Wie beim Ausdruck wird vorher gespeichert, damit
+   * die Vorbelegung (Zeiten, km …) dem Formular entspricht.
+   */
+  openClaim(): void {
+    const item = this.tour();
+    if (!item) {
+      return;
+    }
+    if (this.locked()) {
+      this.showClaim.set(true);
+      return;
+    }
+    this.tours.save({ tour: item, silent: true, onSaved: () => this.showClaim.set(true) });
+    this.form()?.markAsPristine();
+  }
+
   print(): void {
     const tour = this.tour();
     if (!tour || this.printing()) {

@@ -1,0 +1,120 @@
+\documentclass[paper=a4,ngerman,fontsize=9pt,parskip=false]{scrartcl}
+% Abrechnung eines Trainers für eine Tour oder einen Kurs, zum Unterschreiben.
+% Aufbau wie das Formular "Abrechnung" der Sektion (Version 1/2026), Schriften
+% und Grün wie der Ausdruck. Gefüllt von server/claims.py; nur Pakete, die
+% auch das TeX Live 2022 auf dem Server hat.
+\usepackage[default,regular,bold,osf]{sourceserifpro}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{babel}
+\usepackage[left=15mm,right=15mm,top=12mm,bottom=16mm]{geometry}
+\usepackage{scrlayer-scrpage}
+\usepackage{ragged2e}
+\usepackage{eurosym}
+\usepackage{xcolor}
+\usepackage{tabularx}
+\usepackage{needspace}
+\usepackage{xfrac}
+\usepackage{newunicodechar}
+\usepackage{pifont}
+
+\newunicodechar{€}{\euro}
+\newunicodechar{➚}{\ding{218}}
+\newunicodechar{➘}{\ding{216}}
+\newunicodechar{●}{$\bullet$}
+\newunicodechar{○}{$\circ$}
+\newunicodechar{↑}{\ding{218}}
+\newunicodechar{↓}{\ding{216}}
+\newunicodechar{„}{\glqq{}}
+\newunicodechar{“}{\grqq{}}
+\newunicodechar{½}{\sfrac{1}{2}}
+\newunicodechar{⅓}{\sfrac{1}{3}}
+\newunicodechar{⅔}{\sfrac{2}{3}}
+\newunicodechar{¼}{\sfrac{1}{4}}
+\newunicodechar{¾}{\sfrac{3}{4}}
+\newunicodechar{△}{\ensuremath{\triangle}}
+
+\definecolor{davGrey}{RGB}{60,60,60}
+\definecolor{davGreen}{RGB}{90,175,51}
+\definecolor{davBar}{RGB}{200,226,180}
+\definecolor{davLight}{RGB}{242,242,242}
+
+\DeclareFixedFont{\davTitleFont}{T1}{SourceSansPro-LF}{b}{n}{17}
+\DeclareFixedFont{\davBarFont}{T1}{SourceSansPro-LF}{b}{n}{9.5}
+\DeclareFixedFont{\davSmallFont}{T1}{SourceSansPro-LF}{m}{n}{7.5}
+\DeclareFixedFont{\davFooterFont}{T1}{SourceSansPro-LF}{m}{n}{6.5}
+
+\setlength{\parindent}{0pt}
+\setlength{\JustifyingParindent}{0pt}
+\setlength{\RaggedRightParindent}{0pt}
+\setlength{\tabcolsep}{3pt}
+
+% Kopf: "Abrechnung" und die Sektion, auf grünem Grund wie das Formular.
+\newcommand{\claimHeader}{%
+\noindent\colorbox{davBar}{\makebox[\dimexpr\linewidth-2\fboxsep\relax]{%
+{\davTitleFont\color{davGreen!60!black}Abrechnung}\hfill
+{\davSmallFont\begin{tabular}[b]{@{}r@{}}Sektion Allgäu-Kempten des Deutschen Alpenvereins e.V.\\
+Aybühlweg 69, 87439 Kempten (Allgäu) · Tel. +49 (0)831 570097-0\end{tabular}}}}\par\vspace{1.2ex}}
+
+% Angaben zu Person und Veranstaltung: zwei Spalten mit je Beschriftung und Wert.
+\newenvironment{claimHead}{%
+\renewcommand{\arraystretch}{1.25}%
+\tabularx{\linewidth}{@{}>{\bfseries}p{29mm}>{\RaggedRight}X>{\bfseries}p{25mm}>{\RaggedRight}X@{}}}{%
+\endtabularx\par}
+\newcommand{\claimPair}[4]{#1: & #2 & #3: & #4\\}
+
+% Leere Linie zum Ausfüllen von Hand und ein Kästchen zum Ankreuzen.
+\newcommand{\claimBlank}{\rule[-0.3ex]{48mm}{0.4pt}}
+\newcommand{\claimBox}{\fbox{\rule{0pt}{1ex}\rule{1ex}{0pt}}}
+
+% Abschnittsbalken wie im Formular, rechts eine optionale Angabe.
+\newcommand{\claimBar}[2]{%
+\par\Needspace{5\baselineskip}\vspace{1.1ex}\noindent\colorbox{davBar}{\makebox[\dimexpr\linewidth-2\fboxsep\relax]{%
+{\davBarFont #1}\hfill{\davSmallFont #2}}}\par\vspace{0.3ex}}
+
+% Positionen: Kategorie, Satz, Anzahl, Betrag.
+\newenvironment{claimRows}{%
+\renewcommand{\arraystretch}{1.15}%
+\tabularx{\linewidth}{@{}>{\RaggedRight}X>{\RaggedLeft}p{30mm}>{\RaggedLeft}p{22mm}>{\RaggedLeft}p{24mm}@{}}}{%
+\endtabularx\par}
+
+\newcommand{\claimSmall}[1]{\par\vspace{0.4ex}{\davSmallFont\RaggedRight #1}\par}
+
+\newcommand{\claimMobility}{%
+\par\vspace{1.1ex}\noindent\colorbox{davLight}{\makebox[\dimexpr\linewidth-2\fboxsep\relax]{%
+{\davBarFont Teilnehmermobilität:} {\small Erfassung ausschließlich online unter dav-kempten.de/co2}\hfill}}\par}
+
+% Konto links, Summen und Ergebnis rechts.
+\newcommand{\claimAccount}[2]{%
+\par\Needspace{8\baselineskip}\vspace{1.1ex}\noindent
+\begin{minipage}[t]{0.48\linewidth}
+\colorbox{davBar}{\makebox[\dimexpr\linewidth-2\fboxsep\relax][l]{\davBarFont Rechnungsbetrag bitte überweisen auf:}}\par\vspace{0.6ex}
+#1
+\end{minipage}\hfill
+\begin{minipage}[t]{0.48\linewidth}
+\colorbox{davBar}{\makebox[\dimexpr\linewidth-2\fboxsep\relax][l]{\davBarFont Summen}}\par\vspace{0.3ex}
+\renewcommand{\arraystretch}{1.2}%
+\begin{tabularx}{\linewidth}{@{}>{\RaggedLeft}X>{\RaggedLeft}p{24mm}@{}}
+#2
+\end{tabularx}
+\end{minipage}\par}
+
+\newcommand{\claimDeclaration}[1]{\par\vspace{1.4ex}{\davSmallFont\justifying #1}\par}
+
+\newcommand{\claimSignature}[1]{%
+\par\Needspace{5\baselineskip}\vspace{9mm}\noindent
+\begin{tabularx}{\linewidth}{@{}p{55mm}@{\hspace{10mm}}X@{}}
+#1 & \\[-1.6ex]
+\rule{\linewidth}{0.4pt} & \rule{\linewidth}{0.4pt}\\
+{\small Datum} & {\small Unterschrift (Original)}
+\end{tabularx}\par}
+
+\pagestyle{scrheadings}
+\clearpairofpagestyles
+\cfoot*{\davFooterFont\color{davGrey}%%Footer%% \textperiodcentered{} Seite \thepage}
+
+\begin{document}
+\RaggedRight
+\color{davGrey}
+%%Content%%
+\end{document}
