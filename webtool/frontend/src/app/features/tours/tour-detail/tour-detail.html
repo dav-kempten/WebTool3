@@ -500,72 +500,16 @@
     @if (selectedEventForm(); as ef) {
       <form [formGroup]="ef" class="avk-event-form">
         @if (selectedKind() === 'tour') {
-          <div class="avk-grid-2">
-            <div class="avk-field">
-              <label>Kurztitel</label>
-              <input
-                pInputText
-                formControlName="title"
-                maxlength="30"
-                pTooltip="Kurztitel (max. 30 Zeichen) für die Darstellung im Tourenprogramm auf der Homepage"
-              />
-            </div>
-            <div class="avk-field">
-              <label>Langtitel</label>
-              <input
-                pInputText
-                formControlName="name"
-                maxlength="125"
-                pTooltip="Langtitel (max. 125 Zeichen) für die Detailansicht auf Homepage (kann mit dem Kurztitel übereinstimmen)"
-              />
-            </div>
-          </div>
-        }
-
-        @if (selectedKind() !== 'deadline') {
-          <div class="avk-grid-3">
-            <!-- Die Vorbesprechung dauert nur einen Abend: Startdatum steht hier
-                 in der Zeitzeile, der Treffpunkt bekommt darunter eine eigene. -->
-            @if (selectedKind() === 'preliminary') {
-              <div class="avk-field">
-                <label>Startdatum</label>
-                <p-datepicker
-                  formControlName="startDate"
-                  dateFormat="dd.mm.yy"
-                  appendTo="body"
-                  [minDate]="minDate()"
-                  pTooltip="Startdatum"
-                ></p-datepicker>
-              </div>
-            }
-            @if (selectedKind() === 'tour') {
-              <div class="avk-field">
-                <label>Tageszeit (ca.)</label>
-                <!-- Tageszeit and Startzeit lock each other, see lockStartTimeOrApproximate(). -->
-                <p-select
-                  formControlName="approximateId"
-                  [options]="approximateOptions()"
-                  optionLabel="name"
-                  optionValue="id"
-                  [showClear]="true"
-                  appendTo="body"
-                  pTooltip="Ungefähre Startzeit (wenn keine genaue Zeit angegeben werden kann) – gesperrt, solange eine Startzeit eingetragen ist"
-                />
-              </div>
-            }
-            <div class="avk-field">
-              <label>Startzeit</label>
-              <avk-time-input formControlName="startTime" tooltip="Startzeit – gesperrt, solange eine Tageszeit gewählt ist" />
-            </div>
-            <div class="avk-field">
-              <label>Endzeit</label>
-              <avk-time-input formControlName="endTime" tooltip="Endzeit" />
-            </div>
-          </div>
-        }
-
-        @if (selectedKind() !== 'preliminary') {
-          <div class="avk-grid-2">
+          <avk-event-fields
+            [form]="ef"
+            [config]="tourEventFields"
+            [approximateOptions]="approximateOptions()"
+            [minDate]="minDate()"
+          />
+        } @else {
+          <!-- Anmeldeschluss: nur das Datum. Vorbesprechung: ein Abend, daher
+               Datum und Zeiten in einer Zeile, darunter der Treffpunkt. -->
+          <div [class]="selectedKind() === 'preliminary' ? 'avk-grid-3' : 'avk-grid-2'">
             <div class="avk-field">
               <label>Startdatum</label>
               <p-datepicker
@@ -576,24 +520,14 @@
                 pTooltip="Startdatum"
               ></p-datepicker>
             </div>
-            @if (selectedKind() === 'tour') {
+            @if (selectedKind() === 'preliminary') {
               <div class="avk-field">
-                <label>Enddatum</label>
-                <!-- Lower bound is the start date itself, so an earlier day cannot
-                     be picked in the first place. -->
-                <p-datepicker
-                  formControlName="endDate"
-                  dateFormat="dd.mm.yy"
-                  appendTo="body"
-                  [minDate]="ef.get('startDate')?.value ?? minDate()"
-                  [class.avk-invalid]="ef.get('endDate')?.hasError('endBeforeStart')"
-                  pTooltip="Enddatum (nur angeben wenn die Veranstaltung länger als einen Tag dauert)"
-                ></p-datepicker>
-                @if (ef.get('endDate')?.hasError('endBeforeStart')) {
-                  <small class="avk-error-text">
-                    Das Enddatum darf nicht vor dem Startdatum liegen.
-                  </small>
-                }
+                <label>Startzeit</label>
+                <avk-time-input formControlName="startTime" tooltip="Startzeit" />
+              </div>
+              <div class="avk-field">
+                <label>Endzeit</label>
+                <avk-time-input formControlName="endTime" tooltip="Endzeit" />
               </div>
             }
           </div>
@@ -637,69 +571,6 @@
               pTooltip="Abweichender Treffpunkt für Ausnahmefälle"
             />
             <small>Für Ausnahmefälle frei eintragbar – die Optionen oben werden dann abgewählt.</small>
-          </div>
-        }
-
-        @if (selectedKind() === 'tour') {
-          <div class="avk-field">
-            <label>Beschreibung</label>
-            <textarea pTextarea formControlName="description" rows="3" class="avk-full"></textarea>
-            <small>Sonderzeichen: ● ○ ➘ ➚ „“ ½ ⅓ ⅔ ¼ ¾</small>
-          </div>
-        }
-
-        @if (selectedKind() === 'tour') {
-          <div class="avk-grid-3">
-            <div class="avk-field">
-              <label>Treffpunkt</label>
-              <avk-rendezvous-input formControlName="rendezvous" tooltip="Treffpunkt für die Abfahrt" />
-            </div>
-            <div class="avk-field">
-              <label>Ausgangspunkt</label>
-              <input pInputText formControlName="source" maxlength="75" />
-            </div>
-            <div class="avk-field">
-              <label>Übernachtungsort</label>
-              <input pInputText formControlName="location" maxlength="75" />
-            </div>
-          </div>
-
-          <div class="avk-checkbox-row avk-checkbox-row-spread">
-            <div class="avk-checkbox-item">
-              <p-checkbox formControlName="lea" [binary]="true" inputId="leaCheckbox" />
-              <label for="leaCheckbox">Low Emission Adventure</label>
-            </div>
-            <div class="avk-checkbox-item">
-              <p-checkbox formControlName="distal" [binary]="true" inputId="distalCheckbox" />
-              <label for="distalCheckbox">Gemeinschaftsanreise</label>
-            </div>
-            <div class="avk-checkbox-item">
-              <p-checkbox formControlName="publicTransport" [binary]="true" inputId="publicTransportCheckbox" />
-              <label for="publicTransportCheckbox">Öffentliche Anreise</label>
-            </div>
-            <div class="avk-checkbox-item" pTooltip="Reservierungswunsch für das Alpin-Shuttle">
-              <p-checkbox formControlName="shuttleService" [binary]="true" inputId="shuttleServiceCheckbox" />
-              <label for="shuttleServiceCheckbox">Alpin-Shuttle</label>
-            </div>
-          </div>
-          <div class="avk-grid-2">
-            <div class="avk-field">
-              <label>Gesamtfahrstrecke (km)</label>
-              <p-inputnumber
-                formControlName="distance"
-                [min]="0"
-                [max]="9999"
-                pTooltip="Gesamtfahrstrecke der Veranstaltung – Fahrten innerhalb der Tour bitte mitrechnen, auch wenn nur geschätzt"
-              ></p-inputnumber>
-            </div>
-            <div class="avk-field">
-              <label>Tourenportal-Link</label>
-              <input pInputText formControlName="link" maxlength="200" pTooltip="z.B. Alpenvereinaktiv, Outdooractive etc." />
-            </div>
-          </div>
-          <div class="avk-field">
-            <label>Kartenausschnitt-URL</label>
-            <input pInputText formControlName="map" maxlength="100" class="avk-full" />
           </div>
         }
       </form>

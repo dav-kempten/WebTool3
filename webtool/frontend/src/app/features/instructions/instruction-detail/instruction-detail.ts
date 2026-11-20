@@ -30,8 +30,10 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { TextareaModule } from 'primeng/textarea';
 import { TooltipModule } from 'primeng/tooltip';
 import { ResponsiveTooltip } from '../../../shared/directives/responsive-tooltip';
-import { RendezvousInput } from '../../../shared/components/rendezvous-input/rendezvous-input';
-import { TimeInput } from '../../../shared/components/time-input/time-input';
+import {
+  EventFields,
+  EventFieldsConfig,
+} from '../../../shared/components/event-fields/event-fields';
 import { ReadyChecklistDialog } from '../../../shared/dialogs/ready-checklist-dialog/ready-checklist-dialog';
 import { guardReadyState, spansSeveralDays } from '../../../shared/util/ready-guard';
 import { MessageModule } from 'primeng/message';
@@ -87,8 +89,7 @@ import { lockStartTimeOrApproximate } from '../../../shared/util/event-time';
     TextareaModule,
     TooltipModule,
     ResponsiveTooltip,
-    RendezvousInput,
-    TimeInput,
+    EventFields,
     MessageModule,
     ReadyChecklistDialog,
     HomepagePreviewDialog,
@@ -235,6 +236,35 @@ export class InstructionDetail {
   readonly minDate = signal<Date>(tomorrow());
   readonly showEvent = signal(false);
   readonly selectedIsMain = signal(false);
+
+  /**
+   * Felder des Termin-Dialogs, siehe EventFields. Anreise, Fahrstrecke und
+   * Beschreibung gehören zum Haupttermin; die Homepage-Hinweise unter den
+   * Ortsfeldern sieht nur die Geschäftsstelle.
+   */
+  readonly eventFields = computed<EventFieldsConfig>(() => {
+    const main = this.selectedIsMain();
+    return {
+      titles: {
+        title: 'Kurztitel (z.B. Praxistag 1, max. 30 Zeichen) für die Ansicht im Kursprogramm auf der Homepage',
+        name: 'Langtitel (max. 125 Zeichen) für die Detailansicht auf der Homepage',
+      },
+      approximate: true,
+      endDate: 'Enddatum',
+      sourceLabel: 'Kursort',
+      sourceTooltip: 'Treffpunkt vor Ort',
+      locationLabel: 'Übernachtungsort',
+      placeHint: this.isOffice() ? (label: string) => this.homepagePlace(label) : undefined,
+      checkboxes: main ? ['lea', 'distal', 'publicTransport', 'shuttleService'] : [],
+      distance: main
+        ? 'Gesamtfahrstrecke der Veranstaltung – Fahrten innerhalb des Kurses bitte mitrechnen, auch wenn nur geschätzt'
+        : undefined,
+      // Beim Sonderkurs ist dieser Text die Kursbeschreibung — daher doppelt so viel Platz.
+      link: true,
+      map: true,
+      description: main ? { rows: this.isSpecial() ? 6 : 3 } : undefined,
+    };
+  });
   selectedEventForm = signal<FormGroup | undefined>(undefined);
   private selectedEventId: number | null = null;
 
@@ -404,6 +434,8 @@ export class InstructionDetail {
       distal: [event.distal],
       publicTransport: [event.publicTransport],
       shuttleService: [event.shuttleService],
+      link: [event.link],
+      map: [event.map],
     });
 
     // The end-date validator reads the start date, so moving the start has to

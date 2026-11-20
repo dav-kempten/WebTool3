@@ -25,8 +25,10 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { TextareaModule } from 'primeng/textarea';
 import { TooltipModule } from 'primeng/tooltip';
 import { ResponsiveTooltip } from '../../../shared/directives/responsive-tooltip';
-import { RendezvousInput } from '../../../shared/components/rendezvous-input/rendezvous-input';
-import { TimeInput } from '../../../shared/components/time-input/time-input';
+import {
+  EventFields,
+  EventFieldsConfig,
+} from '../../../shared/components/event-fields/event-fields';
 import { MessageModule } from 'primeng/message';
 import { ConfirmationService } from 'primeng/api';
 
@@ -73,8 +75,7 @@ import { describeSaveErrorPath } from '../../../shared/util/save-error';
     TextareaModule,
     TooltipModule,
     ResponsiveTooltip,
-    RendezvousInput,
-    TimeInput,
+    EventFields,
     MessageModule,
   ],
   providers: [AutoSaveService],
@@ -138,6 +139,21 @@ export class SessionDetail {
   );
   readonly equipmentOptions = this.values.equipments;
   readonly approximateOptions = this.values.approximates;
+
+  /** Felder des Termin-Dialogs, siehe EventFields. */
+  readonly eventFields: EventFieldsConfig = {
+    titles: {
+      title: 'Kurztitel (max. 30 Zeichen) für die Terminliste und die Darstellung auf der Homepage',
+      name: 'Langtitel (max. 125 Zeichen) für die Detailansicht auf der Homepage (kann mit dem Kurztitel übereinstimmen)',
+    },
+    approximate: true,
+    endDate: 'Enddatum',
+    locationLabel: 'Ort',
+    checkboxes: ['reservationService', 'distal', 'shuttleService'],
+    distance: 'Gesamtfahrstrecke der Veranstaltung – Fahrten innerhalb des Termins bitte mitrechnen, auch wenn nur geschätzt',
+    map: true,
+    description: { rows: 3 },
+  };
   readonly nameOptions = computed(() =>
     Array.from(this.names.nameById().values()).map((n) => ({
       id: n.id,

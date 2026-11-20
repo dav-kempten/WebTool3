@@ -32,7 +32,10 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { TextareaModule } from 'primeng/textarea';
 import { TooltipModule } from 'primeng/tooltip';
 import { ResponsiveTooltip } from '../../../shared/directives/responsive-tooltip';
-import { RendezvousInput } from '../../../shared/components/rendezvous-input/rendezvous-input';
+import {
+  EventFields,
+  EventFieldsConfig,
+} from '../../../shared/components/event-fields/event-fields';
 import { TimeInput } from '../../../shared/components/time-input/time-input';
 import { ReadyChecklistDialog } from '../../../shared/dialogs/ready-checklist-dialog/ready-checklist-dialog';
 import { guardReadyState, spansSeveralDays } from '../../../shared/util/ready-guard';
@@ -91,7 +94,7 @@ type EventKind = 'tour' | 'deadline' | 'preliminary';
     TextareaModule,
     TooltipModule,
     ResponsiveTooltip,
-    RendezvousInput,
+    EventFields,
     TimeInput,
     MessageModule,
     ReadyChecklistDialog,
@@ -177,6 +180,23 @@ export class TourDetail {
     this.values.categories().filter((c) => c.tour),
   );
   readonly approximateOptions = this.values.approximates;
+
+  /** Felder des Termin-Dialogs für den Tourtermin, siehe EventFields. */
+  readonly tourEventFields: EventFieldsConfig = {
+    titles: {
+      title: 'Kurztitel (max. 30 Zeichen) für die Darstellung im Tourenprogramm auf der Homepage',
+      name: 'Langtitel (max. 125 Zeichen) für die Detailansicht auf Homepage (kann mit dem Kurztitel übereinstimmen)',
+    },
+    approximate: true,
+    endDate: 'Enddatum (nur angeben wenn die Veranstaltung länger als einen Tag dauert)',
+    sourceLabel: 'Ausgangspunkt',
+    locationLabel: 'Übernachtungsort',
+    checkboxes: ['lea', 'distal', 'publicTransport', 'shuttleService'],
+    distance: 'Gesamtfahrstrecke der Veranstaltung – Fahrten innerhalb der Tour bitte mitrechnen, auch wenn nur geschätzt',
+    link: true,
+    map: true,
+    description: { rows: 3, hint: 'Sonderzeichen: ● ○ ➘ ➚ „“ ½ ⅓ ⅔ ¼ ¾' },
+  };
   readonly nameOptions = computed(() =>
     this.names.nameById
       ? Array.from(this.names.nameById().values()).map((n) => ({

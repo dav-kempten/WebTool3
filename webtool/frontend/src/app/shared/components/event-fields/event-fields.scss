@@ -1,0 +1,17 @@
+/* Steht im Formular des Dialogs (.avk-event-form) und reiht die Zeilen
+   genauso untereinander wie dieses. */
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.avk-field {
+  p-datepicker,
+  p-inputnumber,
+  p-select,
+  avk-time-input,
+  avk-rendezvous-input {
+    width: 100%;
+  }
+}

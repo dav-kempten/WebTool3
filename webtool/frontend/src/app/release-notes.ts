@@ -29,6 +29,7 @@ export const RELEASE_NOTES: readonly ReleaseNote[] = [
       'In Beschreibungen bleiben die üblichen Formatierungen erhalten: Zeilenumbruch, fett, kursiv, Absätze, Listen und Links. Andere HTML-Befehle werden auf der Homepage entfernt, alle übrigen Felder erscheinen dort genau so, wie sie eingetippt wurden.',
       'Start- und Endzeit: Der Uhr-Knopf bietet nur noch Viertelstunden an. Eine Uhrzeit, die sich nicht lesen lässt, wird rot markiert, und darunter steht, wie sie aussehen muss.',
       'Die Terminliste filtert über eine Auswahlliste „Gruppe“ mit allen Gruppen, die Termine haben – statt der festen Knöpfe, in denen manche Gruppen fehlten. Gruppenleiter sehen beim Öffnen gleich ihre eigene Gruppe.',
+      'Die Termin-Details von Touren, Kursen und Gruppenterminen sind jetzt gleich aufgebaut und gleich breit. Kurstermine haben jetzt auch Tourenportal-Link und Kartenausschnitt.',
     ],
   },
   {

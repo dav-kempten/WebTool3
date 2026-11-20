@@ -1,0 +1,139 @@
+@let c = config();
+@let f = form();
+<ng-container [formGroup]="f">
+  @if (c.titles; as titles) {
+    <div class="avk-grid-2">
+      <div class="avk-field">
+        <label>Kurztitel</label>
+        <input pInputText formControlName="title" maxlength="30" [pTooltip]="titles.title" />
+      </div>
+      <div class="avk-field">
+        <label>Langtitel</label>
+        <input pInputText formControlName="name" maxlength="125" [pTooltip]="titles.name" />
+      </div>
+    </div>
+  }
+
+  <div [class]="c.approximate ? 'avk-grid-3' : 'avk-grid-2'">
+    @if (c.approximate) {
+      <div class="avk-field">
+        <label>Tageszeit (ca.)</label>
+        <!-- Tageszeit und Startzeit sperren sich gegenseitig, siehe lockStartTimeOrApproximate(). -->
+        <p-select
+          formControlName="approximateId"
+          [options]="approximateOptions()"
+          optionLabel="name"
+          optionValue="id"
+          [showClear]="true"
+          appendTo="body"
+          pTooltip="Ungefähre Startzeit (wenn keine genaue Zeit angegeben werden kann) – gesperrt, solange eine Startzeit eingetragen ist"
+        />
+      </div>
+    }
+    <div class="avk-field">
+      <label>Startzeit</label>
+      <avk-time-input
+        formControlName="startTime"
+        [tooltip]="c.approximate ? 'Startzeit – gesperrt, solange eine Tageszeit gewählt ist' : 'Startzeit'"
+      />
+    </div>
+    <div class="avk-field">
+      <label>Endzeit</label>
+      <avk-time-input formControlName="endTime" tooltip="Endzeit" />
+    </div>
+  </div>
+
+  <div class="avk-grid-2">
+    <div class="avk-field">
+      <label>Startdatum</label>
+      <p-datepicker formControlName="startDate" dateFormat="dd.mm.yy" appendTo="body" [minDate]="minDate()" pTooltip="Startdatum" />
+    </div>
+    @if (c.endDate; as endDateTooltip) {
+      <div class="avk-field">
+        <label>Enddatum</label>
+        <!-- Untergrenze ist das Startdatum selbst, ein früherer Tag lässt sich gar nicht erst wählen. -->
+        <p-datepicker
+          formControlName="endDate"
+          dateFormat="dd.mm.yy"
+          appendTo="body"
+          [minDate]="f.get('startDate')?.value ?? minDate()"
+          [class.avk-invalid]="f.get('endDate')?.hasError('endBeforeStart')"
+          [pTooltip]="endDateTooltip"
+        />
+        @if (f.get('endDate')?.hasError('endBeforeStart')) {
+          <small class="avk-error-text">Das Enddatum darf nicht vor dem Startdatum liegen.</small>
+        }
+      </div>
+    }
+  </div>
+
+  <div [class]="c.sourceLabel ? 'avk-grid-3' : 'avk-grid-2'">
+    <div class="avk-field">
+      <label>Treffpunkt</label>
+      <avk-rendezvous-input formControlName="rendezvous" tooltip="Treffpunkt für die Abfahrt" />
+      @if (c.placeHint) {
+        <small>{{ c.placeHint('Treffpunkt') }}</small>
+      }
+    </div>
+    @if (c.sourceLabel; as sourceLabel) {
+      <div class="avk-field">
+        <label>{{ sourceLabel }}</label>
+        <input pInputText formControlName="source" maxlength="75" [pTooltip]="c.sourceTooltip ?? ''" />
+        @if (c.placeHint) {
+          <small>{{ c.placeHint(sourceLabel) }}</small>
+        }
+      </div>
+    }
+    <div class="avk-field">
+      <label>{{ c.locationLabel }}</label>
+      <input pInputText formControlName="location" maxlength="75" />
+      @if (c.placeHint) {
+        <small>{{ c.placeHint('Übernachtung') }}</small>
+      }
+    </div>
+  </div>
+
+  @if (checkboxes().length) {
+    <div class="avk-checkbox-row avk-checkbox-row-spread">
+      @for (box of checkboxes(); track box.name) {
+        <div class="avk-checkbox-item" [pTooltip]="box.tooltip">
+          <p-checkbox [formControlName]="box.name" [binary]="true" [inputId]="idPrefix + box.name" />
+          <label [for]="idPrefix + box.name">{{ box.label }}</label>
+        </div>
+      }
+    </div>
+  }
+
+  @if (extras()) {
+    <div [class]="extras() === 3 ? 'avk-grid-3' : 'avk-grid-2'">
+      @if (c.distance; as distanceTooltip) {
+        <div class="avk-field">
+          <label>Gesamtfahrstrecke (km)</label>
+          <p-inputnumber formControlName="distance" [min]="0" [max]="9999" [pTooltip]="distanceTooltip" />
+        </div>
+      }
+      @if (c.link) {
+        <div class="avk-field">
+          <label>Tourenportal-Link</label>
+          <input pInputText formControlName="link" maxlength="200" pTooltip="z.B. Alpenvereinaktiv, Outdooractive etc." />
+        </div>
+      }
+      @if (c.map) {
+        <div class="avk-field">
+          <label>Kartenausschnitt-URL</label>
+          <input pInputText formControlName="map" maxlength="100" />
+        </div>
+      }
+    </div>
+  }
+
+  @if (c.description; as description) {
+    <div class="avk-field">
+      <label>Beschreibung</label>
+      <textarea pTextarea formControlName="description" [rows]="description.rows" class="avk-full"></textarea>
+      @if (description.hint) {
+        <small>{{ description.hint }}</small>
+      }
+    </div>
+  }
+</ng-container>
