@@ -169,7 +169,7 @@ class Tour(
         label, value = self._preliminary()
         if label:
             lines.append(homepage.line(label, homepage.text(value)))
-        lines.append(homepage.line('Abfahrt', homepage.text(self.tour.departure())))
+        lines.append(homepage.line('Abfahrt', homepage.text(self.tour.departure(labelled=True))))
         if self.tour.source:
             lines.append(homepage.line('Ausgangspunkt', homepage.text(self.tour.source)))
         if self.tour.location:

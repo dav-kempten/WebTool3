@@ -193,7 +193,7 @@ class Booklet(TimeMixin, models.Model):
                     preliminary = event.tour._preliminary()
                     if preliminary[0]:
                         lines.append(f'\\textbf{{{cls.texify(preliminary[0])}:}} {cls.texify(preliminary[1])}')
-                    lines.append(f'\\textbf{{Abfahrt:}} {cls.texify(event.departure())}')
+                    lines.append(f'\\textbf{{Abfahrt:}} {cls.texify(event.departure(labelled=True))}')
                     if event.source:
                         lines.append(f'\\textbf{{Ausgangspunkt:}} {cls.texify(event.source)}')
                     if event.location:

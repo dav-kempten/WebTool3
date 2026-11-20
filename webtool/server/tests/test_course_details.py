@@ -96,3 +96,21 @@ def test_places_are_escaped(course):
     assert 'Treffpunkt: Hütte &lt;b&gt;Alpenrose&lt;/b&gt; &amp; Co' in details
     assert '<strong>Übernachtung:</strong> &lt;script&gt;x()&lt;/script&gt;' in details
     assert '<script>' not in details
+
+
+def test_labels_typed_into_the_fields_are_not_doubled(course):
+    event = course.instruction
+    event.rendezvous = 'Treffpunkt: Alpinzentrum Kempten, Seminarraum'
+    event.source = 'Ausgangspunkt: Kletterhalle'
+    event.location = 'Übernachtung: Otto-Mayr-Hütte'
+    event.save()
+    meeting = course.meeting_list.first()
+    meeting.rendezvous = 'treffpunkt : Alpinzentrum Kempten, Parkplatz'
+    meeting.save()
+    lines = main_block(course.details())
+    assert lines[1:] == [
+        '<strong>Treffpunkt:</strong> Alpinzentrum Kempten, Seminarraum',
+        '<strong>Kursort:</strong> Kletterhalle',
+        '<strong>Übernachtung:</strong> Otto-Mayr-Hütte',
+    ]
+    assert 'Praxis am Fels, Treffpunkt: Alpinzentrum Kempten, Parkplatz, Kursort' in course.details()

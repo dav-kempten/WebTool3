@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import re
+
 from django.db import models
 from django.template.defaultfilters import date, time
 
@@ -8,6 +10,17 @@ from .approximate import Approximate
 from .mixins import SeasonMixin, DescriptionMixin
 from .time_base import TimeMixin
 from . import fields
+
+#: Ein von Hand vorangestelltes "Treffpunkt:" im Feld, das die Beschriftung verdoppeln würde.
+RENDEZVOUS_LABEL = re.compile(r'^\s*Treffpunkt\s*:\s*', re.IGNORECASE)
+
+#: Dasselbe für die beschrifteten Orte eines Kurstermins (Event.places()),
+#: samt der früher gebräuchlichen Namen für Kursort und Übernachtung.
+PLACE_LABELS = {
+    'Treffpunkt': RENDEZVOUS_LABEL,
+    'Kursort': re.compile(r'^\s*(Kursort|Ausgangspunkt|Ausgangsort)\s*:\s*', re.IGNORECASE),
+    'Übernachtung': re.compile(r'^\s*(Übernachtung|Übernachtungsort|Ort)\s*:\s*', re.IGNORECASE),
+}
 
 
 class EventManager(models.Manager):
@@ -244,12 +257,16 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
             return date(self.start_date, "d.m." + y)
         return "{0} - {1}".format(date(self.start_date, "d.m." + y), date(self.end_date, "d.m." + y))
 
-    def departure(self, with_places=True):
+    def departure(self, with_places=True, labelled=False):
         """
             {start_date}, {start_time}, {rendezvous}, Heimkehr am {end_date} gegen {end_time} Uhr
+            {start_date}, {start_time}, Treffpunkt: {rendezvous}, Heimkehr …  (labelled=True)
 
         :param with_places: False lässt den Treffpunkt weg, damit ihn der
             Aufrufer als eigene, beschriftete Angabe ausgeben kann.
+        :param labelled: True schreibt "Treffpunkt: " vor den Treffpunkt
+            (Abfahrt einer Tour). Ein schon im Feld stehendes "Treffpunkt:"
+            wird dabei nicht verdoppelt.
         """
         season_year = int(self.season.name)
         with_year = season_year != self.start_date.year or (self.end_date and season_year != self.end_date.year)
@@ -280,7 +297,10 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
 
         departure = "{}, {}".format(start_date, start_time)
         if with_places and self.rendezvous:
-            departure = "{}, {}".format(departure, self.rendezvous)
+            rendezvous = self.rendezvous
+            if labelled:
+                rendezvous = "Treffpunkt: {}".format(RENDEZVOUS_LABEL.sub('', rendezvous))
+            departure = "{}, {}".format(departure, rendezvous)
         if end_time:
             departure = "{}, Heimkehr".format(departure)
             if end_date:
@@ -356,17 +376,22 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
         """
         Treffpunkt, Kursort und Übernachtung eines Kurstermins, jeweils mit der
         Bezeichnung, unter der sie auf der Homepage stehen — dieselben wie im
-        Termin-Dialog des Frontends. Leere Felder fehlen.
+        Termin-Dialog des Frontends. Leere Felder fehlen. Hat jemand die
+        Bezeichnung selbst ins Feld geschrieben ("Treffpunkt: Parkplatz"), fällt
+        sie weg, damit sie nicht doppelt erscheint.
 
         :return: Liste von (Bezeichnung, Wert)
         """
-        return [
-            (label, value) for label, value in (
-                ('Treffpunkt', self.rendezvous),
-                ('Kursort', self.source),
-                ('Übernachtung', self.location),
-            ) if value
-        ]
+        places = []
+        for label, value in (
+            ('Treffpunkt', self.rendezvous),
+            ('Kursort', self.source),
+            ('Übernachtung', self.location),
+        ):
+            value = PLACE_LABELS[label].sub('', value or '')
+            if value:
+                places.append((label, value))
+        return places
 
     def homepage_appointment(self):
         """

@@ -154,3 +154,18 @@ def test_appointment_without_time_shows_the_date_range(tour):
     event.save()
     first = event.appointment(with_places=False)
     assert first.startswith('10.7.') and ' bis 12.7.' in first
+
+
+def test_departure_labels_the_meeting_point_once(tour):
+    line = places_paragraph(tour.details())[1]
+    assert ', Treffpunkt: Alpinzentrum Kempten, Parkplatz, Heimkehr' in line
+    event = tour.tour
+    event.rendezvous = 'Treffpunkt:  Alpinzentrum Kempten, Parkplatz'
+    event.save()
+    line = places_paragraph(tour.details())[1]
+    assert line.count('Treffpunkt') == 1
+    assert ', Treffpunkt: Alpinzentrum Kempten, Parkplatz, Heimkehr' in line
+
+
+def test_preliminary_meeting_point_stays_unlabelled(tour):
+    assert places_paragraph(tour.details())[0].endswith('19 Uhr, Alpinzentrum Kempten, Seminarraum')
