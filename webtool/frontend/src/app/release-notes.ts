@@ -22,6 +22,7 @@ export const RELEASE_NOTES: readonly ReleaseNote[] = [
       'Auf der Homepage stehen Treffpunkt, Kursort und Übernachtung eines Kurses jetzt beschriftet: beim ersten Termin je in einer eigenen Zeile unter „Termin:“ bzw. „Abfahrt:“, bei den weiteren Terminen in der jeweiligen Terminzeile. Der Kursort erscheint dort jetzt auch bei den weiteren Terminen.',
       'Für die Geschäftsstelle steht im Termin-Dialog eines Kurses unter diesen Feldern, wo sie auf der Homepage landen.',
       'Auf der Homepage, im Programmheft und im Ausdruck heißt es jetzt „Teilnahmegebühr“ statt „Teilnehmergebühr“.',
+      'Auf dem Dashboard stehen „Meine Touren“ und „Meine Kurse“ jetzt über dem Bedarf der Saison.',
     ],
   },
   {
