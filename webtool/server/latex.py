@@ -26,10 +26,16 @@ def compile_latex(tempdir, name, source, runs, check_exit):
         f.write(source)
     pdf = os.path.join(tempdir, f'{name}.pdf')
     for i in range(runs):
-        process = run(
-            ['pdflatex', '-interaction=batchmode', f'{name}.tex'],
-            cwd=tempdir, stdout=DEVNULL, stderr=DEVNULL,
-        )
+        try:
+            process = run(
+                ['pdflatex', '-interaction=batchmode', f'{name}.tex'],
+                cwd=tempdir, stdout=DEVNULL, stderr=DEVNULL,
+            )
+        except FileNotFoundError:
+            # Ohne TeX Live (etwa ein altes lokales Image) ein 503 mit Meldung
+            # statt eines 500 mit Traceback.
+            print('LaTeX failed: pdflatex is not installed.', flush=True)
+            return None
         last = i == runs - 1
         if not os.path.isfile(pdf) or (check_exit and last and process.returncode != 0):
             print(f'LaTeX failed on {name}.tex (exit {process.returncode}):', flush=True)
