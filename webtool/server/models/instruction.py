@@ -186,7 +186,7 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
             )
             lines.append(advances)
         if self.admission > 0:
-            lines.append("<strong>Teilnehmergebühr:</strong> {} €".format(int(self.admission)))
+            lines.append("<strong>Teilnahmegebühr:</strong> {} €".format(int(self.admission)))
         if self.extra_charges:
             extra_charges = "<strong>Zusatzkosten:</strong> {} €{}".format(
                 self.extra_charges, " für {}".format(self.extra_charges_info) if self.extra_charges_info else ''
@@ -231,7 +231,7 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
             Toureninformation: {info}
             Organisation: {guides}
             Anzahlung: {advances} € {advances_info}
-            Teilnehmergebühr: {admission} € {admission_info}
+            Teilnahmegebühr: {admission} € {admission_info}
             Zusatzkosten: {extra_charges} € {extra_charges_info}
             Fahrtkostenbeteiligung: ca. {travel_cost} € für {distance} km
         """

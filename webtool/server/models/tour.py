@@ -169,7 +169,7 @@ class Tour(
             Toureninformation: {info}
             Organisation: {guides}
             Anzahlung: {advances} € {advances_info}
-            Teilnehmergebühr: {admission} € {admission_info}
+            Teilnahmegebühr: {admission} € {admission_info}
             Zusatzkosten: {extra_charges}
             Fahrtkostenbeteiligung: ca. {travel_cost} € für {distance} km
         """
@@ -237,7 +237,7 @@ class Tour(
             advances = "Anzahlung: {} €{}".format(int(self.advances), " {}".format(self.advances_info) if self.advances_info else '')
             output.append(advances)
 
-        admission = "Teilnehmergebühr: {} €".format(int(self.admission))
+        admission = "Teilnahmegebühr: {} €".format(int(self.admission))
         if advances:
             admission = (
                 "{}, im Teilnehmerbeitrag ist eine Anzahlung von {} € enthalten. "
@@ -270,7 +270,7 @@ class Tour(
             Toureninformation: {info}
             Organisation: {guides}
             Anzahlung: {advances} € {advances_info}
-            Teilnehmergebühr: {admission} € {admission_info}
+            Teilnahmegebühr: {admission} € {admission_info}
             Zusatzkosten: {extra_charges}
             Fahrtkostenbeteiligung: ca. {travel_cost} € für {distance} km
         """
@@ -323,7 +323,7 @@ class Tour(
             advances = "Anzahlung: {} €{}".format(int(self.advances), " {}".format(self.advances_info) if self.advances_info else '')
             output.append(advances)
 
-        admission = "Teilnehmergebühr: {} €".format(int(self.admission))
+        admission = "Teilnahmegebühr: {} €".format(int(self.admission))
         if advances:
             admission = (
                 "{}, im Teilnehmerbeitrag ist eine Anzahlung von {} € enthalten."
@@ -359,7 +359,7 @@ class Tour(
             Toureninformation: {info}
             Organisation: {guides}
             Anzahlung: {advances} € {advances_info}
-            Teilnehmergebühr: {admission} € {admission_info}
+            Teilnahmegebühr: {admission} € {admission_info}
             Zusatzkosten: {extra_charges} € {extra_charges_info}
             Fahrtkostenbeteiligung: ca. {travel_cost} € für {distance} km
         """
@@ -405,7 +405,7 @@ class Tour(
                 int(self.advances), " für {}".format(self.advances_info) if self.advances_info else ''
             )
             lines.append(advances)
-        lines.append("<strong>Teilnehmergebühr:</strong> {} €".format(int(self.admission)))
+        lines.append("<strong>Teilnahmegebühr:</strong> {} €".format(int(self.admission)))
         if self.extra_charges:
             extra_charges = "<strong>Zusatzkosten:</strong> {} €{}".format(
                 self.extra_charges, " für {}".format(self.extra_charges_info) if self.extra_charges_info else ''

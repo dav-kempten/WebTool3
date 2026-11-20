@@ -245,7 +245,7 @@ class Booklet(TimeMixin, models.Model):
                     lines.append(f'\\textbf{{Vorauszahlung:}} \\EUR{{{int(advances)}}}{cls.texify(reason)}')
 
                 if admission:
-                    lines.append(f'\\textbf{{Teilnehmergebühr:}} \\EUR{{{int(admission)}}}')
+                    lines.append(f'\\textbf{{Teilnahmegebühr:}} \\EUR{{{int(admission)}}}')
 
                 if extra_charges:
                     reason = f' für {extra_charges_info}' if extra_charges_info else ''

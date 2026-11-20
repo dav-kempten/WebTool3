@@ -186,7 +186,7 @@ def travel(sheet, event, place_label):
 
 
 def costs(sheet, activity):
-    sheet.field('Teilnehmergebühr', euro(activity.admission) if activity.admission else '')
+    sheet.field('Teilnahmegebühr', euro(activity.admission) if activity.admission else '')
     sheet.field('Zusatzkosten', amount(activity.extra_charges, activity.extra_charges_info))
     sheet.field('Anzahlung', amount(activity.advances, activity.advances_info))
 
