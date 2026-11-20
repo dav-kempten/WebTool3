@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { describe, expect, it } from 'vitest';
 import { timeFormatValidator } from '../../util/validators';
-import { TimeInput, normalizeTime } from './time-input';
+import { TimeInput, normalizeTime, toQuarterHour } from './time-input';
 
 @Component({
   imports: [ReactiveFormsModule, TimeInput],
@@ -47,6 +47,18 @@ describe('normalizeTime', () => {
   });
 });
 
+describe('toQuarterHour', () => {
+  it.each([
+    [9, 0, [9, 0]],
+    [9, 7, [9, 0]],
+    [9, 8, [9, 15]],
+    [9, 53, [10, 0]],
+    [23, 59, [23, 45]],
+  ])('rounds %i:%i to %j', (hours, minutes, expected) => {
+    expect(toQuarterHour(hours, minutes)).toEqual(expected);
+  });
+});
+
 describe('TimeInput', () => {
   it('shows the stored time', () => {
     const { input } = setup();
@@ -69,12 +81,37 @@ describe('TimeInput', () => {
     expect(control.hasError('timeFormat')).toBe(true);
   });
 
-  it('takes the time chosen in the picker', () => {
-    const { fixture, input, picker, control } = setup();
-    picker.onPick(new Date(2026, 0, 1, 6, 5));
+  it('explains the format once the field is left with an unreadable time', () => {
+    const { fixture, input } = setup();
+    const message = () => fixture.nativeElement.querySelector('.avk-time-error');
+    input.value = '25:00';
+    input.dispatchEvent(new Event('input'));
     fixture.detectChanges();
-    expect(control.value).toBe('06:05');
-    expect(input.value).toBe('06:05');
+    expect(message()).toBeNull();
+    input.dispatchEvent(new Event('blur'));
+    fixture.detectChanges();
+    expect(message()?.textContent).toContain('HH:MM');
+    expect(input.classList).toContain('p-invalid');
+    type(input, '18.30');
+    fixture.detectChanges();
+    expect(message()).toBeNull();
+  });
+
+  it('takes the time chosen in the picker, on the quarter hour', () => {
+    const { fixture, input, picker, control } = setup();
+    picker.onPick(new Date(2026, 0, 1, 6, 45));
+    fixture.detectChanges();
+    expect(control.value).toBe('06:45');
+    expect(input.value).toBe('06:45');
+    picker.onPick(new Date(2026, 0, 1, 6, 53));
+    expect(control.value).toBe('07:00');
+  });
+
+  it('opens the picker on the nearest quarter hour of a typed time', () => {
+    const { picker, control } = setup();
+    control.setValue('09:37');
+    expect([picker.pickerDate().getHours(), picker.pickerDate().getMinutes()]).toEqual([9, 30]);
+    expect(control.value).toBe('09:37');
   });
 
   it('opens the picker on the stored time, or 08:00 when empty', () => {

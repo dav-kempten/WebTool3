@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, computed, forwardRef, input, signal } from '@angular/core';
-import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
+import { ControlValueAccessor, FormsModule, NgControl } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { DatePickerModule } from 'primeng/datepicker';
 import { InputGroupModule } from 'primeng/inputgroup';
@@ -39,10 +39,19 @@ function pad(value: number): string {
 }
 
 /**
+ * Rundet auf die nächste Viertelstunde, höchstens auf 23:45. Der Picker bietet
+ * nur Viertelstunden an; getippt werden darf weiterhin jede Minute.
+ */
+export function toQuarterHour(hours: number, minutes: number): [number, number] {
+  const total = Math.min(Math.round((hours * 60 + minutes) / 15) * 15, 23 * 60 + 45);
+  return [Math.floor(total / 60), total % 60];
+}
+
+/**
  * Eingabefeld für eine Uhrzeit im Format `HH:MM` (der Wert im Formular bleibt
  * ein String wie bisher). Die Zeit lässt sich tippen — beim Verlassen des Felds
  * wird sie vereinheitlicht — oder über den Uhr-Knopf mit einem Zeitpicker
- * wählen.
+ * wählen — dort nur in Viertelstunden.
  */
 @Component({
   selector: 'avk-time-input',
@@ -57,13 +66,13 @@ function pad(value: number): string {
     TooltipModule,
     ResponsiveTooltip,
   ],
-  providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => TimeInput), multi: true }],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <p-inputgroup>
       <input
         pInputText
         [value]="value()"
+        [class.p-invalid]="showsFormatError()"
         [disabled]="disabled()"
         placeholder="HH:MM"
         maxlength="5"
@@ -82,6 +91,9 @@ function pad(value: number): string {
         />
       </p-inputgroup-addon>
     </p-inputgroup>
+    @if (showsFormatError()) {
+      <small class="avk-time-error">Bitte als Uhrzeit HH:MM eintragen, z. B. 09:30.</small>
+    }
     <p-popover #popover appendTo="body">
       <p-datepicker
         [ngModel]="pickerDate()"
@@ -89,7 +101,7 @@ function pad(value: number): string {
         [inline]="true"
         [timeOnly]="true"
         hourFormat="24"
-        [stepMinute]="5"
+        [stepMinute]="15"
       />
     </p-popover>
   `,
@@ -98,6 +110,11 @@ function pad(value: number): string {
       display: block;
       width: 100%;
     }
+    .avk-time-error {
+      display: block;
+      margin-top: 0.35rem;
+      color: var(--p-red-500, #ef4444);
+    }
     input {
       flex: 1 1 auto;
       min-width: 0;
@@ -105,6 +122,14 @@ function pad(value: number): string {
   `,
 })
 export class TimeInput implements ControlValueAccessor {
+  /**
+   * Der Formular-Control, an dem das Feld hängt — darüber liest es den
+   * Formatfehler des `timeFormatValidator`. Statt NG_VALUE_ACCESSOR meldet
+   * sich die Komponente selbst als Value Accessor an; beides zugleich ergäbe
+   * eine zirkuläre Abhängigkeit.
+   */
+  private readonly ngControl = inject(NgControl, { self: true, optional: true });
+
   /** Tooltip am Eingabefeld. */
   readonly tooltip = input('');
 
@@ -117,12 +142,28 @@ export class TimeInput implements ControlValueAccessor {
       .split(':')
       .map(Number);
     const date = new Date();
-    date.setHours(hours, minutes, 0, 0);
+    date.setHours(...toQuarterHour(hours, minutes), 0, 0);
     return date;
   });
 
   private onChange: (value: string | null) => void = () => {};
   private onTouched: () => void = () => {};
+
+  constructor() {
+    if (this.ngControl) {
+      this.ngControl.valueAccessor = this;
+    }
+  }
+
+  /**
+   * Meldung erst nach dem Verlassen des Felds, damit sie nicht schon beim
+   * Tippen der ersten Ziffer erscheint. Die Prüfung selbst bleibt beim
+   * `timeFormatValidator` des Formulars.
+   */
+  showsFormatError(): boolean {
+    const control = this.ngControl;
+    return !!control && !!control.touched && !!control.hasError('timeFormat');
+  }
 
   writeValue(value: string | null): void {
     this.value.set(value ?? '');
@@ -154,7 +195,8 @@ export class TimeInput implements ControlValueAccessor {
 
   onPick(date: Date | null): void {
     if (date) {
-      this.set(`${pad(date.getHours())}:${pad(date.getMinutes())}`);
+      const [hours, minutes] = toQuarterHour(date.getHours(), date.getMinutes());
+      this.set(`${pad(hours)}:${pad(minutes)}`);
       this.onTouched();
     }
   }
