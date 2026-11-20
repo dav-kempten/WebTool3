@@ -244,9 +244,12 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
             return date(self.start_date, "d.m." + y)
         return "{0} - {1}".format(date(self.start_date, "d.m." + y), date(self.end_date, "d.m." + y))
 
-    def departure(self):
+    def departure(self, with_places=True):
         """
             {start_date}, {start_time}, {rendezvous}, Heimkehr am {end_date} gegen {end_time} Uhr
+
+        :param with_places: False lässt den Treffpunkt weg, damit ihn der
+            Aufrufer als eigene, beschriftete Angabe ausgeben kann.
         """
         season_year = int(self.season.name)
         with_year = season_year != self.start_date.year or (self.end_date and season_year != self.end_date.year)
@@ -276,7 +279,7 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
             end_time = ''
 
         departure = "{}, {}".format(start_date, start_time)
-        if self.rendezvous:
+        if with_places and self.rendezvous:
             departure = "{}, {}".format(departure, self.rendezvous)
         if end_time:
             departure = "{}, Heimkehr".format(departure)
@@ -285,12 +288,15 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
             departure = "{} gegen {} Uhr".format(departure, end_time)
         return departure
 
-    def appointment(self):
+    def appointment(self, with_places=True):
         """
             {start_date}, {start_time} Uhr, {name}, {location}, {rendezvous}
             {start_date}, {start_time} bis {end_time} Uhr, {name}, {location}, {rendezvous}
             {start_date}, {start_time} Uhr bis {end_date}, {end_time} Uhr, {name}, {location}, {rendezvous}
             {start_date}, {start_time} Uhr bis {end_date}, {name}, {location}, {rendezvous}
+
+        :param with_places: False lässt Übernachtungsort und Treffpunkt weg,
+            damit sie der Aufrufer als eigene, beschriftete Angaben ausgeben kann.
         """
         appointment = ''
         season_year = int(self.season.name)
@@ -332,11 +338,27 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
             appointment = "{}, {}".format(start_date, approximate)
         if self.name:
             appointment = "{}, {}".format(appointment, self.name)
-        if self.location:
+        if with_places and self.location:
             appointment = "{}, {}".format(appointment, self.location)
-        if self.rendezvous:
+        if with_places and self.rendezvous:
             appointment = "{}, {}".format(appointment, self.rendezvous)
         return appointment
+
+    def places(self):
+        """
+        Treffpunkt, Kursort und Übernachtung eines Kurstermins, jeweils mit der
+        Bezeichnung, unter der sie auf der Homepage stehen — dieselben wie im
+        Termin-Dialog des Frontends. Leere Felder fehlen.
+
+        :return: Liste von (Bezeichnung, Wert)
+        """
+        return [
+            (label, value) for label, value in (
+                ('Treffpunkt', self.rendezvous),
+                ('Kursort', self.source),
+                ('Übernachtung', self.location),
+            ) if value
+        ]
 
     def prefixed_date(self, prefix, formatter, with_year=False):
         """

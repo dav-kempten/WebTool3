@@ -503,14 +503,17 @@
           <div class="avk-field">
             <label>Treffpunkt</label>
             <avk-rendezvous-input formControlName="rendezvous" tooltip="Treffpunkt für die Abfahrt" />
+            <small>{{ homepagePlace('Treffpunkt') }}</small>
           </div>
           <div class="avk-field">
             <label>Kursort</label>
             <input pInputText formControlName="source" maxlength="75" pTooltip="Treffpunkt vor Ort" />
+            <small>{{ homepagePlace('Kursort') }}</small>
           </div>
           <div class="avk-field">
             <label>Übernachtungsort</label>
             <input pInputText formControlName="location" maxlength="75" />
+            <small>{{ homepagePlace('Übernachtung') }}</small>
           </div>
         </div>
         @if (selectedIsMain()) {

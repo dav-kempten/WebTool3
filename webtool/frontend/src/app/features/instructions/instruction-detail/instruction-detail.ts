@@ -377,6 +377,18 @@ export class InstructionDetail {
     return id == null ? '' : (this.values.approximateById().get(id)?.name ?? '');
   }
 
+  /**
+   * Sagt unter einem Ortsfeld im Termin-Dialog, wo es auf der Homepage landet.
+   * Muss zu `Instruction.details()` bzw. `Event.places()` im Backend passen:
+   * beim Haupttermin eine eigene Zeile unter "Termin:", bei den weiteren
+   * Terminen beschriftet in der Terminzeile.
+   */
+  homepagePlace(label: string): string {
+    return this.selectedIsMain()
+      ? `Homepage: eigene Zeile „${label}:“ unter dem Termin`
+      : `Homepage: „${label}: …“ in der Zeile unter „Weitere Termine“`;
+  }
+
   /** Date column: multi-day events are shown as a range. */
   eventDate(event: Event): string {
     return formatIsoDateRangeDe(event.startDate, event.endDate);

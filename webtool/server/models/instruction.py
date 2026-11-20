@@ -148,22 +148,26 @@ class Instruction(TimeMixin, GuidedEventMixin, AdminMixin, AdmissionMixin, Chapt
                 )
                 output.write('</div>')
 
+        # Haupttermin: Treffpunkt, Kursort und Übernachtung stehen
+        # jeweils in einer eigenen, beschrifteten Zeile unter dem Termin.
         output.write('<p>')
         lines = []
         if self.instruction.distal:
-            lines.append('<strong>Abfahrt:</strong> {}'.format(self.instruction.departure()))
+            lines.append('<strong>Abfahrt:</strong> {}'.format(self.instruction.departure(with_places=False)))
         else:
-            lines.append('<strong>Termin:</strong> {}'.format(self.instruction.appointment()))
-        if self.instruction.source:
-            lines.append('<strong>Ausgangspunkt:</strong> {}'.format(self.instruction.source))
-        if self.instruction.location and self.instruction.distal:
-            lines.append('<strong>{}:</strong> {}'.format("Übernachtung" if self.instruction.end_date else "Ausgangspunkt", self.instruction.location))
+            lines.append('<strong>Termin:</strong> {}'.format(self.instruction.appointment(with_places=False)))
+        for label, value in self.instruction.places():
+            lines.append('<strong>{}:</strong> {}'.format(label, value))
         output.write('<br />'.join(lines))
         output.write('</p>')
 
+        # Weitere Termine: dieselben Angaben, beschriftet im Fließtext.
         if self.meeting_list.exists():
             output.write('<p><strong>Weitere Termine:</strong><br />')
-            output.write('<br />'.join([e.appointment() for e in self.meeting_list.all()]))
+            output.write('<br />'.join([
+                ', '.join([e.appointment(with_places=False)] + ['{}: {}'.format(label, value) for label, value in e.places()])
+                for e in self.meeting_list.all()
+            ]))
             output.write('<br /><br />')
             output.write('<strong>Obacht!</strong> Alle Theorieteile sind verpflichtend und Voraussetzung für die '
                          'Teilnahme an den Praxisterminen. Die Theorieteile müssen in Präsenz wahrgenommen werden, '
