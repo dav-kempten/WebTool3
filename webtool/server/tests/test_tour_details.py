@@ -133,3 +133,24 @@ def test_description_keeps_allowed_tags_and_drops_the_rest(tour):
     for dropped in ('<script', 'onclick', 'onerror', 'javascript:', '<img'):
         assert dropped not in details
     assert 'Kosten &lt; 10 &amp; so' in details
+
+
+def test_appointment_without_any_time_starts_with_the_date(tour):
+    event = tour.tour
+    event.start_time = event.approximate = None
+    event.end_date = None
+    event.name = 'Langtitel'
+    event.save()
+    text = event.appointment()
+    assert not text.startswith(',')
+    assert text.split(', ')[0].startswith('10.7.')
+    assert text.split(', ')[1] == 'Langtitel'
+
+
+def test_appointment_without_time_shows_the_date_range(tour):
+    event = tour.tour
+    event.start_time = event.approximate = None
+    event.end_date = datetime.date(NEXT, 7, 12)
+    event.save()
+    first = event.appointment(with_places=False)
+    assert first.startswith('10.7.') and ' bis 12.7.' in first

@@ -258,7 +258,7 @@ def tour_source(tour):
     sheet.field('Info', tex(tour.info))
 
     sheet.section('Treffpunkt und Anreise')
-    travel(sheet, event, 'Ausgangsort')
+    travel(sheet, event, 'Ausgangspunkt')
     sheet.field('Tourenportal', url(event.link))
     sheet.field('Kartenausschnitt', url(str(event.map)) if event.map else '')
 

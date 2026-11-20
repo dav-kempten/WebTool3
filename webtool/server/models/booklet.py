@@ -180,16 +180,14 @@ class Booklet(TimeMixin, models.Model):
                 lines = []
 
                 if instruction:
+                    # Wie auf der Homepage (Instruction.details()): Treffpunkt,
+                    # Kursort und Übernachtung in eigenen, beschrifteten Zeilen.
                     if event.distal:
-                        lines.append(f'\\textbf{{Abfahrt:}} {cls.texify(event.departure())}')
+                        lines.append(f'\\textbf{{Abfahrt:}} {cls.texify(event.departure(with_places=False))}')
                     else:
-                        lines.append(f'\\textbf{{Termin:}} {cls.texify(event.appointment())}')
-                    if event.source:
-                        lines.append(f'\\textbf{{Ausgangspunkt:}} {cls.texify(event.source)}')
-                    if event.location and event.distal:
-                        lines.append(
-                            f'\\textbf{{{"Übernachtung" if event.end_date else "Ausgangspunkt"}}}: {cls.texify(event.location)}'
-                        )
+                        lines.append(f'\\textbf{{Termin:}} {cls.texify(event.appointment(with_places=False))}')
+                    for label, value in event.places():
+                        lines.append(f'\\textbf{{{label}:}} {cls.texify(value)}')
 
                 if tour:
                     preliminary = event.tour._preliminary()
@@ -208,7 +206,7 @@ class Booklet(TimeMixin, models.Model):
 
                 if instruction and instruction.meeting_list.exists():
                     s.write(f'\\par\n\\textbf{{Weitere Termine:}}{cls.RELAX}\n')
-                    s.write(f'{cls.RELAX}\n'.join([cls.texify(e.appointment()) for e in instruction.meeting_list.all()]))
+                    s.write(f'{cls.RELAX}\n'.join([cls.texify(e.homepage_appointment()) for e in instruction.meeting_list.all()]))
                     s.write('\\par')
 
                 if instruction and not instruction.is_special and event.description:

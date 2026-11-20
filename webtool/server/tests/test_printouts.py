@@ -50,7 +50,7 @@ def tour(api, seeded):
     event.description = 'Beschreibung-T'
     event.start_time, event.end_time = datetime.time(7, 30), datetime.time(18)
     event.end_date = datetime.date(NEXT, 7, 12)
-    event.rendezvous, event.source, event.location = 'Treffpunkt-T', 'Ausgangsort-T', 'Übernachtung-T'
+    event.rendezvous, event.source, event.location = 'Treffpunkt-T', 'Ausgangspunkt-T', 'Übernachtung-T'
     event.distance = 321
     event.link, event.map = 'https://portal.example/tour', 'https://karte.example/tour'
     event.lea = event.distal = event.public_transport = event.shuttle_service = event.overnight = True
@@ -108,7 +108,7 @@ def test_tour_printout_shows_every_form_field(tour):
         # KV, Bemerkungen, Nachricht, Ausrüstungsbedarf
         'Bemerkung-T', 'Nachricht-T', 'Ausrüstungsbedarf Tour',
         # Termin-Details of the tour itself
-        'Langtitel-T', 'Beschreibung-T', 'Treffpunkt-T', 'Ausgangsort-T', 'Übernachtung-T', 'ca. 321 km',
+        'Langtitel-T', 'Beschreibung-T', 'Treffpunkt-T', 'Ausgangspunkt-T', 'Übernachtung-T', 'ca. 321 km',
         'Low Emission Adventure', 'Gemeinschaftsanreise', 'Öffentliche Anreise', 'Alpin-Shuttle', 'Seminarraum',
     )
     assert '\\davTitle{KURZTITEL-T}' in source

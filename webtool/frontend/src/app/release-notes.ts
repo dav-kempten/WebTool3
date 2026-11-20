@@ -24,6 +24,9 @@ export const RELEASE_NOTES: readonly ReleaseNote[] = [
       'Auf der Homepage, im Programmheft und im Ausdruck heißt es jetzt „Teilnahmegebühr“ statt „Teilnehmergebühr“.',
       'Auf dem Dashboard stehen „Meine Touren“ und „Meine Kurse“ jetzt über dem Bedarf der Saison.',
       'Gruppenleiter, Fachbereichssprecher und Geschäftsstelle können auf dem Dashboard über „Neuer Gruppentermin“ direkt einen Termin anlegen, wie bei Touren und Kursen. Gruppenleiter sehen dabei nur ihre eigenen Gruppen.',
+      'Das Feld „Ausgangsort“ im Tourformular heißt jetzt „Ausgangspunkt“, wie auf der Homepage und im Programmheft. Im Programmheft stehen bei Kursen Treffpunkt, Kursort und Übernachtung jetzt so beschriftet wie auf der Homepage.',
+      'Kurstermine ohne Start- und Tageszeit zeigen auf der Homepage wieder ihr Datum. Bisher fehlte es dort, und die Zeile begann mit einem Komma.',
+      'In Beschreibungen bleiben die üblichen Formatierungen erhalten: Zeilenumbruch, fett, kursiv, Absätze, Listen und Links. Andere HTML-Befehle werden auf der Homepage entfernt, alle übrigen Felder erscheinen dort genau so, wie sie eingetippt wurden.',
     ],
   },
   {

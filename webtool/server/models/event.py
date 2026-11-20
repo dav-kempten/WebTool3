@@ -294,6 +294,8 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
             {start_date}, {start_time} bis {end_time} Uhr, {name}, {location}, {rendezvous}
             {start_date}, {start_time} Uhr bis {end_date}, {end_time} Uhr, {name}, {location}, {rendezvous}
             {start_date}, {start_time} Uhr bis {end_date}, {name}, {location}, {rendezvous}
+            {start_date}, {approximate}, {name}, {location}, {rendezvous}
+            {start_date} bis {end_date}, {name}, {location}, {rendezvous}  (ohne Start- und Tageszeit)
 
         :param with_places: False lässt Übernachtungsort und Treffpunkt weg,
             damit sie der Aufrufer als eigene, beschriftete Angaben ausgeben kann.
@@ -334,8 +336,14 @@ class Event(SeasonMixin, TimeMixin, DescriptionMixin, models.Model):
                     appointment = "{} bis {} Uhr".format(appointment, end_time)
             else:
                 appointment = "{} Uhr".format(appointment)
-        if approximate:
+        elif approximate:
             appointment = "{}, {}".format(start_date, approximate)
+        else:
+            # Weder Startzeit noch Tageszeit: dann wenigstens das Datum, statt
+            # mit ", Langtitel" zu beginnen.
+            appointment = start_date
+            if end_date and self.end_date != self.start_date:
+                appointment = "{} bis {}".format(appointment, end_date)
         if self.name:
             appointment = "{}, {}".format(appointment, self.name)
         if with_places and self.location:
