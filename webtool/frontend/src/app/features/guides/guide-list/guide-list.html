@@ -1,45 +1,99 @@
-<section class="avk-page">
-  <p-table
-    #dt
-    [value]="rows()"
-    [paginator]="true"
-    [rows]="25"
-    [rowsPerPageOptions]="[25, 50, 100]"
-    [globalFilterFields]="['firstName', 'lastName', 'username']"
-    dataKey="id"
-    styleClass="p-datatable-sm p-datatable-striped"
-  >
-    <ng-template #caption>
-      <div class="avk-table-caption">
-        <span class="p-input-icon-left">
-          <i class="pi pi-search"></i>
-          <input
-            pInputText
-            type="text"
-            maxlength="50"
-            placeholder="Trainerfilter"
-            (input)="dt.filterGlobal($any($event.target).value, 'contains')"
-          />
-        </span>
+@if (!isOffice()) {
+  <section class="avk-page">
+    <p-card header="Trainer – Zugriff eingeschränkt">
+      @if (isLoggedIn()) {
+        <p>
+          Die Übersicht aller Trainer ist der Geschäftsstelle und den Administratoren vorbehalten.
+          Deinen eigenen Steckbrief kannst du unter „Mein Profil“ bearbeiten.
+        </p>
+      } @else {
+        <p>Bitte melde dich mit einem Mitarbeiter-Zugang an, um die Trainerliste zu sehen.</p>
+      }
+      <div class="avk-row-actions">
+        @if (myId(); as id) {
+          <a [routerLink]="['/trainers', id]">
+            <p-button label="Zu meinem Steckbrief" icon="pi pi-user" />
+          </a>
+        }
+        <a routerLink="/dashboard">
+          <p-button label="Zurück zum Dashboard" severity="secondary" />
+        </a>
       </div>
-    </ng-template>
+    </p-card>
+  </section>
+} @else {
+  <section class="avk-page">
+    <p-table
+      #dt
+      [value]="rows()"
+      [paginator]="true"
+      [rows]="25"
+      [rowsPerPageOptions]="[25, 50, 100]"
+      [globalFilterFields]="['lastName', 'firstName', 'userName', 'job']"
+      dataKey="id"
+      styleClass="p-datatable-sm p-datatable-striped"
+    >
+      <ng-template #caption>
+        <div class="avk-table-caption">
+          <p-iconfield iconPosition="left">
+            <p-inputicon styleClass="pi pi-search" />
+            <input
+              pInputText
+              type="text"
+              maxlength="50"
+              placeholder="Trainer suchen …"
+              (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+            />
+          </p-iconfield>
+          <p-select
+            [options]="profileFilterOptions"
+            [ngModel]="profileFilter()"
+            (onChange)="profileFilter.set($event.value)"
+            optionLabel="label"
+            optionValue="value"
+          />
+        </div>
+      </ng-template>
 
-    <ng-template #header>
-      <tr>
-        <th>Vorname</th>
-        <th>Nachname</th>
-      </tr>
-    </ng-template>
+      <ng-template #header>
+        <tr>
+          <th pSortableColumn="lastName">Nachname <p-sortIcon field="lastName" /></th>
+          <th pSortableColumn="firstName">Vorname <p-sortIcon field="firstName" /></th>
+          <th>Aufgabe im Verein</th>
+          <th pSortableColumn="hasProfile">Steckbrief <p-sortIcon field="hasProfile" /></th>
+          <th>Aktionen</th>
+        </tr>
+      </ng-template>
 
-    <ng-template #body let-guide>
-      <tr class="avk-link-cell" (click)="select(guide)">
-        <td>{{ guide.firstName }}</td>
-        <td>{{ guide.lastName }}</td>
-      </tr>
-    </ng-template>
+      <ng-template #body let-guide>
+        <tr>
+          <td class="avk-link-cell" (click)="select(guide)">{{ guide.lastName }}</td>
+          <td class="avk-link-cell" (click)="select(guide)">{{ guide.firstName }}</td>
+          <td class="avk-link-cell" (click)="select(guide)">{{ guide.job }}</td>
+          <td>
+            @if (guide.hasProfile) {
+              <p-tag value="Vorhanden" severity="success" />
+            } @else {
+              <p-tag value="Leer" severity="secondary" />
+            }
+          </td>
+          <td>
+            <div class="avk-row-actions">
+              <p-button
+                label="Bearbeiten"
+                icon="pi pi-pencil"
+                size="small"
+                severity="secondary"
+                (onClick)="select(guide)"
+              />
+            </div>
+          </td>
+        </tr>
+      </ng-template>
 
-    <ng-template #emptymessage>
-      <tr><td colspan="2" class="avk-empty">Keine Trainer gefunden.</td></tr>
-    </ng-template>
-  </p-table>
-</section>
+      <ng-template #emptymessage>
+        <tr><td colspan="5" class="avk-empty">Keine Trainer gefunden.</td></tr>
+      </ng-template>
+    </p-table>
+  </section>
+}

@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { MenuItem } from 'primeng/api';
@@ -77,23 +77,28 @@ export class MainMenu {
     { label: 'Trainer', icon: 'pi pi-id-card', routerLink: '/trainers' },
   ];
 
-  readonly loginMenu: MenuItem[] = [
-    {
-      label: 'Service Zugang',
-      icon: 'pi pi-lock',
-      command: () => this.displayStaffLogin.set(true),
-    },
-    {
-      label: 'Mein Profil',
-      icon: 'pi pi-user',
-      command: () => {
-        const id = this.user().id;
-        if (id) {
-          void this.router.navigate(['/trainers', id]);
-        }
+  readonly loginMenu = computed<MenuItem[]>(() => {
+    const items: MenuItem[] = [
+      {
+        label: 'Service Zugang',
+        icon: 'pi pi-lock',
+        command: () => this.displayStaffLogin.set(true),
       },
-    },
-  ];
+    ];
+    if (this.isLoggedIn()) {
+      items.push({
+        label: 'Mein Profil',
+        icon: 'pi pi-user',
+        command: () => {
+          const id = this.user().id;
+          if (id) {
+            void this.router.navigate(['/trainers', id]);
+          }
+        },
+      });
+    }
+    return items;
+  });
 
   loginLabel(): string {
     return this.isLoggedIn() ? 'Abmelden' : 'Anmelden';

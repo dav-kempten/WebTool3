@@ -1,24 +1,143 @@
 @if (!canView()) {
   <section class="avk-page">
-    <p-card header="Trainerprofil – Zugriff verboten">
-      <p>Sie sind nicht berechtigt, dieses Profil zu sehen.</p>
-      <a routerLink="/trainers"><p-button label="Zurück" /></a>
+    <p-card header="Mein Profil – Zugriff verboten">
+      @if (isLoggedIn()) {
+        <p>Sie sind nicht berechtigt, dieses Profil zu sehen.</p>
+      } @else {
+        <p>Bitte melde dich an, um deinen Steckbrief zu bearbeiten.</p>
+      }
+      <a routerLink="/dashboard"><p-button label="Zurück zum Dashboard" /></a>
+    </p-card>
+  </section>
+} @else if (isNotFound()) {
+  <section class="avk-page">
+    <p-card header="Kein Trainer-Steckbrief vorhanden">
+      <p>Für dieses Benutzerkonto ist kein Trainer-Steckbrief hinterlegt.</p>
+      <a routerLink="/dashboard"><p-button label="Zurück zum Dashboard" severity="secondary" /></a>
     </p-card>
   </section>
 } @else if (guide(); as g) {
-  <section class="avk-page">
-    <p-card [header]="g.firstName + ' ' + g.lastName">
-      <p class="avk-muted">@{{ g.username }}</p>
-      @if (g.profile) {
-        <p class="avk-profile">{{ g.profile }}</p>
-      } @else {
-        <p class="avk-muted">Kein Profiltext hinterlegt.</p>
-      }
-      <a routerLink="/trainers"><p-button label="Zurück" severity="secondary" /></a>
-    </p-card>
-  </section>
+  @if (form(); as fg) {
+    <section class="avk-page">
+      <form [formGroup]="fg" class="avk-detail-form" (ngSubmit)="save()">
+        <p-card [header]="isOwnProfile() ? 'Mein Steckbrief' : 'Steckbrief – ' + g.firstName + ' ' + g.lastName">
+          <p class="avk-hint">
+            {{ g.firstName }} {{ g.lastName }} – Diese Angaben erscheinen im
+            Trainer-Steckbrief auf der Sektions-Homepage. Alle Felder sind freiwillig;
+            leere Felder werden nicht angezeigt.
+          </p>
+          @if (autoSave.lastSaved() && !saveErrorSummary()) {
+            <p-message severity="success">
+              Automatisch gespeichert um {{ autoSave.lastSaved() | date: 'HH:mm:ss' }}
+            </p-message>
+          }
+          @if (saveErrorSummary()) {
+            <p-message severity="error">
+              Speichern fehlgeschlagen bei: {{ saveErrorSummary() }}
+            </p-message>
+          }
+        </p-card>
+
+        <p-card subheader="Persönliche Angaben">
+          <div class="avk-grid-3">
+            <div class="avk-field">
+              <label for="profile-name">Rufname</label>
+              <input
+                id="profile-name"
+                pInputText
+                formControlName="name"
+                maxlength="100"
+                placeholder="z. B. Spitzname oder Rufname"
+              />
+            </div>
+            <div class="avk-field">
+              <label for="profile-city">Wohnort</label>
+              <input
+                id="profile-city"
+                pInputText
+                formControlName="city"
+                maxlength="150"
+                placeholder="z. B. Kempten"
+              />
+            </div>
+            <div class="avk-field">
+              <label for="profile-job">Aufgabe im Verein</label>
+              <input
+                id="profile-job"
+                pInputText
+                formControlName="job"
+                maxlength="250"
+                placeholder="z. B. Tourenleiter, Fachbereich …"
+              />
+            </div>
+          </div>
+        </p-card>
+
+        <p-card subheader="Über mich">
+          <div class="avk-detail-form">
+            <div class="avk-field">
+              <label for="profile-hobby">Hobbys / Interessen</label>
+              <textarea
+                id="profile-hobby"
+                pTextarea
+                formControlName="hobby"
+                rows="3"
+                maxlength="1000"
+                class="avk-full"
+                placeholder="z. B. Skitouren, Klettern, Mountainbiken …"
+              ></textarea>
+            </div>
+            <div class="avk-field">
+              <label for="profile-reason">Warum ich im DAV aktiv bin</label>
+              <textarea
+                id="profile-reason"
+                pTextarea
+                formControlName="reason"
+                rows="5"
+                maxlength="2000"
+                class="avk-full"
+                placeholder="Was dich motiviert, Touren oder Kurse zu leiten …"
+              ></textarea>
+            </div>
+            <div class="avk-field">
+              <label for="profile-tip">Mein Geheimtipp</label>
+              <textarea
+                id="profile-tip"
+                pTextarea
+                formControlName="tip"
+                rows="3"
+                maxlength="1000"
+                class="avk-full"
+                placeholder="z. B. Lieblingstour, Hütte oder Einkehrtipp"
+              ></textarea>
+            </div>
+          </div>
+        </p-card>
+
+        <div class="avk-detail-actions">
+          @if (canEdit()) {
+            <p-button
+              type="submit"
+              label="Speichern"
+              icon="pi pi-save"
+              [disabled]="fg.invalid"
+            />
+          }
+          @if (isOffice()) {
+            <a routerLink="/trainers">
+              <p-button label="Zurück zur Trainerliste" severity="secondary" />
+            </a>
+          } @else {
+            <a routerLink="/dashboard">
+              <p-button label="Zurück zum Dashboard" severity="secondary" />
+            </a>
+          }
+        </div>
+      </form>
+    </section>
+  }
 } @else {
   <section class="avk-page">
-    <p-card><p>Profil wird geladen …</p></p-card>
+    <p-card><p>Steckbrief wird geladen …</p></p-card>
   </section>
 }

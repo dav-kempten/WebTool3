@@ -8,24 +8,42 @@ from server.models import Guide
 from server.serializers.frontend.guides import GuideListSerializer, GuideSerializer
 
 
-class IsStaffOrReadOnly(permissions.BasePermission):
+class IsGuideOwnerOrStaffOrReadOnly(permissions.BasePermission):
     """
-    The request is authenticated for a staff user, or is a read-only request.
+    Safe methods are readable, staff may manage all guides, and a logged-in
+    trainer may update (PUT/PATCH) their own Steckbrief.
     """
 
     def has_permission(self, request, view):
-        return (
-            request.method in permissions.SAFE_METHODS or
-            request.user and
-            request.user.is_staff
-        )
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        if not (request.user and request.user.is_authenticated):
+            return False
+        if request.user.is_staff:
+            return True
+        return request.method in ('PUT', 'PATCH')
+
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        if not (request.user and request.user.is_authenticated):
+            return False
+        if request.user.is_staff:
+            return True
+        return request.method in ('PUT', 'PATCH') and obj.user == request.user
 
 
 class GuideViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
-    permission_classes = (IsStaffOrReadOnly, )
+    permission_classes = (IsGuideOwnerOrStaffOrReadOnly, )
 
-    queryset = Guide.objects
+    queryset = Guide.objects.select_related('user')
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        if self.action == 'list':
+            return qs.filter(user__is_active=True, deprecated=False, unknown=False)
+        return qs
 
     def get_serializer_class(self):
         if self.action == 'list':
@@ -68,8 +86,9 @@ class GuideViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         except ValueError:
             raise Http404
 
+        partial = kwargs.pop('partial', False)
         instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data)
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
@@ -79,6 +98,10 @@ class GuideViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
             instance._prefetched_objects_cache = {}
 
         return Response(serializer.data)
+
+    def partial_update(self, request, pk=None, *args, **kwargs):
+        kwargs['partial'] = True
+        return self.update(request, pk=pk, *args, **kwargs)
 
     def destroy(self, request, pk=None, *args, **kwargs):
 

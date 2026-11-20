@@ -1,7 +1,8 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, catchError, of } from 'rxjs';
-import { Guide, GuideSummary } from '../../models/guide';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { Observable, catchError, map, of } from 'rxjs';
+import { Guide, GuideProfile, GuideSummary } from '../../models/guide';
+import { SaveResult, toSaveError } from '../../shared/util/save-error';
 
 const JSON_HEADERS = new HttpHeaders({
   Accept: 'application/json',
@@ -28,5 +29,12 @@ export class GuideService {
     return this.http
       .get<Guide>(`/api/frontend/guides/${id}/`, { headers: READ_HEADERS })
       .pipe(catchError(() => of(null)));
+  }
+
+  updateGuide(id: number, profile: GuideProfile): Observable<SaveResult<Guide>> {
+    return this.http.put<Guide>(`/api/frontend/guides/${id}/`, { profile }).pipe(
+      map((data) => ({ data, errors: [] }) as SaveResult<Guide>),
+      catchError((error: HttpErrorResponse) => of(toSaveError<Guide>(error))),
+    );
   }
 }

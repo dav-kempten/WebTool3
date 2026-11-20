@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
+import json
+from datetime import date
+
 from django.conf import settings
 from django.db import models
 
 from .mixins import SeasonsMixin
 from .time_base import TimeMixin
-from datetime import date
 
 
 class GuideManager(models.Manager):
@@ -121,6 +123,18 @@ class Guide(SeasonsMixin, TimeMixin, models.Model):
                 .replace('Trainer ', 'T')
                 .replace('JDAV-', '')
         ) if qualification else None
+
+    def parsed_profile(self):
+        """Return the Steckbrief JSON field as a dict, whether stored as a JSON string or dict."""
+        raw = self.profile
+        if not raw:
+            return {}
+        if isinstance(raw, str):
+            try:
+                raw = json.loads(raw)
+            except (TypeError, ValueError):
+                return {}
+        return dict(raw) if isinstance(raw, dict) else {}
 
     def retraining_list(self):
         retraining_list = (self.user.retraining_list.values_list('description', flat=True))

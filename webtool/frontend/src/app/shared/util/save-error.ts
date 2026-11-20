@@ -80,6 +80,12 @@ const FIELD_LABELS: Record<string, string> = {
   instruction: 'Haupttermin',
   meetings: 'Kurstermin',
   session: 'Gruppentermin',
+  profile: 'Steckbrief',
+  city: 'Wohnort',
+  job: 'Aufgabe im Verein',
+  hobby: 'Hobbys / Interessen',
+  reason: 'Warum ich im DAV aktiv bin',
+  tip: 'Mein Geheimtipp',
 };
 
 /** e.g. `["meetings", "1", "startTime"]` -> `"Kurstermin 2 – Startzeit"`. */
