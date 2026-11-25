@@ -54,6 +54,7 @@ import {
 } from '../../../shared/util/validators';
 import { lockStartTimeOrApproximate } from '../../../shared/util/event-time';
 import { describeSaveErrorPath } from '../../../shared/util/save-error';
+import { States } from '../../../models/value';
 
 @Component({
   selector: 'avk-session-detail',
@@ -132,7 +133,34 @@ export class SessionDetail {
     return this.isCoordinator() || this.managedCollectiveIds().has(session.collectiveId);
   });
 
-  readonly stateOptions = this.values.states;
+  /** Geschäftsstelle und Administration (is_staff im Backend). */
+  readonly isOffice = this.auth.isOfficeOrAbove;
+
+  /**
+   * Gruppenleiter bearbeiten nur "In Arbeit"; mit "Fertig" übernimmt die
+   * Geschäftsstelle. Das Backend prüft dasselbe (views/frontend/locks.py).
+   * Maßgeblich ist der gespeicherte Status: wer "Fertig" wählt, muss das noch
+   * speichern können.
+   */
+  readonly locked = computed(
+    () =>
+      !this.isOffice() &&
+      (this.savedStateId() ?? this.session()?.stateId ?? States.WORKING) !== States.WORKING,
+  );
+  /** The state as last loaded from or saved to the backend. */
+  private readonly savedStateId = signal<number | undefined>(undefined);
+
+  /** Leiter wählen nur In Arbeit oder Fertig; der aktuelle Status bleibt zur Anzeige drin. */
+  readonly stateOptions = computed(() => {
+    const states = this.values.states();
+    if (this.isOffice()) {
+      return states;
+    }
+    const currentId = this.session()?.stateId;
+    return states.filter(
+      (s) => s.id === States.WORKING || s.id === States.READY || s.id === currentId,
+    );
+  });
   /** Only tour categories — instruction/collective categories don't apply here. */
   readonly categoryOptions = computed(() =>
     this.values.categories().filter((c) => c.tour),
@@ -200,6 +228,20 @@ export class SessionDetail {
         save: () => this.persist(true),
       });
     });
+
+    // A locked session is read-only: a disabled form is never valid, so the
+    // auto-save leaves it alone as well.
+    effect(() => {
+      const form = this.form();
+      if (!form) {
+        return;
+      }
+      if (this.locked()) {
+        form.disable({ emitEvent: false });
+      } else {
+        form.enable({ emitEvent: false });
+      }
+    });
   }
 
   private buildForm(session: Session): void {
@@ -219,6 +261,7 @@ export class SessionDetail {
       comment: [session.comment],
       stateId: [session.stateId],
     });
+    this.savedStateId.set(session.stateId);
 
     group.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((value) => {
       this.sessions.updateLocal(session.id, value as Partial<Session>);
@@ -243,7 +286,7 @@ export class SessionDetail {
 
   openEvent(): void {
     const event = this.sessionEvent();
-    if (!event) {
+    if (!event || this.locked()) {
       return;
     }
     this.minDate.set(relaxedMinDate(fromIsoDate(event.startDate)));
@@ -303,8 +346,12 @@ export class SessionDetail {
 
   persist(silent = false): void {
     const session = this.session();
-    if (session) {
-      this.sessions.save({ session, silent });
+    if (session && !this.locked()) {
+      this.sessions.save({
+        session,
+        silent,
+        onSaved: () => this.savedStateId.set(this.session()?.stateId),
+      });
     }
   }
 

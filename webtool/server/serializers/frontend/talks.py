@@ -91,7 +91,9 @@ class TalkSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         instance = validated_data.pop('pk')
         if instance:
-            return self.update(instance, validated_data)
+            # Kein Upsert: ein POST mit der Id eines bestehenden Termins lief
+            # sonst an der Objektprüfung der View (Eigentümer, Status) vorbei.
+            raise serializers.ValidationError({'id': 'Bestehende Termine werden per PUT geändert.'})
         else:
             talk_data = validated_data.pop('talk')
             speaker = validated_data.pop('speaker')

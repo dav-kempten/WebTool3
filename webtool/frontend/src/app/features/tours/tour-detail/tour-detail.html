@@ -22,6 +22,9 @@
         @if (saveErrorSummary()) {
           <p-message severity="error">Speichern fehlgeschlagen bei: {{ saveErrorSummary() }}</p-message>
         }
+        @if (locked()) {
+          <p-message severity="info">Nur lesbar: Trainer bearbeiten Termine nur im Status „In Arbeit“. Änderungen übernimmt jetzt die Geschäftsstelle.</p-message>
+        }
       </p-card>
 
       <p-card subheader="Buchungsnummer, Bearbeitungsstatus und Tourenart">

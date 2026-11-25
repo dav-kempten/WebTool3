@@ -177,13 +177,15 @@ export const SessionsStore = signalStore(
       ),
     );
 
-    const save = rxMethod<{ session: Session; silent?: boolean }>(
+    const save = rxMethod<{ session: Session; silent?: boolean; onSaved?: () => void }>(
       pipe(
-        switchMap(({ session, silent }) =>
+        switchMap(({ session, silent, onSaved }) =>
           service.upsertSession(session.id, buildSaveBody(session)).pipe(
             tap(({ data, errors }) => {
               if (data) {
                 patchState(store, setEntity(rawToEntity(data)), { lastSaveErrors: [] });
+                // Runs only after a successful save, e.g. to open the homepage preview.
+                onSaved?.();
                 loadSummaries();
                 if (!silent) {
                   messages.add({

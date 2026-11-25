@@ -201,9 +201,31 @@ export class InstructionDetail {
   });
   readonly showClaim = signal(false);
 
+  /**
+   * Trainer bearbeiten nur "In Arbeit"; mit "Fertig" übernimmt die
+   * Geschäftsstelle. Das Backend prüft dasselbe (views/frontend/locks.py).
+   * Maßgeblich ist der gespeicherte Status, nicht das Formular: sonst sperrte
+   * schon die Auswahl von "Fertig", bevor sie gespeichert ist.
+   */
   readonly locked = computed(
-    () => this.isOwner() && (this.instruction()?.stateId ?? 0) > 2,
+    () =>
+      !this.isOffice() &&
+      (this.savedStateId() ?? this.instruction()?.stateId ?? States.WORKING) !== States.WORKING,
   );
+  /** The state as last loaded from or saved to the backend. */
+  private readonly savedStateId = signal<number | undefined>(undefined);
+
+  /** Every save goes through here, so the lock follows the stored state. */
+  private store(instruction: Instruction, silent: boolean, onSaved?: () => void): void {
+    this.instructions.save({
+      instruction,
+      silent,
+      onSaved: () => {
+        this.savedStateId.set(this.instruction()?.stateId);
+        onSaved?.();
+      },
+    });
+  }
 
   readonly stateOptions = computed(() => {
     const states = this.values.states();
@@ -341,6 +363,7 @@ export class InstructionDetail {
     });
 
     this.needsExtraCategory.set(instruction.categoryId != null);
+    this.savedStateId.set(instruction.stateId);
 
     guardReadyState(group.get('stateId')!, {
       current: () => this.instruction()?.stateId,
@@ -481,14 +504,14 @@ export class InstructionDetail {
 
   addMeeting(): void {
     const instruction = this.instruction();
-    if (instruction) {
+    if (instruction && !this.locked()) {
       this.instructions.addMeeting({ instruction, isIndoor: this.isIndoor() });
     }
   }
 
   removeMeeting(eventId: number): void {
     const instruction = this.instruction();
-    if (!instruction) {
+    if (!instruction || this.locked()) {
       return;
     }
     this.confirm.confirm({
@@ -503,8 +526,8 @@ export class InstructionDetail {
 
   persist(silent = false): void {
     const instruction = this.instruction();
-    if (instruction) {
-      this.instructions.save({ instruction, silent });
+    if (instruction && !this.locked()) {
+      this.store(instruction, silent);
     }
   }
 
@@ -535,7 +558,7 @@ export class InstructionDetail {
       load();
       return;
     }
-    this.instructions.save({ instruction, silent: true, onSaved: load });
+    this.store(instruction, true, load);
     this.form()?.markAsPristine();
   }
 
@@ -558,7 +581,7 @@ export class InstructionDetail {
       this.showClaim.set(true);
       return;
     }
-    this.instructions.save({ instruction: item, silent: true, onSaved: () => this.showClaim.set(true) });
+    this.store(item, true, () => this.showClaim.set(true));
     this.form()?.markAsPristine();
   }
 
@@ -575,7 +598,7 @@ export class InstructionDetail {
       load();
       return;
     }
-    this.instructions.save({ instruction, silent: true, onSaved: load });
+    this.store(instruction, true, load);
     this.form()?.markAsPristine();
   }
 

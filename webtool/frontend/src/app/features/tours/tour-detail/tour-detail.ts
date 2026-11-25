@@ -160,10 +160,31 @@ export class TourDetail {
   });
   readonly showClaim = signal(false);
 
-  /** Owner may only edit while the tour is still In Arbeit/Fertig (state <= 2). */
+  /**
+   * Trainer bearbeiten nur "In Arbeit"; mit "Fertig" übernimmt die
+   * Geschäftsstelle. Das Backend prüft dasselbe (views/frontend/locks.py).
+   * Maßgeblich ist der gespeicherte Status, nicht das Formular: sonst sperrte
+   * schon die Auswahl von "Fertig", bevor sie gespeichert ist.
+   */
   readonly locked = computed(
-    () => this.isOwner() && (this.tour()?.stateId ?? 0) > 2,
+    () =>
+      !this.isOffice() &&
+      (this.savedStateId() ?? this.tour()?.stateId ?? States.WORKING) !== States.WORKING,
   );
+  /** The state as last loaded from or saved to the backend. */
+  private readonly savedStateId = signal<number | undefined>(undefined);
+
+  /** Every save goes through here, so the lock follows the stored state. */
+  private store(tour: Tour, silent: boolean, onSaved?: () => void): void {
+    this.tours.save({
+      tour,
+      silent,
+      onSaved: () => {
+        this.savedStateId.set(this.tour()?.stateId);
+        onSaved?.();
+      },
+    });
+  }
 
   // --- option lists ---
   readonly stateOptions = computed(() => {
@@ -343,6 +364,7 @@ export class TourDetail {
     });
 
     this.needsExtraCategories.set((tour.categoryIds?.length ?? 0) > 0);
+    this.savedStateId.set(tour.stateId);
 
     guardReadyState(group.get('stateId')!, {
       current: () => this.tour()?.stateId,
@@ -483,14 +505,14 @@ export class TourDetail {
 
   addPreliminary(): void {
     const tour = this.tour();
-    if (tour) {
+    if (tour && !this.locked()) {
       this.tours.addPreliminary(tour);
     }
   }
 
   removePreliminary(): void {
     const tour = this.tour();
-    if (!tour) {
+    if (!tour || this.locked()) {
       return;
     }
     this.confirm.confirm({
@@ -574,8 +596,8 @@ export class TourDetail {
   // --- actions ---
   persist(silent = false): void {
     const tour = this.tour();
-    if (tour) {
-      this.tours.save({ tour, silent });
+    if (tour && !this.locked()) {
+      this.store(tour, silent);
     }
   }
 
@@ -606,7 +628,7 @@ export class TourDetail {
       load();
       return;
     }
-    this.tours.save({ tour, silent: true, onSaved: load });
+    this.store(tour, true, load);
     this.form()?.markAsPristine();
   }
 
@@ -629,7 +651,7 @@ export class TourDetail {
       this.showClaim.set(true);
       return;
     }
-    this.tours.save({ tour: item, silent: true, onSaved: () => this.showClaim.set(true) });
+    this.store(item, true, () => this.showClaim.set(true));
     this.form()?.markAsPristine();
   }
 
@@ -646,7 +668,7 @@ export class TourDetail {
       load();
       return;
     }
-    this.tours.save({ tour, silent: true, onSaved: load });
+    this.store(tour, true, load);
     this.form()?.markAsPristine();
   }
 

@@ -5,20 +5,31 @@ from rest_framework import viewsets, permissions, status, mixins
 from rest_framework.response import Response
 
 from server.models import Session, Collective, Season
+from server.views.frontend import locks
 from server.serializers.frontend.sessions import SessionListSerializer, SessionSerializer
 
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
     """
     Object-level permission to only allow manager of a collective and member of staff to edit it.
+    Managers may only edit while the session is "In Arbeit", see locks.py.
     """
+    message = locks.LOCKED_MESSAGE
+
+    @staticmethod
+    def manages(user, collective_id):
+        try:
+            collective_id = int(collective_id)
+        except (TypeError, ValueError):
+            return False
+        return Collective.objects.filter(pk=collective_id, managers__user=user).exists()
+
     def has_permission(self, request, view):
+        locks.refuse_upsert(request)
         if request.user.is_authenticated and not request.user.is_staff and request.method == 'POST':
-            if 'collectiveId' in request.data:
-                managers = Collective.objects.get(pk=request.data['collectiveId']).managers.all()
-                for guide in managers:
-                    if request.user.id == guide.pk:
-                        return True
+            if self.manages(request.user, request.data.get('collectiveId')) \
+                    and locks.guide_may_create_with_state(request):
+                return True
         authenticated_request = request.method == 'PUT' and request.user.is_authenticated
         return request.method in permissions.SAFE_METHODS or authenticated_request or request.user.is_staff
 
@@ -30,12 +41,15 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
             return True
         # User is only allowed to perform actions on own objects expect DELETE-Requests.
         if request.method == 'PUT':
-            # Only allow PUT-requests if request.user is manager of collective
-            if 'collectiveId' in request.data:
-                managers = Collective.objects.get(pk=request.data['collectiveId']).managers.all()
-                for guide in managers:
-                    if request.user.id == guide.pk:
-                        return True
+            # Only managers of the session's own collective -- the collectiveId of
+            # the request alone would let any manager edit every session. A
+            # session may only move to another collective the user manages too.
+            if not self.manages(request.user, obj.collective_id):
+                return False
+            if 'collectiveId' in request.data and not self.manages(request.user, request.data['collectiveId']):
+                return False
+            # Only while the session is "In Arbeit"; it may stay there or be handed in ("Fertig").
+            return locks.in_progress(obj.state) and locks.guide_may_set_state(request)
         return False
 
 

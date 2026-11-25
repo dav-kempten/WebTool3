@@ -15,6 +15,9 @@
         @if (saveErrorSummary()) {
           <p-message severity="error">Speichern fehlgeschlagen bei: {{ saveErrorSummary() }}</p-message>
         }
+        @if (locked()) {
+          <p-message severity="info">Nur lesbar: Trainer bearbeiten Termine nur im Status „In Arbeit“. Änderungen übernimmt jetzt die Geschäftsstelle.</p-message>
+        }
       </p-card>
 
       <p-card subheader="Buchungsnummer, Status und Gruppe">
@@ -67,7 +70,7 @@
               <td>{{ eventDate(event) }}</td>
               <td>{{ event.startTime || approximateName(event.approximateId) }}</td>
               <td>{{ event.name }}</td>
-              <td><p-button icon="pi pi-pencil" size="small" [text]="true" (onClick)="openEvent()" /></td>
+              <td>@if (!locked()) {<p-button icon="pi pi-pencil" size="small" [text]="true" (onClick)="openEvent()" />}</td>
             </tr>
           </ng-template>
         </p-table>
@@ -105,7 +108,9 @@
       </p-card>
 
       <div class="avk-detail-actions">
-        <p-button label="Speichern" icon="pi pi-save" (onClick)="save()" />
+        @if (!locked()) {
+          <p-button label="Speichern" icon="pi pi-save" (onClick)="save()" />
+        }
         <a routerLink="/sessions"><p-button label="Zurück" severity="secondary" /></a>
         @if (isCoordinator()) {
           <span class="avk-spacer"></span>

@@ -6,6 +6,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from server import claims, printouts
+from server.views.frontend import locks
 from server.models import Tour, Season
 from server.serializers.client.activity import ActivitySerializer
 from server.serializers.frontend.tours import TourListSerializer, TourSerializer
@@ -14,10 +15,14 @@ from server.serializers.frontend.tours import TourListSerializer, TourSerializer
 class IsOwnerOrReadOnly(permissions.BasePermission):
     """
     Object-level permission to only allow owners of an object and member of staff to edit it.
+    Owners may only edit while the tour is "In Arbeit", see locks.py.
     """
+    message = locks.LOCKED_MESSAGE
+
     def has_permission(self, request, view):
+        locks.refuse_upsert(request)
         if request.user.is_authenticated and not request.user.is_staff and request.method == 'POST':
-            if 'guideId' in request.data and request.data['guideId'] == request.user.id:
+            if request.data.get('guideId') == request.user.id and locks.guide_may_create_with_state(request):
                 return True
         authenticated_request = request.method == 'PUT' and request.user.is_authenticated
         return request.method in permissions.SAFE_METHODS or authenticated_request or request.user.is_staff
@@ -31,8 +36,8 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
         # User is only allowed to perform actions on own objects,
         # expect DELETE-Requests.
         if obj.guide is not None and obj.guide.user == request.user and request.method == 'PUT':
-            # Only allow requests if tour and request is on stateId = 2 or less
-            if obj.state.pk <= 2 and 'stateId' in request.data and request.data['stateId'] <= 2:
+            # Only while the tour is "In Arbeit"; it may stay there or be handed in ("Fertig").
+            if locks.in_progress(obj.state) and 'stateId' in request.data and locks.guide_may_set_state(request):
                 # Users are not allowed to change guideId
                 if 'guideId' in request.data and obj.guide.pk == request.data['guideId']:
                     return True
