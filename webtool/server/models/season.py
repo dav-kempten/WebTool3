@@ -160,6 +160,7 @@ class Season(TimeMixin, models.Model):
         if with_preliminary:
             dates = dates | Q(
                 preliminary__isnull=False,
+                preliminary__deprecated=False,
                 preliminary__start_date__year=year,
                 preliminary__start_date__month=month,
             )

@@ -252,8 +252,8 @@ def tour_source(tour):
     sheet.field('Tour', when(event))
     if tour.deadline:
         sheet.field('Anmeldeschluss', tex(tour.deadline.long_date(with_year=True)))
-    if tour.preliminary:
-        preliminary = tour.preliminary
+    preliminary = tour.active_preliminary
+    if preliminary:
         sheet.field('Vorbesprechung', when(preliminary) + (f', {tex(preliminary.rendezvous)}' if preliminary.rendezvous else ''))
     sheet.field('Info', tex(tour.info))
 
@@ -291,7 +291,7 @@ def tour_source(tour):
 
     lead(sheet, tour, 'Trainer')
     remarks(sheet, tour)
-    events = [e for e in (event, tour.deadline, tour.preliminary) if e]
+    events = [e for e in (event, tour.deadline, tour.active_preliminary) if e]
     internal(sheet, tour, events, 'Tour')
     return sheet.source()
 

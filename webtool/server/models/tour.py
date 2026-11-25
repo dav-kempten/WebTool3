@@ -130,9 +130,21 @@ class Tour(
         with_year = self.deadline.start_date.year != season_year
         return self.deadline.long_date(with_year=with_year)
 
+    @property
+    def active_preliminary(self):
+        """The preliminary meeting, unless it was removed in the frontend.
+
+        Removing it there only marks the event deprecated, so it can be reused
+        when the preliminary is added again.
+        """
+        preliminary = self.preliminary
+        if preliminary is None or preliminary.deprecated:
+            return None
+        return preliminary
+
     def _preliminary(self):
-        if self.preliminary:
-            preliminary = self.preliminary.departure()
+        if self.active_preliminary:
+            preliminary = self.active_preliminary.departure()
             return 'Vorbesprechung', "{}".format(preliminary)
         elif self.info:
             return 'Toureninformation', self.info

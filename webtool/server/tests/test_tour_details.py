@@ -73,6 +73,17 @@ def test_info_replaces_missing_preliminary(tour):
     assert places_paragraph(tour.details())[0] == '<strong>Toureninformation:</strong> Infos per Mail'
 
 
+def test_removed_preliminary_is_not_shown(tour):
+    # Removing the preliminary in the frontend only marks the event deprecated.
+    tour.preliminary.deprecated = True
+    tour.preliminary.save()
+    tour.info = 'Infos per Mail'
+    tour.save()
+    details = tour.details()
+    assert 'Vorbesprechung' not in details
+    assert places_paragraph(details)[0] == '<strong>Toureninformation:</strong> Infos per Mail'
+
+
 def test_registration_line(tour):
     assert 'mindestens 3, maximal 6 Teilnehmer.</p>' in tour.details()
 

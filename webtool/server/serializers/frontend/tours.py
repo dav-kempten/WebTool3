@@ -356,8 +356,9 @@ class TourSerializer(InternalFieldsMixin, serializers.ModelSerializer):
             return 'N.a.'
 
     def preliminary_format(self, instance=None):
-        if instance.preliminary:
-            return instance.preliminary.short_date(with_year=True) + ' ' + self.time_format(event=instance.preliminary)
+        preliminary = instance.active_preliminary
+        if preliminary:
+            return preliminary.short_date(with_year=True) + ' ' + self.time_format(event=preliminary)
         else:
             return instance.info
 
