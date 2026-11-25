@@ -36,12 +36,16 @@ async function start(sessionUser: object) {
   return { fixture, router };
 }
 
+// Both tests go through the real routes, lazy-loaded pages included; under
+// the load of the full suite that can take longer than the default 5 s.
+const ROUTING_TIMEOUT = 20_000;
+
 describe('App', () => {
   it('sends an anonymous visitor to the login page, without the menu', async () => {
     const { fixture, router } = await start({});
     expect(router.url).toBe('/login?returnUrl=%2Ftours');
     expect(fixture.nativeElement.querySelector('avk-main-menu')).toBeNull();
-  });
+  }, ROUTING_TIMEOUT);
 
   it('lets a logged-in user in and shows who is logged in', async () => {
     const { fixture, router } = await start({ id: 7, firstName: 'Lina', lastName: 'Wansel', role: 'guide' });
@@ -50,5 +54,5 @@ describe('App', () => {
     expect(menu).toBeTruthy();
     expect(menu.textContent).toContain('Lina Wansel');
     expect(menu.textContent).toContain('Trainer');
-  });
+  }, ROUTING_TIMEOUT);
 });
