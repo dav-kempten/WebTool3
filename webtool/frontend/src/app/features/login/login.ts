@@ -61,7 +61,7 @@ export class Login {
   readonly kind = signal<LoginKind>(this.restoreKind());
   readonly failed = signal(false);
   readonly busy = signal(false);
-  /** The logo file may be missing; then the section's name stands in for it. */
+  /** Should the logo (public/dav-kempten.jpg, a copy of the admin's webtool/static logo) fail to load, the name stands in. */
   readonly logoMissing = signal(false);
 
   readonly memberForm = this.fb.nonNullable.group({

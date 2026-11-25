@@ -66,6 +66,10 @@ personaldaten_json.py
 !webtool/frontend/proxy.conf.json
 !webtool/frontend/.vscode/*.json
 
+# Ebenso das pauschale *.jpg: das Sektionslogo der Anmeldeseite, eine Kopie
+# von webtool/static/dav-kempten.jpg (das Logo im Admin).
+!webtool/frontend/public/dav-kempten.jpg
+
 # Wird bei jedem Build aus package.json und der Uhrzeit erzeugt
 # (webtool/frontend/scripts/build-info.mjs) und gehoert damit zum Build,
 # nicht zum Quellstand.

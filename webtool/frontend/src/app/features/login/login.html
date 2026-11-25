@@ -2,7 +2,7 @@
   <p-card styleClass="avk-login-card">
     <div class="avk-login-brand">
       @if (!logoMissing()) {
-        <img src="dav-logo.svg" alt="DAV Sektion Allgäu-Kempten" class="avk-login-logo" (error)="logoMissing.set(true)" />
+        <img src="dav-kempten.jpg" alt="Deutscher Alpenverein, Sektion Allgäu-Kempten" width="221" height="128" class="avk-login-logo" (error)="logoMissing.set(true)" />
       } @else {
         <div class="avk-login-logo-text">DAV Sektion Allgäu-Kempten</div>
       }
@@ -32,6 +32,7 @@
             inputmode="numeric"
             maxlength="16"
             placeholder="008-00-123456"
+            name="memberId"
             formControlName="memberId"
             autocomplete="username"
             [class.avk-input-error]="failed()"
@@ -51,6 +52,7 @@
           <input
             id="userName"
             pInputText
+            name="username"
             formControlName="userName"
             autocomplete="username"
             [class.avk-input-error]="failed()"
@@ -63,6 +65,7 @@
             id="password"
             pInputText
             type="password"
+            name="password"
             formControlName="password"
             autocomplete="current-password"
             [class.avk-input-error]="failed()"
