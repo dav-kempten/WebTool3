@@ -15,6 +15,17 @@ export interface ReleaseNote {
 
 export const RELEASE_NOTES: readonly ReleaseNote[] = [
   {
+    version: '3.0.1',
+    changes: [
+      'Anmelden geht jetzt über eine eigene Anmeldeseite: Trainer mit ihrer Mitgliedsnummer (so wie sie auf dem DAV-Ausweis steht, mit „/“ oder „-“), die Geschäftsstelle mit Benutzername und Passwort. Danach geht es zum Dashboard oder zu der Seite, die ein Link geöffnet hat. Oben rechts steht, wer angemeldet ist und in welcher Rolle.',
+      'Touren, Kurse und Gruppentermine bearbeiten Trainer nur noch im Status „In Arbeit“. Ab „Fertig“ sind alle Felder ausgegraut, dann übernimmt die Geschäftsstelle.',
+      'Solange die Geschäftsstelle einen abgegebenen Termin noch nicht freigegeben hat, holst du ihn mit „Wieder bearbeiten“ zurück auf „In Arbeit“.',
+      'Gruppentermine haben jetzt wie Touren und Kurse die „Vorschau Homepage“.',
+      'Steht im Treffpunkt einer Tour schon „Treffpunkt:“, erscheint das auf der Homepage und im Programmheft nicht mehr doppelt.',
+      'Eine entfernte Vorbesprechung taucht auf der Homepage, im Programmheft und im Ausdruck nicht mehr auf.',
+    ],
+  },
+  {
     version: '3.0.0',
     changes: [
       'Der Trainer-Bereich ist da: Unter „Trainer“ stehen Liste und Detailseite. Jeder Trainer kann dort seinen Steckbrief selbst pflegen, die Geschäftsstelle alle.',
