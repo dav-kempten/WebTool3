@@ -21,6 +21,7 @@ export const RELEASE_NOTES: readonly ReleaseNote[] = [
       'Touren, Kurse und Gruppentermine bearbeiten Trainer nur noch im Status „In Arbeit“. Ab „Fertig“ sind alle Felder ausgegraut, dann übernimmt die Geschäftsstelle.',
       'Solange die Geschäftsstelle einen abgegebenen Termin noch nicht freigegeben hat, holst du ihn mit „Wieder bearbeiten“ zurück auf „In Arbeit“.',
       'Gruppentermine haben jetzt wie Touren und Kurse die „Vorschau Homepage“.',
+      'Das WebTool schreibt jetzt in Fira Sans, der Schrift von alpenverein.de.',
       'Steht im Treffpunkt einer Tour schon „Treffpunkt:“, erscheint das auf der Homepage und im Programmheft nicht mehr doppelt.',
       'Eine entfernte Vorbesprechung taucht auf der Homepage, im Programmheft und im Ausdruck nicht mehr auf.',
     ],
