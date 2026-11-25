@@ -2,7 +2,7 @@
 from django.contrib.auth import login, authenticate
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
-from rest_framework import views, permissions
+from rest_framework import views, permissions, status
 from rest_framework.response import Response
 
 from server.serializers.auth.login import LoginSerializer
@@ -28,8 +28,8 @@ class LoginView(views.APIView):
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
         user = authenticate(request, **data)
-        try:
-            login(request, user)
-        except ValueError:
-            pass
+        if user is None:
+            # Former code passed None on to login() and answered with a 500.
+            return Response({'detail': 'Anmeldung fehlgeschlagen.'}, status=status.HTTP_400_BAD_REQUEST)
+        login(request, user)
         return Response(UserSerializer(user).data)

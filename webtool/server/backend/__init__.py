@@ -8,14 +8,24 @@ from server.models import Profile, Tour, Instruction, Session, Talk
 class Backend(ModelBackend):
 
     def authenticate(self, request, username=None, password=None, **kwargs):
-        try:
-            profile = Profile.objects.get(member_id=kwargs.get('member_id'))
-        except Profile.DoesNotExist:
+        """
+        Trainer melden sich nur mit ihrer Mitgliedsnummer an, ohne Passwort.
+        Das gilt ausdrücklich nicht für Personal und Administration: die
+        Nummer steht auf dem DAV-Ausweis und ist kein Geheimnis, wer sie
+        kennt, wäre sonst Geschäftsstelle. Die melden sich mit Benutzername
+        und Passwort an (ModelBackend).
+        """
+        member_id = (kwargs.get('member_id') or '').strip()
+        if not member_id:
             return None
-        except Profile.MultipleObjectsReturned:
+        try:
+            profile = Profile.objects.select_related('user').get(member_id=member_id)
+        except (Profile.DoesNotExist, Profile.MultipleObjectsReturned):
             return None
 
         user = profile.user
+        if not user.is_active or user.is_staff or user.is_superuser:
+            return None
         return user
 
     def get_all_permissions(self, user_obj, obj=None):
