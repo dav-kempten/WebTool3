@@ -60,7 +60,13 @@ const RESULT: ClaimResult = {
   total: '166.50',
 };
 
-function setup(office = false) {
+/**
+ * Mounts the opened dialog. Rendering its template (some 20 PrimeNG fields in
+ * jsdom) takes 0.5-0.9 s per test and made the suite time out now and then, so
+ * only `render` draws it; the logic tests run the component on an empty
+ * template, as they never look at the DOM.
+ */
+function setup(office = false, render = false) {
   const previews: ClaimInput[] = [];
   const downloads: ClaimInput[] = [];
   TestBed.configureTestingModule({
@@ -83,6 +89,9 @@ function setup(office = false) {
       },
     ],
   });
+  if (!render) {
+    TestBed.overrideComponent(ClaimDialog, { set: { template: '', imports: [] } });
+  }
   const fixture = TestBed.createComponent(ClaimDialog);
   fixture.componentRef.setInput('kind', 'instructions');
   fixture.componentRef.setInput('eventId', 5);
@@ -91,11 +100,21 @@ function setup(office = false) {
   return { fixture, dialog: fixture.componentInstance, previews, downloads };
 }
 
-// Mounting the dialog with its PrimeNG parts can take longer than the default
-// 5 s under the load of the full suite; it used to time out now and then.
-describe('ClaimDialog', { timeout: 20_000 }, () => {
+describe('ClaimDialog', () => {
   beforeEach(() => vi.useFakeTimers());
   afterEach(() => vi.useRealTimers());
+
+  // The only test that draws the PrimeNG fields: 1 s alone, 4-4.7 s in the
+  // full suite (parallel files, PrimeNG's first-use setup), so it gets 15 s.
+  it('renders the opened dialog with the amounts per day and night and the result', { timeout: 15_000 }, () => {
+    const { fixture } = setup(false, true);
+    vi.advanceTimersByTime(400);
+    fixture.detectChanges();
+    // p-dialog may move its content to the body, so look there.
+    const amounts = [...document.body.querySelectorAll('.avk-claim-amount')].map((el) => el.textContent?.trim());
+    expect(amounts).toEqual(['32,50 €', '85,00 €', '25,00 €']);
+    expect(document.body.querySelector('.avk-claim-sum')?.textContent).toContain('166,50 €');
+  });
 
   it('loads the defaults when opened and previews them', () => {
     const { fixture, dialog, previews } = setup();
