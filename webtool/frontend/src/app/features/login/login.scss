@@ -30,12 +30,12 @@
 
 .avk-login-logo {
   display: block;
-  max-width: 12rem;
-  max-height: 6rem;
+  max-width: 100%;
+  height: auto;
   margin: 0 auto;
 }
 
-/* Platzhalter, solange public/dav-logo.svg fehlt. */
+/* Ersatz, falls das Logo (public/dav-kempten.jpg, Kopie des Admin-Logos aus webtool/static) nicht lädt. */
 .avk-login-logo-text {
   font-weight: 700;
   font-size: 1.05rem;
