@@ -25,6 +25,9 @@
       <form [formGroup]="memberForm" novalidate (ngSubmit)="submit()" class="avk-login-form">
         <div class="avk-field">
           <label for="memberId">Mitgliedsnummer</label>
+          <!-- autocomplete="on", not "username": without a password field no
+               password manager stores the number, but the browser's form
+               history (name="memberId") offers it again next time. -->
           <input
             id="memberId"
             pInputText
@@ -34,7 +37,7 @@
             placeholder="008-00-123456"
             name="memberId"
             formControlName="memberId"
-            autocomplete="username"
+            autocomplete="on"
             [class.avk-input-error]="failed()"
             autofocus
           />
