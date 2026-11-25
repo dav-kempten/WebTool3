@@ -1,5 +1,8 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, OnInit, computed, effect, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { filter, map } from 'rxjs';
+import { AuthService } from './core/services/auth.service';
 import { DatePipe } from '@angular/common';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -45,6 +48,31 @@ export class App implements OnInit {
 
   private valuesStore = inject(ValuesStore);
   private namesStore = inject(NamesStore);
+  private auth = inject(AuthService);
+  private router = inject(Router);
+
+  private readonly url = toSignal(
+    this.router.events.pipe(
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+      map((event) => event.urlAfterRedirects),
+    ),
+    { initialValue: '' },
+  );
+  /** The login page stands alone, without the menu. */
+  readonly onLoginPage = computed(() => this.url().startsWith('/login'));
+  /** Not before the first navigation, so the menu does not flash up on the way to /login. */
+  readonly showHeader = computed(() => this.url() !== '' && !this.onLoginPage());
+
+  constructor() {
+    // Logged out (button, or a session the server no longer knows): back to
+    // the login page. Only after the first session check, see AuthService.ready.
+    effect(() => {
+      // The first navigation is the guard's job: it keeps the returnUrl.
+      if (this.url() && this.auth.checked() && this.auth.isLoggedOut() && !this.onLoginPage()) {
+        void this.router.navigate(['/login']);
+      }
+    });
+  }
 
   ngOnInit(): void {
     // Warm the shared reference-data caches once for the whole app.

@@ -16,40 +16,20 @@
 }
 
 .avk-user {
-  font-weight: 600;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.2;
   white-space: nowrap;
 }
 
-.avk-dialog-hint {
-  margin: 0 0 1rem;
-  font-size: 0.85rem;
-  opacity: 0.75;
+.avk-user-name {
+  font-weight: 600;
 }
 
-.avk-field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  margin-bottom: 1rem;
-
-  input {
-    width: 100%;
-  }
-}
-
-.avk-input-error {
-  border-color: var(--p-red-400, #f87171) !important;
-  background: var(--p-red-50, #fef2f2);
-}
-
-.avk-error-text {
-  display: block;
-  margin-bottom: 0.75rem;
-  color: var(--p-red-500, #ef4444);
-}
-
-:host ::ng-deep .w-full {
-  width: 100%;
+.avk-user-role {
+  font-size: 0.8rem;
+  opacity: 0.65;
 }
 
 /*

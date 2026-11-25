@@ -1,0 +1,78 @@
+<section class="avk-login">
+  <p-card styleClass="avk-login-card">
+    <div class="avk-login-brand">
+      @if (!logoMissing()) {
+        <img src="dav-logo.svg" alt="DAV Sektion Allgäu-Kempten" class="avk-login-logo" (error)="logoMissing.set(true)" />
+      } @else {
+        <div class="avk-login-logo-text">DAV Sektion Allgäu-Kempten</div>
+      }
+      <h1>WebTool</h1>
+      <p>Touren, Kurse und Gruppentermine</p>
+    </div>
+
+    <p-selectbutton
+      [options]="kinds"
+      optionLabel="label"
+      optionValue="value"
+      [ngModel]="kind()"
+      (ngModelChange)="setKind($event)"
+      [allowEmpty]="false"
+      class="avk-login-kind"
+      ariaLabel="Zugang"
+    />
+
+    @if (kind() === 'member') {
+      <form [formGroup]="memberForm" novalidate (ngSubmit)="submit()" class="avk-login-form">
+        <div class="avk-field">
+          <label for="memberId">Mitgliedsnummer</label>
+          <input
+            id="memberId"
+            pInputText
+            type="text"
+            inputmode="numeric"
+            maxlength="16"
+            placeholder="008-00-123456"
+            formControlName="memberId"
+            autocomplete="username"
+            [class.avk-input-error]="failed()"
+            autofocus
+          />
+          <small class="avk-login-hint">Wie auf dem DAV-Ausweis, „/“ oder „-“ ist egal.</small>
+        </div>
+        @if (failed()) {
+          <p-message severity="error">Anmeldung fehlgeschlagen. Bitte die Mitgliedsnummer prüfen.</p-message>
+        }
+        <p-button type="submit" label="Anmelden" icon="pi pi-sign-in" styleClass="w-full" [loading]="busy()" [disabled]="memberForm.invalid" />
+      </form>
+    } @else {
+      <form [formGroup]="staffForm" novalidate (ngSubmit)="submit()" class="avk-login-form">
+        <div class="avk-field">
+          <label for="userName">Benutzername</label>
+          <input
+            id="userName"
+            pInputText
+            formControlName="userName"
+            autocomplete="username"
+            [class.avk-input-error]="failed()"
+            autofocus
+          />
+        </div>
+        <div class="avk-field">
+          <label for="password">Passwort</label>
+          <input
+            id="password"
+            pInputText
+            type="password"
+            formControlName="password"
+            autocomplete="current-password"
+            [class.avk-input-error]="failed()"
+          />
+        </div>
+        @if (failed()) {
+          <p-message severity="error">Anmeldung fehlgeschlagen. Bitte Benutzername und Passwort prüfen.</p-message>
+        }
+        <p-button type="submit" label="Anmelden" icon="pi pi-sign-in" styleClass="w-full" [loading]="busy()" [disabled]="staffForm.invalid" />
+      </form>
+    }
+  </p-card>
+</section>

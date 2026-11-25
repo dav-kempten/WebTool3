@@ -1,6 +1,8 @@
-<header class="avk-header">
-  <avk-main-menu />
-</header>
+@if (showHeader()) {
+  <header class="avk-header">
+    <avk-main-menu />
+  </header>
+}
 
 <main class="avk-main">
   <router-outlet />

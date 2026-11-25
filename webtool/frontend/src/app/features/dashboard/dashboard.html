@@ -1,11 +1,7 @@
 <section class="avk-page">
   <header class="avk-dashboard-header">
     <h1>WebTool – DAV Allgäu-Kempten</h1>
-    @if (isLoggedIn()) {
-      <p>Willkommen zurück, {{ user().firstName }}!</p>
-    } @else {
-      <p>Bitte melde dich an, um Veranstaltungen zu bearbeiten.</p>
-    }
+    <p>Willkommen zurück, {{ user().firstName }}!</p>
   </header>
 
   <div class="avk-dashboard-grid">

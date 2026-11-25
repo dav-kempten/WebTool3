@@ -68,7 +68,23 @@ export class AuthService {
   /** Ab Geschäftsstelle: TN-Gebühr, KV-Verlinkung, Homepage-Hinweise. */
   readonly isOfficeOrAbove = computed(() => this.permission().permissionLevel >= PermissionLevel.staff);
 
+  /**
+   * Resolves once the server has said who owns the session cookie (or that the
+   * request failed). Until then a new tab looks anonymous although the cookie
+   * may be valid, so the route guards wait for it before sending to /login.
+   */
+  readonly ready: Promise<void>;
+  private markReady: () => void = () => undefined;
+  /** True once `ready` has resolved, for synchronous checks. */
+  readonly checked = signal(false);
+
   constructor() {
+    this.ready = new Promise<void>((resolve) => {
+      this.markReady = () => {
+        this.checked.set(true);
+        resolve();
+      };
+    });
     this.refresh();
   }
 
@@ -82,9 +98,11 @@ export class AuthService {
     this.http.get<RawUser>('/api/login/').subscribe({
       next: (rawUser) => {
         this.setUser(rawUser && rawUser.id ? convertUser(rawUser) : ANONYMOUS_USER);
+        this.markReady();
       },
       error: () => {
         /* keep what sessionStorage restored */
+        this.markReady();
       },
     });
   }
@@ -108,10 +126,17 @@ export class AuthService {
       );
   }
 
-  logout(): void {
+  /** `done` runs once the server has ended the session (or the request failed). */
+  logout(done?: () => void): void {
     this.http.post<void>('/api/logout/', {}).subscribe({
-      next: () => this.setUser(ANONYMOUS_USER),
-      error: () => this.setUser(ANONYMOUS_USER),
+      next: () => {
+        this.setUser(ANONYMOUS_USER);
+        done?.();
+      },
+      error: () => {
+        this.setUser(ANONYMOUS_USER);
+        done?.();
+      },
     });
   }
 
