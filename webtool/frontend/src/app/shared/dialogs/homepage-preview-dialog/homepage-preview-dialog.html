@@ -19,9 +19,14 @@
       <ul class="avk-hp-facts">
         <li><span>Termin:</span> {{ dates() }}</li>
         <li><span>Leitung:</span> {{ guide() }}</li>
-        <li><span>Teilnehmer:</span> {{ participants() }}</li>
+        <!-- Group dates carry neither participants nor a fee. -->
+        @if (p.quantity) {
+          <li><span>Teilnehmer:</span> {{ participants() }}</li>
+        }
         <li><span>Buchungscode:</span> {{ p.id }}</li>
-        <li><span>Gebühr:</span> {{ fee() }}</li>
+        @if (p.admission != null) {
+          <li><span>Gebühr:</span> {{ fee() }}</li>
+        }
       </ul>
       <div class="avk-hp-body">
         <!-- Backend-generated HTML (details()); Angular sanitises it on binding. -->

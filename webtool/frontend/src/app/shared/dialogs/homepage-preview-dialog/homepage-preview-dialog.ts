@@ -7,7 +7,7 @@ import { ActivityPreview } from '../../../models/preview';
 import { MATERIAL_LIST_URL } from '../../util/links';
 
 /**
- * Shows a tour or course the way the homepage (TYPO3, dav-kempten.de) presents
+ * Shows a tour, course or group date the way the homepage (TYPO3, dav-kempten.de) presents
  * it: title with booking code, the facts list and the description. The content
  * is exactly what the homepage receives; only the look is an approximation.
  */

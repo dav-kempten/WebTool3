@@ -3,6 +3,7 @@ import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http
 import { Observable, catchError, map, of } from 'rxjs';
 import { Session, SessionSummary, RawSession } from '../../models/session';
 import { Event } from '../../models/event';
+import { ActivityPreview } from '../../models/preview';
 import { SaveResult, toSaveError } from '../../shared/util/save-error';
 
 const JSON_HEADERS = new HttpHeaders({
@@ -34,6 +35,13 @@ export class SessionService {
     }
     return this.http
       .get<RawSession>(`/api/frontend/sessions/${id}/`, { headers: READ_HEADERS })
+      .pipe(catchError(() => of(null)));
+  }
+
+  /** The group date as the homepage receives it, also before it is published. */
+  getPreview(id: number): Observable<ActivityPreview | null> {
+    return this.http
+      .get<ActivityPreview>(`/api/frontend/sessions/${id}/preview/`, { headers: READ_HEADERS })
       .pipe(catchError(() => of(null)));
   }
 

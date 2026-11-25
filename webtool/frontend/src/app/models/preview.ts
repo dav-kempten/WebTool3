@@ -1,6 +1,6 @@
 /**
- * What the homepage receives for a tour or course — the client API's detail
- * view, served by `/api/frontend/{tours,instructions}/<id>/preview/`. Only the
+ * What the homepage receives for a tour, course or group date — the client API's
+ * detail view, served by `/api/frontend/{tours,instructions,sessions}/<id>/preview/`. Only the
  * fields the preview shows are typed.
  */
 export interface ActivityPreview {

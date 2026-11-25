@@ -55,6 +55,9 @@ import {
 import { lockStartTimeOrApproximate } from '../../../shared/util/event-time';
 import { describeSaveErrorPath } from '../../../shared/util/save-error';
 import { States } from '../../../models/value';
+import { SessionService } from '../../../core/services/session.service';
+import { ActivityPreview } from '../../../models/preview';
+import { HomepagePreviewDialog } from '../../../shared/dialogs/homepage-preview-dialog/homepage-preview-dialog';
 
 @Component({
   selector: 'avk-session-detail',
@@ -78,6 +81,7 @@ import { States } from '../../../models/value';
     ResponsiveTooltip,
     EventFields,
     MessageModule,
+    HomepagePreviewDialog,
   ],
   providers: [AutoSaveService],
   templateUrl: './session-detail.html',
@@ -87,6 +91,7 @@ export class SessionDetail {
   readonly id = input.required<string>();
 
   private sessions = inject(SessionsStore);
+  private sessionService = inject(SessionService);
   private values = inject(ValuesStore);
   private names = inject(NamesStore);
   private events = inject(EventsStore);
@@ -357,6 +362,44 @@ export class SessionDetail {
 
   save(): void {
     this.persist(false);
+    this.form()?.markAsPristine();
+  }
+
+  readonly showPreview = signal(false);
+  readonly homepagePreview = signal<ActivityPreview | null>(null);
+  readonly previewLoading = signal(false);
+
+  /**
+   * Saves first, so the preview shows the current state, then opens what the
+   * homepage would show. A failed save reports its errors and opens nothing.
+   * A locked group date cannot be saved by its manager, so it is previewed as stored.
+   */
+  openPreview(): void {
+    const session = this.session();
+    if (!session) {
+      return;
+    }
+    const load = () => {
+      this.homepagePreview.set(null);
+      this.previewLoading.set(true);
+      this.showPreview.set(true);
+      this.sessionService.getPreview(session.id).subscribe((preview) => {
+        this.homepagePreview.set(preview);
+        this.previewLoading.set(false);
+      });
+    };
+    if (this.locked()) {
+      load();
+      return;
+    }
+    this.sessions.save({
+      session,
+      silent: true,
+      onSaved: () => {
+        this.savedStateId.set(this.session()?.stateId);
+        load();
+      },
+    });
     this.form()?.markAsPristine();
   }
 

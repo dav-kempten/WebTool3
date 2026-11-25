@@ -111,6 +111,7 @@
         @if (!locked()) {
           <p-button label="Speichern" icon="pi pi-save" (onClick)="save()" />
         }
+        <p-button label="Vorschau Homepage" icon="pi pi-eye" severity="secondary" (onClick)="openPreview()" pTooltip="Speichert und zeigt, wie der Gruppentermin auf dav-kempten.de erscheint" />
         <a routerLink="/sessions"><p-button label="Zurück" severity="secondary" /></a>
         @if (isCoordinator()) {
           <span class="avk-spacer"></span>
@@ -141,6 +142,8 @@
       </form>
     }
   </p-dialog>
+
+  <avk-homepage-preview-dialog [(visible)]="showPreview" [preview]="homepagePreview()" [loading]="previewLoading()" />
 } @else {
   <section class="avk-page">
     <p-card>
