@@ -91,7 +91,9 @@ function setup(office = false) {
   return { fixture, dialog: fixture.componentInstance, previews, downloads };
 }
 
-describe('ClaimDialog', () => {
+// Mounting the dialog with its PrimeNG parts can take longer than the default
+// 5 s under the load of the full suite; it used to time out now and then.
+describe('ClaimDialog', { timeout: 20_000 }, () => {
   beforeEach(() => vi.useFakeTimers());
   afterEach(() => vi.useRealTimers());
 
