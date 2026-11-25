@@ -158,3 +158,51 @@ def test_staff_may_edit_in_every_state(api, kind, item, helper, state_name):
     assert response.status_code == 200, response.content
     item.refresh_from_db()
     assert list(item.team.all()) == [helper]
+
+
+# --- Zurück auf "In Arbeit" ---------------------------------------------------
+
+def test_leader_reopens_a_ready_event(kind, item, leader):
+    set_state(item, 'Fertig')
+    response = client_for(leader).post(f'{KINDS[kind]}{item.pk}/reopen/', format='json')
+    assert response.status_code == 200, response.content
+    assert response.json()['stateId'] == state('In Arbeit').pk
+    item.refresh_from_db()
+    assert item.state == state('In Arbeit')
+
+
+def test_reopen_changes_nothing_but_the_state(kind, item, leader, helper):
+    set_state(item, 'Fertig')
+    response = client_for(leader).post(
+        f'{KINDS[kind]}{item.pk}/reopen/', {'teamIds': [helper.pk], 'guideId': helper.pk}, format='json',
+    )
+    assert response.status_code == 200, response.content
+    item.refresh_from_db()
+    assert list(item.team.all()) == []
+    assert item.guide == leader
+
+
+@pytest.mark.parametrize('state_name', ['In Arbeit', 'Freigegeben', 'Veröffentlicht', 'Noch nicht buchbar'])
+def test_only_ready_events_can_be_reopened(kind, item, leader, state_name):
+    set_state(item, state_name)
+    response = client_for(leader).post(f'{KINDS[kind]}{item.pk}/reopen/', format='json')
+    assert response.status_code == 400, response.content
+    item.refresh_from_db()
+    assert item.state == state(state_name)
+
+
+def test_others_cannot_reopen(kind, item, helper):
+    set_state(item, 'Fertig')
+    response = client_for(helper).post(f'{KINDS[kind]}{item.pk}/reopen/', format='json')
+    assert response.status_code == 403, response.content
+    item.refresh_from_db()
+    assert item.state == state('Fertig')
+
+
+def test_after_reopening_the_leader_may_edit_again(api, kind, item, leader, helper):
+    set_state(item, 'Fertig')
+    client = client_for(leader)
+    assert client.post(f'{KINDS[kind]}{item.pk}/reopen/', format='json').status_code == 200
+    body = body_with_helper(api, kind, item, helper)
+    response = client.put(f'{KINDS[kind]}{item.pk}/', body, format='json')
+    assert response.status_code == 200, response.content

@@ -68,6 +68,14 @@ export class SessionService {
     );
   }
 
+  /** Fertig → In Arbeit; only the state changes (see views/frontend/locks.py). */
+  reopenSession(id: number): Observable<SaveResult<RawSession>> {
+    return this.http.post<RawSession>(`/api/frontend/sessions/${id}/reopen/`, {}).pipe(
+      map((data) => ({ data, errors: [] }) as SaveResult<RawSession>),
+      catchError((error: HttpErrorResponse) => of(toSaveError<RawSession>(error))),
+    );
+  }
+
   deleteSession(id: number): Observable<boolean> {
     return this.http.delete(`/api/frontend/sessions/${id}/`).pipe(
       map(() => true),

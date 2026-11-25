@@ -3,13 +3,14 @@
 
 Trainer bearbeiten ihre Touren, Kurse und Gruppentermine nur im Status
 "In Arbeit". Mit "Fertig" geben sie den Termin an die Geschäftsstelle ab, ab
-dann ändert nur noch das Personal (is_staff) daran.
+dann ändert nur noch das Personal (is_staff) daran. Solange der Termin
+"Fertig" ist, also noch nicht geprüft, holen sie ihn mit reopen() zurück.
 
 Die Status werden über das Flag `default` bzw. den Namen erkannt, nicht über
 feste Primärschlüssel: die stimmen nur in der Produktionsdatenbank zufällig mit
 der Reihenfolge überein.
 """
-from rest_framework.exceptions import PermissionDenied
+from rest_framework.exceptions import PermissionDenied, ValidationError
 
 from server.models import State
 
@@ -22,6 +23,27 @@ LOCKED_MESSAGE = (
 def in_progress(state):
     """True für den Status "In Arbeit"."""
     return state is not None and state.default
+
+
+def is_ready(state):
+    """True für den Status "Fertig": abgegeben, aber noch nicht geprüft."""
+    return state is not None and state.name == 'Fertig'
+
+
+def reopen(request, obj, owner):
+    """
+    Setzt einen Termin von "Fertig" zurück auf "In Arbeit", sonst nichts --
+    die übrigen Felder bleiben, wie sie sind. ``owner`` sagt, ob der Benutzer
+    den Termin leitet; das Personal darf es immer. Ab "Freigegeben" hat die
+    Geschäftsstelle den Termin übernommen, dann geht es nicht mehr zurück.
+    """
+    if not (owner or request.user.is_staff):
+        raise PermissionDenied('Nur die Leitung des Termins kann ihn wieder bearbeiten.')
+    if not is_ready(obj.state):
+        raise ValidationError({'stateId': 'Nur Termine im Status „Fertig“ können wieder bearbeitet werden.'})
+    obj.state = State.objects.get(default=True)
+    obj.save()
+    return obj
 
 
 def _data(request):

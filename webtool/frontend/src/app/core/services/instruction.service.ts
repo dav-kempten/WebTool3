@@ -81,6 +81,14 @@ export class InstructionService {
     );
   }
 
+  /** Fertig → In Arbeit; only the state changes (see views/frontend/locks.py). */
+  reopenInstruction(id: number): Observable<SaveResult<RawInstruction>> {
+    return this.http.post<RawInstruction>(`/api/frontend/instructions/${id}/reopen/`, {}).pipe(
+      map((data) => ({ data, errors: [] }) as SaveResult<RawInstruction>),
+      catchError((error: HttpErrorResponse) => of(toSaveError<RawInstruction>(error))),
+    );
+  }
+
   deleteInstruction(id: number): Observable<boolean> {
     return this.http.delete(`/api/frontend/instructions/${id}/`).pipe(
       map(() => true),

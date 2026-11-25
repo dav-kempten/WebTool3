@@ -19,6 +19,10 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
     """
     message = locks.LOCKED_MESSAGE
 
+    @staticmethod
+    def owns(user, obj):
+        return obj.guide is not None and obj.guide.user == user
+
     def has_permission(self, request, view):
         locks.refuse_upsert(request)
         if request.user.is_authenticated and not request.user.is_staff and request.method == 'POST':
@@ -35,7 +39,7 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
             return True
         # User is only allowed to perform actions on own objects,
         # expect DELETE-Requests.
-        if obj.guide is not None and obj.guide.user == request.user and request.method == 'PUT':
+        if self.owns(request.user, obj) and request.method == 'PUT':
             # Only while the tour is "In Arbeit"; it may stay there or be handed in ("Fertig").
             if locks.in_progress(obj.state) and 'stateId' in request.data and locks.guide_may_set_state(request):
                 # Users are not allowed to change guideId
@@ -120,6 +124,13 @@ class TourViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         response = Response(ActivitySerializer(instance.tour, context=dict(request=request)).data)
         response['Cache-Control'] = 'no-store'
         return response
+
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    def reopen(self, request, pk=None):
+        """Fertig → In Arbeit, damit die Leitung die Tour wieder bearbeiten kann (locks.reopen)."""
+        instance = self.get_object()
+        locks.reopen(request, instance, IsOwnerOrReadOnly.owns(request.user, instance))
+        return Response(TourSerializer(instance, context=self.get_serializer_context()).data)
 
     @action(detail=True, methods=['get'], permission_classes=[permissions.IsAuthenticated],
             renderer_classes=printouts.RENDERERS)

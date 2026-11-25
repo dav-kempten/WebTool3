@@ -38,10 +38,7 @@ export function lockStartTimeOrApproximate(form: AbstractControl, destroyRef: De
   if (!startTime || !approximate) {
     return;
   }
-  const apply = () => {
-    setEnabled(startTime, !usesApproximate(form));
-    setEnabled(approximate, !hasStartTime(form));
-  };
+  const apply = () => syncStartTimeLock(form);
   approximate.valueChanges.pipe(takeUntilDestroyed(destroyRef)).subscribe((value) => {
     if (value != null && startTime.value) {
       startTime.setValue(null);
@@ -51,6 +48,20 @@ export function lockStartTimeOrApproximate(form: AbstractControl, destroyRef: De
     .pipe(takeUntilDestroyed(destroyRef))
     .subscribe(apply);
   apply();
+}
+
+/**
+ * Locks the start time or the time of day as the values demand. Also for
+ * re-enabling a whole form, which frees both fields: run this afterwards.
+ */
+export function syncStartTimeLock(form: AbstractControl): void {
+  const startTime = form.get('startTime');
+  const approximate = form.get('approximateId');
+  if (!startTime || !approximate) {
+    return;
+  }
+  setEnabled(startTime, !usesApproximate(form));
+  setEnabled(approximate, !hasStartTime(form));
 }
 
 function setEnabled(control: AbstractControl, enabled: boolean): void {

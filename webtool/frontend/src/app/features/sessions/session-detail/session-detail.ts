@@ -155,6 +155,28 @@ export class SessionDetail {
   /** The state as last loaded from or saved to the backend. */
   private readonly savedStateId = signal<number | undefined>(undefined);
 
+  /**
+   * Solange die Geschäftsstelle einen abgegebenen Gruppentermin noch nicht
+   * freigegeben hat, holt die Gruppenleitung ihn zurück auf "In Arbeit".
+   */
+  readonly canReopen = computed(() => !this.isOffice() && this.savedStateId() === States.READY);
+
+  reopen(): void {
+    const session = this.session();
+    if (!session || !this.canReopen()) {
+      return;
+    }
+    this.sessions.reopen({
+      id: session.id,
+      onDone: () => {
+        // The store holds the reloaded session; bring the form's state along
+        // without firing the store mirror.
+        this.form()?.get('stateId')?.setValue(States.WORKING, { emitEvent: false });
+        this.savedStateId.set(States.WORKING);
+      },
+    });
+  }
+
   /** Leiter wählen nur In Arbeit oder Fertig; der aktuelle Status bleibt zur Anzeige drin. */
   readonly stateOptions = computed(() => {
     const states = this.values.states();

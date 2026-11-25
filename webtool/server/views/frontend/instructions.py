@@ -19,6 +19,12 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
     """
     message = locks.LOCKED_MESSAGE
 
+    @staticmethod
+    def owns(user, obj):
+        # Trainer leiten nur Sommer- und Winterkurse selbst.
+        return (obj.guide is not None and obj.guide.user == user
+                and bool(obj.topic.category.winter or obj.topic.category.summer))
+
     def has_permission(self, request, view):
         locks.refuse_upsert(request)
         # Allow POST-request from authenticated users
@@ -39,8 +45,7 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
             return True
         # User is only allowed to perform actions on own objects,
         # expect DELETE-Requests.
-        if obj.guide is not None and obj.guide.user == request.user and request.method == 'PUT' \
-                and (obj.topic.category.winter or obj.topic.category.summer):
+        if self.owns(request.user, obj) and request.method == 'PUT':
             # Only while the course is "In Arbeit"; it may stay there or be handed in ("Fertig").
             if locks.in_progress(obj.state) and 'stateId' in request.data and locks.guide_may_set_state(request):
                 # Users are not allowed to change guideId
@@ -117,6 +122,13 @@ class InstructionViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
             instance._prefetched_objects_cache = {}
 
         return Response(serializer.data)
+
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    def reopen(self, request, pk=None):
+        """Fertig → In Arbeit, damit die Leitung den Kurs wieder bearbeiten kann (locks.reopen)."""
+        instance = self.get_object()
+        locks.reopen(request, instance, IsOwnerOrReadOnly.owns(request.user, instance))
+        return Response(InstructionSerializer(instance, context=self.get_serializer_context()).data)
 
     @action(detail=True, methods=['get'], permission_classes=[permissions.IsAuthenticated])
     def preview(self, request, pk=None):

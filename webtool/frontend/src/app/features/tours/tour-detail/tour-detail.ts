@@ -69,7 +69,7 @@ import {
 } from '../../../shared/util/validators';
 import { describeSaveErrorPath } from '../../../shared/util/save-error';
 import { EQUIPMENT_LIST_URL } from '../../../shared/util/links';
-import { lockStartTimeOrApproximate } from '../../../shared/util/event-time';
+import { lockStartTimeOrApproximate, syncStartTimeLock } from '../../../shared/util/event-time';
 import { States } from '../../../models/value';
 
 type EventKind = 'tour' | 'deadline' | 'preliminary';
@@ -173,6 +173,8 @@ export class TourDetail {
   );
   /** The state as last loaded from or saved to the backend. */
   private readonly savedStateId = signal<number | undefined>(undefined);
+  /** Whether the forms are currently disabled by the lock (not by their own rules). */
+  private disabledByLock = false;
 
   /** Every save goes through here, so the lock follows the stored state. */
   private store(tour: Tour, silent: boolean, onSaved?: () => void): void {
@@ -326,6 +328,30 @@ export class TourDetail {
     // Show the tour's reference code (e.g. "VHF-601") instead of "#id" in the breadcrumb.
     effect(() => {
       this.breadcrumb.setDetailTitle(this.tour()?.reference || null);
+    });
+
+    // A locked tour is read-only: every field greys out, the event dialogs
+    // included, and a disabled form is never valid, so the auto-save rests too.
+    // Re-enabled only when the lock goes away, since enable() also frees the
+    // start time/time of day pair, which is then locked again as before.
+    effect(() => {
+      const locked = this.locked();
+      const form = this.form();
+      const events = this.eventForms();
+      if (!form || !events) {
+        return;
+      }
+      if (locked) {
+        form.disable({ emitEvent: false });
+        events.disable({ emitEvent: false });
+        this.disabledByLock = true;
+      } else if (this.disabledByLock) {
+        form.enable({ emitEvent: false });
+        events.enable({ emitEvent: false });
+        // Only the tour itself carries the pair, see buildEventForm().
+        syncStartTimeLock(events.at(0));
+        this.disabledByLock = false;
+      }
     });
   }
 
@@ -559,7 +585,7 @@ export class TourDetail {
    */
   toggleMeetingOption(option: 'seminar' | 'online', checked: boolean): void {
     const group = this.selectedEventForm();
-    if (!group) {
+    if (!group || this.locked()) {
       return;
     }
     // Entweder-oder: die gewählte Option ersetzt die andere, Abwählen leert
@@ -587,6 +613,9 @@ export class TourDetail {
    * would tick itself again on the next load.
    */
   toggleExtraCategories(checked: boolean): void {
+    if (this.locked()) {
+      return;
+    }
     this.needsExtraCategories.set(checked);
     if (!checked) {
       this.form()?.get('categoryIds')?.setValue([]);
@@ -679,6 +708,28 @@ export class TourDetail {
 
   /** "Speichern + Fertig" is only offered while the tour is still In Arbeit. */
   readonly isWorking = computed(() => this.tour()?.stateId === States.WORKING);
+
+  /**
+   * Solange die Geschäftsstelle eine abgegebene Tour noch nicht freigegeben
+   * hat, holt der Trainer sie zurück auf "In Arbeit" (reopen im Backend).
+   */
+  readonly canReopen = computed(() => !this.isOffice() && this.savedStateId() === States.READY);
+
+  reopen(): void {
+    const tour = this.tour();
+    if (!tour || !this.canReopen()) {
+      return;
+    }
+    this.tours.reopen({
+      id: tour.id,
+      onDone: () => {
+        // The store holds the reloaded tour; bring the form's state along
+        // without firing the ready guard or the store mirror.
+        this.form()?.get('stateId')?.setValue(States.WORKING, { emitEvent: false });
+        this.savedStateId.set(States.WORKING);
+      },
+    });
+  }
 
   readonly showReadyChecklist = signal(false);
   /** Set only while the confirmed checklist hands the tour in, see guardReadyState(). */

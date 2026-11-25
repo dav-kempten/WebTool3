@@ -124,6 +124,13 @@ class SessionViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
         return Response(serializer.data)
 
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    def reopen(self, request, pk=None):
+        """Fertig → In Arbeit, damit die Gruppenleitung den Termin wieder bearbeiten kann (locks.reopen)."""
+        instance = self.get_object()
+        locks.reopen(request, instance, IsOwnerOrReadOnly.manages(request.user, instance.collective_id))
+        return Response(SessionSerializer(instance, context=self.get_serializer_context()).data)
+
     @action(detail=True, methods=['get'], permission_classes=[permissions.IsAuthenticated])
     def preview(self, request, pk=None):
         """

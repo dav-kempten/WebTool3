@@ -23,7 +23,14 @@
           <p-message severity="error">Speichern fehlgeschlagen bei: {{ saveErrorSummary() }}</p-message>
         }
         @if (locked()) {
-          <p-message severity="info">Nur lesbar: Trainer bearbeiten Termine nur im Status „In Arbeit“. Änderungen übernimmt jetzt die Geschäftsstelle.</p-message>
+          <p-message severity="info">
+            Nur lesbar: Trainer bearbeiten Termine nur im Status „In Arbeit“.
+            @if (canReopen()) {
+              Solange die Geschäftsstelle noch nicht freigegeben hat, holst du ihn mit „Wieder bearbeiten“ zurück.
+            } @else {
+              Änderungen übernimmt jetzt die Geschäftsstelle.
+            }
+          </p-message>
         }
       </p-card>
 
@@ -46,7 +53,7 @@
           </div>
           <div class="avk-field">
             <label>Tourenart</label>
-            <input pInputText [value]="category()?.name ?? ''" readonly pTooltip="Hauptkategorie der Tour" />
+            <input pInputText [value]="category()?.name ?? ''" readonly [disabled]="locked()" pTooltip="Hauptkategorie der Tour" />
           </div>
         </div>
       </p-card>
@@ -450,6 +457,14 @@
       </p-card>
 
       <div class="avk-detail-actions">
+        @if (canReopen()) {
+          <p-button
+            label="Wieder bearbeiten"
+            icon="pi pi-pencil"
+            (onClick)="reopen()"
+            pTooltip="Setzt den Status zurück auf „In Arbeit“, damit du wieder ändern kannst – solange die Geschäftsstelle noch nicht freigegeben hat"
+          />
+        }
         @if (!locked()) {
           <p-button label="Speichern" icon="pi pi-save" (onClick)="save()" />
           @if (isWorking()) {
@@ -564,6 +579,7 @@
                   (onChange)="toggleMeetingOption('seminar', $event.checked)"
                   [binary]="true"
                   inputId="meetingSeminarRoomCheckbox"
+                  [disabled]="locked()"
                 />
                 <label for="meetingSeminarRoomCheckbox">Seminarraum</label>
               </div>
@@ -574,6 +590,7 @@
                   (onChange)="toggleMeetingOption('online', $event.checked)"
                   [binary]="true"
                   inputId="meetingOnlineCheckbox"
+                  [disabled]="locked()"
                 />
                 <label for="meetingOnlineCheckbox">online</label>
               </div>

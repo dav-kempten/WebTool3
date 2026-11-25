@@ -90,6 +90,14 @@ export class TourService {
     );
   }
 
+  /** Fertig → In Arbeit; only the state changes (see views/frontend/locks.py). */
+  reopenTour(id: number): Observable<SaveResult<RawTour>> {
+    return this.http.post<RawTour>(`/api/frontend/tours/${id}/reopen/`, {}).pipe(
+      map((data) => ({ data, errors: [] }) as SaveResult<RawTour>),
+      catchError((error: HttpErrorResponse) => of(toSaveError<RawTour>(error))),
+    );
+  }
+
   deleteTour(id: number): Observable<boolean> {
     return this.http.delete(`/api/frontend/tours/${id}/`).pipe(
       map(() => true),

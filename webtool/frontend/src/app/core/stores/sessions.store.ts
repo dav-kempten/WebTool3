@@ -20,7 +20,7 @@ import { SessionService, CreateSessionPayload } from '../services/session.servic
 import { EventsStore } from './events.store';
 import { Session, SessionSummary, RawSession } from '../../models/session';
 import { Event } from '../../models/event';
-import { SaveError, describeSaveError } from '../../shared/util/save-error';
+import { SaveError, describeSaveError, describeSaveErrors } from '../../shared/util/save-error';
 
 interface SessionsState {
   summaries: SessionSummary[];
@@ -211,8 +211,38 @@ export const SessionsStore = signalStore(
       ),
     );
 
+    /** Fertig → In Arbeit, so the guide can edit again; `onDone` runs after success. */
+    const reopen = rxMethod<{ id: number; onDone?: () => void }>(
+      pipe(
+        switchMap(({ id, onDone }) =>
+          service.reopenSession(id).pipe(
+            tap(({ data, errors }) => {
+              if (data) {
+                patchState(store, setEntity(rawToEntity(data)), { lastSaveErrors: [] });
+                loadSummaries();
+                onDone?.();
+                messages.add({
+                  severity: 'success',
+                  summary: 'Wieder in Arbeit',
+                  detail: 'Der Gruppentermin kann wieder bearbeitet werden.',
+                });
+              } else {
+                messages.add({
+                  severity: 'error',
+                  summary: 'Zurücksetzen fehlgeschlagen',
+                  detail: describeSaveErrors(errors, 'Bitte die Seite neu laden.'),
+                  life: 10000,
+                });
+              }
+            }),
+          ),
+        ),
+      ),
+    );
+
     return {
       loadSummaries,
+      reopen,
       ensureSummaries(): void {
         if (!store.summariesLoaded()) {
           loadSummaries();

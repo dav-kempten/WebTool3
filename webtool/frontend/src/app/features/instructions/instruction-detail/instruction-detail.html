@@ -17,7 +17,14 @@
           <p-message severity="error">Speichern fehlgeschlagen bei: {{ saveErrorSummary() }}</p-message>
         }
         @if (locked()) {
-          <p-message severity="info">Nur lesbar: Trainer bearbeiten Termine nur im Status „In Arbeit“. Änderungen übernimmt jetzt die Geschäftsstelle.</p-message>
+          <p-message severity="info">
+            Nur lesbar: Trainer bearbeiten Termine nur im Status „In Arbeit“.
+            @if (canReopen()) {
+              Solange die Geschäftsstelle noch nicht freigegeben hat, holst du ihn mit „Wieder bearbeiten“ zurück.
+            } @else {
+              Änderungen übernimmt jetzt die Geschäftsstelle.
+            }
+          </p-message>
         }
       </p-card>
 
@@ -33,7 +40,7 @@
           </div>
           <div class="avk-field">
             <label>Thema</label>
-            <input pInputText [value]="topic()?.title ?? ''" readonly pTooltip="Kurskategorie der Veranstaltung" />
+            <input pInputText [value]="topic()?.title ?? ''" readonly [disabled]="locked()" pTooltip="Kurskategorie der Veranstaltung" />
           </div>
         </div>
       </p-card>
@@ -81,6 +88,7 @@
               (onChange)="setOvernight($event.checked)"
               [binary]="true"
               inputId="overnightCheckbox"
+              [disabled]="locked()"
             />
             <label for="overnightCheckbox">Kurs mit Übernachtung</label>
           </div>
@@ -167,26 +175,26 @@
             <div class="avk-grid-2">
               <div class="avk-field">
                 <label>Mindestqualifikation (Kursthema)</label>
-                <input pInputText [value]="topicQualificationNames()" readonly pTooltip="Benötigte Qualifikation der Teilnehmer*innen" />
+                <input pInputText [value]="topicQualificationNames()" readonly [disabled]="locked()" pTooltip="Benötigte Qualifikation der Teilnehmer*innen" />
               </div>
               <div class="avk-field">
                 <label>Zusätzliche Anforderungen (Kursthema)</label>
-                <input pInputText [value]="t.preconditions" readonly pTooltip="Zusätzliche Anforderungen" />
+                <input pInputText [value]="t.preconditions" readonly [disabled]="locked()" pTooltip="Zusätzliche Anforderungen" />
               </div>
             </div>
             <div class="avk-grid-2">
               <div class="avk-field">
                 <label>Ausrüstung (Kursthema)</label>
-                <input pInputText [value]="topicEquipmentNames()" readonly pTooltip="Benötigte Ausrüstungssets" />
+                <input pInputText [value]="topicEquipmentNames()" readonly [disabled]="locked()" pTooltip="Benötigte Ausrüstungssets" />
               </div>
               <div class="avk-field">
                 <label>Zusatzausrüstung (Kursthema)</label>
-                <input pInputText [value]="t.miscEquipment" readonly pTooltip="Zusatzausrüstung" />
+                <input pInputText [value]="t.miscEquipment" readonly [disabled]="locked()" pTooltip="Zusatzausrüstung" />
               </div>
             </div>
             <div class="avk-field">
               <label>Beschreibung (Kursthema)</label>
-              <textarea pTextarea [value]="t.description" rows="3" readonly class="avk-full" pTooltip="Kurzbeschreibung der Kursinhalte"></textarea>
+              <textarea pTextarea [value]="t.description" rows="3" readonly [disabled]="locked()" class="avk-full" pTooltip="Kurzbeschreibung der Kursinhalte"></textarea>
             </div>
           </p-card>
         }
@@ -387,6 +395,14 @@
       </p-card>
 
       <div class="avk-detail-actions">
+        @if (canReopen()) {
+          <p-button
+            label="Wieder bearbeiten"
+            icon="pi pi-pencil"
+            (onClick)="reopen()"
+            pTooltip="Setzt den Status zurück auf „In Arbeit“, damit du wieder ändern kannst – solange die Geschäftsstelle noch nicht freigegeben hat"
+          />
+        }
         @if (!locked()) {
           <p-button label="Speichern" icon="pi pi-save" (onClick)="save()" />
           @if (isWorking()) {

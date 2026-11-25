@@ -1,7 +1,12 @@
 import { DestroyRef, Injector, runInInjectionContext } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { FormControl, FormGroup } from '@angular/forms';
-import { hasStartTime, lockStartTimeOrApproximate, usesApproximate } from './event-time';
+import {
+  hasStartTime,
+  lockStartTimeOrApproximate,
+  syncStartTimeLock,
+  usesApproximate,
+} from './event-time';
 
 function eventForm(startTime: string | null, approximateId: number | null): FormGroup {
   return new FormGroup({
@@ -84,5 +89,17 @@ describe('event-time', () => {
       // disabled control keeps its value for getRawValue().
       expect(form.getRawValue().startTime).toBe('08:00');
     });
+  });
+
+  it('locks the pair again after the whole form was disabled and enabled', () => {
+    const form = locked('08:00', null);
+    form.disable({ emitEvent: false });
+    form.enable({ emitEvent: false });
+    // enable() frees both fields ...
+    expect(form.get('approximateId')!.enabled).toBe(true);
+    syncStartTimeLock(form);
+    // ... and the sync restores the lock the values call for.
+    expect(form.get('approximateId')!.disabled).toBe(true);
+    expect(form.get('startTime')!.enabled).toBe(true);
   });
 });

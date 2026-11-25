@@ -331,6 +331,21 @@ export class InstructionDetail {
     effect(() => {
       this.breadcrumb.setDetailTitle(this.instruction()?.reference || null);
     });
+
+    // A locked course is read-only: every field greys out, and a disabled
+    // form is never valid, so the auto-save rests too. The meeting dialog
+    // builds its own form, see selectEvent().
+    effect(() => {
+      const form = this.form();
+      if (!form) {
+        return;
+      }
+      if (this.locked()) {
+        form.disable({ emitEvent: false });
+      } else {
+        form.enable({ emitEvent: false });
+      }
+    });
   }
 
   private buildForm(instruction: Instruction): void {
@@ -384,6 +399,9 @@ export class InstructionDetail {
    * shows; otherwise it would stay saved but invisible.
    */
   toggleExtraCategory(checked: boolean): void {
+    if (this.locked()) {
+      return;
+    }
     this.needsExtraCategory.set(checked);
     if (!checked) {
       this.form()?.get('categoryId')?.setValue(null);
@@ -417,7 +435,7 @@ export class InstructionDetail {
 
   setOvernight(checked: boolean): void {
     const id = this.instruction()?.instructionId;
-    if (id == null) {
+    if (id == null || this.locked()) {
       return;
     }
     this.instructions.updateEventLocal(id, { overnight: checked });
@@ -481,6 +499,10 @@ export class InstructionDetail {
         group.get('endDate')!.updateValueAndValidity({ emitEvent: false }),
       );
     lockStartTimeOrApproximate(group, this.destroyRef);
+    // A locked course shows its meetings read-only.
+    if (this.locked()) {
+      group.disable({ emitEvent: false });
+    }
 
     this.selectedEventForm.set(group);
     this.showEvent.set(true);
@@ -488,7 +510,7 @@ export class InstructionDetail {
 
   applyEvent(): void {
     const form = this.selectedEventForm();
-    if (!form || this.selectedEventId == null) {
+    if (!form || this.selectedEventId == null || this.locked()) {
       return;
     }
     const value = form.getRawValue();
@@ -609,6 +631,28 @@ export class InstructionDetail {
 
   /** "Speichern + Fertig" is only offered while the course is still In Arbeit. */
   readonly isWorking = computed(() => this.instruction()?.stateId === States.WORKING);
+
+  /**
+   * Solange die Geschäftsstelle einen abgegebenen Kurs noch nicht freigegeben
+   * hat, holt der Trainer ihn zurück auf "In Arbeit" (reopen im Backend).
+   */
+  readonly canReopen = computed(() => !this.isOffice() && this.savedStateId() === States.READY);
+
+  reopen(): void {
+    const instruction = this.instruction();
+    if (!instruction || !this.canReopen()) {
+      return;
+    }
+    this.instructions.reopen({
+      id: instruction.id,
+      onDone: () => {
+        // The store holds the reloaded course; bring the form's state along
+        // without firing the ready guard or the store mirror.
+        this.form()?.get('stateId')?.setValue(States.WORKING, { emitEvent: false });
+        this.savedStateId.set(States.WORKING);
+      },
+    });
+  }
 
   readonly showReadyChecklist = signal(false);
   /** Set only while the confirmed checklist hands the course in, see guardReadyState(). */
