@@ -1,6 +1,23 @@
 /* Global styles for the new WebTool frontend (Angular 21 + PrimeNG 21). */
 @use "primeicons/primeicons.css";
 @use "primeflex/primeflex.css";
+/* Fira Sans wie auf alpenverein.de (SIL Open Font License), selbst ausgeliefert
+   über @fontsource statt von einem fremden Server. Light für leichte
+   Überschriften, Regular/Medium/SemiBold/Bold für Text und Hervorhebungen.
+   Nur Latein und Latein-Erweitert (Umlaute, Namen wie Łukasz), damit das ZIP
+   nicht jeden Zeichensatz mitschleppt. */
+@use "@fontsource/fira-sans/latin-300.css" as fira-latin-300;
+@use "@fontsource/fira-sans/latin-ext-300.css" as fira-latin-ext-300;
+@use "@fontsource/fira-sans/latin-400.css" as fira-latin-400;
+@use "@fontsource/fira-sans/latin-ext-400.css" as fira-latin-ext-400;
+@use "@fontsource/fira-sans/latin-400-italic.css" as fira-latin-400-italic;
+@use "@fontsource/fira-sans/latin-ext-400-italic.css" as fira-latin-ext-400-italic;
+@use "@fontsource/fira-sans/latin-500.css" as fira-latin-500;
+@use "@fontsource/fira-sans/latin-ext-500.css" as fira-latin-ext-500;
+@use "@fontsource/fira-sans/latin-600.css" as fira-latin-600;
+@use "@fontsource/fira-sans/latin-ext-600.css" as fira-latin-ext-600;
+@use "@fontsource/fira-sans/latin-700.css" as fira-latin-700;
+@use "@fontsource/fira-sans/latin-ext-700.css" as fira-latin-ext-700;
 
 :root {
   --avk-content-max-width: 1280px;
@@ -14,7 +31,7 @@ body {
   height: 100%;
   margin: 0;
   font-family:
-    "Open Sans",
+    "Fira Sans",
     -apple-system,
     BlinkMacSystemFont,
     "Segoe UI",
