@@ -486,15 +486,6 @@
           (onClick)="print()"
           pTooltip="Speichert und lädt die Tour mit allen Angaben als PDF im Stil des Programmhefts – zum Abheften"
         />
-        @if (canClaim()) {
-          <p-button
-            label="Abrechnung"
-            icon="pi pi-calculator"
-            severity="secondary"
-            (onClick)="openClaim()"
-            pTooltip="Speichert und erstellt die Abrechnung nach dem Abrechnungsleitfaden – korrigierbar, als PDF zum Unterschreiben"
-          />
-        }
         @if (!isOwner()) {
           <span class="avk-spacer"></span>
           <p-button label="Tour löschen" icon="pi pi-trash" severity="danger" (onClick)="confirmDelete()" />
@@ -515,9 +506,6 @@
   />
 
   <avk-homepage-preview-dialog [(visible)]="showPreview" [preview]="homepagePreview()" [loading]="previewLoading()" />
-  @if (tour(); as claimed) {
-    <avk-claim-dialog kind="tours" [eventId]="claimed.id" [(visible)]="showClaim" />
-  }
 
   <!-- Event editing dialog -->
   <p-dialog

@@ -43,7 +43,6 @@ import { InstructionsStore } from '../../../core/stores/instructions.store';
 import { InstructionService } from '../../../core/services/instruction.service';
 import { ActivityPreview } from '../../../models/preview';
 import { HomepagePreviewDialog } from '../../../shared/dialogs/homepage-preview-dialog/homepage-preview-dialog';
-import { ClaimDialog } from '../../../shared/dialogs/claim-dialog/claim-dialog';
 import { ValuesStore } from '../../../core/stores/values.store';
 import { NamesStore } from '../../../core/stores/names.store';
 import { EventsStore } from '../../../core/stores/events.store';
@@ -94,7 +93,6 @@ import { lockStartTimeOrApproximate } from '../../../shared/util/event-time';
     MessageModule,
     ReadyChecklistDialog,
     HomepagePreviewDialog,
-    ClaimDialog,
   ],
   providers: [AutoSaveService],
   templateUrl: './instruction-detail.html',

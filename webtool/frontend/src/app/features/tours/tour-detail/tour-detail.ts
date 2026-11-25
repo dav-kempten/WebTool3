@@ -46,7 +46,6 @@ import { ToursStore } from '../../../core/stores/tours.store';
 import { TourService } from '../../../core/services/tour.service';
 import { ActivityPreview } from '../../../models/preview';
 import { HomepagePreviewDialog } from '../../../shared/dialogs/homepage-preview-dialog/homepage-preview-dialog';
-import { ClaimDialog } from '../../../shared/dialogs/claim-dialog/claim-dialog';
 import { ValuesStore } from '../../../core/stores/values.store';
 import { NamesStore } from '../../../core/stores/names.store';
 import { EventsStore } from '../../../core/stores/events.store';
@@ -100,7 +99,6 @@ type EventKind = 'tour' | 'deadline' | 'preliminary';
     MessageModule,
     ReadyChecklistDialog,
     HomepagePreviewDialog,
-    ClaimDialog,
   ],
   providers: [AutoSaveService],
   templateUrl: './tour-detail.html',
